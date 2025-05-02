@@ -7,7 +7,10 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include <vector>
+#include "../File Systems/FileManager.h"
 
+//static std::vector<unsigned int> indices;
+//static std::vector<glm::vec3> vertices;
 void IcePick::Scene::OnBegin() {
 
 }
@@ -29,6 +32,42 @@ void IcePick::Scene::OnEnd() {
 }
 
 void IcePick::Scene::LoadFromDisk(const char* path) {
+	unsigned int meshID = GlobalFileSystem.LoadMesh<FBX>("res/Assets/cube.fbx");
+	std::cout << "Loaded mesh" << std::endl;
+	Mesh& tempMesh = GlobalFileSystem.GetMesh(meshID);
+	//IcePickRenderer::AddGeometry(tempMesh);
+
+
+	VertexArray& VA = IcePickRenderer::AddVertexArray();
+	VA.IndexCount = tempMesh.m_Indices.size();
+	VA.Bind();
+
+
+	VertexBuffer vertexBuffer(tempMesh.m_Vertices.data(), sizeof(IcePick::Vertex) * tempMesh.m_Vertices.size());
+	vertexBuffer.Bind();
+	//VertexBuffer vertexBuffer(mesh->mVertices, sizeof(aiVector3D) * mesh->mNumVertices);
+
+	VertexBufferLayout layout;
+	layout.Push<float>(3);
+	layout.Push<float>(2);
+	layout.Push<float>(3);
+
+	VA.AddBuffer(vertexBuffer, layout);
+
+
+	IndexBuffer indexBuffer(tempMesh.m_Indices.data(), tempMesh.m_Indices.size());
+	indexBuffer.Bind();
+
+
+	VA.Unbind();
+	vertexBuffer.Unbind();
+	indexBuffer.Unbind();
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+	return;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 	//const aiScene* scene = importer.ReadFile("res/Assets/hatsune_miku.glb", aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -65,6 +104,7 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 
 
 		VertexBuffer vertexBuffer(vertices.data(), sizeof(glm::vec3) * vertices.size());
+		vertexBuffer.Bind();
 		//VertexBuffer vertexBuffer(mesh->mVertices, sizeof(aiVector3D) * mesh->mNumVertices);
 
 		VertexBufferLayout layout;
@@ -74,8 +114,12 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 
 
 		IndexBuffer indexBuffer(indices.data(), mesh->mNumFaces * 3);
+		indexBuffer.Bind();
 
 
+		VA.Unbind();
+		vertexBuffer.Unbind();
+		indexBuffer.Unbind();
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

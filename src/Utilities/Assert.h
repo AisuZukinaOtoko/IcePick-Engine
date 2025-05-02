@@ -11,5 +11,5 @@
         } \
     } while (false)
 #else // ifdef RELEASE
-#   define CORE_ASSERT(condition, message)
+#   define IP_ASSERT(condition, message)
 #endif // ifndef RELEASE

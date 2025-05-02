@@ -36,9 +36,9 @@ bool Engine::Init() {
 //}
 
 void Engine::Run() {
-	unsigned int meshID = GlobalFileSystem.LoadMesh<FBX>("res/Assets/cube.fbx");
+	/*unsigned int meshID = GlobalFileSystem.LoadMesh<FBX>("res/Assets/cube.fbx");
 	std::cout << "Loaded mesh" << std::endl;
-	m_Renderer.AddGeometry(GlobalFileSystem.GetMesh(meshID));
+	IcePickRenderer::AddGeometry(GlobalFileSystem.GetMesh(meshID));*/
 
 
 	//float positions[] = { // vertex coords vec3, texture coords vec2

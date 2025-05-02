@@ -25,6 +25,7 @@ namespace IcePick {
 
 	class Mesh {
 	public:
+		Mesh();
 		Mesh(const char* filePath);
 		bool isValid();
 		~Mesh();
@@ -33,10 +34,10 @@ namespace IcePick {
 		* @param Pointer reference to vertex data. Size of vertex data in bytes. Pointer reference to index data. Number of indices.
 		* @returns Void.
 		*/
-		void GetMeshData(float*& VertexData, size_t& Stride, unsigned int& VertexCount, unsigned int*& IndexData, unsigned int& IndexCount);
-	private:
 		std::vector<Vertex> m_Vertices;
 		std::vector<unsigned int> m_Indices;
+		void GetMeshData(float*& VertexData, size_t& Stride, unsigned int& VertexCount, unsigned int*& IndexData, unsigned int& IndexCount);
+	private:
 	};
 
 

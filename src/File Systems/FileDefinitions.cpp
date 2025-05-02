@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 
+IcePick::Mesh::Mesh() {
+
+}
 
 IcePick::Mesh::Mesh(const char* filePath){
 	std::ifstream inFile;

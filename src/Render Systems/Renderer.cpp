@@ -248,6 +248,42 @@ namespace IcePickRenderer {
 		VertexArrays.emplace_back();
 		return VertexArrays.back();
 	}
+
+	bool AddGeometry(IcePick::Mesh& mesh) {
+		if (!mesh.isValid())
+			return false;
+
+		float* vertexData;
+		size_t vertexStride;
+		unsigned int vertexCount, indexCount;
+		unsigned int* indexData;
+
+		mesh.GetMeshData(vertexData, vertexStride, vertexCount, indexData, indexCount);
+
+		IcePickRenderer::VertexArrays.emplace_back();
+		VertexArray& vertexArray = IcePickRenderer::VertexArrays.back();
+		vertexArray.IndexCount = indexCount;
+		vertexArray.Bind();
+
+		VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
+
+		VertexBufferLayout layout;
+		layout.Push<float>(3);
+		layout.Push<float>(2);
+		layout.Push<float>(3);
+
+		vertexArray.AddBuffer(vertexBuffer, layout);
+
+
+		IndexBuffer indexBuffer(indexData, indexCount);
+
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		return true;
+	}
 }
 
 
