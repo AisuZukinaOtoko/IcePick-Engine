@@ -26,4 +26,6 @@ private:
 	bool m_RightStrafe = false;
 	bool m_ForwardStrafe = false;
 	bool m_BackStrafe = false;
+	bool m_UpFloat = false;
+	bool m_DownFloat = false;
 };

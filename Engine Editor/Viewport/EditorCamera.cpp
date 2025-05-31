@@ -46,10 +46,23 @@ void EditorCamera::OnUpdate(DeltaTime dt) {
     if (m_RightStrafe) {
         cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp));
     }
+
+    if (m_UpFloat) {
+        cameraPosition -= cameraUp;
+    }
+    if (m_DownFloat) {
+        cameraPosition += cameraUp;
+    }
 }
 
 void EditorCamera::OnKeyPress(int action, int code) {
     switch (code) {
+    case IcePick::IP_KEY_E:
+        m_UpFloat = (action != IP_RELEASE);
+        break;
+    case IcePick::IP_KEY_Q:
+        m_DownFloat = (action != IP_RELEASE);
+        break;
     case IcePick::IP_KEY_W:
         m_ForwardStrafe = (action != IP_RELEASE);
         break;
@@ -63,7 +76,7 @@ void EditorCamera::OnKeyPress(int action, int code) {
         m_RightStrafe = (action != IP_RELEASE);
         break;
     case IcePick::IP_MOUSE_RIGHT:
-        m_ForwardStrafe = m_LeftStrafe = m_BackStrafe = m_RightStrafe = (action != IP_RELEASE); // disable movement if right mouse button is released
+        m_UpFloat = m_DownFloat = m_ForwardStrafe = m_LeftStrafe = m_BackStrafe = m_RightStrafe = (action != IP_RELEASE); // disable movement if right mouse button is released
         break;
     default:
         break;
