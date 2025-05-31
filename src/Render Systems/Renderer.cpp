@@ -164,7 +164,7 @@ namespace IcePickRenderer {
 
 
 
-		ShaderProgramSource source = parseShader("res/shaders/material.shader");
+		ShaderProgramSource source = parseShader("res/shaders/basic.shader");
 		BasicMaterialShaderID = CreateShader(source.vertexSource, source.fragmentSource);
 		glUseProgram(BasicMaterialShaderID);
 

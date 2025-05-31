@@ -57,10 +57,13 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);
-		model = glm::scale(model, EntityTransformComponent.Scale);
 		model = glm::rotate(model, EntityTransformComponent.Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, EntityTransformComponent.Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::rotate(model, EntityTransformComponent.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, EntityTransformComponent.Scale);
+
+		if (!EntityMeshComponent.MeshVisible)
+			continue;
 
 		if (ActiveSceneRegistry.all_of<MaterialComponent>(entity)) {
 			MaterialComponent& EntityMaterialComponent = ActiveSceneRegistry.get<MaterialComponent>(entity);
