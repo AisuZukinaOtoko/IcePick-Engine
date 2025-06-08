@@ -35,8 +35,8 @@ void ScenePanel::ShowSceneHierarchy() {
 		{
 			if (ImGui::BeginMenu("Add component"))
 			{
-				if (ImGui::MenuItem("Mesh component")) {
-					IcePick::AddComponent<IcePick::MeshComponent>(m_SelectedEntity);
+				if (ImGui::MenuItem("Mesh renderer component")) {
+					IcePick::AddComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
 				}
 
 				if (ImGui::MenuItem("Material component")) {
@@ -58,9 +58,13 @@ void ScenePanel::ShowSceneHierarchy() {
 				m_SelectedEntity = entt::null; // Deselect if deleted
 			}
 
-			if (ImGui::MenuItem("Increment Entity Vertex Array")) {
-				IcePick::MeshComponent& mesh = IcePick::GetComponent<IcePick::MeshComponent>(m_SelectedEntity);
-				mesh.MeshVertexArrayRegistryIndex++;
+			if (ImGui::MenuItem("Activate hatsune miku")) {
+				IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+				for (int i = 0; i < 9; i++) {
+					IcePick::MeshComponent newMesh = { i, -1, IcePick::MeshComponent::STATIC };
+					meshRenderer.Meshes[i] = newMesh;
+				}
+				meshRenderer.MeshCount = 9;
 			}
 
 			ImGui::EndPopup();

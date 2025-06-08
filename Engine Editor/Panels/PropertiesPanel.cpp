@@ -103,13 +103,13 @@ void PropertiesPanel::EntityProperties() {
         Vec3Control("Scale", transform.Scale);
     }
 
-    if (HasComponent<MeshComponent>(m_SelectedEntity)) {
-        MeshComponent& mesh = GetComponent<MeshComponent>(m_SelectedEntity);
-        TextProperty("Vertex array ID", std::to_string(mesh.MeshVertexArrayRegistryIndex).c_str());
-        TextProperty("Mesh type", std::to_string(mesh.MeshType).c_str());
-        CheckBox("Visible", &mesh.MeshVisible);
-        CheckBox("Cast shadows", &mesh.CastShadows);
-        CheckBox("Receive shadows", &mesh.ReceiveShadows);
+    if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
+        MeshRendererComponent& meshRenderer = GetComponent<MeshRendererComponent>(m_SelectedEntity);
+        //TextProperty("Vertex array ID", std::to_string(meshRenderer.MeshVertexArrayRegistryIndex).c_str());
+        TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
+        CheckBox("Visible", &meshRenderer.MeshVisible);
+        CheckBox("Cast shadows", &meshRenderer.CastShadows);
+        CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
     }
 
     if (HasComponent<MaterialComponent>(m_SelectedEntity)) {

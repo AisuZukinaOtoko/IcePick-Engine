@@ -11,7 +11,7 @@ VertexArray::VertexArray(const VertexArray& other) {
 }
 
 VertexArray::~VertexArray() {
-	std::cout << "Delete Vertex Array" << std::endl;
+	std::cout << "Delete Vertex Array: " << m_ID << std::endl;
 	glDeleteVertexArrays(1, &m_ID);
 }
 

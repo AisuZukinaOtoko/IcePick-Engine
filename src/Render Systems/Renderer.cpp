@@ -143,6 +143,8 @@ namespace IcePickRenderer {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
+		VertexArrays.reserve(15);
+
 
 		float fov = glm::radians(45.0f);
 		float aspectRatio = MainTargetWindowSize[0] / (float)MainTargetWindowSize[1];
@@ -164,7 +166,7 @@ namespace IcePickRenderer {
 
 
 
-		ShaderProgramSource source = parseShader("res/shaders/basic.shader");
+		ShaderProgramSource source = parseShader("res/shaders/material.shader");
 		BasicMaterialShaderID = CreateShader(source.vertexSource, source.fragmentSource);
 		glUseProgram(BasicMaterialShaderID);
 
@@ -232,9 +234,9 @@ namespace IcePickRenderer {
 	}
 
 
-	void DrawMesh(const MeshComponent& mesh, const MaterialComponent& materialComponent, glm::mat4 modelTransformMatrix) {
+	void DrawMesh(const MeshComponent& mesh, glm::mat4 modelTransformMatrix) {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
-		Material& meshMaterial = GetMaterial(materialComponent.MaterialIndex);
+		Material& meshMaterial = GetMaterial(mesh.MaterialIndex);
 		glUseProgram(meshMaterial.ShaderID);
 		int location = glGetUniformLocation(BasicMaterialShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);

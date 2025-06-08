@@ -45,14 +45,15 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 	float angle = glm::radians(45.0f);
 	glm::mat4 model = glm::mat4(1.0f);
 	
+	//IcePick::MeshRendererComponent temp = {};
 	IcePick::MeshComponent temp = {};
 
 	IcePickRenderer::DrawMeshBasicMaterial(temp, model);
 	auto& ActiveSceneRegistry = GetActiveSceneRegistry();
-	auto sceneView = ActiveSceneRegistry.view<MeshComponent>();
+	auto sceneView = ActiveSceneRegistry.view<MeshRendererComponent>();
 
 	for (entt::entity entity: sceneView) {
-		MeshComponent& EntityMeshComponent = ActiveSceneRegistry.get<MeshComponent>(entity);
+		MeshRendererComponent& EntityMeshRendererComponent = ActiveSceneRegistry.get<MeshRendererComponent>(entity);
 		TransformComponent& EntityTransformComponent = ActiveSceneRegistry.get<TransformComponent>(entity);
 
 		model = glm::mat4(1.0f);
@@ -62,16 +63,18 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 		model = glm::rotate(model, EntityTransformComponent.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, EntityTransformComponent.Scale);
 
-		if (!EntityMeshComponent.MeshVisible)
+		if (!EntityMeshRendererComponent.MeshVisible)
 			continue;
 
-		if (ActiveSceneRegistry.all_of<MaterialComponent>(entity)) {
-			MaterialComponent& EntityMaterialComponent = ActiveSceneRegistry.get<MaterialComponent>(entity);
-			IcePickRenderer::DrawMesh(EntityMeshComponent, EntityMaterialComponent, model);
-		}
-		else {
-			IcePickRenderer::DrawMeshBasicMaterial(EntityMeshComponent, model);
-			//IP_LOG("Draw me");
+		for (int i = 0; i < EntityMeshRendererComponent.MeshCount; i++) {
+			MeshComponent& mesh = EntityMeshRendererComponent.Meshes[i];
+
+			if (mesh.MaterialIndex != -1) {
+				IcePickRenderer::DrawMesh(mesh, model);
+			}
+			else {
+				IcePickRenderer::DrawMeshBasicMaterial(mesh, model);
+			}
 		}
 	}
 

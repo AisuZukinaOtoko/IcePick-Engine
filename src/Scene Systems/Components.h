@@ -2,13 +2,21 @@
 #include "glm/glm.hpp"
 
 namespace IcePick {
+
 	struct MeshComponent {
-		unsigned int MeshVertexArrayRegistryIndex;
-		enum Type {	STATIC = 0, DEFORM	} MeshType;
+		unsigned int MeshVertexArrayRegistryIndex = 0;
+		int MaterialIndex = -1;
+		enum Type { STATIC = 0, SKELETAL } MeshType;
+	};
+
+	struct MeshRendererComponent {
+		static const int MaxMeshCount = 10;
+		MeshComponent Meshes[MaxMeshCount];
+		int MeshCount = 0;
 		bool MeshVisible = true;
 		bool CastShadows = false;
 		bool ReceiveShadows = false;
-	};
+	};	
 
 	struct MaterialComponent {
 		unsigned int MaterialIndex;

@@ -21,7 +21,7 @@ namespace IcePickRenderer {
 	void NewFrame();
 	void EndFrame();
 	//void CreateShaderPogram(std::string shaderSource);
-	void DrawMesh(const IcePick::MeshComponent& mesh, const IcePick::MaterialComponent& material, glm::mat4 modelTransformMatrix);
+	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix);
 	void DrawMeshBasicMaterial(const IcePick::MeshComponent& mesh, const glm::mat4& modelTransformMatrix);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 

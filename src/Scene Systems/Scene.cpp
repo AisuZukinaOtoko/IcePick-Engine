@@ -32,42 +32,42 @@ void IcePick::Scene::OnEnd() {
 }
 
 void IcePick::Scene::LoadFromDisk(const char* path) {
-	unsigned int meshID = GlobalFileSystem.LoadMesh<FBX>("res/Assets/cube.fbx");
-	std::cout << "Loaded mesh" << std::endl;
-	Mesh& tempMesh = GlobalFileSystem.GetMesh(meshID);
-	//IcePickRenderer::AddGeometry(tempMesh);
+	//unsigned int meshID = GlobalFileSystem.LoadMesh<FBX>("res/Assets/cube.fbx");
+	//std::cout << "Loaded mesh" << std::endl;
+	//Mesh& tempMesh = GlobalFileSystem.GetMesh(meshID);
+	////IcePickRenderer::AddGeometry(tempMesh);
 
 
-	VertexArray& VA = IcePickRenderer::AddVertexArray();
-	VA.IndexCount = tempMesh.m_Indices.size();
-	VA.Bind();
+	//VertexArray& VA = IcePickRenderer::AddVertexArray();
+	//VA.IndexCount = tempMesh.m_Indices.size();
+	//VA.Bind();
 
 
-	VertexBuffer vertexBuffer(tempMesh.m_Vertices.data(), sizeof(IcePick::Vertex) * tempMesh.m_Vertices.size());
-	vertexBuffer.Bind();
-	//VertexBuffer vertexBuffer(mesh->mVertices, sizeof(aiVector3D) * mesh->mNumVertices);
+	//VertexBuffer vertexBuffer(tempMesh.m_Vertices.data(), sizeof(IcePick::Vertex) * tempMesh.m_Vertices.size());
+	//vertexBuffer.Bind();
+	////VertexBuffer vertexBuffer(mesh->mVertices, sizeof(aiVector3D) * mesh->mNumVertices);
 
-	VertexBufferLayout layout;
-	layout.Push<float>(3);
-	layout.Push<float>(2);
-	layout.Push<float>(3);
+	//VertexBufferLayout layout;
+	//layout.Push<float>(3);
+	//layout.Push<float>(2);
+	//layout.Push<float>(3);
 
-	VA.AddBuffer(vertexBuffer, layout);
-
-
-	IndexBuffer indexBuffer(tempMesh.m_Indices.data(), tempMesh.m_Indices.size());
-	indexBuffer.Bind();
+	//VA.AddBuffer(vertexBuffer, layout);
 
 
-	VA.Unbind();
-	vertexBuffer.Unbind();
-	indexBuffer.Unbind();
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//IndexBuffer indexBuffer(tempMesh.m_Indices.data(), tempMesh.m_Indices.size());
+	//indexBuffer.Bind();
 
 
-	return;
+	//VA.Unbind();
+	//vertexBuffer.Unbind();
+	//indexBuffer.Unbind();
+	//glBindVertexArray(0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+	//return;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 	//const aiScene* scene = importer.ReadFile("res/Assets/hatsune_miku.glb", aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -80,8 +80,8 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 	std::cout << "Hatsune Miku!!!!!!!" << std::endl;
 	std::cout << scene->mNumMeshes << std::endl;
 	aiMesh** meshList = scene->mMeshes;
-	//for (int i = 0; i < scene->mNumMeshes; i++)
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < scene->mNumMeshes; i++)
+	//for (int i = 0; i < 1; i++)
 	{ // upload each mesh as a vertex array to the GPU
 		aiMesh* mesh = meshList[i];
 		std::vector<unsigned int> indices;
@@ -128,5 +128,6 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 		std::cout << "Mesh " << i << " index count: ";
 		std::cout << mesh->mNumFaces * 3 << std::endl;
 	}
+	std::cout << "Done loading scene " << std::endl;
 	entt::entity newEntity = IcePick::NewEntity();
 }
