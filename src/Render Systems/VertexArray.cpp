@@ -15,7 +15,7 @@ VertexArray::~VertexArray() {
 	glDeleteVertexArrays(1, &m_ID);
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) {
+void VertexArray::AddBuffer(const VertexBuffer& vb, const IcePickRenderer::VertexLayout& layout) {
 	Bind();
 	vb.Bind();
 	const auto& elements = layout.GetElements(); // std::vector<VertexBufferElement>&
@@ -25,10 +25,10 @@ void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
 	// Each vertex element has an index
 	// Specify the attribute for each vertex element
 	for (unsigned int i = 0; i < elements.size(); i++) {
-		const VertexBufferElement& element = elements[i];
+		const IcePickRenderer::VertexBufferElement& element = elements[i];
 		glEnableVertexAttribArray(i);
 		glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)offset);
-		offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
+		offset += element.count * IcePickRenderer::VertexBufferElement::GetSizeOfType(element.type);
 	}
 }
 

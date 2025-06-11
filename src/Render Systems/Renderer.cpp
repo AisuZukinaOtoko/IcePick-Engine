@@ -269,7 +269,7 @@ namespace IcePickRenderer {
 
 		VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
 
-		VertexBufferLayout layout;
+		VertexLayout layout;
 		layout.Push<float>(3);
 		layout.Push<float>(2);
 		layout.Push<float>(3);
@@ -330,7 +330,7 @@ bool IcePick::Renderer::AddGeometry(Mesh& mesh){
 
 	VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
 
-	VertexBufferLayout layout;
+	IcePickRenderer::VertexLayout layout;
 	layout.Push<float>(3);
 	layout.Push<float>(2);
 	layout.Push<float>(3);

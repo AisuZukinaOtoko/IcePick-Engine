@@ -163,6 +163,7 @@
     <ClCompile Include="src\Render Systems\IndexBuffer.cpp" />
     <ClCompile Include="src\Render Systems\Materials.cpp" />
     <ClCompile Include="src\Render Systems\Renderer.cpp" />
+    <ClCompile Include="src\Render Systems\Vertex.cpp" />
     <ClCompile Include="src\Scene Systems\Camera.cpp" />
     <ClCompile Include="src\Scene Systems\Entity.cpp" />
     <ClCompile Include="src\Scene Systems\Scene.cpp" />
@@ -337,6 +338,8 @@
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\Layers\GameLayer.h" />
     <ClInclude Include="src\Render Systems\Materials.h" />
+    <ClInclude Include="src\Render Systems\Vertex.h" />
+    <ClInclude Include="src\Render Systems\VertexLayout.h" />
     <ClInclude Include="src\Scene Systems\Components.h" />
     <ClInclude Include="src\Scene Systems\SceneRegistry.h" />
     <ClInclude Include="src\Utilities\Clock.h" />

@@ -1,7 +1,6 @@
 #pragma once
-
+#include "VertexLayout.h"
 class VertexBuffer;
-class VertexBufferLayout;
 
 class VertexArray {
 public:
@@ -9,7 +8,7 @@ public:
 	VertexArray(const VertexArray& other);
 	~VertexArray();
 
-	void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
+	void AddBuffer(const VertexBuffer& vb, const IcePickRenderer::VertexLayout& layout);
 	void Bind() const;
 	void Unbind() const;
 	unsigned int IndexCount = 0;

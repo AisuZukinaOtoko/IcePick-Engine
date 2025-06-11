@@ -6,7 +6,7 @@ namespace IcePick {
 	struct MeshComponent {
 		unsigned int MeshVertexArrayRegistryIndex = 0;
 		int MaterialIndex = -1;
-		enum Type { STATIC = 0, SKELETAL } MeshType;
+		enum Type { STATIC = 0, ANIMATED } MeshType;
 	};
 
 	struct MeshRendererComponent {

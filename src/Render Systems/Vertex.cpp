@@ -1,0 +1,57 @@
+#include "Vertex.h"
+using namespace IcePickRenderer;
+
+StaticVertex3D::StaticVertex3D() {
+	Position = glm::vec3(0.0f);
+	Normal = glm::vec3(0.0f);
+	TextureCoords = glm::vec2(0.0f);
+}
+
+StaticVertex3D::StaticVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords)
+	: Position(position), Normal(normal), TextureCoords(textureCoords) {
+
+}
+
+VertexLayout StaticVertex3D::GetVertexLayout() {
+	VertexLayout layout;
+
+	layout.Push<float>(3);
+	layout.Push<float>(3);
+	layout.Push<float>(2);
+
+	return layout;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void AnimatedVertex3D::InitBoneWeights() {
+	for (int i = 0; i < MaxEffectiveBoneCount; i++) {
+		BoneIDs[i] = 0;
+		BoneWeights[i] = 0.0f;
+	}
+}
+
+AnimatedVertex3D::AnimatedVertex3D() {
+	Position = glm::vec3(0.0f);
+	Normal = glm::vec3(0.0f);
+	TextureCoords = glm::vec2(0.0f);
+
+	InitBoneWeights();
+}
+
+AnimatedVertex3D::AnimatedVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords)
+	: Position(position), Normal(normal), TextureCoords(textureCoords) {
+	InitBoneWeights();
+}
+
+VertexLayout AnimatedVertex3D::GetVertexLayout() {
+	VertexLayout layout;
+
+	layout.Push<float>(3);
+	layout.Push<float>(3);
+	layout.Push<float>(2);
+	layout.Push<unsigned int>(4);
+	layout.Push<float>(4);
+
+	return layout;
+}
