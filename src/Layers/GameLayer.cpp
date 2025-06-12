@@ -46,11 +46,6 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat3 normalMatrix = glm::mat3(1.0f);
 
-	
-	//IcePick::MeshRendererComponent temp = {};
-	IcePick::MeshComponent temp = {};
-
-	IcePickRenderer::DrawMeshBasicMaterial(temp, model);
 	auto& ActiveSceneRegistry = GetActiveSceneRegistry();
 	auto sceneView = ActiveSceneRegistry.view<MeshRendererComponent>();
 
