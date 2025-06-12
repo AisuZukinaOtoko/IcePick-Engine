@@ -44,6 +44,8 @@ void IcePick::GameLayer::OnRender(RenderPayload& payload) {
 void IcePick::GameLayer::RenderEntityMeshes() {
 	float angle = glm::radians(45.0f);
 	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat3 normalMatrix = glm::mat3(1.0f);
+
 	
 	//IcePick::MeshRendererComponent temp = {};
 	IcePick::MeshComponent temp = {};
@@ -56,15 +58,19 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 		MeshRendererComponent& EntityMeshRendererComponent = ActiveSceneRegistry.get<MeshRendererComponent>(entity);
 		TransformComponent& EntityTransformComponent = ActiveSceneRegistry.get<TransformComponent>(entity);
 
+		if (!EntityMeshRendererComponent.MeshVisible)
+			continue;
+
 		model = glm::mat4(1.0f);
+		normalMatrix = glm::mat3(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);
 		model = glm::rotate(model, EntityTransformComponent.Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, EntityTransformComponent.Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::rotate(model, EntityTransformComponent.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, EntityTransformComponent.Scale);
+		normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
 
-		if (!EntityMeshRendererComponent.MeshVisible)
-			continue;
+		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
 
 		for (int i = 0; i < EntityMeshRendererComponent.MeshCount; i++) {
 			MeshComponent& mesh = EntityMeshRendererComponent.Meshes[i];

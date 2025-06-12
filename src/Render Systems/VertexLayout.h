@@ -7,11 +7,12 @@
 
 namespace IcePickRenderer {
 	struct VertexBufferElement {
-		VertexBufferElement(unsigned int type, unsigned int count, bool normalized) : type(type), count(count), normalized(normalized) {};
+		VertexBufferElement(unsigned int type, unsigned int count, bool normalized, size_t offset) 
+			: type(type), count(count), normalized(normalized), offset(offset) {};
 		unsigned int type;
 		unsigned int count;
 		unsigned char normalized;
-		//void* offset;
+		size_t offset;
 
 		static unsigned int GetSizeOfType(unsigned int type) {
 			switch (type) {
@@ -26,31 +27,31 @@ namespace IcePickRenderer {
 
 	class VertexLayout {
 	public:
-		VertexLayout()
-			: m_Stride(0) {
+		VertexLayout(unsigned int stride)
+			: m_Stride(stride) {
 		};
 
 		template<typename T>
-		void Push(unsigned int count) {
+		void Push(unsigned int count, size_t offset) {
 			std::runtime_error(false);
 		}
 
 		template<>
-		void Push<float>(unsigned int count) {
-			m_Elements.push_back({ GL_FLOAT, count, GL_FALSE });
-			m_Stride += count * sizeof(GLfloat);
+		void Push<float>(unsigned int count, size_t offset) {
+			m_Elements.push_back({ GL_FLOAT, count, GL_FALSE, offset });
+			//m_Stride += count * sizeof(GLfloat);
 		}
 
 		template<>
-		void Push<unsigned int>(unsigned int count) {
-			m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-			m_Stride += count * sizeof(GLuint);
+		void Push<unsigned int>(unsigned int count, size_t offset) {
+			m_Elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE, offset });
+			//m_Stride += count * sizeof(GLuint);
 		}
 
 		template<>
-		void Push<unsigned char>(unsigned int count) {
-			m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-			m_Stride += count * sizeof(GLbyte);
+		void Push<unsigned char>(unsigned int count, size_t offset) {
+			m_Elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE, offset});
+			//m_Stride += count * sizeof(GLbyte);
 		}
 
 		inline const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; };

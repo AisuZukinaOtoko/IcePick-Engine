@@ -8,13 +8,13 @@ static int EntityCount = 0;
 entt::entity IcePick::NewEntity() {
     entt::entity newEntity = IP_SceneRegistry.create();
 
-#ifndef RELEASE
+//#ifndef RELEASE
     std::string newEntityTag = "Object: " + std::to_string(EntityCount);
     IP_SceneRegistry.emplace<TagComponent>(newEntity, newEntityTag);
-#else
-    IP_ASSERT(false, "Not implemented");
-    IP_SceneRegistry.emplace<TagComponent>(newEntity);
-#endif
+//#else
+//    IP_ASSERT(false, "Not implemented");
+//    IP_SceneRegistry.emplace<TagComponent>(newEntity);
+//#endif
     IP_SceneRegistry.emplace<TransformComponent>(newEntity);
     EntityCount++;
     return newEntity;

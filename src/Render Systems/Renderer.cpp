@@ -31,6 +31,7 @@ static ShaderProgramSource parseShader(const std::string filepath) {
 	std::ifstream inFile(filepath);
 	if (inFile.fail()) {
 		std::cerr << "Error: Could not open shader file." << std::endl;
+		IP_LOG("Could not open shader file.", IP_ERROR_LOG);
 		return {};
 	}
 
@@ -72,6 +73,8 @@ static unsigned int compileShader(unsigned int type, const std::string& source) 
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* err = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, err);
+		IP_LOG("Failed to compile shader.", IP_ERROR_LOG);
+		IP_LOG(err, IP_ERROR_LOG);
 		std::cout << "Failed to compile shader.\n";
 		std::cout << err << std::endl;
 		glDeleteShader(id);
@@ -104,6 +107,7 @@ namespace IcePickRenderer {
 	static GLFWwindow* MainTargetWindow = nullptr;
 	static glm::ivec2 MainTargetWindowSize;
 	static glm::mat4 RenderViewProjectionMatrix;
+	static glm::mat3 RenderWorldNormalMatrix; // No translation
 	static std::vector<VertexArray> VertexArrays;
 
 	static unsigned int BasicMaterialShaderID = 0;
@@ -221,12 +225,18 @@ namespace IcePickRenderer {
 		RenderViewProjectionMatrix = ViewProjectionMatrix;
 	}
 
+	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix) {
+		RenderWorldNormalMatrix = WorldNormalMatrix;
+	}
+
 
 	void DrawMeshBasicMaterial(const MeshComponent& mesh, const glm::mat4& modelTransformMatrix) {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 		glUseProgram(BasicMaterialShaderID);
 		int location = glGetUniformLocation(BasicMaterialShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
+		location = glGetUniformLocation(BasicMaterialShaderID, "u_NormalMatrix"); // location negative if uniform not found
+		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, meshVertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);
@@ -238,8 +248,10 @@ namespace IcePickRenderer {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 		Material& meshMaterial = GetMaterial(mesh.MaterialIndex);
 		glUseProgram(meshMaterial.ShaderID);
-		int location = glGetUniformLocation(BasicMaterialShaderID, "u_MVP"); // location negative if uniform not found
+		int location = glGetUniformLocation(meshMaterial.ShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
+		location = glGetUniformLocation(meshMaterial.ShaderID, "u_NormalMatrix"); // location negative if uniform not found
+		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, meshVertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);
@@ -251,7 +263,7 @@ namespace IcePickRenderer {
 		return VertexArrays.back();
 	}
 
-	bool AddGeometry(IcePick::Mesh& mesh) {
+	/*bool AddGeometry(IcePick::Mesh& mesh) {
 		if (!mesh.isValid())
 			return false;
 
@@ -285,14 +297,16 @@ namespace IcePickRenderer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		return true;
-	}
+	}*/
 }
 
 
 void GLCheckErrors(){
 	GLenum error = glGetError();
 	while (error != GL_NO_ERROR) {
-		std::cout << "Error: " << error << std::endl;
+		std::string errorString = "Error: " + std::to_string((int)error);
+		IP_LOG(errorString.c_str(), IP_ERROR_LOG);
+		std::cout << errorString << std::endl;
 		error = glGetError();
 	}
 }
@@ -312,38 +326,38 @@ Renderer::~Renderer(){
 }
 
 
-bool IcePick::Renderer::AddGeometry(Mesh& mesh){
-	if (!mesh.isValid())
-		return false;
-
-	float* vertexData;
-	size_t vertexStride;
-	unsigned int vertexCount, indexCount;
-	unsigned int* indexData;
-
-	mesh.GetMeshData(vertexData, vertexStride, vertexCount, indexData, indexCount);
-
-	IcePickRenderer::VertexArrays.emplace_back();
-	VertexArray& vertexArray = IcePickRenderer::VertexArrays.back();
-	vertexArray.IndexCount = indexCount;
-	vertexArray.Bind();
-
-	VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
-
-	IcePickRenderer::VertexLayout layout;
-	layout.Push<float>(3);
-	layout.Push<float>(2);
-	layout.Push<float>(3);
-
-	vertexArray.AddBuffer(vertexBuffer, layout);
-
-
-	IndexBuffer indexBuffer(indexData, indexCount);
-
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	return true;
-}
+//bool IcePick::Renderer::AddGeometry(Mesh& mesh){
+//	if (!mesh.isValid())
+//		return false;
+//
+//	float* vertexData;
+//	size_t vertexStride;
+//	unsigned int vertexCount, indexCount;
+//	unsigned int* indexData;
+//
+//	mesh.GetMeshData(vertexData, vertexStride, vertexCount, indexData, indexCount);
+//
+//	IcePickRenderer::VertexArrays.emplace_back();
+//	VertexArray& vertexArray = IcePickRenderer::VertexArrays.back();
+//	vertexArray.IndexCount = indexCount;
+//	vertexArray.Bind();
+//
+//	VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
+//
+//	IcePickRenderer::VertexLayout layout;
+//	layout.Push<float>(3);
+//	layout.Push<float>(2);
+//	layout.Push<float>(3);
+//
+//	vertexArray.AddBuffer(vertexBuffer, layout);
+//
+//
+//	IndexBuffer indexBuffer(indexData, indexCount);
+//
+//
+//	glBindVertexArray(0);
+//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//
+//	return true;
+//}

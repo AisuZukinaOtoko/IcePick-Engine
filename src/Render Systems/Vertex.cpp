@@ -13,11 +13,11 @@ StaticVertex3D::StaticVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 t
 }
 
 VertexLayout StaticVertex3D::GetVertexLayout() {
-	VertexLayout layout;
+	VertexLayout layout(sizeof(StaticVertex3D));
 
-	layout.Push<float>(3);
-	layout.Push<float>(3);
-	layout.Push<float>(2);
+	layout.Push<float>(3, offsetof(StaticVertex3D, Position));
+	layout.Push<float>(3, offsetof(StaticVertex3D, Normal));
+	layout.Push<float>(2, offsetof(StaticVertex3D, TextureCoords));
 
 	return layout;
 }
@@ -45,13 +45,13 @@ AnimatedVertex3D::AnimatedVertex3D(glm::vec3 position, glm::vec3 normal, glm::ve
 }
 
 VertexLayout AnimatedVertex3D::GetVertexLayout() {
-	VertexLayout layout;
+	VertexLayout layout(sizeof(AnimatedVertex3D));
 
-	layout.Push<float>(3);
-	layout.Push<float>(3);
-	layout.Push<float>(2);
-	layout.Push<unsigned int>(4);
-	layout.Push<float>(4);
+	layout.Push<float>(3, offsetof(AnimatedVertex3D, Position));
+	layout.Push<float>(3, offsetof(AnimatedVertex3D, Normal));
+	layout.Push<float>(2, offsetof(AnimatedVertex3D, TextureCoords));
+	layout.Push<unsigned int>(4, offsetof(AnimatedVertex3D, BoneIDs));
+	layout.Push<float>(4, offsetof(AnimatedVertex3D, BoneWeights));
 
 	return layout;
 }

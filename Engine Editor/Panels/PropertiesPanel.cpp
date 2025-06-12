@@ -138,10 +138,6 @@ void PropertiesPanel::TextProperty(const char* label, const char* property) {
     ImGui::NextColumn();
     ImGui::Text(property);
     ImGui::Columns(1);
-
-    float myColor[4] = { 0.2f, 0.4f, 0.8f, 1.0f };
-    //ImGui::ColorEdit4("RGBA Color", myColor);
-    //ImGui::ColorPicker3("RGBA Color 1", myColor);
 }
 
 void PropertiesPanel::FloatSlider(const char* label, float* value, float min, float max) {

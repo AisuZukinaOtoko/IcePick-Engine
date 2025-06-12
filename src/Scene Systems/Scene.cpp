@@ -32,6 +32,8 @@ void IcePick::Scene::OnEnd() {
 }
 
 void IcePick::Scene::LoadFromDisk(const char* path) {
+	IP_LOG("Before loading mesh");
+	GLCheckErrors();
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 	//const aiScene* scene = importer.ReadFile("res/Assets/hatsune_miku.glb", aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -41,6 +43,11 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 		return;
 	}
 
+	std::cout << "Size of vertex: " << sizeof(IcePickRenderer::StaticVertex3D) << std::endl;
+	std::cout << "Offset of position: " << offsetof(IcePickRenderer::StaticVertex3D, Position) << std::endl;
+	std::cout << "Offset of normal: " << offsetof(IcePickRenderer::StaticVertex3D, Normal) << std::endl;
+	std::cout << "Offset of TexCoords: " << offsetof(IcePickRenderer::StaticVertex3D, TextureCoords) << std::endl;
+
 	std::cout << "Hatsune Miku!!!!!!!" << std::endl;
 	std::cout << scene->mNumMeshes << std::endl;
 	aiMesh** meshList = scene->mMeshes;
@@ -49,11 +56,24 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 	{ // upload each mesh as a vertex array to the GPU
 		aiMesh* mesh = meshList[i];
 		std::vector<unsigned int> indices;
-		std::vector<glm::vec3> vertices;
+		std::vector<IcePickRenderer::StaticVertex3D> vertices;
 
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 			aiVector3D pos = mesh->mVertices[i];
-			vertices.push_back(glm::vec3(pos.x, pos.y, pos.z));
+			aiVector3D uv = aiVector3D(0.0f);
+			aiVector3D norm = aiVector3D(0.0f);
+
+			if (mesh->HasTextureCoords(0)) {
+				uv = mesh->mTextureCoords[0][i];
+			}
+
+			if (mesh->HasNormals()) {
+				norm = mesh->mNormals[i];
+			}
+			glm::vec3 position = glm::vec3(pos.x, pos.y, pos.z);
+			glm::vec3 normal = glm::vec3(norm.x, norm.y, norm.z);
+			glm::vec2 textureCoords = glm::vec2(uv.x, uv.y);
+			vertices.emplace_back(position, normal, textureCoords);
 		}
 
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
@@ -67,14 +87,20 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 		VA.Bind();
 
 
-		VertexBuffer vertexBuffer(vertices.data(), sizeof(glm::vec3) * vertices.size());
+		VertexBuffer vertexBuffer(vertices.data(), sizeof(IcePickRenderer::StaticVertex3D) * vertices.size());
 		vertexBuffer.Bind();
 		//VertexBuffer vertexBuffer(mesh->mVertices, sizeof(aiVector3D) * mesh->mNumVertices);
 
-		IcePickRenderer::VertexLayout layout;
-		layout.Push<float>(3);
+	/*	IcePickRenderer::VertexLayout layout(sizeof(glm::vec3));
+		layout.Push<float>(3, offsetof(IcePickRenderer::StaticVertex3D, Position));*/
 
-		VA.AddBuffer(vertexBuffer, layout);
+		
+		//IP_LOG("About to add buffer.");
+		//GLCheckErrors();
+		VA.AddBuffer(vertexBuffer, IcePickRenderer::StaticVertex3D::GetVertexLayout());
+		//IP_LOG("Added buffer.");
+		//GLCheckErrors();
+		//VA.AddBuffer(vertexBuffer, layout);
 
 
 		IndexBuffer indexBuffer(indices.data(), mesh->mNumFaces * 3);

@@ -25,7 +25,7 @@ namespace IcePick {
 	T& GetComponent(entt::entity entity) {
 		entt::registry& registry = GetActiveSceneRegistry();
 		IP_ASSERT(HasComponent<T>(entity), "No component to get.");
-		registry.get<T>(entity);
+		return registry.get<T>(entity);
 	}
 
 	template<typename T>

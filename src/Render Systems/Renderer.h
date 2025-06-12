@@ -33,8 +33,9 @@ namespace IcePickRenderer {
 	
 	// Render camera settings
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
+	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
 	VertexArray& AddVertexArray();
-	bool AddGeometry(IcePick::Mesh& mesh);
+	//bool AddGeometry(IcePick::Mesh& mesh);
 }
 
 namespace IcePick {
