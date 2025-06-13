@@ -16,6 +16,7 @@ void Viewport::OnUpdate(DeltaTime dt) {
 	m_EditorCamera.OnUpdate(dt);
 	glm::mat4 viewProjMatrix = m_EditorCamera.getViewProjectionMatrix();
 	IcePickRenderer::SetRenderViewProjectionMatrix(viewProjMatrix);
+	IcePickRenderer::SetRenderCameraWorldPosition(m_EditorCamera.cameraPosition);
 }
 
 void Viewport::OnViewportEvent(IcePick::Event& event) {

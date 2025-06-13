@@ -106,6 +106,7 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
 namespace IcePickRenderer {
 	static GLFWwindow* MainTargetWindow = nullptr;
 	static glm::ivec2 MainTargetWindowSize;
+	static glm::vec3 CameraPosition;
 	static glm::mat4 RenderViewProjectionMatrix;
 	static glm::mat3 RenderWorldNormalMatrix; // No translation
 	static std::vector<VertexArray> VertexArrays;
@@ -221,6 +222,10 @@ namespace IcePickRenderer {
 		glfwSetInputMode(MainTargetWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 
+	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {
+		CameraPosition = CameraWorldPosition;
+	}
+
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix) {
 		RenderViewProjectionMatrix = ViewProjectionMatrix;
 	}
@@ -233,10 +238,16 @@ namespace IcePickRenderer {
 	void DrawMeshBasicMaterial(const MeshComponent& mesh, const glm::mat4& modelTransformMatrix) {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 		glUseProgram(BasicMaterialShaderID);
+
 		int location = glGetUniformLocation(BasicMaterialShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
+		location = glGetUniformLocation(BasicMaterialShaderID, "u_Modelmatrix"); // location negative if uniform not found
+		glUniformMatrix4fv(location, 1, GL_FALSE, &modelTransformMatrix[0][0]);
 		location = glGetUniformLocation(BasicMaterialShaderID, "u_NormalMatrix"); // location negative if uniform not found
 		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
+		location = glGetUniformLocation(BasicMaterialShaderID, "u_CameraPosition"); // location negative if uniform not found
+		glUniform3fv(location, 1, &CameraPosition[0]);
+
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, meshVertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);
@@ -248,10 +259,16 @@ namespace IcePickRenderer {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 		Material& meshMaterial = GetMaterial(mesh.MaterialIndex);
 		glUseProgram(meshMaterial.ShaderID);
+
 		int location = glGetUniformLocation(meshMaterial.ShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
+		location = glGetUniformLocation(meshMaterial.ShaderID, "u_Modelmatrix"); // location negative if uniform not found
+		glUniformMatrix4fv(location, 1, GL_FALSE, &modelTransformMatrix[0][0]);
 		location = glGetUniformLocation(meshMaterial.ShaderID, "u_NormalMatrix"); // location negative if uniform not found
 		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
+		location = glGetUniformLocation(meshMaterial.ShaderID, "u_CameraPosition"); // location negative if uniform not found
+		glUniform3fv(location, 1, &CameraPosition[0]);
+
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, meshVertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);

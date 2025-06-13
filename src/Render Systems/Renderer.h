@@ -32,6 +32,7 @@ namespace IcePickRenderer {
 	void RequestCursorUnlock();
 	
 	// Render camera settings
+	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
 	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
 	VertexArray& AddVertexArray();
