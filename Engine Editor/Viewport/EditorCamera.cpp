@@ -27,31 +27,31 @@ void EditorCamera::OnUpdate(DeltaTime dt) {
         pitch = -89.0f;
     glm::vec3 direction;
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
+    direction.y = -sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
 
     // move camera
     if (m_ForwardStrafe) {
-        cameraPosition += cameraFront;
+        cameraPosition += cameraFront * moveSensitivity;
     }
     if (m_BackStrafe) {
-        cameraPosition -= cameraFront;
+        cameraPosition -= cameraFront * moveSensitivity;
     }
 
     if (m_LeftStrafe) {
-        cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp));
+        cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * moveSensitivity;
     }
 
     if (m_RightStrafe) {
-        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp));
+        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * moveSensitivity;
     }
 
     if (m_UpFloat) {
-        cameraPosition -= cameraUp;
+        cameraPosition += cameraUp * moveSensitivity;
     }
     if (m_DownFloat) {
-        cameraPosition += cameraUp;
+        cameraPosition -= cameraUp * moveSensitivity;
     }
 }
 

@@ -18,6 +18,8 @@ public:
 	float cameraNearClip = 0.1f;
 	float cameraFarClip = 1000.0f;
 
+	float moveSensitivity = 0.15f;
+
 	glm::mat4 getViewProjectionMatrix();
 	void OnUpdate(DeltaTime dt);
 	void OnKeyPress(int action, int code);

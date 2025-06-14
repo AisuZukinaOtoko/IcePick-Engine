@@ -14,7 +14,7 @@ void PropertiesPanel::PanelSetup() {
     ImGui::Text("Current column width: %f", m_ColumnWidth);
 }
 
-void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values) {
+void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const float dragSpeed) {
     ImGui::PushID(label);
 
     // Styling
@@ -34,7 +34,7 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values) {
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
     ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
-    ImGui::DragFloat("##DragX", &values.x, 0.01f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("##DragX", &values.x, dragSpeed, 0.0f, 0.0f, "%.2f");
     ImGui::PopItemWidth();
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.7f, 0.0f, 1.0f));
@@ -46,7 +46,7 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values) {
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
     ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
-    ImGui::DragFloat("##DragY", &values.y, 0.01f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("##DragY", &values.y, dragSpeed, 0.0f, 0.0f, "%.2f");
     ImGui::PopItemWidth();
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.8f, 1.0f));
@@ -58,7 +58,7 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values) {
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
     ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
-    ImGui::DragFloat("##DragZ", &values.z, 0.01f, 0.0f, 0.0f, "%.2f");
+    ImGui::DragFloat("##DragZ", &values.z, dragSpeed, 0.0f, 0.0f, "%.2f");
 
     ImGui::PopItemWidth();
     ImGui::Columns(1);
@@ -98,9 +98,9 @@ void PropertiesPanel::EntityProperties() {
 
     if (HasComponent<TransformComponent>(m_SelectedEntity)) {
         TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
-        Vec3Control("Position", transform.Position);
-        Vec3Control("Rotation", transform.Rotation);
-        Vec3Control("Scale", transform.Scale);
+        Vec3Control("Position", transform.Position, 0.05);
+        Vec3Control("Rotation", transform.Rotation, 0.5);
+        Vec3Control("Scale", transform.Scale, 0.03);
     }
 
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
@@ -119,13 +119,13 @@ void PropertiesPanel::EntityProperties() {
 
     if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
         RigidBodyComponent& rigidBody = GetComponent<RigidBodyComponent>(m_SelectedEntity);
-        Vec3Control("Velocity", rigidBody.Velocity);
+        Vec3Control("Velocity", rigidBody.Velocity, 0.01);
         FloatSlider("Mass", &rigidBody.Mass, 0.01f, 100.0f);
     }
 
     if (HasComponent<SphereColliderComponent>(m_SelectedEntity)) {
         SphereColliderComponent& sphereCollider = GetComponent<SphereColliderComponent>(m_SelectedEntity);
-        Vec3Control("Offset", sphereCollider.PositionOffset);
+        Vec3Control("Offset", sphereCollider.PositionOffset, 0.01);
         FloatSlider("Radius", &sphereCollider.Radius, 0.0f, 100.0f);
     }
 

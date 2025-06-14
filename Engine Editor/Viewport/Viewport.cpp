@@ -28,7 +28,7 @@ void Viewport::OnViewportEvent(IcePick::Event& event) {
 void Viewport::Render(unsigned int frameBuffer) {
 	ImGui::Begin(m_ID);
 	m_ViewportSize = ImGui::GetContentRegionAvail();
-	ImGui::Image((void*)(intptr_t)frameBuffer, m_ViewportSize);
+	ImGui::Image((void*)(intptr_t)frameBuffer, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	ImGuiIO& io = ImGui::GetIO();
 
 

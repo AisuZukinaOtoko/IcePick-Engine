@@ -35,11 +35,16 @@ void IcePick::Scene::LoadFromDisk(const char* path) {
 	IP_LOG("Before loading mesh");
 	GLCheckErrors();
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate |
+		aiProcess_FixInfacingNormals |
+		aiProcess_FlipWindingOrder |
+		aiProcess_CalcTangentSpace
+	);
 	//const aiScene* scene = importer.ReadFile("res/Assets/hatsune_miku.glb", aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cerr << "Assimp Error: " << importer.GetErrorString() << std::endl;
+		std::string errorString = "Assimp Error: " + std::string(importer.GetErrorString());
+		IP_LOG(errorString.c_str(), IP_ERROR_LOG);
 		return;
 	}
 

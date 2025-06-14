@@ -15,7 +15,7 @@ public:
 	void EntityProperties();
 private:
 	void PanelSetup();
-	void Vec3Control(const char* label, glm::vec3& values);
+	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
 	void TextProperty(const char* label, const char* property);
 	void FloatSlider(const char* label, float* value, float min, float max);
 	void CheckBox(const char* label, bool* value);

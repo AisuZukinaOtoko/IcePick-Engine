@@ -148,7 +148,7 @@ namespace IcePickRenderer {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
-		VertexArrays.reserve(15);
+		VertexArrays.reserve(30);
 
 
 		float fov = glm::radians(45.0f);
