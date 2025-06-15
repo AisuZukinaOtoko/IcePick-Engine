@@ -82,6 +82,6 @@ void main() {
     //    OutputColour *= vec4(u_AlbedoColour, 1.0);
     //}
     gl_FragColor = OutputColour;
-    //gl_FragColor = vec4(v_Normal, 1.0f);
+    //gl_FragColor = vec4(v_Normal * 0.5 + 0.5, 1.0f);
     //gl_FragColor = vec4(v_Pos, 1.0f);
 };

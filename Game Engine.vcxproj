@@ -144,6 +144,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
+    <ClCompile Include="Engine Editor\Menu\Toolbar.cpp" />
+    <ClCompile Include="Engine Editor\Panels\AssetBrowser.cpp" />
     <ClCompile Include="Engine Editor\Panels\LogPanel.cpp" />
     <ClCompile Include="Engine Editor\Panels\PropertiesPanel.cpp" />
     <ClCompile Include="Engine Editor\Panels\ScenePanel.cpp" />
@@ -151,6 +153,7 @@
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
+    <ClCompile Include="src\File Systems\AssetLoader.cpp" />
     <ClCompile Include="src\Layers\Layer.cpp" />
     <ClCompile Include="src\Layers\GameLayer.cpp" />
     <ClCompile Include="src\LogSystem.cpp" />
@@ -328,6 +331,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
+    <ClInclude Include="Engine Editor\Menu\Toolbar.h" />
+    <ClInclude Include="Engine Editor\Panels\AssetBrowser.h" />
     <ClInclude Include="Engine Editor\Panels\LogPanel.h" />
     <ClInclude Include="Engine Editor\Panels\PanelCommon.h" />
     <ClInclude Include="Engine Editor\Panels\PropertiesPanel.h" />
@@ -336,6 +341,7 @@
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
+    <ClInclude Include="src\File Systems\AssetLoader.h" />
     <ClInclude Include="src\Layers\GameLayer.h" />
     <ClInclude Include="src\Render Systems\Materials.h" />
     <ClInclude Include="src\Render Systems\Vertex.h" />

@@ -17,6 +17,13 @@
 
 using namespace IcePick;
 
+void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
+	GLenum severity, GLsizei length,
+	const GLchar* message, const void* userParam) {
+	IP_LOG(message, IP_ERROR_LOG);
+	//std::cerr << "[GL DEBUG] " << message << "\n";
+}
+
 static void OnWindowResize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	IP_LOG("Window Resized");
@@ -118,9 +125,10 @@ namespace IcePickRenderer {
 		if (!glfwInit())
 			return false;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 
 		MainTargetWindow = glfwCreateWindow(1280, 960, "IcePick Engine", NULL, NULL);
@@ -136,17 +144,29 @@ namespace IcePickRenderer {
 		glfwSetFramebufferSizeCallback(MainTargetWindow, OnWindowResize);
 
 		// Init glew
+		glewExperimental = GL_TRUE;
 		GLenum err = glewInit();
 		if (GLEW_OK != err) {
 			fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 			return false;
 		}
-
+		
+		std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+
+		glDebugMessageCallback(debugCallback, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+		glDebugMessageControl(
+			GL_DONT_CARE,
+			GL_DONT_CARE,
+			GL_DEBUG_SEVERITY_NOTIFICATION,
+			0, nullptr,
+			GL_FALSE
+		);
 
 		VertexArrays.reserve(30);
 

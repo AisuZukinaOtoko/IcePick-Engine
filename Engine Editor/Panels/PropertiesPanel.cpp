@@ -110,6 +110,27 @@ void PropertiesPanel::EntityProperties() {
         CheckBox("Visible", &meshRenderer.MeshVisible);
         CheckBox("Cast shadows", &meshRenderer.CastShadows);
         CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
+
+        ImGui::Text("Drop an asset here!");
+        ImGui::NextColumn();
+        ImGui::ImageButton("##Hello", (void*)1, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0));
+        if (ImGui::BeginDragDropTarget()) {            
+            ImGui::Text("Dropping something");
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+                //IM_ASSERT(payload->DataSize == sizeof(Asset));
+                if (payload->DataSize == sizeof(IcePick::Entity)) {
+                    const IcePick::Entity* droppedAsset = (const IcePick::Entity*)payload->Data;
+                    IP_LOG("Successfully dropped asset.");
+                }
+                else {
+                    IP_LOG("Failed to drop asset.", IP_ERROR_LOG);
+                }
+
+                // Do something with the asset (e.g. assign to selected entity)
+                //printf("Dropped asset: %s\n", droppedAsset);
+            }
+            ImGui::EndDragDropTarget();
+        }
     }
 
     if (HasComponent<MaterialComponent>(m_SelectedEntity)) {
