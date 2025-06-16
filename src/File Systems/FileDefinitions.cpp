@@ -1,4 +1,4 @@
-#include "FileDefinitions.h"
+#include "AssetDefinitions.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -8,7 +8,7 @@ IcePick::Mesh::Mesh() {
 }
 
 IcePick::Mesh::Mesh(const char* filePath){
-	std::ifstream inFile;
+	/*std::ifstream inFile;
 	inFile.open(filePath);
 
 	if (inFile.fail()) {
@@ -53,12 +53,13 @@ IcePick::Mesh::Mesh(const char* filePath){
 		}
 	}
 
-	inFile.close();
+	inFile.close();*/
 }
 
 bool IcePick::Mesh::isValid(){
-	unsigned int IndexCount = m_Indices.size();
-	return m_Vertices.size() && !(IndexCount % 3) && IndexCount;
+	//unsigned int IndexCount = m_Indices.size();
+	//return m_Vertices.size() && !(IndexCount % 3) && IndexCount;
+	return true;
 }
 
 IcePick::Mesh::~Mesh(){
@@ -66,9 +67,9 @@ IcePick::Mesh::~Mesh(){
 }
 
 void IcePick::Mesh::GetMeshData(float*& VertexData, size_t& Stride, unsigned int& VertexCount, unsigned int*& IndexData, unsigned int& IndexCount){
-	VertexData = &m_Vertices[0].position[0];
+	/*VertexData = &m_Vertices[0].position[0];
 	Stride = sizeof(Vertex);
 	VertexCount = m_Vertices.size();
 	IndexData = &m_Indices[0];
-	IndexCount = m_Indices.size();
+	IndexCount = m_Indices.size();*/
 }

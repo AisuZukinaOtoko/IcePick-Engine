@@ -22,7 +22,6 @@ namespace IcePick {
 		void OnPreRender();
 		void OnUIRender();
 		void OnEnd();
-		void LoadFromDisk(const char* path);
 	private:
 		UUID m_SceneID;
 	};

@@ -44,12 +44,13 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::DockSpaceOverViewport(dockspace_id, mainViewPort, ImGuiDockNodeFlags_PassthruCentralNode);
 
     m_Toolbar.Render();
-    m_PropertiesPanel.SelectedProperties();
     ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
     m_Viewport.Render(payload.FrameBufferID);
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();
+    m_PropertiesPanel.SetDropFilePath(m_AssetBrowser.GetDragFilePath());
+    m_PropertiesPanel.SelectedProperties();
 
 
     ImGui::Render();

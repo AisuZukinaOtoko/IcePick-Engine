@@ -10,8 +10,6 @@ static IcePick::Input gameInput;
 void IcePick::GameLayer::OnAttach() {
 	m_FrameBuffer.Init();
 	m_CurrentScene.OnBegin();
-	m_CurrentScene.LoadFromDisk("res/Assets/hatsune_miku.glb");
-	m_CurrentScene.LoadFromDisk("res/Assets/hatsune_miku_fortnite.glb");
 }
 
 void IcePick::GameLayer::OnUpdate(DeltaTime dt) {
@@ -56,6 +54,10 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 
 		if (!EntityMeshRendererComponent.MeshVisible)
 			continue;
+
+		if (!EntityMeshRendererComponent.MeshLoaded && !EntityMeshRendererComponent.MeshFilePath.empty()) {
+			EntityMeshRendererComponent = m_AssetLoader.LoadMesh(EntityMeshRendererComponent.MeshFilePath);
+		}
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);

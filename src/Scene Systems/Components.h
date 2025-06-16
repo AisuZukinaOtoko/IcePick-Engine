@@ -1,5 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
+#include <string>
+#include <filesystem>
 
 namespace IcePick {
 
@@ -13,6 +15,10 @@ namespace IcePick {
 		static const int MaxMeshCount = 10;
 		MeshComponent Meshes[MaxMeshCount];
 		int MeshCount = 0;
+
+		std::filesystem::path MeshFilePath = "";
+		bool MeshLoaded = false;
+
 		bool MeshVisible = true;
 		bool CastShadows = false;
 		bool ReceiveShadows = false;
@@ -25,6 +31,9 @@ namespace IcePick {
 	struct SpriteRendererComponent {
 		unsigned int Texture;
 		glm::ivec4 TextureSourceRect;
+
+		std::filesystem::path TextureFilePath = "";
+		bool TextureLoaded = false;
 	};
 
 	struct TagComponent {

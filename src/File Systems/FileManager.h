@@ -1,5 +1,5 @@
 #pragma once
-#include "FileDefinitions.h"
+#include "AssetDefinitions.h"
 #include <vector>
 
 namespace IcePick {
@@ -22,16 +22,16 @@ namespace IcePick {
 		@param Path to file
 		@returns ID of the mesh.
 		*/
-		template<>
-		unsigned int LoadMesh<FBX>(const char* filepath);
+		/*template<>
+		unsigned int LoadMesh<FBX>(const char* filepath);*/
 
 		/*
 		@brief Load mesh OBJ file.
 		@param Path to file
 		@returns ID of the mesh.
 		*/
-		template<>
-		unsigned int LoadMesh<OBJ>(const char* filepath);
+		/*template<>
+		unsigned int LoadMesh<OBJ>(const char* filepath);*/
 
 		/*
 		* @brief Get a reference to mesh data.

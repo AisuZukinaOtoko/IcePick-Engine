@@ -14,7 +14,8 @@ void LogPanel::RenderLogs() {
 		ClearLogs();
 		IP_LOG("Clear logs", IP_WARN_LOG);
 	}
-	
+	ImGui::Separator();
+	ImGui::BeginChild("LogScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	
 	for (const auto& Log : *LogHistory) {
 		switch (Log.type) {
@@ -28,7 +29,7 @@ void LogPanel::RenderLogs() {
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			break;
 		}
-		ImGui::Text(Log.message.c_str());
+		ImGui::TextWrapped(Log.message.c_str());
 		ImGui::PopStyleColor();
 	}
 
@@ -37,6 +38,8 @@ void LogPanel::RenderLogs() {
 		m_CurrLogCount = LogHistory->size();
 		ImGui::SetScrollHereY(1.0f);
 	}
+
+	ImGui::EndChild();
 	ImGui::End();
 }
 

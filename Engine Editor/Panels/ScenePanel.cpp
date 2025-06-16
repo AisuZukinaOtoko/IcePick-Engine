@@ -58,26 +58,6 @@ void ScenePanel::ShowSceneHierarchy() {
 				m_SelectedEntity = entt::null; // Deselect if deleted
 			}
 
-			if (ImGui::MenuItem("Activate hatsune miku")) {
-				const int tempNumMeshes = 9;
-				IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
-				for (int i = 0; i < tempNumMeshes; i++) {
-					IcePick::MeshComponent newMesh = { i, -1, IcePick::MeshComponent::STATIC };
-					meshRenderer.Meshes[i] = newMesh;
-				}
-				meshRenderer.MeshCount = 9;
-			}
-
-			if (ImGui::MenuItem("Activate fortnite hatsune miku")) {
-				const int tempNumMeshes = 3;
-				IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
-				for (int i = 9; i < 9 + tempNumMeshes; i++) {
-					IcePick::MeshComponent newMesh = { i, -1, IcePick::MeshComponent::STATIC };
-					meshRenderer.Meshes[i - 9] = newMesh;
-				}
-				meshRenderer.MeshCount = 3;
-			}
-
 			ImGui::EndPopup();
 		}
 

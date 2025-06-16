@@ -135,6 +135,9 @@
     <ClCompile Include="Engine Editor\Panels\AssetBrowser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\File Systems\AssetLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic.shader" />
@@ -552,8 +555,8 @@
     <None Include="src\Vendor\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="res\Assets\cube.fbx" />
-    <None Include="res\Assets\rect.fbx" />
+    <None Include="res\assets\cube.fbx" />
+    <None Include="res\assets\rect.fbx" />
     <None Include="res\shaders\material.shader" />
   </ItemGroup>
   <ItemGroup>
@@ -1454,7 +1457,7 @@
     <ClInclude Include="src\File Systems\FileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\File Systems\FileDefinitions.h">
+    <ClInclude Include="src\File Systems\AssetDefinitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene Systems\SceneManager.h">
@@ -1565,6 +1568,9 @@
     <ClInclude Include="Engine Editor\Panels\AssetBrowser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\File Systems\AssetLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\CatWithHat.png">
@@ -1575,6 +1581,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="res\Data\gamecontrollerdb.txt" />
+    <Text Include="res\data\gamecontrollerdb.txt" />
   </ItemGroup>
 </Project>

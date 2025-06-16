@@ -8,6 +8,7 @@ VertexArray::VertexArray() {
 
 VertexArray::VertexArray(const VertexArray& other) {
 	m_ID = other.m_ID;
+	this->IndexCount = other.IndexCount;
 }
 
 VertexArray::~VertexArray() {
@@ -38,5 +39,9 @@ void VertexArray::Bind() const {
 
 void VertexArray::Unbind() const {
 	glBindVertexArray(0);
+}
+
+unsigned int VertexArray::GetID() {
+	return m_ID;
 }
 

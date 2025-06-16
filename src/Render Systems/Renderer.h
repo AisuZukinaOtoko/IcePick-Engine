@@ -8,7 +8,6 @@
 #include "IndexBuffer.h"
 #include "FrameBuffer.h"
 #include "../Scene Systems/Components.h"
-#include "../File Systems/FileDefinitions.h"
 #include "../Vendor/imgui-docking/imgui.h"
 #include "../Vendor/glm/glm.hpp"
 
@@ -35,37 +34,8 @@ namespace IcePickRenderer {
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
 	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
-	VertexArray& AddVertexArray();
+	NewVertexArrayData AddVertexArray();
 	//bool AddGeometry(IcePick::Mesh& mesh);
-}
-
-namespace IcePick {
-	class Renderer {
-	public:
-		Renderer();
-		~Renderer();
-
-		//bool Init();
-		//bool InitForImgui();
-		//bool WindowShouldClose();
-		bool AddGeometry(Mesh& mesh);
-		//void BeginFrame();
-		//void EndFrame();
-		//void Clear();
-		//void UpdateViewportSize(ImVec2);
-		//void Draw();
-
-		//static GLFWwindow* Window;
-		//static int WindowWidth;
-		//static int WindowHeight;
-	private:
-		// Number of draw calls per frame
-		//unsigned int m_DrawCallsCount;
-		//unsigned int m_ShaderProgram;
-		//void DrawGeometry(const VertexArray& va);
-		//void CompileShader(std::string source);
-		//std::vector<VertexArray> m_VertArrRegistry;
-		//std::vector<FrameBuffer> m_FrameBuffers;
-	};
+	//VertexArray& AddVertexArray();
 }
 

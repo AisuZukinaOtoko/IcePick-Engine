@@ -160,13 +160,7 @@ namespace IcePickRenderer {
 
 		glDebugMessageCallback(debugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
-		glDebugMessageControl(
-			GL_DONT_CARE,
-			GL_DONT_CARE,
-			GL_DEBUG_SEVERITY_NOTIFICATION,
-			0, nullptr,
-			GL_FALSE
-		);
+		glDebugMessageControl(GL_DONT_CARE,	GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
 		VertexArrays.reserve(30);
 
@@ -295,46 +289,10 @@ namespace IcePickRenderer {
 		meshVertexArray.Unbind();
 	}
 
-	VertexArray& AddVertexArray() {
+	NewVertexArrayData AddVertexArray() {
 		VertexArrays.emplace_back();
-		return VertexArrays.back();
+		return { VertexArrays.back(), static_cast<unsigned int>(VertexArrays.size() - 1) };
 	}
-
-	/*bool AddGeometry(IcePick::Mesh& mesh) {
-		if (!mesh.isValid())
-			return false;
-
-		float* vertexData;
-		size_t vertexStride;
-		unsigned int vertexCount, indexCount;
-		unsigned int* indexData;
-
-		mesh.GetMeshData(vertexData, vertexStride, vertexCount, indexData, indexCount);
-
-		IcePickRenderer::VertexArrays.emplace_back();
-		VertexArray& vertexArray = IcePickRenderer::VertexArrays.back();
-		vertexArray.IndexCount = indexCount;
-		vertexArray.Bind();
-
-		VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
-
-		VertexLayout layout;
-		layout.Push<float>(3);
-		layout.Push<float>(2);
-		layout.Push<float>(3);
-
-		vertexArray.AddBuffer(vertexBuffer, layout);
-
-
-		IndexBuffer indexBuffer(indexData, indexCount);
-
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		return true;
-	}*/
 }
 
 
@@ -351,50 +309,3 @@ void GLCheckErrors(){
 void GLClearErrors() {
 	while (glGetError() != GL_NO_ERROR);
 }
-
-
-Renderer::Renderer(){
-	//m_DrawCallsCount = 0;
-	//m_ShaderProgram = 0;
-}
-
-Renderer::~Renderer(){
-	//glDeleteProgram(m_ShaderProgram);
-}
-
-
-//bool IcePick::Renderer::AddGeometry(Mesh& mesh){
-//	if (!mesh.isValid())
-//		return false;
-//
-//	float* vertexData;
-//	size_t vertexStride;
-//	unsigned int vertexCount, indexCount;
-//	unsigned int* indexData;
-//
-//	mesh.GetMeshData(vertexData, vertexStride, vertexCount, indexData, indexCount);
-//
-//	IcePickRenderer::VertexArrays.emplace_back();
-//	VertexArray& vertexArray = IcePickRenderer::VertexArrays.back();
-//	vertexArray.IndexCount = indexCount;
-//	vertexArray.Bind();
-//
-//	VertexBuffer vertexBuffer(vertexData, vertexStride * vertexCount);
-//
-//	IcePickRenderer::VertexLayout layout;
-//	layout.Push<float>(3);
-//	layout.Push<float>(2);
-//	layout.Push<float>(3);
-//
-//	vertexArray.AddBuffer(vertexBuffer, layout);
-//
-//
-//	IndexBuffer indexBuffer(indexData, indexCount);
-//
-//
-//	glBindVertexArray(0);
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//
-//	return true;
-//}

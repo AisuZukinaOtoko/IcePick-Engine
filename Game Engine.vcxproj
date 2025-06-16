@@ -186,8 +186,8 @@
     <ClCompile Include="src\Render Systems\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Assets\cube.fbx" />
-    <None Include="res\Assets\rect.fbx" />
+    <None Include="res\assets\cube.fbx" />
+    <None Include="res\assets\rect.fbx" />
     <None Include="res\shaders\basic.shader" />
     <None Include="res\shaders\material.shader" />
     <None Include="src\Vendor\glm\detail\func_common.inl" />
@@ -352,7 +352,7 @@
     <ClInclude Include="src\Event Systems\EventHandler.h" />
     <ClInclude Include="src\Layers\Layer.h" />
     <ClInclude Include="src\LogSystem.h" />
-    <ClInclude Include="src\File Systems\FileDefinitions.h" />
+    <ClInclude Include="src\File Systems\AssetDefinitions.h" />
     <ClInclude Include="src\File Systems\FileManager.h" />
     <ClInclude Include="src\IcePickCoreMinimal.h" />
     <ClInclude Include="src\IcePickRuntime.h" />
@@ -673,7 +673,7 @@
     <Image Include="res\textures\Sword.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="res\Data\gamecontrollerdb.txt" />
+    <Text Include="res\data\gamecontrollerdb.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

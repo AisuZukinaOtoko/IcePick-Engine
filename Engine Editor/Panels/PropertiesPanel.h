@@ -13,6 +13,7 @@ public:
 	void SetEntitySelect(entt::entity entity);
 
 	void EntityProperties();
+	void SetDropFilePath(std::string filePath);
 private:
 	void PanelSetup();
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
@@ -23,4 +24,5 @@ private:
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
 	entt::entity m_SelectedEntity = entt::null;
+	std::string m_DropFilePath;
 };

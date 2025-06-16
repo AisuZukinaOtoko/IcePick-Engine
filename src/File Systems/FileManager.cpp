@@ -15,15 +15,15 @@ IcePick::Mesh& IcePick::FileManager::GetMesh(unsigned int meshID){
 	return m_MeshRegistry[meshID];
 }
 
-template<>
-unsigned int IcePick::FileManager::LoadMesh<IcePick::FBX>(const char* filepath) {
-	m_MeshRegistry.emplace_back(filepath);
-	return m_MeshRegistry.size() - 1;
-}
-
-template<>
-unsigned int IcePick::FileManager::LoadMesh<IcePick::OBJ>(const char* filepath) {
-	//OBJ file(filepath);
-	//file.Serialize();
-	return -1;
-}
+//template<>
+//unsigned int IcePick::FileManager::LoadMesh<IcePick::FBX>(const char* filepath) {
+//	m_MeshRegistry.emplace_back(filepath);
+//	return m_MeshRegistry.size() - 1;
+//}
+//
+//template<>
+//unsigned int IcePick::FileManager::LoadMesh<IcePick::OBJ>(const char* filepath) {
+//	//OBJ file(filepath);
+//	//file.Serialize();
+//	return -1;
+//}
