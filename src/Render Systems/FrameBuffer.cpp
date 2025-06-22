@@ -115,3 +115,7 @@ unsigned int FrameBuffer::GetID() const {
 	return m_ID;
 }
 
+unsigned int FrameBuffer::GetColourTextureID() const {
+	return m_ColourTexID;
+}
+

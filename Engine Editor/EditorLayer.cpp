@@ -2,6 +2,11 @@
 #include "EditorLayer.h"
 #include "../src/Event Systems/Input.h"
 
+IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) 
+    : m_EngineAPI(engineAPI) {
+    m_AssetBrowser.Init(m_EngineAPI);
+}
+
 void IcePick::EditorLayer::OnAttach() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

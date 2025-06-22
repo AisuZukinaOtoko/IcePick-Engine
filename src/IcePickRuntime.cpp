@@ -5,7 +5,8 @@
 #include "Render Systems/VertexBuffer.h"
 #include "Event Systems/EventHandler.h"
 #include "Layers/Layer.h"
-#include "Layers/GameLayer.h"
+#include "Layers/EngineLayer.h"
+#include "Layers/EngineAPI.h"
 #include "../Engine Editor/EditorLayer.h"
 #include <iostream>
 
@@ -22,8 +23,13 @@ bool Engine::Init() {
 		return false;
 	}
 	m_EngineRunning = true;
-	IP_LayerStack.addLayer(std::make_shared<EditorLayer>());
-	IP_LayerStack.addLayer(std::make_shared<GameLayer>());
+	std::shared_ptr<EngineLayer> engineLayer = std::make_shared<EngineLayer>();
+	std::shared_ptr<EditorLayer> editorLayer = std::make_shared<EditorLayer>(engineLayer);
+
+	IP_LayerStack.addLayer(editorLayer);
+	IP_LayerStack.addLayer(engineLayer);
+	/*IP_LayerStack.addLayer(std::make_shared<EditorLayer>());
+	IP_LayerStack.addLayer(std::make_shared<EngineLayer>());*/
 	return true;
 }
 

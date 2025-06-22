@@ -13,6 +13,7 @@ public:
 	void Bind();
 	void UnBind();
 	unsigned int GetID() const;
+	unsigned int GetColourTextureID() const;
 private:
 	unsigned int m_ID = 0;
 	unsigned int m_TextureID = 0;

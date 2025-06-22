@@ -7,6 +7,16 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+IcePick::AssetLoader::AssetLoader() {
+	m_loadedTextures.reserve(5);
+	m_loadedTextures.emplace_back("res/textures/icons/folder_icon.png");
+	m_loadedTextures.emplace_back("res/textures/icons/fbx_icon.png");
+	m_loadedTextures.emplace_back("res/textures/icons/glb_icon.png");
+	m_loadedTextures.emplace_back("res/textures/icons/obj_icon.png");
+	m_loadedTextures.emplace_back("res/textures/icons/file_icon.png");
+	std::cout << "Texture ID: " << m_loadedTextures.back().GetID() << std::endl;
+}
+
 IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::path filePath)
 {
 	MeshRendererComponent returnMeshRendererComponent;
@@ -90,7 +100,8 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 		IndexBuffer indexBuffer(indices.data(), mesh->mNumFaces * 3);
 		indexBuffer.Bind();
 
-		returnMeshRendererComponent.Meshes[i] = { VAdata.VA_Index, -1, IcePick::MeshComponent::STATIC};
+		returnMeshRendererComponent.Meshes[i] = { VAdata.VA_Index, 1, IcePick::MeshComponent::STATIC};
+		//returnMeshRendererComponent.Meshes[i] = { VAdata.VA_Index, -1, IcePick::MeshComponent::STATIC};
 
 		VA.Unbind();
 		vertexBuffer.Unbind();

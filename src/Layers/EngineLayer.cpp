@@ -1,5 +1,5 @@
 #include "../Render Systems/Renderer.h"
-#include "GameLayer.h"
+#include "EngineLayer.h"
 #include "../LogSystem.h"
 #include "../Event Systems/Input.h"
 #include "../Scene Systems/SceneRegistry.h"
@@ -7,12 +7,12 @@
 
 static IcePick::Input gameInput;
 
-void IcePick::GameLayer::OnAttach() {
+void IcePick::EngineLayer::OnAttach() {
 	m_FrameBuffer.Init();
 	m_CurrentScene.OnBegin();
 }
 
-void IcePick::GameLayer::OnUpdate(DeltaTime dt) {
+void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 	if (gameInput.IsKeyPressed(IP_KEY_T)) {
 		IP_LOG("Game layer pressed T.");
 	}
@@ -22,7 +22,7 @@ void IcePick::GameLayer::OnUpdate(DeltaTime dt) {
 }
 
 
-void IcePick::GameLayer::OnEvent(Event& event) {
+void IcePick::EngineLayer::OnEvent(Event& event) {
 
 	if ((event.action == IP_PRESS) && (event.code == IP_KEY_S) && (event.mods & GLFW_MOD_SHIFT)) {
 		IP_LOG("Shift-S pressed.");
@@ -32,15 +32,15 @@ void IcePick::GameLayer::OnEvent(Event& event) {
 	gameInput.OnEvent(event);
 }
 
-void IcePick::GameLayer::OnRender(RenderPayload& payload) {
+void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	m_FrameBuffer.Bind();
 	m_CurrentScene.OnPreRender();
-	payload.FrameBufferID = m_FrameBuffer.GetID();
+	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
 	m_FrameBuffer.UnBind();
 }
 
-void IcePick::GameLayer::RenderEntityMeshes() {
+void IcePick::EngineLayer::RenderEntityMeshes() {
 	float angle = glm::radians(45.0f);
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat3 normalMatrix = glm::mat3(1.0f);
@@ -74,7 +74,18 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 			MeshComponent& mesh = EntityMeshRendererComponent.Meshes[i];
 
 			if (mesh.MaterialIndex != -1) {
-				IcePickRenderer::DrawMesh(mesh, model);
+				Material tempMaterial;
+				tempMaterial.ShaderID = 1;
+				tempMaterial.AlbedoMap = 1;
+				tempMaterial.NormalMap = 0;
+				tempMaterial.RoughnessMap = 0;
+				tempMaterial.MetallicMap = 0;
+				tempMaterial.EmissiveMap = 0;
+
+				tempMaterial.Albedo = glm::vec3(1.0f, 1.0f, 0.0f);
+				tempMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
+				tempMaterial.SampleBitmask = Material::ALBEDO;
+				IcePickRenderer::DrawMesh(mesh, model, tempMaterial);
 			}
 			else {
 				IcePickRenderer::DrawMeshBasicMaterial(mesh, model);
@@ -84,6 +95,6 @@ void IcePick::GameLayer::RenderEntityMeshes() {
 
 }
 
-void IcePick::GameLayer::OnDetach() {
+void IcePick::EngineLayer::OnDetach() {
 
 }

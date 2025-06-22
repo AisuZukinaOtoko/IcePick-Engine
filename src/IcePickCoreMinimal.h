@@ -8,6 +8,7 @@
 #include "Event Systems/Input.h"
 #include "LogSystem.h"
 #include "File Systems/AssetLoader.h"
+#include "Layers/EngineAPI.h"
 
 namespace IcePick {
 	Entity* GetSceneEntity(UUID EntityID);

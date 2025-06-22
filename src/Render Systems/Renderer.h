@@ -10,6 +10,7 @@
 #include "../Scene Systems/Components.h"
 #include "../Vendor/imgui-docking/imgui.h"
 #include "../Vendor/glm/glm.hpp"
+#include "Materials.h"
 
 
 void GLCheckErrors();
@@ -20,7 +21,7 @@ namespace IcePickRenderer {
 	void NewFrame();
 	void EndFrame();
 	//void CreateShaderPogram(std::string shaderSource);
-	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix);
+	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix, const IcePick::Material& material);
 	void DrawMeshBasicMaterial(const IcePick::MeshComponent& mesh, const glm::mat4& modelTransformMatrix);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 

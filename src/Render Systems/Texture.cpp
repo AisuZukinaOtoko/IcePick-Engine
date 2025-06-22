@@ -1,6 +1,24 @@
 #include <iostream>
 #include "Texture.h"
 #include "../Vendor/stb_image.h"
+#include "../LogSystem.h"
+
+Texture::Texture(unsigned char* data, int m_width, int m_height, int m_BPP) {
+	if (!data)
+		IP_LOG("Error loading texture.", IP_ERROR_LOG);
+
+
+	glGenTextures(1, &m_ID);
+	glBindTexture(GL_TEXTURE_2D, m_ID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // image minimize resize setting
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // image enlarge resize setting
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 Texture::Texture(const std::string& path){
 	m_ID = 0;
@@ -13,7 +31,7 @@ Texture::Texture(const std::string& path){
 
 
 	if (!m_localBuffer)
-		std::cout << "An error loading image.\n";
+		IP_LOG("Error loading texture.", IP_ERROR_LOG);
 
 
 	glGenTextures(1, &m_ID);
@@ -43,4 +61,12 @@ void Texture::Bind(unsigned int slot = 0) const {
 
 void Texture::Unbind(){
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+int Texture::GetTextureID() {
+	return m_TextureID;
+}
+
+unsigned int Texture::GetID() {
+	return m_ID;
 }

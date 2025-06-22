@@ -105,7 +105,7 @@
     <ClCompile Include="src\Event Systems\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Layers\GameLayer.cpp">
+    <ClCompile Include="src\Layers\EngineLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine Editor\EditorLayer.cpp">
@@ -138,9 +138,12 @@
     <ClCompile Include="src\File Systems\AssetLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Layers\EngineAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\basic.shader" />
+    <None Include="res\shaders\depth.shader" />
     <None Include="src\Vendor\glm\detail\func_common.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -557,6 +560,7 @@
     </None>
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
+    <None Include="res\shaders\normal.shader" />
     <None Include="res\shaders\material.shader" />
   </ItemGroup>
   <ItemGroup>
@@ -1529,7 +1533,7 @@
     <ClInclude Include="src\Event Systems\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Layers\GameLayer.h">
+    <ClInclude Include="src\Layers\EngineLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Event Systems\Event.h">
@@ -1569,6 +1573,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\File Systems\AssetLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Styles\Icons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Layers\EngineAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

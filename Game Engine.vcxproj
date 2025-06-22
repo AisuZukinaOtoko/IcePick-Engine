@@ -154,8 +154,9 @@
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
+    <ClCompile Include="src\Layers\EngineAPI.cpp" />
     <ClCompile Include="src\Layers\Layer.cpp" />
-    <ClCompile Include="src\Layers\GameLayer.cpp" />
+    <ClCompile Include="src\Layers\EngineLayer.cpp" />
     <ClCompile Include="src\LogSystem.cpp" />
     <ClCompile Include="src\File Systems\FileDefinitions.cpp" />
     <ClCompile Include="src\File Systems\FileManager.cpp" />
@@ -188,8 +189,9 @@
   <ItemGroup>
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
-    <None Include="res\shaders\basic.shader" />
+    <None Include="res\shaders\depth.shader" />
     <None Include="res\shaders\material.shader" />
+    <None Include="res\shaders\normal.shader" />
     <None Include="src\Vendor\glm\detail\func_common.inl" />
     <None Include="src\Vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\Vendor\glm\detail\func_exponential.inl" />
@@ -337,12 +339,14 @@
     <ClInclude Include="Engine Editor\Panels\PanelCommon.h" />
     <ClInclude Include="Engine Editor\Panels\PropertiesPanel.h" />
     <ClInclude Include="Engine Editor\Panels\ScenePanel.h" />
+    <ClInclude Include="Engine Editor\Styles\Icons.h" />
     <ClInclude Include="Engine Editor\Viewport\EditorCamera.h" />
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
-    <ClInclude Include="src\Layers\GameLayer.h" />
+    <ClInclude Include="src\Layers\EngineAPI.h" />
+    <ClInclude Include="src\Layers\EngineLayer.h" />
     <ClInclude Include="src\Render Systems\Materials.h" />
     <ClInclude Include="src\Render Systems\Vertex.h" />
     <ClInclude Include="src\Render Systems\VertexLayout.h" />

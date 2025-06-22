@@ -5,7 +5,7 @@
 #include "../File Systems/AssetLoader.h"
 
 namespace IcePick {
-	class GameLayer : public Layer {
+	class EngineLayer : public Layer {
 	public:
 		void OnAttach() override;
 		void OnUpdate(DeltaTime dt) override;
