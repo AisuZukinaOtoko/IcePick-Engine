@@ -6,6 +6,7 @@
 #include "Panels/ScenePanel.h"
 #include "Panels/AssetBrowser.h"
 #include "Menu/Toolbar.h"
+#include "Styles/Styles.h"
 #include "../src/Layers/EngineAPI.h"
 
 namespace IcePick {
@@ -19,6 +20,7 @@ namespace IcePick {
 		virtual void OnEvent(Event& event) override;
 		virtual void OnRender(RenderPayload& payload) override;
 	private:
+		Styles m_Styles;
 		EngineAPI m_EngineAPI;
 		LogPanel m_LogPanel;
 		PropertiesPanel m_PropertiesPanel;

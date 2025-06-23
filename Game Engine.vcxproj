@@ -149,6 +149,7 @@
     <ClCompile Include="Engine Editor\Panels\LogPanel.cpp" />
     <ClCompile Include="Engine Editor\Panels\PropertiesPanel.cpp" />
     <ClCompile Include="Engine Editor\Panels\ScenePanel.cpp" />
+    <ClCompile Include="Engine Editor\Styles\Styles.cpp" />
     <ClCompile Include="Engine Editor\Viewport\EditorCamera.cpp" />
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
@@ -339,7 +340,7 @@
     <ClInclude Include="Engine Editor\Panels\PanelCommon.h" />
     <ClInclude Include="Engine Editor\Panels\PropertiesPanel.h" />
     <ClInclude Include="Engine Editor\Panels\ScenePanel.h" />
-    <ClInclude Include="Engine Editor\Styles\Icons.h" />
+    <ClInclude Include="Engine Editor\Styles\Styles.h" />
     <ClInclude Include="Engine Editor\Viewport\EditorCamera.h" />
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="src\Event Systems\Event.h" />

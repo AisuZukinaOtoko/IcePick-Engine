@@ -5,8 +5,8 @@ AssetBrowser::AssetBrowser() {
     m_CurrentBrowsingPath = "res/assets";
 }
 
-void AssetBrowser::Init(IcePick::EngineAPI& engineAPI) {
-    engineAPI.SayHello();
+void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
+    m_Styles = styles;
 }
 
 void AssetBrowser::Render() {
@@ -35,26 +35,14 @@ void AssetBrowser::Render() {
     int tempIterator = 0;
     for (const auto& file : std::filesystem::directory_iterator(m_CurrentBrowsingPath)) {
         tempIterator++;
-        ImTextureID icon = (void*)1;
+        ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);
 
         if (file.is_regular_file()) {
             std::filesystem::path extension = file.path().extension();
-
-            if (extension == ".fbx") {
-                icon = (void*)2;
-            }
-            else if (extension == ".glb") {
-                icon = (void*)3;
-            }
-            else if (extension == ".obj") {
-                icon = (void*)4;
-            }
-            else {
-                icon = (void*)5;
-            }
+            icon = GetFileIcon(extension);
         }
         else if (file.is_directory()) {
-
+            icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FOLDER);
         }
         
 
@@ -98,4 +86,21 @@ void AssetBrowser::Render() {
 
 std::string AssetBrowser::GetDragFilePath() {
     return m_DragFilePath;
+}
+
+void* AssetBrowser::GetFileIcon(std::filesystem::path extension) {
+    void* icon;
+    if (extension == ".fbx") {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FBX_FILE);
+    }
+    else if (extension == ".glb") {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GLB_FILE);
+    }
+    else if (extension == ".obj") {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_OBJ_FILE);
+    }
+    else {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);
+    }
+    return icon;
 }

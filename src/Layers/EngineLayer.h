@@ -1,4 +1,5 @@
 #pragma once
+#include "../Render Systems/Renderer.h"
 #include "Layer.h"
 #include "../Render Systems/FrameBuffer.h"
 #include "../Scene Systems/Scene.h"
@@ -13,6 +14,8 @@ namespace IcePick {
 
 		void OnEvent(Event& event) override;
 		void OnRender(RenderPayload& payload) override;
+
+		unsigned int CreateTexture(std::filesystem::path assetPath);
 	private:
 		FrameBuffer m_FrameBuffer;
 		AssetLoader m_AssetLoader;

@@ -3,7 +3,10 @@
 
 IcePick::EngineAPI::EngineAPI(std::shared_ptr<EngineLayer> engine) {
 	m_Engine = engine;
-	IP_LOG("The API has a reference to the engine.");
+}
+
+unsigned int IcePick::EngineAPI::NewTexture(std::filesystem::path texturePath) {
+	return m_Engine->CreateTexture(texturePath);
 }
 
 IcePick::EngineAPI::~EngineAPI() {

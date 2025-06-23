@@ -16,10 +16,12 @@ namespace IcePick {
 	public:
 		AssetLoader();
 		MeshRendererComponent LoadMesh(std::filesystem::path filePath);
+		unsigned int LoadTexture(std::filesystem::path texturePath);
 		//void LoadTexture(std::filesystem::path filePath);
 		//void LoadAudio(std::filesystem::path filePath);
 	private:
 		std::unordered_map<std::filesystem::path, MeshRendererComponent> m_loadedAssetPathToMeshRenderer;
-		std::vector<Texture> m_loadedTextures;
+		std::vector<Texture> m_Textures;
+		std::unordered_map<std::filesystem::path, unsigned int> m_LoadedTexturesCache;
 	};
 }

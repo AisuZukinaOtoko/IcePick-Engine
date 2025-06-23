@@ -8,13 +8,27 @@
 #include "assimp/postprocess.h"
 
 IcePick::AssetLoader::AssetLoader() {
-	m_loadedTextures.reserve(5);
-	m_loadedTextures.emplace_back("res/textures/icons/folder_icon.png");
+	m_Textures.reserve(10);
+	/*m_loadedTextures.emplace_back("res/textures/icons/folder_icon.png");
 	m_loadedTextures.emplace_back("res/textures/icons/fbx_icon.png");
 	m_loadedTextures.emplace_back("res/textures/icons/glb_icon.png");
 	m_loadedTextures.emplace_back("res/textures/icons/obj_icon.png");
-	m_loadedTextures.emplace_back("res/textures/icons/file_icon.png");
-	std::cout << "Texture ID: " << m_loadedTextures.back().GetID() << std::endl;
+	m_loadedTextures.emplace_back("res/textures/icons/file_icon.png");*/
+	m_Textures.emplace_back("res/textures/BrickWall.jpg");
+}
+
+unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
+
+	if (m_LoadedTexturesCache.find(texturePath) != m_LoadedTexturesCache.end()) {
+		IP_LOG("Using a loaded texture.");
+		unsigned int index = m_LoadedTexturesCache[texturePath];
+		return m_Textures[index].GetID();
+	}
+
+	unsigned int insertIndex = m_Textures.size();
+	m_Textures.emplace_back(texturePath.string());
+	m_LoadedTexturesCache.insert({ texturePath, insertIndex });
+	return m_Textures.back().GetID();
 }
 
 IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::path filePath)
@@ -36,7 +50,6 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 	}
 
 	IP_LOG("Loading a new mesh.");
-	//GLCheckErrors();
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath.string(), aiProcess_Triangulate |
 		aiProcess_FixInfacingNormals |

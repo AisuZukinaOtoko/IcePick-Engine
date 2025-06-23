@@ -141,6 +141,9 @@
     <ClCompile Include="src\Layers\EngineAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Styles\Styles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -1575,10 +1578,10 @@
     <ClInclude Include="src\File Systems\AssetLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Styles\Icons.h">
+    <ClInclude Include="src\Layers\EngineAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Layers\EngineAPI.h">
+    <ClInclude Include="Engine Editor\Styles\Styles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

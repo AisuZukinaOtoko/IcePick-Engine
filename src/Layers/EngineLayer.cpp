@@ -32,6 +32,10 @@ void IcePick::EngineLayer::OnEvent(Event& event) {
 	gameInput.OnEvent(event);
 }
 
+unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePath) {
+	return m_AssetLoader.LoadTexture(texturePath);
+}
+
 void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	m_FrameBuffer.Bind();
 	m_CurrentScene.OnPreRender();

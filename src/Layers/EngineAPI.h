@@ -10,6 +10,8 @@ namespace IcePick {
 		EngineAPI(const EngineAPI& other) = default;
 		~EngineAPI();
 
+		unsigned int NewTexture(std::filesystem::path assetPath);
+
 		void SayHello() {
 			if (m_Engine) {
 

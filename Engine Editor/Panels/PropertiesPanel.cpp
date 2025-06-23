@@ -122,33 +122,10 @@ void PropertiesPanel::EntityProperties() {
         if (ImGui::BeginDragDropTarget()) {            
             ImGui::Text("Dropping something");
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                //IM_ASSERT(payload->DataSize == sizeof(Asset));
-                IP_LOG("Successfully dropped asset.");
                 std::filesystem::path droppedAssetPath(m_DropFilePath);
                 meshRenderer.MeshFilePath = droppedAssetPath;
                 meshRenderer.MeshLoaded = false;
                 IP_LOG(m_DropFilePath.c_str());
-                //if (payload->DataSize == sizeof(std::filesystem::path)) {
-
-                //    const char* path = static_cast<const char*>(payload->Data);
-                //    std::filesystem::path droppedAssetPath(path);
-
-                //   // std::filesystem::path* droppedAssetPath = (std::filesystem::path*)payload->Data;
-
-                //    meshRenderer.MeshFilePath = droppedAssetPath;
-                //    //meshRenderer.MeshLoaded = false;
-
-                //    //IP_LOG(meshRenderer.MeshFilePath.string().c_str());
-                //    /*std::cout << "Path: " << meshRenderer.MeshFilePath << std::endl;
-                //    std::cout << "Path: " << meshRenderer.MeshFilePath.string() << std::endl;
-                //    std::cout << "Path: " << meshRenderer.MeshFilePath.string().c_str() << std::endl;*/
-                //}
-                //else {
-                //    IP_LOG("Failed to drop asset.", IP_ERROR_LOG);
-                //}
-
-                // Do something with the asset (e.g. assign to selected entity)
-                //printf("Dropped asset: %s\n", droppedAsset);
             }
             ImGui::EndDragDropTarget();
         }

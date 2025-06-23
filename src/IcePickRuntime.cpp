@@ -28,8 +28,6 @@ bool Engine::Init() {
 
 	IP_LayerStack.addLayer(editorLayer);
 	IP_LayerStack.addLayer(engineLayer);
-	/*IP_LayerStack.addLayer(std::make_shared<EditorLayer>());
-	IP_LayerStack.addLayer(std::make_shared<EngineLayer>());*/
 	return true;
 }
 
