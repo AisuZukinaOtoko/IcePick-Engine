@@ -1,11 +1,16 @@
 #include "../src/IcePickCoreMinimal.h"
 #include "EditorLayer.h"
 #include "../src/Event Systems/Input.h"
+#include "imgui-docking/ImGuizmo.h"
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) 
     : m_EngineAPI(engineAPI) {
     m_Styles.Init(engineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
+
+    auto cb = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
+    m_Viewport.SetSelectedEntityChangeCallback(cb);
+    m_ScenePanel.SetSelectedEntityChangeCallback(cb);
 }
 
 void IcePick::EditorLayer::OnAttach() {
@@ -21,12 +26,15 @@ void IcePick::EditorLayer::OnAttach() {
     ImGui_ImplOpenGL3_Init();
 }
 
+void IcePick::EditorLayer::OnChangeSelectedEntity(entt::entity selectedEntity) {
+    m_Viewport.SetSelectedEntity(selectedEntity);
+    m_ScenePanel.SetSelectedEntity(selectedEntity);
+    m_PropertiesPanel.SetSelectedEntity(selectedEntity);
+}
+
 void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {
     m_Viewport.OnUpdate(dt);
-
-    if (m_ScenePanel.EntitySelected()) {
-        m_PropertiesPanel.SetEntitySelect(m_ScenePanel.GetSelectedEntity());
-    }
+    m_ScenePanel.OnUpdate(dt);
 }
 
 void IcePick::EditorLayer::OnDetach() {
@@ -42,6 +50,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
     ImGuiViewport* mainViewPort = ImGui::GetMainViewport();
     ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
@@ -62,3 +71,4 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+

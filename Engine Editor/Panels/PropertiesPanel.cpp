@@ -86,7 +86,7 @@ void PropertiesPanel::SetColumnWidth(float newWidth) {
     m_ColumnWidth = newWidth;
 }
 
-void PropertiesPanel::SetEntitySelect(entt::entity entity) {
+void PropertiesPanel::SetSelectedEntity(entt::entity entity) {
     m_SelectedEntity = entity;
 }
 

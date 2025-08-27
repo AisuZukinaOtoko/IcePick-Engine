@@ -13,10 +13,16 @@ EditorCamera::EditorCamera() {
     cameraFOV = glm::radians(45.0f);
 }
 
-glm::mat4 EditorCamera::getViewProjectionMatrix() {
-    glm::mat4 projection = glm::perspective(cameraFOV, aspectRatio, cameraNearClip, cameraFarClip);
-    glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-    return projection * view;
+glm::mat4 EditorCamera::GetViewProjectionMatrix() {
+    return GetProjectionMatrix() * GetViewMatrix();
+}
+
+glm::mat4 EditorCamera::GetProjectionMatrix() {
+    return glm::perspective(cameraFOV, aspectRatio, cameraNearClip, cameraFarClip);
+}
+
+glm::mat4 EditorCamera::GetViewMatrix() {
+    return glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 }
 
 void EditorCamera::OnUpdate(DeltaTime dt) {

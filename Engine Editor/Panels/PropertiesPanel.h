@@ -10,7 +10,7 @@ public:
 	~PropertiesPanel() = default;
 	void SelectedProperties();
 	void SetColumnWidth(float newWidth);
-	void SetEntitySelect(entt::entity entity);
+	void SetSelectedEntity(entt::entity entity);
 
 	void EntityProperties();
 	void SetDropFilePath(std::string filePath);

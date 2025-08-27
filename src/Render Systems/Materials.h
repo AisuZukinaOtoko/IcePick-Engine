@@ -27,8 +27,4 @@ namespace IcePick {
 		float MetalValue = 0.0f;
 		float EmissiveValue = 0.0f;
 	};
-
-	//returns material index
-	unsigned int NewMaterial();
-	Material& GetMaterial(unsigned int index);
 }

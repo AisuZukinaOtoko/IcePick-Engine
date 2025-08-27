@@ -20,7 +20,9 @@ public:
 
 	float moveSensitivity = 0.015f;
 
-	glm::mat4 getViewProjectionMatrix();
+	glm::mat4 GetViewProjectionMatrix();
+	glm::mat4 GetProjectionMatrix();
+	glm::mat4 GetViewMatrix();
 	void OnUpdate(DeltaTime dt);
 	void OnKeyPress(int action, int code);
 private:

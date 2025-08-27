@@ -30,6 +30,8 @@ const vec3 tempLightPosition = vec3(1.0f, 2.0f, 1.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const vec3 tempAmbientColour = vec3(0.02f, 0.015f, 0.015f);
 
+#include "math.shader"
+
 void main() {
     vec4 OutputColour = vec4(0.0f);
 
@@ -48,12 +50,6 @@ void main() {
         OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
     }
 
-    //if ((MaterialSampleFlags & SAMPLE_ALBEDO) != 0) {
-    //    OutputColour *= texture(u_AlbedoTexUnit, v_TexCoord);
-    //}
-    //else {
-    //    OutputColour *= u_AlbedoColour;
-    //    //OutputColour *= vec4(0.0, 0.0, 1.0, 1.0);
-    //}
+    gl_FragColor = TempColour();
     gl_FragColor = OutputColour;
 };

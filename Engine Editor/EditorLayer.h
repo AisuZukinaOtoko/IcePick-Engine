@@ -21,6 +21,7 @@ namespace IcePick {
 		virtual void OnEvent(Event& event) override;
 		virtual void OnRender(RenderPayload& payload) override;
 	private:
+		void OnChangeSelectedEntity(entt::entity selectedEntity);
 		Styles m_Styles;
 		EngineAPI m_EngineAPI;
 		LogPanel m_LogPanel;

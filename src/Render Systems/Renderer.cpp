@@ -14,7 +14,6 @@
 #include "../Scene Systems/Components.h"
 #include "../Utilities/Assert.h"
 
-
 using namespace IcePick;
 
 void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
@@ -28,87 +27,6 @@ static void OnWindowResize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 	IP_LOG("Window Resized");
 }
-
-struct ShaderProgramSource {
-	std::string vertexSource;
-	std::string fragmentSource;
-};
-
-static ShaderProgramSource parseShader(const std::string filepath) {
-	std::ifstream inFile(filepath);
-	if (inFile.fail()) {
-		std::cerr << "Error: Could not open shader file." << std::endl;
-		IP_LOG("Could not open shader file.", IP_ERROR_LOG);
-		return {};
-	}
-
-	enum class ShaderType {
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	};
-
-	std::string line;
-	std::stringstream ss[2];
-	ShaderType type = ShaderType::NONE;
-	while (getline(inFile, line)) {
-		if (line.find("shader") != std::string::npos) {
-			if (line.find("vertex") != std::string::npos) {
-				type = ShaderType::VERTEX;
-			}
-			else if (line.find("fragment") != std::string::npos) {
-				type = ShaderType::FRAGMENT;
-			}
-		}
-		else {
-			ss[(int)type] << line << '\n';
-		}
-	}
-
-	return { ss[0].str(), ss[1].str() };
-}
-
-static unsigned int compileShader(unsigned int type, const std::string& source) {
-	unsigned int id = glCreateShader(type);
-	const char* src = source.c_str();
-	glShaderSource(id, 1, &src, nullptr);
-	glCompileShader(id);
-
-	// TODO: Error handling
-	int result;
-	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-	if (result == GL_FALSE) {
-		int length;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-		char* err = (char*)alloca(length * sizeof(char));
-		glGetShaderInfoLog(id, length, &length, err);
-		IP_LOG("Failed to compile shader.", IP_ERROR_LOG);
-		IP_LOG(err, IP_ERROR_LOG);
-		std::cout << "Failed to compile shader.\n";
-		std::cout << err << std::endl;
-		glDeleteShader(id);
-		return 0;
-	}
-
-	return id;
-}
-
-static unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
-	unsigned int program = glCreateProgram();
-	unsigned int vShader = compileShader(GL_VERTEX_SHADER, vertexShader);
-	unsigned int fShader = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-	glAttachShader(program, vShader);
-	glAttachShader(program, fShader);
-	glLinkProgram(program);
-	glValidateProgram(program);
-
-	// TODO: Error handling
-
-	glDeleteShader(vShader);
-	glDeleteShader(fShader);
-
-	return program;
-}
-
 
 namespace IcePickRenderer {
 	static GLFWwindow* MainTargetWindow = nullptr;
@@ -165,37 +83,6 @@ namespace IcePickRenderer {
 		glDebugMessageControl(GL_DONT_CARE,	GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
 		VertexArrays.reserve(100);
-
-
-		float fov = glm::radians(45.0f);
-		float aspectRatio = MainTargetWindowSize[0] / (float)MainTargetWindowSize[1];
-		float nearClip = 0.1f;
-		float farClip = 100.0f;
-		float angle = glm::radians(45.0f);
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-		// Perspective matrix
-		glm::mat4 projection = glm::perspective(fov, aspectRatio, nearClip, farClip);
-		// View matrix
-		glm::mat4 view = glm::lookAt(cameraPos, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		// Initialise model matrix
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-		RenderViewProjectionMatrix = projection * view;
-		// MVP matrix
-		glm::mat4 mvp = projection * view * model;
-
-
-
-		//ShaderProgramSource source = parseShader("res/shaders/material.shader");
-		//BasicMaterialShaderID = CreateShader(source.vertexSource, source.fragmentSource);
-		//glUseProgram(BasicMaterialShaderID);
-
-		//unsigned int location = glGetUniformLocation(BasicMaterialShaderID, "u_MVP");
-		//glUniformMatrix4fv(location, 1, GL_FALSE, &mvp[0][0]);
-
-		//BasicMaterial = { BasicMaterialShaderID, 0, 0, 0, 0, 0 };
-
 		return true;
 	}
 

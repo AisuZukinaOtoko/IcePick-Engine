@@ -4,6 +4,21 @@ ScenePanel::ScenePanel() {
 	m_Title = "Scene Hierarchy";
 }
 
+void ScenePanel::SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback) {
+	SelectedEntityChangeCallback = callback;
+}
+
+void ScenePanel::SetSelectedEntity(entt::entity entity) {
+	m_SelectedEntity = entity;
+}
+
+void ScenePanel::OnUpdate(DeltaTime dt) {
+	if (m_EntitySelected) {
+		SelectedEntityChangeCallback(m_SelectedEntity);
+		m_EntitySelected = false;
+	}
+}
+
 
 void ScenePanel::ShowSceneHierarchy() {
 	auto& activeSceneRegistry = IcePick::GetActiveSceneRegistry();
@@ -22,7 +37,6 @@ void ScenePanel::ShowSceneHierarchy() {
 		if (ImGui::IsItemClicked()) {
 			m_SelectedEntity = entity;
 			m_EntitySelected = true;
-			IP_LOG("Entity selected.");
 		}
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
@@ -84,3 +98,4 @@ entt::entity ScenePanel::GetSelectedEntity() {
 ScenePanel::~ScenePanel() {
 
 }
+
