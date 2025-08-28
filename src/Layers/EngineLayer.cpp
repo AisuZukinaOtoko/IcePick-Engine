@@ -3,7 +3,10 @@
 #include "../LogSystem.h"
 #include "../Event Systems/Input.h"
 #include "../Scene Systems/SceneRegistry.h"
-#include "../Vendor/glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/quaternion.hpp"
+
 
 static IcePick::Input gameInput;
 
@@ -64,9 +67,8 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);
-		model = glm::rotate(model, glm::radians(EntityTransformComponent.Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(EntityTransformComponent.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(EntityTransformComponent.Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::quat q = glm::quat(glm::radians(EntityTransformComponent.Rotation));
+		model *= glm::toMat4(q);
 		model = glm::scale(model, EntityTransformComponent.Scale);
 		normalMatrix = glm::mat3(1.0f);
 		normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));

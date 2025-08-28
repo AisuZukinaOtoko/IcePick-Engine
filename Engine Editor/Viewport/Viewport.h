@@ -1,5 +1,6 @@
 #pragma once
 #include "imgui-docking/imgui.h"
+#include "imgui-docking/ImGuizmo.h"
 #include "EditorCamera.h"
 #include "../Event Systems/Event.h"
 #include "../Vendor/entt/entt.h"
@@ -27,5 +28,6 @@ private:
 	std::function<void(entt::entity)> SelectedEntityChangeCallback;
 	bool m_EntitySelected = false;
 	entt::entity m_SelectedEntity = entt::null;
-	void RenderEntityGuizmos();
+	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+	void RenderEntityGizmos();
 };

@@ -1,13 +1,18 @@
 #include "Viewport.h"
 #include "../Render Systems/Renderer.h"
+#include "../Event Systems/Input.h"
 #include "imgui-docking/imgui.h"
 #include "imgui-docking/imgui_impl_glfw.h"
 #include "imgui-docking/imgui_impl_opengl3.h"
-#include "imgui-docking/ImGuizmo.h"
 #include "../Scene Systems/SceneRegistry.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/quaternion.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "../LogSystem.h"
+
+static IcePick::Input keyState;
 
 Viewport::Viewport() {
 	m_ViewportSize = ImVec2(1920, 180);
@@ -37,6 +42,17 @@ void Viewport::OnUpdate(DeltaTime dt) {
 }
 
 void Viewport::OnViewportEvent(IcePick::Event& event) {
+	keyState.OnEvent(event);
+
+	if (m_SelectedEntity != entt::null) {
+		if (keyState.IsKeyPressed(IcePick::IP_KEY_1))
+			m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+		else if (keyState.IsKeyPressed(IcePick::IP_KEY_2))
+			m_GizmoOperation = ImGuizmo::OPERATION::ROTATE;
+		else if (keyState.IsKeyPressed(IcePick::IP_KEY_3))
+			m_GizmoOperation = ImGuizmo::OPERATION::SCALE;
+	}
+
 	if (m_ViewportRightClicked) {
 		m_EditorCamera.OnKeyPress(event.action, event.code);
 	}
@@ -51,7 +67,7 @@ void Viewport::Render(unsigned int frameBuffer) {
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (m_SelectedEntity != entt::null) {
-		RenderEntityGuizmos();
+		RenderEntityGizmos();
 	}
 
 
@@ -70,7 +86,7 @@ void Viewport::Render(unsigned int frameBuffer) {
 	ImGui::PopStyleVar();
 }
 
-void Viewport::RenderEntityGuizmos() {
+void Viewport::RenderEntityGizmos() {
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 	
@@ -79,21 +95,33 @@ void Viewport::RenderEntityGuizmos() {
 	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
 	glm::mat4 entityTransformMatrix = glm::mat4(1.0f);
 	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform.Position);
-	entityTransformMatrix = glm::rotate(entityTransformMatrix, glm::radians(entityTransform.Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	entityTransformMatrix = glm::rotate(entityTransformMatrix, glm::radians(entityTransform.Rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	entityTransformMatrix = glm::rotate(entityTransformMatrix, glm::radians(entityTransform.Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::quat q = glm::quat(glm::radians(entityTransform.Rotation));
+	entityTransformMatrix *= glm::toMat4(q);
 	entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransform.Scale);
 
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
 	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
 
 	ImGuizmo::Manipulate(
-		glm::value_ptr(cameraViewMatrix),      // view matrix
-		glm::value_ptr(cameraProjectionMatrix),// projection matrix
-		ImGuizmo::OPERATION::ROTATE,                  // operation (translate, rotate, scale)
-		ImGuizmo::LOCAL,                   // mode (local or world space)
-		glm::value_ptr(entityTransformMatrix)          // the matrix to manipulate
+		glm::value_ptr(cameraViewMatrix),
+		glm::value_ptr(cameraProjectionMatrix),
+		m_GizmoOperation,
+		ImGuizmo::LOCAL,
+		glm::value_ptr(entityTransformMatrix)
 	);
+
+	if (ImGuizmo::IsUsing()) {
+		glm::vec3 translation, scale, skew;
+		glm::vec4 perspective;
+		glm::quat rotation;
+
+		glm::decompose(entityTransformMatrix, scale, rotation, translation, skew, perspective);
+
+		entityTransform.Position = translation;
+		entityTransform.Scale = scale;
+		glm::vec3 euler = glm::eulerAngles(rotation);
+		entityTransform.Rotation = glm::degrees(euler);;
+	}
 
 }
 
