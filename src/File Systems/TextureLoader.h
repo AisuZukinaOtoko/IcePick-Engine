@@ -17,14 +17,17 @@ namespace IcePick {
 		UUID NewTextureFromScene(std::string texturePath, const aiScene* scene);
 		const Texture& GetTexture(UUID id);
 		const Texture& GetDefaultTexture();
+		const UUID GetDefaultTextureID();
 		void SetLoaderBasePath(std::filesystem::path filePath);
 		void UpdateTexture(UUID id, const Texture& other);
 		void CleanUpAfterLoad();
 	private:
 		UUID m_CachedTextureId = UUID::Unitialised();
+		UUID m_DefaultTextureId = UUID::Unitialised();
 		Texture m_CachedTexture;
-		std::filesystem::path m_DefaultTexturePath = "res/textures/DefaultTexture.png";
-		std::filesystem::path m_BaseFilePath = "";
+		const char* m_DefaultTextureRelativePath = "res/textures/DefaultTexture.png";
+		std::filesystem::path m_DefaultTexturePath;
+		std::filesystem::path m_BaseFilePath;
 		Texture m_DefaultTexture;
 		UUID RegisterTexture(const Texture& texture);
 		std::unordered_map<UUID, Texture, UUIDHasher> m_LoadedTextures;

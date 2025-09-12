@@ -155,6 +155,7 @@ namespace IcePick {
 	}
 
 	// Only called when loading a new material
+	// Unitialised material texture slots will not be sampled within the shader
 	void MaterialLoader::SetMaterialSampleBits(MaterialAsset& materialAsset, UUID defualtTextureId) {
 		if (materialAsset.AlbedoTexture != defualtTextureId)
 			materialAsset.SampleBitmask |= MaterialAsset::ALBEDO;

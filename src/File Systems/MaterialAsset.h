@@ -20,13 +20,11 @@ namespace IcePick {
 		UUID ShaderID = UUID::Unitialised();
 		unsigned int SampleBitmask = 0;
 
-		//glm::vec3 AmbientColour;
 		glm::vec4 AlbedoColour;
 		glm::vec3 SpecularColour;
 		float RoughnessValue = 0.0f;
 		float MetalValue = 0.0f;
 		float EmissiveValue = 0.0f;
-		//Material ConstructMaterial();
 	private:
 
 	};

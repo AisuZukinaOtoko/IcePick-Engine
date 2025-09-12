@@ -2,7 +2,7 @@
 #include <filesystem>
 
 AssetBrowser::AssetBrowser() {
-    m_CurrentBrowsingPath = "res/assets";
+    m_CurrentBrowsingPath = std::filesystem::canonical("res/assets");
 }
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {

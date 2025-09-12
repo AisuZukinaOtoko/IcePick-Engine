@@ -56,14 +56,26 @@ IcePick::UUID IcePick::AssetLoader::LoadSceneMaterial(const aiScene* scene, unsi
 	return m_MaterialLoader.NewMaterialFromScene(scene, materialIndex, m_TextureLoader);
 }
 
-void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& parent, const std::vector<unsigned int>& sceneMeshes, const aiScene* scene) {
+unsigned int IcePick::AssetLoader::GetMeshMaterialSlot(std::vector<UUID>& materialSlots, UUID meshMaterial) {
+	for (unsigned int i = 0; i < materialSlots.size(); i++) {
+		if (materialSlots[i] == meshMaterial)
+			return i;
+	}
+
+	materialSlots.push_back(meshMaterial);
+	return (unsigned int)materialSlots.size() - 1;
+}
+
+void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& parent, std::vector<UUID>& materialSlots, const aiScene* scene) {
 	MeshNode currentNode;
 	if (sceneNode->mNumMeshes > 0) {
 		currentNode.VertexArrayIDs.reserve(sceneNode->mNumMeshes);
 		for (int i = 0; i < sceneNode->mNumMeshes; i++) {
 			const unsigned int meshIndex = sceneNode->mMeshes[i];
 			currentNode.VertexArrayIDs.push_back(GetIndex(MESH_INDEX, sceneNode->mMeshes[i]));
-			currentNode.MaterialID = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
+			UUID nodeMaterialId = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
+			currentNode.MaterialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialId);
+			//currentNode.MaterialID = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
 		}
 	}
 
@@ -82,7 +94,7 @@ void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& p
 		return;
 	
 	for (int i = 0; i < sceneNode->mNumChildren; i++) {
-		ProcessSceneNode(sceneNode->mChildren[i], parent.Children.back(), sceneMeshes, scene);
+		ProcessSceneNode(sceneNode->mChildren[i], parent.Children.back(), materialSlots, scene);
 	}
 }
 
@@ -165,7 +177,7 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 	m_TextureLoader.SetLoaderBasePath(filePath.parent_path());
 	std::vector<unsigned int> sceneVertexArrays;
 	LoadModelMeshData(scene, sceneVertexArrays);
-	ProcessSceneNode(scene->mRootNode, returnMeshRendererComponent.RootMeshNode, sceneVertexArrays, scene);
+	ProcessSceneNode(scene->mRootNode, returnMeshRendererComponent.RootMeshNode, returnMeshRendererComponent.MaterialSlots, scene);
 	UpdateIndices(scene);
 	CleanUpAfterLoad();
 

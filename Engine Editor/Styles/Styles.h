@@ -13,7 +13,7 @@ public:
 		ICON_COUNT
 	};
 
-	unsigned int GetIconTexture(Icon icon);
+	unsigned int GetIconTexture(Icon icon) const;
 private:
 	unsigned int m_IconTextures[ICON_COUNT];
 };

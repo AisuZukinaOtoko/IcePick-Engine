@@ -21,8 +21,8 @@ namespace IcePick {
 	struct MeshNode {
 		glm::mat4 NodeTransform = glm::mat4(1.0f);
 		std::vector<unsigned int> VertexArrayIDs; // meshes
-		UUID MaterialID = UUID::Unitialised();
 		std::vector<MeshNode> Children;
+		unsigned int MaterialSlotIndex = (unsigned int)-1;
 	};
 
 	struct MeshRendererComponent {
@@ -30,6 +30,7 @@ namespace IcePick {
 		int MeshCount = 0;
 
 		std::filesystem::path MeshFilePath = "";
+		std::vector<UUID> MaterialSlots;
 		bool MeshLoaded = false;
 
 		bool MeshVisible = true;

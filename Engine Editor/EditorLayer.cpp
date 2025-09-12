@@ -64,7 +64,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_AssetBrowser.Render();
     m_StatisticsPanel.ShowStats();
     m_PropertiesPanel.SetDropFilePath(m_AssetBrowser.GetDragFilePath());
-    m_PropertiesPanel.SelectedProperties();
+    m_PropertiesPanel.SelectedProperties(m_Styles);
 
 
     ImGui::Render();

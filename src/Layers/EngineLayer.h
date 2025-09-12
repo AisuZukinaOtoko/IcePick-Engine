@@ -20,7 +20,7 @@ namespace IcePick {
 		FrameBuffer m_FrameBuffer;
 		AssetLoader m_AssetLoader;
 		void RenderEntityMeshes();
-		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform);
+		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots);
 		int temp_DeleteLater = 0;
 		Scene m_CurrentScene;
 	};

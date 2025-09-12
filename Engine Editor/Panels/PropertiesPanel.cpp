@@ -68,7 +68,7 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const fl
     ImGui::PopID();
 }
 
-void PropertiesPanel::SelectedProperties() {
+void PropertiesPanel::SelectedProperties(const Styles& styles) {
     ImGui::Begin(m_ID, nullptr, ImGuiWindowFlags_NoCollapse);
     PanelSetup();
 
@@ -77,7 +77,7 @@ void PropertiesPanel::SelectedProperties() {
         return;
     }
 
-    EntityProperties();
+    EntityProperties(styles);
 
     ImGui::End();
 }
@@ -94,7 +94,8 @@ void PropertiesPanel::SetDropFilePath(std::string filePath) {
     m_DropFilePath = filePath;
 }
 
-void PropertiesPanel::EntityProperties() {
+void PropertiesPanel::EntityProperties(const Styles& styles) {
+    ImVec2 windowSize = ImGui::GetWindowSize();
     using namespace IcePick;
     if (HasComponent<TagComponent>(m_SelectedEntity)) {
         TagComponent& tag = GetComponent<TagComponent>(m_SelectedEntity);
@@ -102,33 +103,71 @@ void PropertiesPanel::EntityProperties() {
     }
 
     if (HasComponent<TransformComponent>(m_SelectedEntity)) {
-        TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
-        Vec3Control("Position", transform.Position, 0.05);
-        Vec3Control("Rotation", transform.Rotation, 0.5);
-        Vec3Control("Scale", transform.Scale, 0.03);
+        if (ImGui::CollapsingHeader("Transform")) {
+            TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
+            Vec3Control("Position", transform.Position, 0.05);
+            Vec3Control("Rotation", transform.Rotation, 0.5);
+            Vec3Control("Scale", transform.Scale, 0.03);
+        }        
     }
 
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
         MeshRendererComponent& meshRenderer = GetComponent<MeshRendererComponent>(m_SelectedEntity);
-        //TextProperty("Vertex array ID", std::to_string(meshRenderer.MeshVertexArrayRegistryIndex).c_str());
-        TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
-        CheckBox("Visible", &meshRenderer.MeshVisible);
-        CheckBox("Cast shadows", &meshRenderer.CastShadows);
-        CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
 
-        ImGui::Text("Drop an asset here!");
-        ImGui::NextColumn();
-        ImGui::ImageButton("##Hello", (void*)1, ImVec2(20, 20), ImVec2(0, 1), ImVec2(1, 0));
-        if (ImGui::BeginDragDropTarget()) {            
-            ImGui::Text("Dropping something");
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                std::filesystem::path droppedAssetPath(m_DropFilePath);
-                meshRenderer.MeshFilePath = droppedAssetPath;
-                meshRenderer.MeshLoaded = false;
-                IP_LOG(m_DropFilePath.c_str());
+        if (ImGui::CollapsingHeader("Mesh")) {
+            TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
+            CheckBox("Visible", &meshRenderer.MeshVisible);
+            CheckBox("Cast shadows", &meshRenderer.CastShadows);
+            CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
+
+            ImGui::Text("Drop an asset here!");
+            ImGui::NextColumn();
+            ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
+            if (ImGui::BeginDragDropTarget()) {
+                ImGui::Text("Dropping something");
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+                    std::filesystem::path droppedAssetPath(m_DropFilePath);
+                    meshRenderer.MeshFilePath = droppedAssetPath;
+                    meshRenderer.MeshLoaded = false;
+                    IP_LOG(m_DropFilePath.c_str());
+                }
+                ImGui::EndDragDropTarget();
             }
-            ImGui::EndDragDropTarget();
         }
+
+        if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials")) {
+            ImGui::BeginChild("MaterialScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+            for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
+                ImGui::Separator();
+                ImGui::PushID(std::to_string(i).c_str());
+                ImVec2 cursorBegin = ImGui::GetCursorScreenPos();
+
+                ImGui::Columns(2);
+                ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::NextColumn();
+                std::string materialLabel = "Material: " + std::to_string(i);
+                ImGui::Text(materialLabel.c_str());
+
+                ImVec2 cursorEnd = ImGui::GetCursorPos();
+                ImVec2 areaSize = ImVec2(cursorEnd.x - cursorBegin.x, cursorEnd.y - cursorBegin.y);
+
+                ImGui::Columns(1);
+                ImGui::SetCursorScreenPos(cursorBegin);
+                ImGui::InvisibleButton("##AreaButton", ImVec2(windowSize.x, 30));
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+                        std::filesystem::path droppedAssetPath(m_DropFilePath);
+                        meshRenderer.MaterialSlots[i] = UUID::Unitialised();
+                        IP_LOG(m_DropFilePath.c_str(), IP_WARN_LOG);
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImGui::PopID();
+            }
+            ImGui::EndChild();
+        }        
     }
 
     if (HasComponent<MaterialComponent>(m_SelectedEntity)) {

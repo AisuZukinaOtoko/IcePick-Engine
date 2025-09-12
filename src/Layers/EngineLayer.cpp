@@ -74,17 +74,18 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 		normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
 
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
-		RenderMeshNode(EntityMeshRendererComponent.RootMeshNode, model);
+		RenderMeshNode(EntityMeshRendererComponent.RootMeshNode, model, EntityMeshRendererComponent.MaterialSlots);
 	}
 
 }
 
-void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform) {
+void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots) {
 	glm::mat4 meshWorldTransform = parentTransform * parent.NodeTransform;
 	for (unsigned int vertexArrayID : parent.VertexArrayIDs) {
 		MeshComponent mesh = { vertexArrayID, -1, MeshComponent::STATIC };
 
-		const Material& material = m_AssetLoader.GetMaterial(parent.MaterialID);
+		UUID meshMaterialId = (parent.MaterialSlotIndex != -1) ? materialSlots[parent.MaterialSlotIndex] : UUID::Unitialised();
+		const Material& material = m_AssetLoader.GetMaterial(meshMaterialId);
 
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
@@ -92,7 +93,7 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 	}
 
 	for (const MeshNode& meshNode : parent.Children) {
-		RenderMeshNode(meshNode, meshWorldTransform);
+		RenderMeshNode(meshNode, meshWorldTransform, materialSlots);
 	}
 }
 

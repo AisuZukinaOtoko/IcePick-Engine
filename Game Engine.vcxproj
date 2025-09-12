@@ -157,6 +157,7 @@
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
+    <ClCompile Include="src\File Systems\SceneLoader.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
     <ClCompile Include="src\File Systems\TextureLoader.cpp" />
     <ClCompile Include="src\Layers\EngineAPI.cpp" />
@@ -360,6 +361,7 @@
     <ClInclude Include="src\File Systems\AssetLoader.h" />
     <ClInclude Include="src\File Systems\MaterialAsset.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
+    <ClInclude Include="src\File Systems\SceneLoader.h" />
     <ClInclude Include="src\File Systems\ShaderLoader.h" />
     <ClInclude Include="src\File Systems\TextureLoader.h" />
     <ClInclude Include="src\Layers\EngineAPI.h" />

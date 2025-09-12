@@ -3,12 +3,17 @@
 
 namespace IcePick {
 	TextureLoader::TextureLoader()
-	: m_DefaultTexture(m_DefaultTexturePath.string()),
+	: m_DefaultTexture(m_DefaultTextureRelativePath),
 	m_CachedTexture(m_DefaultTexture) {
-		m_CachedTexturePaths.insert({ m_DefaultTexturePath, UUID::Unitialised() });
+		m_DefaultTexturePath = std::filesystem::canonical(m_DefaultTextureRelativePath);
+		m_DefaultTextureId = UUID();
 	}
 
 	UUID TextureLoader::RegisterTexture(const Texture& texture)	{
+		if (!texture.IsValid()) {
+			return m_DefaultTextureId;
+		}
+
 		UUID textureId;
 		m_LoadedTextures.insert({ textureId, texture });
 		return textureId;
@@ -16,8 +21,10 @@ namespace IcePick {
 
 	UUID TextureLoader::NewTextureFromFile(std::filesystem::path texturePath) {
 		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath); // resolve symlinks and relative paths.
-		auto iterator = m_CachedTexturePaths.find(texturePath);
-		
+		if (texturePath == m_DefaultTexturePath)
+			return m_DefaultTextureId;
+
+		auto iterator = m_CachedTexturePaths.find(texturePath);		
 		// Texture has already been loaded.
 		if (iterator != m_CachedTexturePaths.end()) {
 			return iterator->second;
@@ -69,7 +76,7 @@ namespace IcePick {
 	}
 
 	const Texture& TextureLoader::GetTexture(UUID id) {
-		if (id == UUID::Unitialised())
+		if (id == UUID::Unitialised() || id == m_DefaultTextureId)
 			return m_DefaultTexture;
 
 		if (id == m_CachedTextureId)
@@ -88,6 +95,10 @@ namespace IcePick {
 
 	const Texture& TextureLoader::GetDefaultTexture() {
 		return m_DefaultTexture;
+	}
+
+	const UUID TextureLoader::GetDefaultTextureID()	{
+		return m_DefaultTextureId;
 	}
 
 	void TextureLoader::SetLoaderBasePath(std::filesystem::path filePath) {

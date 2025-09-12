@@ -30,6 +30,7 @@ namespace IcePick {
 		inline unsigned int GetIndex(IndexType indexType, unsigned int index);
 		void UpdateIndices(const aiScene* scene);
 		UUID LoadSceneMaterial(const aiScene* scene, unsigned int materialIndex);
+		unsigned int GetMeshMaterialSlot(std::vector<UUID>& materialSlots, UUID meshMaterial);
 		void CleanUpAfterLoad();
 		std::unordered_map<std::filesystem::path, MeshRendererComponent> m_loadedAssetPathToMeshRenderer;
 
@@ -40,7 +41,7 @@ namespace IcePick {
 
 		unsigned int m_RunningIndices[INDEX_COUNT];
 
-		void ProcessSceneNode(const aiNode* sceneNode, MeshNode& parent, const std::vector<unsigned int>& sceneMeshes, const aiScene* scene);
+		void ProcessSceneNode(const aiNode* sceneNode, MeshNode& parent, std::vector<UUID>& materialSlots, const aiScene* scene);
 		void LoadModelMeshData(const aiScene* scene, std::vector<unsigned int>& sceneVertexArrays);
 	};
 }

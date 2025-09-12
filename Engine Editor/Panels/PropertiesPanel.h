@@ -8,14 +8,14 @@ class PropertiesPanel {
 public:
 	PropertiesPanel();
 	~PropertiesPanel() = default;
-	void SelectedProperties();
+	void SelectedProperties(const Styles& styles);
 	void SetColumnWidth(float newWidth);
 	void SetSelectedEntity(entt::entity entity);
 
-	void EntityProperties();
 	void SetDropFilePath(std::string filePath);
 private:
 	void PanelSetup();
+	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
 	void TextProperty(const char* label, const char* property);
 	void FloatSlider(const char* label, float* value, float min, float max);

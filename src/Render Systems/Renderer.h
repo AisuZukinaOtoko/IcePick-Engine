@@ -7,7 +7,6 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "FrameBuffer.h"
-#include "../Scene Systems/Components.h"
 #include "../Vendor/imgui-docking/imgui.h"
 #include "../Vendor/glm/glm.hpp"
 #include "Materials.h"
@@ -16,12 +15,15 @@
 void GLCheckErrors();
 void GLClearErrors();
 
+namespace  IcePick {
+	struct MeshComponent;
+};
+
 namespace IcePickRenderer {
 	bool InitRenderer();
 	void TerminateRenderer();
 	void NewFrame();
 	void EndFrame();
-	//void CreateShaderPogram(std::string shaderSource);
 	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix, const IcePick::Material& material);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
@@ -36,7 +38,5 @@ namespace IcePickRenderer {
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
 	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
 	NewVertexArrayData AddVertexArray();
-	//bool AddGeometry(IcePick::Mesh& mesh);
-	//VertexArray& AddVertexArray();
 }
 

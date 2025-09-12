@@ -39,6 +39,7 @@ void Texture::SetTextureFormats() {
 
 void Texture::UploadTextureData() {
 	glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_LocalFormat, GL_UNSIGNED_BYTE, m_LocalBuffer);
+	m_TextureValid = true;
 }
 
 Texture::Texture(unsigned char* data, int width, int height, int numChannels) {
@@ -112,6 +113,10 @@ void Texture::Bind(unsigned int slot = 0) const {
 
 void Texture::Unbind(){
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+bool Texture::IsValid() const {
+	return m_TextureValid;
 }
 
 int Texture::GetTextureID() {

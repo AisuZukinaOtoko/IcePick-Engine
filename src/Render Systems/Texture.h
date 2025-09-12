@@ -15,6 +15,7 @@ public:
 
 	void Bind(unsigned int slot /*= 0*/) const;
 	void Unbind();
+	bool IsValid() const;
 	void Destroy();
 
 	// ID of the texture asset
@@ -36,4 +37,5 @@ private:
 	int m_NumChannels = 0; // bytes per pixel
 	GLuint m_InternalFormat = GL_RGBA8;
 	GLuint m_LocalFormat = GL_RGBA;
+	bool m_TextureValid = false;
 };

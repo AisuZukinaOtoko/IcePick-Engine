@@ -9,7 +9,7 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_OBJ_FILE] = engineAPI.NewTexture("res/textures/icons/obj_icon.png");
 }
 
-unsigned int Styles::GetIconTexture(Icon icon) {
+unsigned int Styles::GetIconTexture(Icon icon) const {
 	IP_ASSERT(icon != ICON_COUNT, "Invalid icon.");
 	return m_IconTextures[icon];
 }
