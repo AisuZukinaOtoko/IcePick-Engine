@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "EngineLayer.h"
-#include "../LogSystem.h"
 
 namespace IcePick {
 	class EngineAPI {
@@ -13,10 +12,11 @@ namespace IcePick {
 
 		unsigned int NewTexture(std::filesystem::path assetPath);
 
+		void SetRenderTargetDefault();
+		void SetRenderTargetFrameBuffer();
+
 		void SayHello() {
-			if (m_Engine) {
-				IP_LOG("Hello from the Engine API.");
-			}
+			
 		}
 	private:
 		std::shared_ptr<EngineLayer> m_Engine;

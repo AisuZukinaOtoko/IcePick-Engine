@@ -24,6 +24,9 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 	temp_DeleteLater++;
 }
 
+void IcePick::EngineLayer::OnNewFrame() {
+	m_FrameBuffer.Clear();
+}
 
 void IcePick::EngineLayer::OnEvent(Event& event) {
 
@@ -39,12 +42,19 @@ unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePa
 	return m_AssetLoader.LoadTexture(texturePath);
 }
 
-void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
+void IcePick::EngineLayer::SetRenderTargetDefault() {
+	m_FrameBuffer.UnBind();
+}
+
+void IcePick::EngineLayer::SetRenderTargetFrameBuffer() {
 	m_FrameBuffer.Bind();
+}
+
+void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
+	SetRenderTargetFrameBuffer();
 	m_CurrentScene.OnPreRender();
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
-	m_FrameBuffer.UnBind();
 }
 
 void IcePick::EngineLayer::RenderEntityMeshes() {

@@ -81,7 +81,11 @@ namespace IcePick {
 	}
 
 	void ShaderLoader::ShutDown() {
-
+		for (auto iterator = m_LoadedShaders.begin(); iterator != m_LoadedShaders.end(); ++iterator) {
+			iterator->second.Destroy();
+		}
+		m_LoadedShaders.clear();
+		m_LoadedShaderPaths.clear();
 	}
 
 	ShaderLoader::~ShaderLoader() {

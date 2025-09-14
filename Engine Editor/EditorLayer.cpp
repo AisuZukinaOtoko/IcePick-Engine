@@ -46,7 +46,7 @@ void IcePick::EditorLayer::OnEvent(Event& event) {
 }
 
 void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind default render target
+    m_EngineAPI.SetRenderTargetDefault();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -69,6 +69,5 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

@@ -57,6 +57,9 @@ void Engine::Run() {
 		glfwPollEvents();
 
 		IcePickRenderer::NewFrame();
+		for (auto& layer : IP_LayerStack.m_Layers) {
+			layer->OnNewFrame();
+		}
 
 		for (auto& layer : IP_LayerStack.m_Layers) {
 			layer->OnUpdate(deltaTime);

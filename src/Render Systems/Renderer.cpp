@@ -54,7 +54,7 @@ namespace IcePickRenderer {
 			return false;
 
 		glfwMakeContextCurrent(MainTargetWindow);
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 		glfwMaximizeWindow(MainTargetWindow);
 		glfwGetWindowSize(MainTargetWindow, &MainTargetWindowSize[0], &MainTargetWindowSize[1]);
 		IP_ASSERT((MainTargetWindowSize[0] != 0 && MainTargetWindowSize[1] != 0), "Invalid window size");
@@ -87,11 +87,6 @@ namespace IcePickRenderer {
 	}
 
 	void NewFrame() {
-		// TODO fix this
-		glBindFramebuffer(GL_FRAMEBUFFER, 1);
-		glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

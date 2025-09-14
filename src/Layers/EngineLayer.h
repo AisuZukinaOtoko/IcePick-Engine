@@ -13,9 +13,12 @@ namespace IcePick {
 		void OnDetach() override;
 
 		void OnEvent(Event& event) override;
+		void OnNewFrame() override;
 		void OnRender(RenderPayload& payload) override;
 
 		unsigned int CreateTexture(std::filesystem::path assetPath);
+		void SetRenderTargetDefault();
+		void SetRenderTargetFrameBuffer();
 	private:
 		FrameBuffer m_FrameBuffer;
 		AssetLoader m_AssetLoader;

@@ -13,6 +13,7 @@
 #include "../LogSystem.h"
 
 static IcePick::Input keyState;
+static int temp = 9;
 
 Viewport::Viewport() {
 	m_ViewportSize = ImVec2(1920, 180);
@@ -44,6 +45,13 @@ void Viewport::OnUpdate(DeltaTime dt) {
 void Viewport::OnViewportEvent(IcePick::Event& event) {
 	keyState.OnEvent(event);
 
+	if (keyState.IsKeyPressed(IcePick::IP_KEY_P)) {
+		temp++;
+	}
+	if (keyState.IsKeyPressed(IcePick::IP_KEY_O)) {
+		temp--;
+	}
+
 	if (m_SelectedEntity != entt::null) {
 		if (keyState.IsKeyPressed(IcePick::IP_KEY_1))
 			m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -58,12 +66,17 @@ void Viewport::OnViewportEvent(IcePick::Event& event) {
 	}
 }
 
-void Viewport::Render(unsigned int frameBuffer) {
+void Viewport::Render(unsigned int renderTexture) {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::Begin(m_ID);
+
 	m_WindowPosition = ImGui::GetWindowPos();
 	m_ViewportSize = ImGui::GetContentRegionAvail();
-	ImGui::Image((void*)(intptr_t)frameBuffer, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImVec2 regionMin = ImGui::GetWindowContentRegionMin();
+	m_WindowPosition = ImVec2(m_WindowPosition.x + regionMin.x, m_WindowPosition.y + regionMin.y);
+
+	//IP_LOG(std::to_string(temp));
+	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (m_SelectedEntity != entt::null) {
@@ -71,7 +84,7 @@ void Viewport::Render(unsigned int frameBuffer) {
 	}
 
 
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && io.WantCaptureMouse) {
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
 		m_ViewportRightClicked = true;
 		IcePickRenderer::RequestCursorLock();
 	}

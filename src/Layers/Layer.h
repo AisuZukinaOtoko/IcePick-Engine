@@ -19,6 +19,7 @@ namespace IcePick {
 		virtual void OnDetach() = 0;
 
 		virtual void OnEvent(Event& event) {};
+		virtual void OnNewFrame() {};
 		virtual void OnRender(RenderPayload& payload) {};
 		bool m_Active = true;
 	private:

@@ -1,6 +1,5 @@
 #pragma once
 #include "../Scene Systems/UUID.h"
-//#include "../Render Systems/Materials.h"
 #include "glm/glm.hpp"
 
 namespace IcePick {
@@ -11,11 +10,12 @@ namespace IcePick {
 			ROUGHNESS = 0b1 << 2, METTALIC = 0b1 << 3,
 			EMISSIVE = 0b1 << 4
 		};
-		UUID AlbedoTexture = UUID::Unitialised();;
-		UUID NormalTexture = UUID::Unitialised();;
-		UUID RoughnessTexture = UUID::Unitialised();;
-		UUID MetallicTexture = UUID::Unitialised();;
-		UUID EmissiveTexture = UUID::Unitialised();;
+
+		UUID AlbedoTexture = UUID::Unitialised();
+		UUID NormalTexture = UUID::Unitialised();
+		UUID RoughnessTexture = UUID::Unitialised();
+		UUID MetallicTexture = UUID::Unitialised();
+		UUID EmissiveTexture = UUID::Unitialised();
 
 		UUID ShaderID = UUID::Unitialised();
 		unsigned int SampleBitmask = 0;

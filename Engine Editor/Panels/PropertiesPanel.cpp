@@ -1,6 +1,7 @@
 #include "PropertiesPanel.h"
 #include "PanelCommon.h"
 #include "../Scene Systems/SceneRegistry.h"
+#include <iostream>
 #include <filesystem>
 
 PropertiesPanel::PropertiesPanel() {
@@ -122,7 +123,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
             ImGui::Text("Drop an asset here!");
             ImGui::NextColumn();
-            ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
             if (ImGui::BeginDragDropTarget()) {
                 ImGui::Text("Dropping something");
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
@@ -143,7 +144,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                 ImVec2 cursorBegin = ImGui::GetCursorScreenPos();
 
                 ImGui::Columns(2);
-                ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
                 ImGui::NextColumn();
                 std::string materialLabel = "Material: " + std::to_string(i);
                 ImGui::Text(materialLabel.c_str());
