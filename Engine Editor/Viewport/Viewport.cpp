@@ -13,7 +13,7 @@
 #include "../LogSystem.h"
 
 static IcePick::Input keyState;
-static int temp = 9;
+static int temp = 0;
 
 Viewport::Viewport() {
 	m_ViewportSize = ImVec2(1920, 180);
@@ -76,7 +76,7 @@ void Viewport::Render(unsigned int renderTexture) {
 	m_WindowPosition = ImVec2(m_WindowPosition.x + regionMin.x, m_WindowPosition.y + regionMin.y);
 
 	//IP_LOG(std::to_string(temp));
-	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)(renderTexture + temp), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (m_SelectedEntity != entt::null) {

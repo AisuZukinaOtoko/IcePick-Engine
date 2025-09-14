@@ -14,6 +14,7 @@ namespace IcePick {
 
 	void ShaderProgram::CompileShaderProgram(const ShaderSource& programSource) {
 		m_ShaderProgramID = glCreateProgram();
+		IP_LOG("Created shader program ID: " + std::to_string(m_ShaderProgramID));
 		unsigned int vertexShaderId = CompilerShader(GL_VERTEX_SHADER, programSource.VertexShaderSource);
 		unsigned int fragmentShaderId = CompilerShader(GL_FRAGMENT_SHADER, programSource.FragmentShaderSource);
 		

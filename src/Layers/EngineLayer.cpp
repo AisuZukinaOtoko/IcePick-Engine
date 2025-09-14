@@ -97,6 +97,8 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 		UUID meshMaterialId = (parent.MaterialSlotIndex != -1) ? materialSlots[parent.MaterialSlotIndex] : UUID::Unitialised();
 		const Material& material = m_AssetLoader.GetMaterial(meshMaterialId);
 
+		//IP_LOG("Material shader: " + std::to_string(material.ShaderID));
+
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
 		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, material);

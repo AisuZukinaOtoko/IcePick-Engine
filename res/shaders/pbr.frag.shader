@@ -1,7 +1,7 @@
 #version 330 core
 layout(location = 0) out vec4 OutColour;
-layout(location = 1) out vec3 OutNormal;
-layout(location = 2) out uvec2 OutEntityMat;
+layout(location = 1) out vec4 OutNormal;
+layout(location = 2) out uvec4 OutEntityMat;
 
 const int SAMPLE_ALBEDO = 1 << 0;
 const int SAMPLE_NORMAL = 1 << 1;
@@ -56,7 +56,7 @@ void main() {
 
     OutColour = TempColour();
     OutColour = OutputColour;
-    OutNormal = v_Normal;
-    OutEntityMat = uvec2(0, 0);
+    OutNormal = vec4(v_Normal, 1.0f);
+    OutEntityMat = uvec4(1, 0, 0, 0);
     //gl_FragColor = OutputColour;
 };

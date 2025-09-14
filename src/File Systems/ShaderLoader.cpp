@@ -12,6 +12,8 @@ namespace IcePick {
 
 		ShaderProgram pbrShader;
 		//pbrShader
+		IP_LOG(shaderSource.VertexShaderSource);
+		IP_LOG("---------------------------------", IP_WARN_LOG);
 		IP_LOG(shaderSource.FragmentShaderSource);
 		m_DefaultShaderPrograms[PBR_SHADER_PROGRAM].CompileShaderProgram(shaderSource);
 	}

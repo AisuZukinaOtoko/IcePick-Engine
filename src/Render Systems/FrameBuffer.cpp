@@ -36,17 +36,17 @@ bool FrameBuffer::Init() {
 
 	// Normal texture
 	glBindTexture(GL_TEXTURE_2D, m_AttachmentIDs[NORMAL_TEXTURE]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, windowSize.x, windowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, windowSize.x, windowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (unsigned int)NORMAL_TEXTURE, GL_TEXTURE_2D, m_AttachmentIDs[NORMAL_TEXTURE], 0);
 	
 	// Entity and material slot texture
-	/*glBindTexture(GL_TEXTURE_2D, m_AttachmentIDs[ENTITY_MAT_TEXTURE]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, windowSize.x, windowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, m_AttachmentIDs[ENTITY_MAT_TEXTURE]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32UI, windowSize.x, windowSize.y, 0, GL_RG_INTEGER, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (unsigned int)ENTITY_MAT_TEXTURE, GL_TEXTURE_2D, m_AttachmentIDs[ENTITY_MAT_TEXTURE], 0);*/
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (unsigned int)ENTITY_MAT_TEXTURE, GL_TEXTURE_2D, m_AttachmentIDs[ENTITY_MAT_TEXTURE], 0);
 	
 	// Depth render buffer attachment. Memory optimizations. Can't be sampled.
 	glGenRenderbuffers(1, &m_DepthTexID);
@@ -60,9 +60,6 @@ bool FrameBuffer::Init() {
 		GL_COLOR_ATTACHMENT0 + ENTITY_MAT_TEXTURE,
 	};
 	glDrawBuffers(ATTACHMENT_COUNT, attachments);
-
-	//GLenum attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	//glDrawBuffers(2, attachments);
 
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -84,11 +81,7 @@ void FrameBuffer::UnBind() {
 
 void FrameBuffer::Clear() {
 	Bind();
-
-	//glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
 	glClear(GL_DEPTH_BUFFER_BIT);
-
-	//return;
 
 	GLfloat colourClearColour[4] = { 0.6f, 0.8f, 1.0f, 1.0f };
 	GLfloat normalClearColour[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -107,7 +100,6 @@ unsigned int FrameBuffer::GetID() const {
 }
 
 unsigned int FrameBuffer::GetColourTextureID() const {
-	//return m_ColourTexID;
 	return m_AttachmentIDs[COLOUR_TEXTURE];
 }
 

@@ -12,11 +12,13 @@ void Toolbar::Render() {
             }
             ImGui::EndMenu();
         }
-        /*if (ImGui::BeginMenu("Edit")) {
-            if (ImGui::MenuItem("Undo")) {}
-            if (ImGui::MenuItem("Redo")) {}
+
+        if (ImGui::BeginMenu("View")) {
+            //ImGui::Chec
+            //if (ImGui::MenuItem("Undo")) {}
+            //if (ImGui::MenuItem("Redo")) {}
             ImGui::EndMenu();
-        }*/
+        }
         ImGui::EndMainMenuBar();
     }
 }
