@@ -6,20 +6,18 @@
 namespace IcePick {
 
 	ShaderLoader::ShaderLoader() {
-		ShaderSource shaderSource;
-		shaderSource.VertexShaderSource = LoadFile("res/shaders/pbr.vert.shader", 0);
-		shaderSource.FragmentShaderSource = LoadFile("res/shaders/pbr.frag.shader", 0);
-
-		ShaderProgram pbrShader;
-		//pbrShader
-		IP_LOG(shaderSource.VertexShaderSource);
-		IP_LOG("---------------------------------", IP_WARN_LOG);
-		IP_LOG(shaderSource.FragmentShaderSource);
-		m_DefaultShaderPrograms[PBR_SHADER_PROGRAM].CompileShaderProgram(shaderSource);
+	
 	}
 
-	void ShaderLoader::RegisterShaderProgram(ShaderProgram shaderProgram) {
+	void ShaderLoader::SetDefaultShaderProgram(ShaderProgram shaderProgram)	{
+		m_DefaultShaderProgram = shaderProgram;
+		m_CachedShaderProgram = m_DefaultShaderProgram;
+	}
 
+	UUID ShaderLoader::RegisterShaderProgram(ShaderProgram shaderProgram) {
+		UUID shaderId;
+		m_LoadedShaders.insert({ shaderId, shaderProgram });
+		return shaderId;
 	}
 
 	std::string ShaderLoader::LoadFile(std::filesystem::path filePath, unsigned int includeDepth) {
@@ -66,20 +64,53 @@ namespace IcePick {
 		return shaderStream.str();
 	}
 
-	UUID ShaderLoader::LoadShaderProgram(std::filesystem::path shaderPath) {
-		return UUID();
+	UUID ShaderLoader::CreateShaderProgram(ShaderSource& shaderSource) {
+		ShaderProgram shader;
+		shader.CompileShaderProgram(shaderSource);
+
+		if (!shader.IsValid()) {
+			shader.Destroy();
+			return UUID::Unitialised();
+		}
+
+		return RegisterShaderProgram(shader);
 	}
 
-	void ShaderLoader::ReloadShaderProgram(UUID shaderId) {
+	void ShaderLoader::ReloadShaderProgram(UUID shaderId, ShaderSource& shaderSource) {
+		auto iterator = m_LoadedShaders.find(shaderId);
 
+		// Shader program not found, so do not reload shader and do not create a new shader
+		if (iterator == m_LoadedShaders.end())
+			return;
+
+		ShaderProgram newShader;
+		newShader.CompileShaderProgram(shaderSource);
+
+		// Keep old shader if new shader is invalid
+		if (!newShader.IsValid()) {
+			newShader.Destroy();
+			return;
+		}
+		
+		iterator->second.Destroy();
+		iterator->second = newShader;
 	}
 
 	ShaderProgram ShaderLoader::GetShaderProgram(UUID shaderId) {
-		return ShaderProgram();
-	}
+		if (shaderId == UUID::Unitialised())
+			return m_DefaultShaderProgram;
 
-	ShaderProgram ShaderLoader::GetDefaultShaderProgram(DefaultShaderTypes shaderType) {
-		return m_DefaultShaderPrograms[shaderType];
+		if (shaderId == m_CachedShaderProgramId)
+			return m_CachedShaderProgram;
+
+		auto iterator = m_LoadedShaders.find(shaderId);
+
+		if (iterator == m_LoadedShaders.end())
+			return m_DefaultShaderProgram;
+
+		m_CachedShaderProgramId = shaderId;
+		m_CachedShaderProgram = iterator->second;
+		return iterator->second;
 	}
 
 	void ShaderLoader::ShutDown() {

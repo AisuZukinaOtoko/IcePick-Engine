@@ -19,6 +19,7 @@ namespace IcePick {
 		unsigned int CreateTexture(std::filesystem::path assetPath);
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
+		void ReloadShaders();
 	private:
 		FrameBuffer m_FrameBuffer;
 		AssetLoader m_AssetLoader;

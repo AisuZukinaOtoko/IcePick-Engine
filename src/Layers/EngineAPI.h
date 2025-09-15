@@ -14,10 +14,8 @@ namespace IcePick {
 
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
+		void ReloadShaders();
 
-		void SayHello() {
-			
-		}
 	private:
 		std::shared_ptr<EngineLayer> m_Engine;
 	};

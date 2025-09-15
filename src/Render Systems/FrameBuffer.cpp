@@ -17,14 +17,6 @@ bool FrameBuffer::Init() {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
 
-	/*glGenTextures(1, &m_ColourTexID);
-	glBindTexture(GL_TEXTURE_2D, m_ColourTexID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, windowSize.x, windowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColourTexID, 0);*/
-
-	//glGenTextures(1, &m_AttachmentIDs[COLOUR_TEXTURE]);
 	glGenTextures(ATTACHMENT_COUNT, m_AttachmentIDs);
 
 	// Colour texture

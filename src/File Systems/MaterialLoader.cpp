@@ -4,7 +4,7 @@
 
 namespace IcePick {
 	MaterialLoader::MaterialLoader() {
-		m_DefaultMaterial.ShaderID = 1;
+		m_DefaultMaterial.ShaderID = UUID::Unitialised();
 		m_DefaultMaterial.AlbedoMap = 1;
 		m_DefaultMaterial.NormalMap = 1;
 		m_DefaultMaterial.RoughnessMap = 1;
@@ -12,12 +12,12 @@ namespace IcePick {
 		m_DefaultMaterial.EmissiveMap = 1;
 		m_DefaultMaterial.AlbedoColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 		m_DefaultMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
-		m_DefaultMaterial.SampleBitmask = Material::ALBEDO;
+		m_DefaultMaterial.SampleBitmask = 0;
 
 		m_CachedMaterial = m_DefaultMaterial;
 	}
 
-	void MaterialLoader::ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader) const {
+	void MaterialLoader::ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader, ShaderLoader& shaderLoader) const {
 		// Retrieving Texture IDs is expensive, so the check is necessary.
 		// We don't reset the mat.TextureID in case the user wants to re-activate(sample) it
 
@@ -52,7 +52,8 @@ namespace IcePick {
 			result.EmissiveMap = textureLoader.GetDefaultTexture().GetID();
 
 		result.SampleBitmask = mat.SampleBitmask;
-		result.ShaderID = mat.ShaderID;
+		ShaderProgram materialShader = shaderLoader.GetShaderProgram(mat.ShaderID);
+		result.ShaderID = materialShader.GetID();
 
 		result.AlbedoColour = mat.AlbedoColour;
 		result.SpecularColour = mat.SpecularColour;
@@ -67,7 +68,7 @@ namespace IcePick {
 		return materialId;
 	}
 
-	Material MaterialLoader::GetMaterial(UUID id, TextureLoader& textureLoader) {
+	Material MaterialLoader::GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader) {
 		if (id == UUID::Unitialised())
 			return m_DefaultMaterial;
 
@@ -82,10 +83,18 @@ namespace IcePick {
 		}
 
 		Material resultMaterial;
-		ConstructMaterial(iterator->second, resultMaterial, textureLoader);
+		ConstructMaterial(iterator->second, resultMaterial, textureLoader, shaderLoader);
 		m_CachedMaterial = resultMaterial;
 		return resultMaterial;
 		
+	}
+
+	void MaterialLoader::SetMaterialShaderID(UUID materialShaderId)	{
+		m_MaterialShaderId = materialShaderId;
+	}
+
+	void MaterialLoader::SetDefaultMaterial(Material defaultMaterial) {
+		m_DefaultMaterial = defaultMaterial;
 	}
 
 	void MaterialLoader::UpdateMaterial(const Material& other) {
@@ -139,7 +148,7 @@ namespace IcePick {
 		aiMaterial* mat = scene->mMaterials[materialIndex];
 		
 		MaterialAsset newMaterial;
-		newMaterial.ShaderID = 1;
+		newMaterial.ShaderID = m_MaterialShaderId;
 		newMaterial.AlbedoTexture = GetSceneMaterialTexture(scene, aiTextureType_DIFFUSE, mat, textureLoader);
 		newMaterial.NormalTexture = GetSceneMaterialTexture(scene, aiTextureType_NORMALS, mat, textureLoader);
 		newMaterial.RoughnessTexture = GetSceneMaterialTexture(scene, aiTextureType_SHININESS, mat, textureLoader);

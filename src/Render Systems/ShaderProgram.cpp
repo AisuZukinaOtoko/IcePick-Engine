@@ -10,11 +10,15 @@ namespace IcePick {
 
 	ShaderProgram::ShaderProgram(const ShaderProgram& other) {
 		m_ShaderProgramID = other.m_ShaderProgramID;
+		m_ShaderProgramValid = other.m_ShaderProgramValid;
+	}
+
+	unsigned int ShaderProgram::GetID() {
+		return m_ShaderProgramID;
 	}
 
 	void ShaderProgram::CompileShaderProgram(const ShaderSource& programSource) {
 		m_ShaderProgramID = glCreateProgram();
-		IP_LOG("Created shader program ID: " + std::to_string(m_ShaderProgramID));
 		unsigned int vertexShaderId = CompilerShader(GL_VERTEX_SHADER, programSource.VertexShaderSource);
 		unsigned int fragmentShaderId = CompilerShader(GL_FRAGMENT_SHADER, programSource.FragmentShaderSource);
 		
@@ -24,12 +28,18 @@ namespace IcePick {
 		glValidateProgram(m_ShaderProgramID);
 
 		// TODO: Error handling
+		if (vertexShaderId && fragmentShaderId)
+			m_ShaderProgramValid = true;
 
 		glDeleteShader(vertexShaderId);
 		glDeleteShader(fragmentShaderId);
 	}
 
-	void ShaderProgram::Bind() {
+	bool ShaderProgram::IsValid() {
+		return m_ShaderProgramValid;
+	}
+
+	void ShaderProgram::Use() {
 		glUseProgram(m_ShaderProgramID);
 	}
 
@@ -39,6 +49,8 @@ namespace IcePick {
 
 	void ShaderProgram::Destroy() {
 		glDeleteProgram(m_ShaderProgramID);
+		m_ShaderProgramValid = false;
+		m_ShaderProgramID = 0;
 	}
 
 	unsigned int ShaderProgram::CompilerShader(unsigned int shaderType, const std::string& shaderSource) {

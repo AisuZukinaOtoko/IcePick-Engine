@@ -17,6 +17,10 @@ void IcePick::EngineAPI::SetRenderTargetFrameBuffer() {
 	m_Engine->SetRenderTargetFrameBuffer();
 }
 
+void IcePick::EngineAPI::ReloadShaders() {
+	m_Engine->ReloadShaders();
+}
+
 IcePick::EngineAPI::~EngineAPI() {
 
 }

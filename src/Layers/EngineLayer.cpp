@@ -12,6 +12,7 @@ static IcePick::Input gameInput;
 
 void IcePick::EngineLayer::OnAttach() {
 	m_FrameBuffer.Init();
+	m_AssetLoader.Init();
 	m_CurrentScene.OnBegin();
 }
 
@@ -48,6 +49,10 @@ void IcePick::EngineLayer::SetRenderTargetDefault() {
 
 void IcePick::EngineLayer::SetRenderTargetFrameBuffer() {
 	m_FrameBuffer.Bind();
+}
+
+void IcePick::EngineLayer::ReloadShaders() {
+	m_AssetLoader.ReloadShaderPrograms();
 }
 
 void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
@@ -96,8 +101,6 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 
 		UUID meshMaterialId = (parent.MaterialSlotIndex != -1) ? materialSlots[parent.MaterialSlotIndex] : UUID::Unitialised();
 		const Material& material = m_AssetLoader.GetMaterial(meshMaterialId);
-
-		//IP_LOG("Material shader: " + std::to_string(material.ShaderID));
 
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);

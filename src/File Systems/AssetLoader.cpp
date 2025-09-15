@@ -35,13 +35,42 @@ IcePick::AssetLoader::AssetLoader() {
 	}
 }
 
+void IcePick::AssetLoader::Init() {
+	ShaderSource shaderSource;
+	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
+	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
+	m_PBRShaderProgramId = m_ShaderLoader.CreateShaderProgram(shaderSource);
+	ShaderProgram PBRShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
+	m_ShaderLoader.SetDefaultShaderProgram(PBRShader);
+
+	Material defaultMaterial;
+	defaultMaterial.ShaderID = PBRShader.GetID();
+	defaultMaterial.AlbedoMap = m_TextureLoader.GetDefaultTexture().GetID();
+	defaultMaterial.NormalMap = 1;
+	defaultMaterial.RoughnessMap = 1;
+	defaultMaterial.MetallicMap = 1;
+	defaultMaterial.EmissiveMap = 1;
+	defaultMaterial.AlbedoColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+	defaultMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
+	defaultMaterial.SampleBitmask |= Material::ALBEDO;
+	m_MaterialLoader.SetDefaultMaterial(defaultMaterial);
+	m_MaterialLoader.SetMaterialShaderID(m_PBRShaderProgramId);
+}
+
 unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
 	UUID textureId = m_TextureLoader.NewTextureFromFile(texturePath);
 	return m_TextureLoader.GetTexture(textureId).GetID();
 }
 
 const IcePick::Material& IcePick::AssetLoader::GetMaterial(UUID ID) {
-	return m_MaterialLoader.GetMaterial(ID, m_TextureLoader);
+	return m_MaterialLoader.GetMaterial(ID, m_TextureLoader, m_ShaderLoader);
+}
+
+void IcePick::AssetLoader::ReloadShaderPrograms() {
+	ShaderSource shaderSource;
+	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
+	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
+	m_ShaderLoader.ReloadShaderProgram(m_PBRShaderProgramId, shaderSource);
 }
 
 inline unsigned int IcePick::AssetLoader::GetIndex(IndexType indexType, unsigned int index) {
@@ -75,7 +104,6 @@ void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& p
 			currentNode.VertexArrayIDs.push_back(GetIndex(MESH_INDEX, sceneNode->mMeshes[i]));
 			UUID nodeMaterialId = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
 			currentNode.MaterialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialId);
-			//currentNode.MaterialID = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
 		}
 	}
 
@@ -175,6 +203,7 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 	}
 
 	m_TextureLoader.SetLoaderBasePath(filePath.parent_path());
+	m_MaterialLoader.SetMaterialShaderID(m_PBRShaderProgramId);
 	std::vector<unsigned int> sceneVertexArrays;
 	LoadModelMeshData(scene, sceneVertexArrays);
 	ProcessSceneNode(scene->mRootNode, returnMeshRendererComponent.RootMeshNode, returnMeshRendererComponent.MaterialSlots, scene);

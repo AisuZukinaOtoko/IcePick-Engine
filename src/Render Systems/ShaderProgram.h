@@ -12,12 +12,15 @@ namespace IcePick {
 		ShaderProgram();
 		ShaderProgram(const ShaderProgram& other);
 		~ShaderProgram();
+		unsigned int GetID();
 		void CompileShaderProgram(const ShaderSource& programSource);
-		void Bind();
+		bool IsValid();
+		void Use();
 		void UnBind();
 		void Destroy();
 	private:
 		unsigned int CompilerShader(unsigned int shaderType, const std::string& shaderSource);
 		unsigned int m_ShaderProgramID = 0;
+		bool m_ShaderProgramValid = false;
 	};
 }

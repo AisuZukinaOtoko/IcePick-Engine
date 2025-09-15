@@ -3,8 +3,10 @@
 #include "../src/Event Systems/Input.h"
 #include "imgui-docking/ImGuizmo.h"
 
-IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) 
-    : m_EngineAPI(engineAPI) {
+IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
+    m_EngineAPI(engineAPI),
+    m_Toolbar(engineAPI)
+{
     m_Styles.Init(engineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
 

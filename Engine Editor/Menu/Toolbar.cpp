@@ -1,6 +1,13 @@
 #include "Toolbar.h"
 #include "../../src/IcePickCoreMinimal.h"
 
+
+Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :
+    m_EngineAPI(engineAPI) 
+{
+    
+}
+
 void Toolbar::Render() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
@@ -14,9 +21,13 @@ void Toolbar::Render() {
         }
 
         if (ImGui::BeginMenu("View")) {
-            //ImGui::Chec
-            //if (ImGui::MenuItem("Undo")) {}
-            //if (ImGui::MenuItem("Redo")) {}
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Debug")) {
+            if (ImGui::MenuItem("Reload Shaders")) {
+                m_EngineAPI.ReloadShaders();
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();

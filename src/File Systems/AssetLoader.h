@@ -18,11 +18,17 @@ namespace IcePick {
 	class AssetLoader {
 	public:
 		AssetLoader();
+		void Init();
 		MeshRendererComponent LoadMesh(std::filesystem::path filePath);
 		unsigned int LoadTexture(std::filesystem::path texturePath);
 		const Material& GetMaterial(UUID ID);
+		void ReloadShaderPrograms();
 		void ShutDown();
 	private:
+		UUID m_PBRShaderProgramId = UUID::Unitialised();
+		const char* m_PBRVertShader = "res/shaders/pbr.vert.shader";
+		const char* m_PBRFragShader = "res/shaders/pbr.frag.shader";
+
 		enum IndexType {
 			MESH_INDEX = 0,
 			INDEX_COUNT

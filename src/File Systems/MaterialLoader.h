@@ -1,5 +1,6 @@
 #pragma once
 #include "TextureLoader.h"
+#include "ShaderLoader.h"
 #include "MaterialAsset.h"
 #include <unordered_map>
 #include <string>
@@ -13,15 +14,20 @@ namespace IcePick {
 		~MaterialLoader();
 
 		UUID NewMaterialFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
-		Material GetMaterial(UUID id, TextureLoader& textureLoader);
+		Material GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader);
+		void SetMaterialShaderID(UUID materialShaderId);
+		void SetDefaultMaterial(Material defaultMaterial);
 		void UpdateMaterial(const Material& other);
 		void CleanUpAfterLoad();
 		void ShutDown(TextureLoader& textureLoader);
 	private:
 		UUID m_CachedMaterialId = UUID::Unitialised();
+
+		// Shader ID applied to materials loaded from external files
+		UUID m_MaterialShaderId = UUID::Unitialised();
 		Material m_CachedMaterial;
 		Material m_DefaultMaterial;
-		void ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader) const;
+		void ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader, ShaderLoader& shaderLoader) const;
 
 		// Helper functions when creating a new material
 		UUID GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader);
