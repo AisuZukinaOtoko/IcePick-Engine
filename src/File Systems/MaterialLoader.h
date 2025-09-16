@@ -15,7 +15,7 @@ namespace IcePick {
 
 		UUID NewMaterialFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
 		Material GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader);
-		void SetMaterialShaderID(UUID materialShaderId);
+		void SetLoadMaterialShaderID(UUID materialShaderId);
 		void SetDefaultMaterial(Material defaultMaterial);
 		void UpdateMaterial(const Material& other);
 		void CleanUpAfterLoad();
@@ -24,10 +24,11 @@ namespace IcePick {
 		UUID m_CachedMaterialId = UUID::Unitialised();
 
 		// Shader ID applied to materials loaded from external files
-		UUID m_MaterialShaderId = UUID::Unitialised();
+		UUID m_LoadMaterialShaderId = UUID::Unitialised();
 		Material m_CachedMaterial;
 		Material m_DefaultMaterial;
 		void ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader, ShaderLoader& shaderLoader) const;
+		void InvalidateCache();
 
 		// Helper functions when creating a new material
 		UUID GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader);

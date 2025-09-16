@@ -58,5 +58,4 @@ void main() {
     OutColour = OutputColour;
     OutNormal = vec4(v_Normal, 1.0f);
     OutEntityMat = uvec4(1, 0, 0, 0);
-    //gl_FragColor = OutputColour;
 };

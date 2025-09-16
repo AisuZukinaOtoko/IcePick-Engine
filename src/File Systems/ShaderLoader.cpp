@@ -94,6 +94,9 @@ namespace IcePick {
 		
 		iterator->second.Destroy();
 		iterator->second = newShader;
+
+		if (m_CachedShaderProgramId == shaderId)
+			m_CachedShaderProgram = newShader;
 	}
 
 	ShaderProgram ShaderLoader::GetShaderProgram(UUID shaderId) {
