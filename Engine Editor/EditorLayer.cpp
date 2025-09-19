@@ -5,7 +5,8 @@
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
-    m_Toolbar(engineAPI)
+    m_Toolbar(engineAPI),
+    m_Viewport(engineAPI)
 {
     m_Styles.Init(engineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
@@ -61,12 +62,13 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_Toolbar.Render();
     ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
-    m_Viewport.Render(payload.FrameBufferID);
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();
     m_StatisticsPanel.ShowStats();
-    m_PropertiesPanel.SetDropFilePath(m_AssetBrowser.GetDragFilePath());
+    m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
+    m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_PropertiesPanel.SelectedProperties(m_Styles);
+    m_Viewport.Render(payload.FrameBufferID);
 
 
     ImGui::Render();

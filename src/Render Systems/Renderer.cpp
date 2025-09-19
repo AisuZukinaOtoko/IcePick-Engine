@@ -20,7 +20,6 @@ void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length,
 	const GLchar* message, const void* userParam) {
 	IP_LOG(message, IP_ERROR_LOG);
-	//std::cerr << "[GL DEBUG] " << message << "\n";
 }
 
 static void OnWindowResize(GLFWwindow* window, int width, int height) {
@@ -54,7 +53,7 @@ namespace IcePickRenderer {
 			return false;
 
 		glfwMakeContextCurrent(MainTargetWindow);
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 		glfwMaximizeWindow(MainTargetWindow);
 		glfwGetWindowSize(MainTargetWindow, &MainTargetWindowSize[0], &MainTargetWindowSize[1]);
 		IP_ASSERT((MainTargetWindowSize[0] != 0 && MainTargetWindowSize[1] != 0), "Invalid window size");
@@ -187,19 +186,4 @@ namespace IcePickRenderer {
 			va.Destroy();
 		}
 	}
-}
-
-
-void GLCheckErrors(){
-	GLenum error = glGetError();
-	while (error != GL_NO_ERROR) {
-		std::string errorString = "Error: " + std::to_string((int)error);
-		IP_LOG(errorString.c_str(), IP_ERROR_LOG);
-		std::cout << errorString << std::endl;
-		error = glGetError();
-	}
-}
-
-void GLClearErrors() {
-	while (glGetError() != GL_NO_ERROR);
 }

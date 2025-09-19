@@ -16,6 +16,7 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
+		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		std::shared_ptr<EngineLayer> m_Engine;
 	};

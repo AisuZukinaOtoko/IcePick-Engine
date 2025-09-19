@@ -19,7 +19,7 @@ namespace IcePick {
 		UUID CreateShaderProgram(ShaderSource& shaderSource);
 
 		void ReloadShaderProgram(UUID shaderId, ShaderSource& shaderSource);
-		ShaderProgram GetShaderProgram(UUID shaderId);
+		ShaderProgram& GetShaderProgram(UUID shaderId);
 
 	private:
 		ShaderProgram m_DefaultShaderProgram;

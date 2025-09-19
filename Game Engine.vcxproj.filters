@@ -597,6 +597,7 @@
     <None Include="res\shaders\material.shader" />
     <None Include="res\shaders\pbr.vert.shader" />
     <None Include="res\shaders\pbr.frag.shader" />
+    <None Include="res\shaders\picking.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">

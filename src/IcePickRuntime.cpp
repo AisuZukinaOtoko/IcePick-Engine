@@ -9,8 +9,7 @@
 using namespace IcePick;
 
 bool Engine::Init() {
-	IP_CORE_PROFILE_BEGIN("Temp");
-	IP_CORE_PROFILE_POP(); // Temp. The first profile has a 3ms delay for some reason
+	IP_CORE_PROFILE_LOG("Temp", 6.9f);
 	IP_CORE_PROFILE_BEGIN("Engine Init.");
 
 	IP_CORE_PROFILE_BEGIN("Renderer Init.");
@@ -47,8 +46,6 @@ void Engine::Run() {
 	DeltaTime deltaTime;
 	while (m_EngineRunning) {
 		deltaTime.NewFrame();
-		GLCheckErrors();
-		GLClearErrors();
 
 		if (IcePickRenderer::WindowShouldClose()) {
 			Terminate();

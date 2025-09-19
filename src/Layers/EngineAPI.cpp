@@ -21,6 +21,10 @@ void IcePick::EngineAPI::ReloadShaders() {
 	m_Engine->ReloadShaders();
 }
 
+void IcePick::EngineAPI::GetEntityMatPixelData(int x, int y, void* pixelData) {
+	m_Engine->GetEntityMatPixelData(x, y, pixelData);
+}
+
 IcePick::EngineAPI::~EngineAPI() {
 
 }

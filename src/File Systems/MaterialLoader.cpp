@@ -4,7 +4,7 @@
 
 namespace IcePick {
 	MaterialLoader::MaterialLoader() {
-		m_DefaultMaterial.ShaderID = UUID::Unitialised();
+		/*m_DefaultMaterial.ShaderID = UUID::Unitialised();
 		m_DefaultMaterial.AlbedoMap = 1;
 		m_DefaultMaterial.NormalMap = 1;
 		m_DefaultMaterial.RoughnessMap = 1;
@@ -12,8 +12,8 @@ namespace IcePick {
 		m_DefaultMaterial.EmissiveMap = 1;
 		m_DefaultMaterial.AlbedoColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 		m_DefaultMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
-		m_DefaultMaterial.SampleBitmask = 0;
-
+		m_DefaultMaterial.SampleBitmask = 0;*/
+		m_DefaultMaterial.SampleBitmask |= MaterialAsset::ALBEDO;
 		m_CachedMaterial = m_DefaultMaterial;
 	}
 
@@ -57,7 +57,7 @@ namespace IcePick {
 			result.EmissiveMap = textureLoader.GetDefaultTexture().GetID();
 
 		result.SampleBitmask = mat.SampleBitmask;
-		ShaderProgram materialShader = shaderLoader.GetShaderProgram(mat.ShaderID);
+		ShaderProgram& materialShader = shaderLoader.GetShaderProgram(mat.ShaderID);
 		result.ShaderID = materialShader.GetID();
 
 		result.AlbedoColour = mat.AlbedoColour;
@@ -73,7 +73,7 @@ namespace IcePick {
 		return materialId;
 	}
 
-	Material MaterialLoader::GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader) {
+	/*Material MaterialLoader::GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader) {
 		if (id == UUID::Unitialised())
 			return m_DefaultMaterial;
 
@@ -92,16 +92,34 @@ namespace IcePick {
 		m_CachedMaterial = resultMaterial;
 		return resultMaterial;
 		
+	}*/
+
+	MaterialAsset& MaterialLoader::GetMaterialAsset(UUID Id) {
+		if (Id == UUID::Unitialised())
+			return m_DefaultMaterial;
+
+		if (Id == m_CachedMaterialId)
+			return m_CachedMaterial;
+
+		m_CachedMaterialId = Id;
+		auto iterator = m_LoadedMaterialAssets.find(Id);
+		if (iterator == m_LoadedMaterialAssets.end()) {
+			m_CachedMaterial = m_DefaultMaterial;
+			return m_DefaultMaterial;
+		}
+
+		m_CachedMaterial = iterator->second;
+		return iterator->second;
 	}
 
 	void MaterialLoader::SetLoadMaterialShaderID(UUID materialShaderId)	{
 		m_LoadMaterialShaderId = materialShaderId;
 	}
 
-	void MaterialLoader::SetDefaultMaterial(Material defaultMaterial) {
+	/*void MaterialLoader::SetDefaultMaterial(Material defaultMaterial) {
 		m_DefaultMaterial = defaultMaterial;
 		InvalidateCache();
-	}
+	}*/
 
 	void MaterialLoader::UpdateMaterial(const Material& other) {
 

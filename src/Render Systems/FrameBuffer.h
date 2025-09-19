@@ -20,6 +20,8 @@ public:
 	unsigned int GetColourTextureID() const;
 	unsigned int GetAttachmentID(ATTACHMENT attachment);
 	unsigned int GetDepthTextureID() const;
+
+	void GetEntMatPixelData(int x, int y, void* pixelData);
 private:
 	unsigned int m_ID = 0;
 	unsigned int m_AttachmentIDs[ATTACHMENT_COUNT];

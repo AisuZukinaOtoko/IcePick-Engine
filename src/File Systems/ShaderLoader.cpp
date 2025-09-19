@@ -99,7 +99,7 @@ namespace IcePick {
 			m_CachedShaderProgram = newShader;
 	}
 
-	ShaderProgram ShaderLoader::GetShaderProgram(UUID shaderId) {
+	ShaderProgram& ShaderLoader::GetShaderProgram(UUID shaderId) {
 		if (shaderId == UUID::Unitialised())
 			return m_DefaultShaderProgram;
 

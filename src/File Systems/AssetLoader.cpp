@@ -40,10 +40,10 @@ void IcePick::AssetLoader::Init() {
 	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
 	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
 	m_PBRShaderProgramId = m_ShaderLoader.CreateShaderProgram(shaderSource);
-	ShaderProgram PBRShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
+	ShaderProgram& PBRShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
 	m_ShaderLoader.SetDefaultShaderProgram(PBRShader);
 
-	Material defaultMaterial;
+	/*Material defaultMaterial;
 	defaultMaterial.ShaderID = PBRShader.GetID();
 	defaultMaterial.AlbedoMap = m_TextureLoader.GetDefaultTexture().GetID();
 	defaultMaterial.NormalMap = 1;
@@ -54,7 +54,7 @@ void IcePick::AssetLoader::Init() {
 	defaultMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
 	defaultMaterial.SampleBitmask |= Material::ALBEDO;
 	m_MaterialLoader.SetDefaultMaterial(defaultMaterial);
-	m_MaterialLoader.SetLoadMaterialShaderID(m_PBRShaderProgramId);
+	m_MaterialLoader.SetLoadMaterialShaderID(m_PBRShaderProgramId);*/
 }
 
 unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
@@ -62,8 +62,16 @@ unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath
 	return m_TextureLoader.GetTexture(textureId).GetID();
 }
 
-const IcePick::Material& IcePick::AssetLoader::GetMaterial(UUID ID) {
-	return m_MaterialLoader.GetMaterial(ID, m_TextureLoader, m_ShaderLoader);
+const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
+	return m_MaterialLoader.GetMaterialAsset(Id);
+}
+
+IcePick::ShaderProgram& IcePick::AssetLoader::GetShaderProgram(UUID Id) {
+	return m_ShaderLoader.GetShaderProgram(Id);;
+}
+
+void IcePick::AssetLoader::ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial) {
+	m_MaterialLoader.ConstructMaterial(materialAsset, resultMaterial, m_TextureLoader, m_ShaderLoader);
 }
 
 void IcePick::AssetLoader::ReloadShaderPrograms() {
@@ -75,10 +83,10 @@ void IcePick::AssetLoader::ReloadShaderPrograms() {
 	ShaderProgram reloadedDefaultShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
 	m_ShaderLoader.SetDefaultShaderProgram(reloadedDefaultShader);
 
-	Material defaultMaterial = m_MaterialLoader.GetMaterial(UUID::Unitialised(), m_TextureLoader, m_ShaderLoader); // Get default material
-	defaultMaterial.ShaderID = reloadedDefaultShader.GetID();
-	m_MaterialLoader.SetDefaultMaterial(defaultMaterial);
-	m_MaterialLoader.SetLoadMaterialShaderID(m_PBRShaderProgramId);
+	//Material defaultMaterial = m_MaterialLoader.GetMaterial(UUID::Unitialised(), m_TextureLoader, m_ShaderLoader); // Get default material
+	//defaultMaterial.ShaderID = reloadedDefaultShader.GetID();
+	//m_MaterialLoader.SetDefaultMaterial(defaultMaterial);
+	//m_MaterialLoader.SetLoadMaterialShaderID(m_PBRShaderProgramId);
 }
 
 inline unsigned int IcePick::AssetLoader::GetIndex(IndexType indexType, unsigned int index) {

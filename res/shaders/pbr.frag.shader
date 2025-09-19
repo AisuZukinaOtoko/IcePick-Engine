@@ -35,6 +35,7 @@ const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const vec3 tempAmbientColour = vec3(0.02f, 0.015f, 0.015f);
 
 #include "math.shader"
+#include "picking.shader"
 
 void main() {
     vec4 OutputColour = vec4(0.0f);
@@ -57,5 +58,7 @@ void main() {
     OutColour = TempColour();
     OutColour = OutputColour;
     OutNormal = vec4(v_Normal, 1.0f);
-    OutEntityMat = uvec4(1, 0, 0, 0);
+#ifdef VIEW_PICKING
+    OutEntityMat = GetEntityMatSlot();
+#endif
 };

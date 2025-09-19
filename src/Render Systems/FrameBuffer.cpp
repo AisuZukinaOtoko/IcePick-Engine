@@ -104,3 +104,11 @@ unsigned int FrameBuffer::GetDepthTextureID() const {
 	return m_DepthTexID;
 }
 
+void FrameBuffer::GetEntMatPixelData(int x, int y, void* pixelData) {
+	Bind();
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + ENTITY_MAT_TEXTURE);
+	uint32_t pixelData2[2] = { 0, 0 };
+	glReadPixels(x, y, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, pixelData);
+	UnBind();
+}
+

@@ -12,7 +12,7 @@ public:
 	void SetColumnWidth(float newWidth);
 	void SetSelectedEntity(entt::entity entity);
 
-	void SetDropFilePath(std::string filePath);
+	void SetDropAssetPath(std::string filePath);
 private:
 	void PanelSetup();
 	void EntityProperties(const Styles& styles);
@@ -24,5 +24,5 @@ private:
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
 	entt::entity m_SelectedEntity = entt::null;
-	std::string m_DropFilePath;
+	std::string m_DropAssetPath;
 };

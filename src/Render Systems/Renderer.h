@@ -12,9 +12,6 @@
 #include "Materials.h"
 
 
-void GLCheckErrors();
-void GLClearErrors();
-
 namespace  IcePick {
 	struct MeshComponent;
 };

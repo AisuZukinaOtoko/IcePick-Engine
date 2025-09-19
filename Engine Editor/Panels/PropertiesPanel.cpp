@@ -91,8 +91,8 @@ void PropertiesPanel::SetSelectedEntity(entt::entity entity) {
     m_SelectedEntity = entity;
 }
 
-void PropertiesPanel::SetDropFilePath(std::string filePath) {
-    m_DropFilePath = filePath;
+void PropertiesPanel::SetDropAssetPath(std::string filePath) {
+    m_DropAssetPath = filePath;
 }
 
 void PropertiesPanel::EntityProperties(const Styles& styles) {
@@ -104,7 +104,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     }
 
     if (HasComponent<TransformComponent>(m_SelectedEntity)) {
-        if (ImGui::CollapsingHeader("Transform")) {
+        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
             TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
             Vec3Control("Position", transform.Position, 0.05);
             Vec3Control("Rotation", transform.Rotation, 0.5);
@@ -115,7 +115,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
         MeshRendererComponent& meshRenderer = GetComponent<MeshRendererComponent>(m_SelectedEntity);
 
-        if (ImGui::CollapsingHeader("Mesh")) {
+        if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
             TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
             CheckBox("Visible", &meshRenderer.MeshVisible);
             CheckBox("Cast shadows", &meshRenderer.CastShadows);
@@ -127,16 +127,16 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             if (ImGui::BeginDragDropTarget()) {
                 ImGui::Text("Dropping something");
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                    std::filesystem::path droppedAssetPath(m_DropFilePath);
+                    std::filesystem::path droppedAssetPath(m_DropAssetPath);
                     meshRenderer.MeshFilePath = droppedAssetPath;
                     meshRenderer.MeshLoaded = false;
-                    IP_LOG(m_DropFilePath.c_str());
+                    IP_LOG(m_DropAssetPath.c_str());
                 }
                 ImGui::EndDragDropTarget();
             }
         }
 
-        if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials")) {
+        if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::BeginChild("MaterialScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
             for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
                 ImGui::Separator();
@@ -158,9 +158,9 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                        std::filesystem::path droppedAssetPath(m_DropFilePath);
+                        std::filesystem::path droppedAssetPath(m_DropAssetPath);
                         meshRenderer.MaterialSlots[i] = UUID::Unitialised();
-                        IP_LOG(m_DropFilePath.c_str(), IP_WARN_LOG);
+                        IP_LOG(m_DropAssetPath.c_str(), IP_WARN_LOG);
                     }
                     ImGui::EndDragDropTarget();
                 }

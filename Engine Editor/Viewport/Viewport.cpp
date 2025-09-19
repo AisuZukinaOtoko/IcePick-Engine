@@ -15,7 +15,9 @@
 static IcePick::Input keyState;
 static int temp = 0;
 
-Viewport::Viewport() {
+Viewport::Viewport(IcePick::EngineAPI engineAPI) :
+	m_EngineAPI(engineAPI)
+{
 	m_ViewportSize = ImVec2(1920, 180);
 }
 
@@ -25,6 +27,10 @@ void Viewport::SetSelectedEntityChangeCallback(std::function<void(entt::entity)>
 
 void Viewport::SetSelectedEntity(entt::entity entity) {
 	m_SelectedEntity = entity;
+}
+
+void Viewport::SetDropAssetPath(std::string filePath) {
+	m_DropAssetPath = filePath;
 }
 
 void Viewport::OnUpdate(DeltaTime dt) {
@@ -74,9 +80,21 @@ void Viewport::Render(unsigned int renderTexture) {
 	m_ViewportSize = ImGui::GetContentRegionAvail();
 	ImVec2 regionMin = ImGui::GetWindowContentRegionMin();
 	m_WindowPosition = ImVec2(m_WindowPosition.x + regionMin.x, m_WindowPosition.y + regionMin.y);
+	ImVec2 mousePos = ImGui::GetMousePos();
+	m_WindowMousePosition = ImVec2(mousePos.x - m_WindowPosition.x, mousePos.y - m_WindowPosition.y);
 
-	//IP_LOG(std::to_string(temp));
 	ImGui::Image((void*)(intptr_t)(renderTexture + temp), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+			//std::filesystem::path droppedAssetPath(m_DropAssetPath);
+			IP_LOG(m_DropAssetPath.string() + " dropped on viewport");
+			uint32_t pixelData[2] = { 0, 0 };
+			m_EngineAPI.GetEntityMatPixelData(m_WindowMousePosition.x, m_ViewportSize.y - m_WindowMousePosition.y, pixelData);
+			std::cout << pixelData[0] << " " << pixelData[1] << std::endl;
+		}
+		ImGui::EndDragDropTarget();
+	}
+
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (m_SelectedEntity != entt::null) {

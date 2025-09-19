@@ -21,7 +21,9 @@ namespace IcePick {
 		void Init();
 		MeshRendererComponent LoadMesh(std::filesystem::path filePath);
 		unsigned int LoadTexture(std::filesystem::path texturePath);
-		const Material& GetMaterial(UUID ID);
+		const MaterialAsset& GetMaterialAsset(UUID Id);
+		ShaderProgram& GetShaderProgram(UUID Id);
+		void ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial);
 		void ReloadShaderPrograms();
 		void ShutDown();
 	private:
