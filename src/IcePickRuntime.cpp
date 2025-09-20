@@ -52,15 +52,17 @@ void Engine::Run() {
 			break;
 		}
 		glfwPollEvents();
-
 		IcePickRenderer::NewFrame();
+
 		for (auto& layer : IP_LayerStack.m_Layers) {
 			layer->OnNewFrame();
 		}
 
+		IP_CORE_PROFILE_BEGIN("Update Layers");
 		for (auto& layer : IP_LayerStack.m_Layers) {
 			layer->OnUpdate(deltaTime);
 		}
+		IP_CORE_PROFILE_POP();
 
 		auto layerIt = IP_LayerStack.m_Layers.rbegin();
 		RenderPayload payload;
@@ -68,7 +70,7 @@ void Engine::Run() {
 			(*layerIt)->OnRender(payload);
 		}
 
-		IcePickRenderer::EndFrame();
+		IcePickRenderer::EndFrame();		
 	}
 }
 

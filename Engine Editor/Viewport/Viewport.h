@@ -33,8 +33,10 @@ private:
 
 	std::filesystem::path m_DropAssetPath;
 	std::function<void(entt::entity)> SelectedEntityChangeCallback;
+	bool m_UsingGizmo = false;
 	bool m_EntitySelected = false;
 	entt::entity m_SelectedEntity = entt::null;
 	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	void RenderEntityGizmos();
+	void GetViewportDebugData(uint32_t* debugData);
 };

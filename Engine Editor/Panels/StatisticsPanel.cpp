@@ -1,17 +1,23 @@
 #include "StatisticsPanel.h"
 #include "PanelCommon.h"
+#include "../Utilities/DebugStatistics.h"
 
 StatisticsPanel::StatisticsPanel() {
 	m_Title = "Statistics";
 }
 
 void StatisticsPanel::ShowStats() {
+	IP_CORE_PROFILE_POP(); // Pop the total frame time profile
+
 	ImGui::Begin(m_Title);
 	const DebugCapture& rootDebugCapture = IP_GET_CORE_PROFILE();
 	for (const DebugCapture& childDebugCapture : rootDebugCapture.ChildCaptures) {
 		RenderNodeRecursive(childDebugCapture);
 	}
 	ImGui::End();
+
+	IP_CORE_PROFILE_CLEAR();
+	IP_CORE_PROFILE_BEGIN("Frame Total");
 }
 
 void StatisticsPanel::RenderNodeRecursive(const DebugCapture& parentDebugCapture) {

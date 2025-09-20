@@ -1,6 +1,7 @@
 #include "FrameBuffer.h"
 #include "Renderer.h"
 #include "../LogSystem.h"
+#include "entt/entt.h"
 
 using namespace IcePick;
 
@@ -77,7 +78,7 @@ void FrameBuffer::Clear() {
 
 	GLfloat colourClearColour[4] = { 0.6f, 0.8f, 1.0f, 1.0f };
 	GLfloat normalClearColour[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	GLuint entityMatClearColour[4] = { 0, 0, 0, 0 };
+	GLuint entityMatClearColour[4] = { (unsigned int)entt::null, 0, 0, 0};
 
 	glClearBufferfv(GL_COLOR, COLOUR_TEXTURE, colourClearColour);
 	glClearBufferfv(GL_COLOR, NORMAL_TEXTURE, normalClearColour);
@@ -107,7 +108,6 @@ unsigned int FrameBuffer::GetDepthTextureID() const {
 void FrameBuffer::GetEntMatPixelData(int x, int y, void* pixelData) {
 	Bind();
 	glReadBuffer(GL_COLOR_ATTACHMENT0 + ENTITY_MAT_TEXTURE);
-	uint32_t pixelData2[2] = { 0, 0 };
 	glReadPixels(x, y, 1, 1, GL_RG_INTEGER, GL_UNSIGNED_INT, pixelData);
 	UnBind();
 }

@@ -64,11 +64,11 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_LogPanel.RenderLogs();
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();
-    m_StatisticsPanel.ShowStats();
     m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_PropertiesPanel.SelectedProperties(m_Styles);
     m_Viewport.Render(payload.FrameBufferID);
+    m_StatisticsPanel.ShowStats();
 
 
     ImGui::Render();

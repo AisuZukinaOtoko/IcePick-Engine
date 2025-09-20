@@ -90,17 +90,26 @@ void Viewport::Render(unsigned int renderTexture) {
 			IP_LOG(m_DropAssetPath.string() + " dropped on viewport");
 			uint32_t pixelData[2] = { 0, 0 };
 			m_EngineAPI.GetEntityMatPixelData(m_WindowMousePosition.x, m_ViewportSize.y - m_WindowMousePosition.y, pixelData);
+
+			
 			std::cout << pixelData[0] << " " << pixelData[1] << std::endl;
 		}
 		ImGui::EndDragDropTarget();
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
-
 	if (m_SelectedEntity != entt::null) {
 		RenderEntityGizmos();
-	}
+	}	
 
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered() && !m_UsingGizmo) {
+		uint32_t pixelData[2] = { 0, 0 };
+		GetViewportDebugData(pixelData);
+		m_EntitySelected = true;
+		m_SelectedEntity = (entt::entity)pixelData[0];
+		std::string log = "Mouse pixel RG value: (" + std::to_string(pixelData[0]) + ", " + std::to_string(pixelData[1]) + ").";
+		IP_LOG(log);
+	}
 
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
 		m_ViewportRightClicked = true;
@@ -141,7 +150,9 @@ void Viewport::RenderEntityGizmos() {
 		glm::value_ptr(entityTransformMatrix)
 	);
 
+	m_UsingGizmo = false;
 	if (ImGuizmo::IsUsing()) {
+		m_UsingGizmo = true;
 		glm::vec3 translation, scale, skew;
 		glm::vec4 perspective;
 		glm::quat rotation;
@@ -154,6 +165,19 @@ void Viewport::RenderEntityGizmos() {
 		entityTransform.Rotation = glm::degrees(euler);;
 	}
 
+}
+
+void Viewport::GetViewportDebugData(uint32_t* debugData) {
+	int renderBufferWidth, renderBufferHeight;
+	m_EngineAPI.GetRendererWindowSize(renderBufferWidth, renderBufferHeight);
+
+	float xViewportRatio = m_WindowMousePosition.x / (float)m_ViewportSize.x;
+	float yViewportRatio = 1.0f - (m_WindowMousePosition.y / (float)m_ViewportSize.y);
+
+	int x = renderBufferWidth * xViewportRatio;
+	int y = renderBufferHeight * yViewportRatio;
+
+	m_EngineAPI.GetEntityMatPixelData(x, y, debugData);
 }
 
 Viewport::~Viewport() {
