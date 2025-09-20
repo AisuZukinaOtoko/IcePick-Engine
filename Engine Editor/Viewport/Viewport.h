@@ -39,4 +39,5 @@ private:
 	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	void RenderEntityGizmos();
 	void GetViewportDebugData(uint32_t* debugData);
+	void DropMaterialIntoViewport();
 };

@@ -13,7 +13,6 @@
 #include "../LogSystem.h"
 
 static IcePick::Input keyState;
-static int temp = 0;
 
 Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI)
@@ -51,13 +50,6 @@ void Viewport::OnUpdate(DeltaTime dt) {
 void Viewport::OnViewportEvent(IcePick::Event& event) {
 	keyState.OnEvent(event);
 
-	if (keyState.IsKeyPressed(IcePick::IP_KEY_P)) {
-		temp++;
-	}
-	if (keyState.IsKeyPressed(IcePick::IP_KEY_O)) {
-		temp--;
-	}
-
 	if (m_SelectedEntity != entt::null) {
 		if (keyState.IsKeyPressed(IcePick::IP_KEY_1))
 			m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -83,16 +75,10 @@ void Viewport::Render(unsigned int renderTexture) {
 	ImVec2 mousePos = ImGui::GetMousePos();
 	m_WindowMousePosition = ImVec2(mousePos.x - m_WindowPosition.x, mousePos.y - m_WindowPosition.y);
 
-	ImGui::Image((void*)(intptr_t)(renderTexture + temp), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	if (ImGui::BeginDragDropTarget()) {
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-			//std::filesystem::path droppedAssetPath(m_DropAssetPath);
-			IP_LOG(m_DropAssetPath.string() + " dropped on viewport");
-			uint32_t pixelData[2] = { 0, 0 };
-			m_EngineAPI.GetEntityMatPixelData(m_WindowMousePosition.x, m_ViewportSize.y - m_WindowMousePosition.y, pixelData);
-
-			
-			std::cout << pixelData[0] << " " << pixelData[1] << std::endl;
+		if (ImGui::AcceptDragDropPayload("ASSET")) {
+			DropMaterialIntoViewport();
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -107,8 +93,6 @@ void Viewport::Render(unsigned int renderTexture) {
 		GetViewportDebugData(pixelData);
 		m_EntitySelected = true;
 		m_SelectedEntity = (entt::entity)pixelData[0];
-		std::string log = "Mouse pixel RG value: (" + std::to_string(pixelData[0]) + ", " + std::to_string(pixelData[1]) + ").";
-		IP_LOG(log);
 	}
 
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
@@ -127,6 +111,9 @@ void Viewport::Render(unsigned int renderTexture) {
 }
 
 void Viewport::RenderEntityGizmos() {
+	if (!IcePick::HasComponent<IcePick::TransformComponent>(m_SelectedEntity))
+		return;
+
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 	
@@ -178,6 +165,25 @@ void Viewport::GetViewportDebugData(uint32_t* debugData) {
 	int y = renderBufferHeight * yViewportRatio;
 
 	m_EngineAPI.GetEntityMatPixelData(x, y, debugData);
+}
+
+void Viewport::DropMaterialIntoViewport() {
+	uint32_t pixelData[2] = { 0, 0 };
+	GetViewportDebugData(pixelData);
+	
+	entt::entity viewEntity = (entt::entity)pixelData[0];
+	uint32_t materialSlot = pixelData[1];
+
+	if (viewEntity == entt::null)
+		return;
+
+	if (!IcePick::HasComponent<IcePick::MeshRendererComponent>(viewEntity)) // Has another type of renderer which can be mouse selected, but no materials apply
+		return;
+
+	IcePick::MeshRendererComponent& entityMeshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(viewEntity);
+
+	// TODO, use m_DropAssetPath to load/get a material from the asset browser, use UUID for material slot.
+	entityMeshRenderer.MaterialSlots[materialSlot] = IcePick::UUID::Unitialised();
 }
 
 Viewport::~Viewport() {

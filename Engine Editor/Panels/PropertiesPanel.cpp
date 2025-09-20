@@ -96,8 +96,9 @@ void PropertiesPanel::SetDropAssetPath(std::string filePath) {
 }
 
 void PropertiesPanel::EntityProperties(const Styles& styles) {
-    ImVec2 windowSize = ImGui::GetWindowSize();
     using namespace IcePick;
+    ImVec2 windowSize = ImGui::GetWindowSize();
+
     if (HasComponent<TagComponent>(m_SelectedEntity)) {
         TagComponent& tag = GetComponent<TagComponent>(m_SelectedEntity);
         TextProperty("Name", tag.value.c_str());
