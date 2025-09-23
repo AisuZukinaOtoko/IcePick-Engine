@@ -10,10 +10,7 @@ PropertiesPanel::PropertiesPanel() {
 
 void PropertiesPanel::PanelSetup() {
     ImVec2 availableSpace = ImGui::GetContentRegionAvail();
-    ImGui::Text("Current available window region: %f, %f.", availableSpace.x, availableSpace.y);
-
     m_ColumnWidth = availableSpace.x / 3.0f;
-    ImGui::Text("Current column width: %f", m_ColumnWidth);
 }
 
 void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const float dragSpeed) {
@@ -128,8 +125,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             if (ImGui::BeginDragDropTarget()) {
                 ImGui::Text("Dropping something");
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                    std::filesystem::path droppedAssetPath(m_DropAssetPath);
-                    meshRenderer.MeshFilePath = droppedAssetPath;
+                    meshRenderer.MeshFilePath = m_DropAssetPath;
                     meshRenderer.MeshLoaded = false;
                     IP_LOG(m_DropAssetPath.c_str());
                 }
@@ -138,37 +134,37 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         }
 
         if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::BeginChild("MaterialScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-            for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
-                ImGui::Separator();
-                ImGui::PushID(std::to_string(i).c_str());
-                ImVec2 cursorBegin = ImGui::GetCursorScreenPos();
+            ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
+            if (ImGui::BeginTable("table_nested1", 1, flags)) {
 
-                ImGui::Columns(2);
-                ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
-                ImGui::NextColumn();
-                std::string materialLabel = "Material: " + std::to_string(i);
-                ImGui::Text(materialLabel.c_str());
+                for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                    ImGui::TableSetColumnIndex(0);
 
-                ImVec2 cursorEnd = ImGui::GetCursorPos();
-                ImVec2 areaSize = ImVec2(cursorEnd.x - cursorBegin.x, cursorEnd.y - cursorBegin.y);
+                    ImGui::PushID(i);
+                    if (ImGui::BeginTable("Material", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+                        const int imageSize = 50;
+                        ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
 
-                ImGui::Columns(1);
-                ImGui::SetCursorScreenPos(cursorBegin);
-                ImGui::InvisibleButton("##AreaButton", ImVec2(windowSize.x, 30));
+                        ImGui::TableNextColumn();
 
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                        std::filesystem::path droppedAssetPath(m_DropAssetPath);
-                        meshRenderer.MaterialSlots[i] = UUID::Unitialised();
-                        IP_LOG(m_DropAssetPath.c_str(), IP_WARN_LOG);
+                        ImGui::Text("Material: %d", i);
+                        ImGui::EndTable();
                     }
-                    ImGui::EndDragDropTarget();
-                }
+                    ImGui::PopID();
 
-                ImGui::PopID();
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+                            meshRenderer.MaterialSlots[i] = UUID::Unitialised();
+                            IP_LOG(m_DropAssetPath.c_str(), IP_WARN_LOG);
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+                }
+                ImGui::EndTable();
             }
-            ImGui::EndChild();
         }        
     }
 
