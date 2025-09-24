@@ -62,6 +62,14 @@ unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath
 	return m_TextureLoader.GetTexture(textureId).GetID();
 }
 
+unsigned int IcePick::AssetLoader::GetTextureRenderId(UUID textureId) {
+	return m_TextureLoader.GetTexture(textureId).GetID();
+}
+
+IcePick::UUID IcePick::AssetLoader::LoadTextureFromAsset(std::filesystem::path& assetPath) {
+	return m_TextureLoader.NewTextureFromAsset(assetPath);
+}
+
 const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
 	return m_MaterialLoader.GetMaterialAsset(Id);
 }

@@ -10,13 +10,17 @@ namespace IcePick {
 		EngineAPI(const EngineAPI& other) = default;
 		~EngineAPI();
 
-		unsigned int NewTexture(std::filesystem::path assetPath);
+		unsigned int GetTexture(std::filesystem::path assetPath);
+		unsigned int GetTextureRenderId(UUID textureId);
+		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
 		void GetRendererWindowSize(int& x, int& y);
+		glm::vec2 GetMousePos();
+		glm::vec2 GetMouseDelta();
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		std::shared_ptr<EngineLayer> m_Engine;

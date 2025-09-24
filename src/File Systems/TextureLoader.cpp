@@ -1,5 +1,7 @@
 #include "TextureLoader.h"
+#include "json.hpp"
 #include "../LogSystem.h"
+#include <fstream>
 
 namespace IcePick {
 	TextureLoader::TextureLoader()
@@ -24,7 +26,7 @@ namespace IcePick {
 		if (texturePath == m_DefaultTexturePath)
 			return m_DefaultTextureId;
 
-		auto iterator = m_CachedTexturePaths.find(texturePath);		
+		auto iterator = m_CachedTexturePaths.find(texturePath);
 		// Texture has already been loaded.
 		if (iterator != m_CachedTexturePaths.end()) {
 			return iterator->second;
@@ -75,6 +77,28 @@ namespace IcePick {
 		return newTextureId;
 	}
 
+	UUID TextureLoader::NewTextureFromAsset(std::filesystem::path& assetPath) {
+		using nlohmann::json;
+
+		std::ifstream jsonFileStream(assetPath);
+		json assetFile = json::parse(jsonFileStream);
+
+		std::string assetVersion = assetFile.value("version", "0.0");
+		uint32_t textureId = assetFile.value("ID", 0u);
+		std::string sourcePath = assetFile.value("sourcePath", "");
+
+		jsonFileStream.close();
+
+		SetLoaderBasePath(assetPath.parent_path());
+		bool newTextureCreated = NewTextureFromFileWithID(sourcePath, textureId);
+
+		if (newTextureCreated)
+			m_CachedTextureAssetPaths.insert({ assetPath, textureId });
+
+		CleanUpAfterLoad();
+		return textureId;
+	}
+
 	const Texture& TextureLoader::GetTexture(UUID id) {
 		if (id == UUID::Unitialised() || id == m_DefaultTextureId)
 			return m_DefaultTexture;
@@ -120,6 +144,33 @@ namespace IcePick {
 	void TextureLoader::CleanUpAfterLoad() {
 		m_CachedSceneTexturePaths.clear();
 		m_BaseFilePath.clear();
+	}
+
+	bool TextureLoader::NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId)	{
+		try {
+			texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath); // resolve symlinks and relative paths.
+		}
+		catch (...) {
+			IP_LOG("Error resolving canonical texture source path from asset.", IP_ERROR_LOG);
+			return false;
+		}
+		
+		if (texturePath == m_DefaultTexturePath)
+			return false;
+
+		auto iterator = m_CachedTexturePaths.find(texturePath);
+		// Texture has already been loaded.
+		if (iterator != m_CachedTexturePaths.end()) {
+			return false;
+		}
+
+		Texture newTexture(texturePath.string());
+		if (!newTexture.IsValid())
+			return false;
+
+		m_LoadedTextures.insert({ textureId, newTexture });
+		m_CachedTexturePaths.insert({ texturePath, textureId });
+		return true;
 	}
 
 	TextureLoader::~TextureLoader() {

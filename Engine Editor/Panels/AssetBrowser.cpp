@@ -1,8 +1,10 @@
 #include "AssetBrowser.h"
 #include <filesystem>
 
-AssetBrowser::AssetBrowser() {
-    m_CurrentBrowsingPath = std::filesystem::canonical("res/assets");
+AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
+    m_EngineAPI(engineAPI)
+{
+    m_CurrentBrowsingPath = std::filesystem::canonical("res/textures");
 }
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
@@ -38,7 +40,15 @@ void AssetBrowser::Render() {
 
         if (file.is_regular_file()) {
             std::filesystem::path extension = file.path().extension();
-            icon = GetFileIcon(extension);
+
+            if (extension == ".iptex") {
+                std::filesystem::path fullAssetPath = std::filesystem::canonical(file.path());
+                IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
+                icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
+            }
+            else {
+                icon = GetFileIcon(extension);
+            }
         }
         else if (file.is_directory()) {
             icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FOLDER);

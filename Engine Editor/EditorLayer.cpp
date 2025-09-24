@@ -6,7 +6,8 @@
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
     m_Toolbar(engineAPI),
-    m_Viewport(engineAPI)
+    m_Viewport(engineAPI),
+    m_AssetBrowser(engineAPI)
 {
     m_Styles.Init(engineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);

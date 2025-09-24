@@ -127,7 +127,6 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
                     meshRenderer.MeshFilePath = m_DropAssetPath;
                     meshRenderer.MeshLoaded = false;
-                    IP_LOG(m_DropAssetPath.c_str());
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -145,7 +144,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                     if (ImGui::BeginTable("Material", 2)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
-                        const int imageSize = 50;
+                        const int imageSize = 45;
                         ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
 
                         ImGui::TableNextColumn();

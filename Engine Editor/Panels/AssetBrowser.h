@@ -5,7 +5,8 @@
 
 class AssetBrowser {
 public:
-	AssetBrowser();
+	AssetBrowser() = delete;
+	AssetBrowser(IcePick::EngineAPI engineAPI);
 	void Init(IcePick::EngineAPI& engineAPI, Styles styles);
 	void Render();
 	std::string GetDragFilePath();
@@ -14,5 +15,6 @@ private:
 	Styles m_Styles;
 	const char* m_Title = "Asset Browser";
 	std::string m_DragFilePath;
+	IcePick::EngineAPI m_EngineAPI;
 	std::filesystem::path m_CurrentBrowsingPath;
 };

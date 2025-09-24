@@ -29,6 +29,8 @@ namespace IcePickRenderer {
 	glm::ivec2 GetRendererWindowSize();
 	void RequestCursorLock();
 	void RequestCursorUnlock();
+	glm::vec2 GetMousePos();
+	glm::vec2 GetMouseDelta();
 	
 	// Render camera settings
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);

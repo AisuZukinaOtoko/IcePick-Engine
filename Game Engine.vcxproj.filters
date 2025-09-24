@@ -598,6 +598,8 @@
     <None Include="res\shaders\pbr.vert.shader" />
     <None Include="res\shaders\pbr.frag.shader" />
     <None Include="res\shaders\picking.shader" />
+    <None Include="res\textures\black_fabric_diffuse.iptex" />
+    <None Include="res\textures\black_fabric_rough.iptex" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -1654,6 +1656,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\File Systems\SceneLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vendor\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File Systems\TextureAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

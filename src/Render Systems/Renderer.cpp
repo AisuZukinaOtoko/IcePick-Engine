@@ -30,13 +30,14 @@ static void OnWindowResize(GLFWwindow* window, int width, int height) {
 namespace IcePickRenderer {
 	static GLFWwindow* MainTargetWindow = nullptr;
 	static glm::ivec2 MainTargetWindowSize;
+	static glm::vec2 CurrentFrameMousePosition;
+	static glm::vec2 MouseDelta;
 	static glm::vec3 CameraPosition;
 	static glm::mat4 RenderViewProjectionMatrix;
 	static glm::mat3 RenderWorldNormalMatrix; // No translation
 	static std::vector<VertexArray> VertexArrays;
 
 	static unsigned int BasicMaterialShaderID = 0;
-	IcePick::Material BasicMaterial;
 
 	bool InitRenderer() {
 		if (!glfwInit())
@@ -86,6 +87,11 @@ namespace IcePickRenderer {
 	}
 
 	void NewFrame() {
+		double x, y;
+		glfwGetCursorPos(MainTargetWindow, &x, &y);
+		MouseDelta = glm::vec2(x, y) - CurrentFrameMousePosition;
+		CurrentFrameMousePosition = glm::vec2(x, y);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -111,12 +117,20 @@ namespace IcePickRenderer {
 		return MainTargetWindowSize;
 	}
 
-	void RequestCursorLock()	{
+	void RequestCursorLock() {
 		glfwSetInputMode(MainTargetWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	void RequestCursorUnlock() {
 		glfwSetInputMode(MainTargetWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	glm::vec2 GetMousePos() {
+		return CurrentFrameMousePosition;
+	}
+
+	glm::vec2 GetMouseDelta() {
+		return MouseDelta;
 	}
 
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {

@@ -11,6 +11,7 @@
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "../LogSystem.h"
+#include <math.h>
 
 static IcePick::Input keyState;
 
@@ -38,9 +39,15 @@ void Viewport::OnUpdate(DeltaTime dt) {
 		m_EntitySelected = false;
 	}
 
+	glm::vec2 mouseDelta = (m_ViewportRightClicked) ? m_EngineAPI.GetMouseDelta() : glm::vec2(0.0f, 0.0f);
+	if (m_LockCursorFirstFrame) {
+		mouseDelta = glm::vec2(0.0f, 0.0f);
+		m_LockCursorFirstFrame = false;
+	}
+
 	m_EditorCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
-	m_EditorCamera.yaw += m_MouseDelta.x * 0.2;
-	m_EditorCamera.pitch += m_MouseDelta.y * 0.152;
+	m_EditorCamera.yaw += mouseDelta.x * 0.2;
+	m_EditorCamera.pitch += mouseDelta.y * 0.152;
 	m_EditorCamera.OnUpdate(dt);
 	glm::mat4 viewProjMatrix = m_EditorCamera.GetViewProjectionMatrix();
 	IcePickRenderer::SetRenderViewProjectionMatrix(viewProjMatrix);
@@ -83,7 +90,8 @@ void Viewport::Render(unsigned int renderTexture) {
 		ImGui::EndDragDropTarget();
 	}
 
-	ImGuiIO& io = ImGui::GetIO();
+	//ImGuiIO& io = ImGui::GetIO();
+
 	if (m_SelectedEntity != entt::null) {
 		RenderEntityGizmos();
 	}	
@@ -96,16 +104,18 @@ void Viewport::Render(unsigned int renderTexture) {
 	}
 
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
-		m_ViewportRightClicked = true;
 		IcePickRenderer::RequestCursorLock();
+		m_ViewportRightClicked = true;
+		m_LockCursorFirstFrame = true;
 	}
 
 	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-		m_ViewportRightClicked = false;
 		IcePickRenderer::RequestCursorUnlock();
+		m_ViewportRightClicked = false;
+		m_LockCursorFirstFrame = false;
 	}
 
-	m_MouseDelta = (m_ViewportRightClicked) ? io.MouseDelta : ImVec2(0.0f, 0.0f);
+	//m_MouseDelta = (m_ViewportRightClicked) ? io.MouseDelta : ImVec2(0.0f, 0.0f);
 	ImGui::End();
 	ImGui::PopStyleVar();
 }

@@ -28,6 +28,12 @@ private:
 	ImVec2 m_MouseDelta;
 	const char* m_ID = "Viewport";
 	bool m_ViewportRightClicked = false;
+
+	// To disable mouse deltas for the first frame after locking the cursor.
+	// GLFW moves the cursor to the center of the screen, which messes with mouse deltas.
+	// As a result, the viewport camera will not move on the first frame
+	bool m_LockCursorFirstFrame = false;
+
 	EditorCamera m_EditorCamera;
 	IcePick::EngineAPI m_EngineAPI;
 

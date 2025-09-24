@@ -42,6 +42,14 @@ unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePa
 	return m_AssetLoader.LoadTexture(texturePath);
 }
 
+unsigned int IcePick::EngineLayer::GetTextureRenderId(UUID textureId) {
+	return m_AssetLoader.GetTextureRenderId(textureId);
+}
+
+IcePick::UUID IcePick::EngineLayer::LoadTextureFromAsset(std::filesystem::path assetPath) {
+	return m_AssetLoader.LoadTextureFromAsset(assetPath);
+}
+
 void IcePick::EngineLayer::SetRenderTargetDefault() {
 	m_FrameBuffer.UnBind();
 }

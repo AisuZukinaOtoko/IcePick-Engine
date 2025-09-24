@@ -18,6 +18,8 @@ namespace IcePick {
 		void OnRender(RenderPayload& payload) override;
 
 		unsigned int CreateTexture(std::filesystem::path assetPath);
+		unsigned int GetTextureRenderId(UUID textureId);
+		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();

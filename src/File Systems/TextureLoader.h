@@ -15,6 +15,7 @@ namespace IcePick {
 		UUID NewTextureFromFile(std::filesystem::path texturePath);
 		UUID NewTextureFromMemory(unsigned char* data);
 		UUID NewTextureFromScene(std::string texturePath, const aiScene* scene);
+		UUID NewTextureFromAsset(std::filesystem::path& assetPath);
 		const Texture& GetTexture(UUID id);
 		const Texture& GetDefaultTexture();
 		const UUID GetDefaultTextureID();
@@ -22,6 +23,8 @@ namespace IcePick {
 		void UpdateTexture(UUID id, const Texture& other);
 		void CleanUpAfterLoad();
 	private:
+		bool NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId);
+
 		UUID m_CachedTextureId = UUID::Unitialised();
 		UUID m_DefaultTextureId = UUID::Unitialised();
 		Texture m_CachedTexture;
@@ -32,6 +35,8 @@ namespace IcePick {
 		UUID RegisterTexture(const Texture& texture);
 		std::unordered_map<UUID, Texture, UUIDHasher> m_LoadedTextures;
 		std::unordered_map<std::filesystem::path, UUID> m_CachedTexturePaths;
+		std::unordered_map<std::filesystem::path, UUID> m_CachedTextureAssetPaths;
+
 
 		// Cache for loaded scene textures used during loading a multiple materials within a scene. Cleared after each scene is loaded.
 		// Loaded materials within a scene contain indexed texture paths such as '*1'. This cache is to avoid loading duplicate indexed texture paths.
