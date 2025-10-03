@@ -24,9 +24,11 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
+		//void InitThumbnailBuffer
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		FrameBuffer m_FrameBuffer;
+		FrameBuffer m_ThumbnailBuffer;
 		AssetLoader m_AssetLoader;
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);

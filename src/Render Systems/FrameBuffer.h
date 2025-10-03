@@ -12,7 +12,7 @@ public:
 
 	FrameBuffer();
 	~FrameBuffer();
-	bool Init();
+	bool Init(int width, int height);
 	void Bind();
 	void UnBind();
 	void Clear();
@@ -23,10 +23,9 @@ public:
 
 	void GetEntMatPixelData(int x, int y, void* pixelData);
 private:
+	int m_Width, m_Height;
 	unsigned int m_ID = 0;
 	unsigned int m_AttachmentIDs[ATTACHMENT_COUNT];
-	unsigned int m_TextureID = 0;
-	unsigned int m_ColourTexID = 0;
 	unsigned int m_DepthTexID = 0;
 	bool m_DepthTestEnabled = false;
 };

@@ -9,6 +9,7 @@
 #include "Menu/Toolbar.h"
 #include "Styles/Styles.h"
 #include "../src/Layers/EngineAPI.h"
+#include "Windows/MaterialEditor.h"
 
 namespace IcePick {
 	class EditorLayer : public Layer {
@@ -22,6 +23,7 @@ namespace IcePick {
 		virtual void OnRender(RenderPayload& payload) override;
 	private:
 		void OnChangeSelectedEntity(entt::entity selectedEntity);
+		void OnChangeEditMaterial(UUID editMaterialID);
 		Styles m_Styles;
 		EngineAPI m_EngineAPI;
 		LogPanel m_LogPanel;
@@ -31,5 +33,6 @@ namespace IcePick {
 		AssetBrowser m_AssetBrowser;
 		Toolbar m_Toolbar;
 		StatisticsPanel m_StatisticsPanel;
+		MaterialEditor m_MaterialEditor;
 	};
 }

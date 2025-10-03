@@ -147,11 +147,10 @@ namespace IcePick {
 	}
 
 	bool TextureLoader::NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId)	{
-		try {
-			texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath); // resolve symlinks and relative paths.
-		}
-		catch (...) {
-			IP_LOG("Error resolving canonical texture source path from asset.", IP_ERROR_LOG);
+		std::error_code errorCode;
+		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath, errorCode); // resolve symlinks and relative paths.
+		if (errorCode) {
+			IP_LOG(errorCode.message(), IP_ERROR_LOG);
 			return false;
 		}
 		

@@ -21,7 +21,6 @@ namespace IcePick {
 	}
 
 	std::string ShaderLoader::LoadFile(std::filesystem::path filePath, unsigned int includeDepth) {
-		IP_LOG(filePath.string(), IP_STANDARD_LOG);
 		if (includeDepth >= 10) {
 			IP_LOG("Maximum include depth for shader includes.", IP_ERROR_LOG);
 			return "";

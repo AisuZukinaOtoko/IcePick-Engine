@@ -7,14 +7,18 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
     m_Toolbar(engineAPI),
     m_Viewport(engineAPI),
-    m_AssetBrowser(engineAPI)
+    m_AssetBrowser(engineAPI),
+    m_MaterialEditor(engineAPI)
 {
     m_Styles.Init(engineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
 
-    auto cb = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
-    m_Viewport.SetSelectedEntityChangeCallback(cb);
-    m_ScenePanel.SetSelectedEntityChangeCallback(cb);
+    auto entityChangeCallback = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
+    auto editMaterialCallback = std::bind(&EditorLayer::OnChangeEditMaterial, this, std::placeholders::_1);
+    m_Viewport.SetSelectedEntityChangeCallback(entityChangeCallback);
+    m_ScenePanel.SetSelectedEntityChangeCallback(entityChangeCallback);
+    m_PropertiesPanel.SetEditMaterialCallback(editMaterialCallback);
+    m_AssetBrowser.SetEditMaterialCallback(editMaterialCallback);
 }
 
 void IcePick::EditorLayer::OnAttach() {
@@ -34,6 +38,10 @@ void IcePick::EditorLayer::OnChangeSelectedEntity(entt::entity selectedEntity) {
     m_Viewport.SetSelectedEntity(selectedEntity);
     m_ScenePanel.SetSelectedEntity(selectedEntity);
     m_PropertiesPanel.SetSelectedEntity(selectedEntity);
+}
+
+void IcePick::EditorLayer::OnChangeEditMaterial(UUID editMaterialID) {
+    m_MaterialEditor.SetEditMaterial(editMaterialID);
 }
 
 void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {
@@ -68,6 +76,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_PropertiesPanel.SelectedProperties(m_Styles);
+    m_MaterialEditor.Render();
     m_Viewport.Render(payload.FrameBufferID);
     m_StatisticsPanel.ShowStats();
 

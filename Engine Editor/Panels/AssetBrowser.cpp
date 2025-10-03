@@ -11,6 +11,10 @@ void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
     m_Styles = styles;
 }
 
+void AssetBrowser::SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback) {
+    EditMaterialCallback = callback;
+}
+
 void AssetBrowser::Render() {
 	ImGui::Begin(m_Title);
 
@@ -45,6 +49,7 @@ void AssetBrowser::Render() {
                 std::filesystem::path fullAssetPath = std::filesystem::canonical(file.path());
                 IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
+                //icon = GetFileIcon(".png");
             }
             else {
                 icon = GetFileIcon(extension);
@@ -67,6 +72,7 @@ void AssetBrowser::Render() {
             if (file.is_directory()) {
                 m_CurrentBrowsingPath = file.path();
             }
+            EditMaterialCallback(IcePick::UUID::Unitialised());
         }
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {

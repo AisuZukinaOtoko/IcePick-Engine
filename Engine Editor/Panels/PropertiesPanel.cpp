@@ -80,6 +80,10 @@ void PropertiesPanel::SelectedProperties(const Styles& styles) {
     ImGui::End();
 }
 
+void PropertiesPanel::SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback) {
+    EditMaterialCallback = callback;
+}
+
 void PropertiesPanel::SetColumnWidth(float newWidth) {
     m_ColumnWidth = newWidth;
 }
