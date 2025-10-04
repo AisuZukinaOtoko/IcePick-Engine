@@ -183,6 +183,9 @@
     <ClCompile Include="Engine Editor\Windows\EditorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Windows\Nodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -1680,6 +1683,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Windows\EditorRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Windows\Nodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

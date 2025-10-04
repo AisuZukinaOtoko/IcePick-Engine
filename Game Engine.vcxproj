@@ -156,6 +156,7 @@
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="Engine Editor\Windows\EditorRenderer.cpp" />
     <ClCompile Include="Engine Editor\Windows\MaterialEditor.cpp" />
+    <ClCompile Include="Engine Editor\Windows\Nodes.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
@@ -365,6 +366,7 @@
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="Engine Editor\Windows\EditorRenderer.h" />
     <ClInclude Include="Engine Editor\Windows\MaterialEditor.h" />
+    <ClInclude Include="Engine Editor\Windows\Nodes.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
