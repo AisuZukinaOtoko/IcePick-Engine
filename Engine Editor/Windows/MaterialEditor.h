@@ -14,8 +14,12 @@ public:
 private:
 	void DrawCanvas();
 	void DrawNodes();
+	void DrawDragPin();
 	void DrawNodeConnections();
 	bool NodeExists(IcePick::UUID nodeId);
+	ImVec2 CalculateNodeSize(std::shared_ptr<Node> node);
+	ImVec2 CalculateNodePosition(std::shared_ptr<Node> node);
+	ImVec2 CalculatePinPosition(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
 	std::shared_ptr<Node> FindNodeById(IcePick::UUID nodeId);
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;
@@ -23,9 +27,26 @@ private:
 	const char* m_ID = "Material Editor";
 
 	IcePick::UUID m_EditMaterialId = IcePick::UUID::Unitialised();
-	//std::vector<Node> m_EditMaterialNodeGraph;
+	
+	bool m_PinActive = false; //dragging a node pin
+	bool m_IsInputPin = false;
+	unsigned int m_SourcePinIndex = 0;
+	IcePick::UUID m_SourcePinNodeId = IcePick::UUID::Unitialised();
 	std::vector<std::shared_ptr<Node>> m_EditMaterialNodeGraph;
 
 	ImVec2 m_CanvasScreenPos;
 	ImVec2 m_CanvasScrolling;
+
+	float nodeWidth = 150.0f;
+	float nodePadding = 30.0f;
+	float nodeHeaderHeight = 30.0f;
+	float nodeCornerRounding = 9.0f;
+	float pinYSpacing = 30.0f;
+	float pinRadius = 6.0f;
+	int pinSegments = 10;
+	float lineThickness = 3.0f;
+	unsigned int lineSegments = 40;
+	ImU32 nodeBgColour = IM_COL32(20, 20, 20, 255);
+	ImU32 nodeHeaderColour = IM_COL32(0xD2, 0xA1, 0x02, 255);
+	ImU32 nodePinColour = IM_COL32(255, 255, 255, 255);
 };

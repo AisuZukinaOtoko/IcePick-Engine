@@ -115,47 +115,89 @@ void MaterialEditor::DrawNodes() {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 offset = m_CanvasScreenPos;
 
-    float nodeWidth = 300.0f;
-    float nodePadding = 50.0f;
-    float nodeHeaderHeight = 30.0f;
-    float nodeCornerRounding = 9.0f;
-    float pinYSpacing = 20.0f;
-    ImU32 nodeBgColour = IM_COL32(10, 10, 10, 255);
-    ImU32 nodeHeaderColour = IM_COL32(90, 60, 150, 255);
-
     for (int i = 0; i < m_EditMaterialNodeGraph.size(); i++) {
         ImGui::PushID(i);
         std::shared_ptr<Node> node = m_EditMaterialNodeGraph[i];
 
-        ImVec2 nodePosition = ImVec2(node->CanvasPosition.x + m_CanvasScreenPos.x + m_CanvasScrolling.x, node->CanvasPosition.y + m_CanvasScreenPos.y + m_CanvasScrolling.y);
-        int maxPins = std::max(node->InputPins.size(), node->OutputPins.size());
-        ImVec2 nodeSize = ImVec2(nodeWidth, (2 * nodePadding) + (maxPins - 1) * pinYSpacing);
+        ImVec2 nodePosition = CalculateNodePosition(node);
+        ImVec2 nodeSize = CalculateNodeSize(node);
 
         draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), nodeBgColour, nodeCornerRounding, ImDrawFlags_RoundCornersAll);
         draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeHeaderHeight), nodeHeaderColour, nodeCornerRounding, ImDrawFlags_RoundCornersTop);
 
         ImGui::SetCursorScreenPos(nodePosition);
-        ImGui::InvisibleButton("nodeHeader", ImVec2(nodeSize.x, nodeHeaderHeight), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        ImGui::InvisibleButton("nodeHeader", ImVec2(nodeSize.x, nodeHeaderHeight), ImGuiButtonFlags_MouseButtonLeft);
         const bool nodeHeaderHovered = ImGui::IsItemHovered();
         const bool nodeHeaderHeld = ImGui::IsItemActive();
 
-        if (nodeHeaderHeld) {
-            IP_LOG("Header held");
+        for (int j = 0; j < node->InputPins.size(); j++) {
+            ImGui::PushID(j);
+            ImVec2 pinPosition = CalculatePinPosition(node, j, true);
+
+            draw_list->AddCircleFilled(pinPosition, pinRadius, nodePinColour, pinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
+            ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
+
+            m_PinActive = ImGui::IsItemActive();
+            m_SourcePinIndex = j;
+            m_IsInputPin = true;
+            m_SourcePinNodeId = node->Id;
+            DrawDragPin();
+            
+            ImGui::PopID();
         }
 
+        for (int j = 0; j < node->OutputPins.size(); j++) {
+            ImGui::PushID(j);
+            ImVec2 pinPosition = CalculatePinPosition(node, j, false);
+
+            draw_list->AddCircleFilled(pinPosition, pinRadius, nodePinColour, pinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
+            ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
+
+            m_PinActive = ImGui::IsItemActive();
+            m_SourcePinIndex = j;
+            m_IsInputPin = false;
+            m_SourcePinNodeId = node->Id;
+            DrawDragPin();
+
+            ImGui::PopID();
+        }
+
+        // Only update node position at the end to avoid inconsistencies with pins
         if (nodeHeaderHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
             node->CanvasPosition.x += io.MouseDelta.x;
             node->CanvasPosition.y += io.MouseDelta.y;
         }
+
         ImGui::PopID();
     }
 }
 
-void MaterialEditor::DrawNodeConnections() {
+void MaterialEditor::DrawDragPin() {
+    if (!m_PinActive)
+        return;
+
     ImGuiIO& io = ImGui::GetIO();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddCircle(ImVec2(1000.0f, 400.0f), 20.0f, 0xFFFFFFFF, 20, 3);
-    draw_list->AddBezierCubic(ImVec2(1000.0f, 400.0f), ImVec2(1030.0f, 400.0f), ImVec2(1060.0f, 460.0f), ImVec2(1090.0f, 460.0f), 0xFFFFFFFF, 3, 20);
+
+    int sign = (m_IsInputPin) ? -1 : 1;
+    std::shared_ptr<Node> node = FindNodeById(m_SourcePinNodeId);
+    ImVec2 lineP1 = CalculatePinPosition(node, m_SourcePinIndex, m_IsInputPin);
+    ImVec2 lineP4 = ImGui::GetMousePos();
+
+    float innerPointXOffset = std::abs(lineP4.x - lineP1.x) / 3.0f;
+    float innerPointYOffset = (lineP4.y - lineP1.y) / 8.0f;
+
+    ImVec2 lineP2 = ImVec2(lineP1.x + innerPointXOffset * sign, lineP1.y + innerPointYOffset);
+    ImVec2 lineP3 = ImVec2(lineP4.x - innerPointXOffset * sign, lineP4.y - innerPointYOffset);
+
+    draw_list->AddBezierCubic(lineP1, lineP2, lineP3, lineP4, nodePinColour, lineThickness, lineSegments);
+}
+
+void MaterialEditor::DrawNodeConnections() {
+    
+    
 }
 
 bool MaterialEditor::NodeExists(IcePick::UUID nodeId) {
@@ -164,6 +206,25 @@ bool MaterialEditor::NodeExists(IcePick::UUID nodeId) {
             return true;
     }
     return false;
+}
+
+ImVec2 MaterialEditor::CalculateNodeSize(std::shared_ptr<Node> node) {
+    int maxPins = std::max(node->InputPins.size(), node->OutputPins.size());
+    return ImVec2(nodeWidth, nodeHeaderHeight + (2 * nodePadding) + (maxPins - 1) * pinYSpacing);
+}
+
+ImVec2 MaterialEditor::CalculateNodePosition(std::shared_ptr<Node> node) {
+    return ImVec2(node->CanvasPosition.x + m_CanvasScreenPos.x + m_CanvasScrolling.x, node->CanvasPosition.y + m_CanvasScreenPos.y + m_CanvasScrolling.y);
+}
+
+ImVec2 MaterialEditor::CalculatePinPosition(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin) {
+    ImVec2 nodePosition = CalculateNodePosition(node);
+    ImVec2 nodeSize = CalculateNodeSize(node);
+    ImVec2 pinPosition = 
+        (isInputPin) ?
+        ImVec2(nodePosition.x, nodePosition.y + nodeHeaderHeight + nodePadding + pinYSpacing * pinIndex) :
+        ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeHeaderHeight + nodePadding + pinYSpacing * pinIndex);
+    return pinPosition;
 }
 
 std::shared_ptr<Node> MaterialEditor::FindNodeById(IcePick::UUID nodeId) {

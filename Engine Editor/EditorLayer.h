@@ -34,5 +34,7 @@ namespace IcePick {
 		Toolbar m_Toolbar;
 		StatisticsPanel m_StatisticsPanel;
 		MaterialEditor m_MaterialEditor;
+
+		ImFont* m_EditorFont = nullptr;
 	};
 }
