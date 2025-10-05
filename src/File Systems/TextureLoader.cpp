@@ -22,7 +22,13 @@ namespace IcePick {
 	}
 
 	UUID TextureLoader::NewTextureFromFile(std::filesystem::path texturePath) {
-		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath); // resolve symlinks and relative paths.
+		std::error_code errorCode;
+		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath, errorCode); // resolve symlinks and relative paths.
+		if (errorCode) {
+			IP_LOG("Error resolving path: " + texturePath.string() + ". " + errorCode.message(), IP_ERROR_LOG);
+			return UUID::Unitialised();
+		}
+
 		if (texturePath == m_DefaultTexturePath)
 			return m_DefaultTextureId;
 
@@ -150,7 +156,7 @@ namespace IcePick {
 		std::error_code errorCode;
 		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath, errorCode); // resolve symlinks and relative paths.
 		if (errorCode) {
-			IP_LOG(errorCode.message(), IP_ERROR_LOG);
+			IP_LOG("Error resolving path: " + texturePath.string() + ". " + errorCode.message(), IP_ERROR_LOG);
 			return false;
 		}
 		

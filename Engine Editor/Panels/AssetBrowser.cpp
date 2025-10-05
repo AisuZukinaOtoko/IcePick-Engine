@@ -4,7 +4,7 @@
 AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
-    m_CurrentBrowsingPath = std::filesystem::canonical("res/textures");
+    m_CurrentBrowsingPath = std::filesystem::canonical("res/Assets");
 }
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
@@ -19,15 +19,12 @@ void AssetBrowser::Render() {
 	ImGui::Begin(m_Title);
 
     if (ImGui::Button("Back")) {
-        IP_LOG(m_CurrentBrowsingPath.string().c_str());
         m_CurrentBrowsingPath = m_CurrentBrowsingPath.parent_path();
-        IP_LOG(m_CurrentBrowsingPath.string().c_str());
     }
     ImGui::Separator();
 
     // Configuration
     const float iconSize = 120.0f;
-    //const float iconSize = 90.0f;
     const float padding = 0.0f;
     const float cellSize = iconSize + padding;
     float panelWidth = ImGui::GetContentRegionAvail().x;
@@ -49,7 +46,11 @@ void AssetBrowser::Render() {
                 std::filesystem::path fullAssetPath = std::filesystem::canonical(file.path());
                 IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
-                //icon = GetFileIcon(".png");
+            }
+            else if (extension == ".ipmat") {
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                    EditMaterialCallback(IcePick::UUID::Unitialised());
+                }
             }
             else {
                 icon = GetFileIcon(extension);
@@ -67,12 +68,11 @@ void AssetBrowser::Render() {
         ImGui::ImageButton("##Hello", icon, ImVec2(iconSize, iconSize), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1));
         ImGui::PopStyleVar(3);
 
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
             // Open asset or navigate into folder
             if (file.is_directory()) {
                 m_CurrentBrowsingPath = file.path();
             }
-            EditMaterialCallback(IcePick::UUID::Unitialised());
         }
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
@@ -88,7 +88,6 @@ void AssetBrowser::Render() {
             ImGui::EndDragDropSource();
         }
 
-        //ImGui::TextWrapped(file.path().string().c_str());
         ImGui::TextWrapped(file.path().filename().string().c_str());
 
         ImGui::NextColumn();

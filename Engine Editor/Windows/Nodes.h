@@ -17,8 +17,8 @@ struct InputPin {
 
 	Pin::PinType Type;
 	std::string Label;
-	IcePick::UUID ConnectedNodeId;
-	unsigned int PinIndex = 0;
+	IcePick::UUID ConnectedNodeId = IcePick::UUID::Unitialised();
+	unsigned int ConnectedPinIndex = 0;
 };
 
 struct OutputPin {
@@ -28,7 +28,7 @@ struct OutputPin {
 	Pin::PinType Type;
 	std::string Label;
 	std::vector<IcePick::UUID> ConnectedNodeIds;
-	std::vector<unsigned int> PinIndices;
+	std::vector<unsigned int> ConnectedPinIndices;
 };
 
 class Node {

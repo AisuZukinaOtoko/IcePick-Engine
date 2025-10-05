@@ -154,6 +154,9 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                         ImGui::TableNextColumn();
 
                         ImGui::Text("Material: %d", i);
+                        if (ImGui::Button("Edit")) {
+                            EditMaterialCallback(meshRenderer.MaterialSlots[i]);
+                        }
                         ImGui::EndTable();
                     }
                     ImGui::PopID();

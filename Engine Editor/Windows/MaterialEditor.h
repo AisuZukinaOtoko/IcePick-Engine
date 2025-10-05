@@ -15,12 +15,19 @@ private:
 	void DrawCanvas();
 	void DrawNodes();
 	void DrawDragPin();
+	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
 	void DrawNodeConnections();
 	bool NodeExists(IcePick::UUID nodeId);
 	ImVec2 CalculateNodeSize(std::shared_ptr<Node> node);
 	ImVec2 CalculateNodePosition(std::shared_ptr<Node> node);
 	ImVec2 CalculatePinPosition(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
 	std::shared_ptr<Node> FindNodeById(IcePick::UUID nodeId);
+	void ConnectActivePin(std::shared_ptr<Node> destinationNode, unsigned int destinationPinIndex, bool destinationIsInputPin);
+
+	// Disconnecting an input pin will disconnect the output pin linked to it
+	// Disconnecting an output pin will disconnect all input pins linked to it
+	void DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
+
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;
 	EditorRenderer m_Renderer;

@@ -12,7 +12,6 @@ void LogPanel::RenderLogs() {
 
 	if (ImGui::Button("Clear")) {
 		ClearLogs();
-		IP_LOG("Clear logs", IP_WARN_LOG);
 	}
 	ImGui::Separator();
 	ImGui::BeginChild("LogScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysVerticalScrollbar);

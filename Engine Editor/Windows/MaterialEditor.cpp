@@ -33,6 +33,7 @@ void MaterialEditor::Render() {
 		ImGui::TableNextColumn();
 		const int imageSize = 300;
 		ImGui::ImageButton("##MaterialButton", (void*)1, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Text("Active Pin: %d", m_PinActive);
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
@@ -42,7 +43,6 @@ void MaterialEditor::Render() {
 }
 
 void MaterialEditor::DrawCanvas() {
-    //static ImVec2 scrolling(0.0f, 0.0f);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));      // Disable padding
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));  // Set a background color
@@ -114,6 +114,8 @@ void MaterialEditor::DrawNodes() {
     ImGuiIO& io = ImGui::GetIO();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 offset = m_CanvasScreenPos;
+    ImVec2 mousePos = ImGui::GetMousePos();
+    bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
 
     for (int i = 0; i < m_EditMaterialNodeGraph.size(); i++) {
         ImGui::PushID(i);
@@ -138,12 +140,24 @@ void MaterialEditor::DrawNodes() {
             ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
             ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
 
-            m_PinActive = ImGui::IsItemActive();
-            m_SourcePinIndex = j;
-            m_IsInputPin = true;
-            m_SourcePinNodeId = node->Id;
-            DrawDragPin();
+            float dx = pinPosition.x - mousePos.x;
+            float dy = pinPosition.y - mousePos.y;
+            bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+            bool currentPinActive = ImGui::IsItemActive();
+
+            if (currentPinActive) {
+                m_PinActive = true;
+                m_SourcePinIndex = j;
+                m_IsInputPin = true;
+                m_SourcePinNodeId = node->Id;
+            }
             
+            DrawDragPin();
+
+            if (currentPinHovered && mouseReleased && m_PinActive) {
+                ConnectActivePin(node, j, true);
+            }
+
             ImGui::PopID();
         }
 
@@ -155,11 +169,23 @@ void MaterialEditor::DrawNodes() {
             ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
             ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
 
-            m_PinActive = ImGui::IsItemActive();
-            m_SourcePinIndex = j;
-            m_IsInputPin = false;
-            m_SourcePinNodeId = node->Id;
+            float dx = pinPosition.x - mousePos.x;
+            float dy = pinPosition.y - mousePos.y;
+            bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+            bool currentPinActive = ImGui::IsItemActive();
+
+            if (currentPinActive) {
+                m_PinActive = true;
+                m_SourcePinIndex = j;
+                m_IsInputPin = false;
+                m_SourcePinNodeId = node->Id;
+            }            
+
             DrawDragPin();
+
+            if (currentPinHovered && mouseReleased && m_PinActive) {
+                ConnectActivePin(node, j, false);
+            }
 
             ImGui::PopID();
         }
@@ -172,6 +198,9 @@ void MaterialEditor::DrawNodes() {
 
         ImGui::PopID();
     }
+
+    if (mouseReleased)
+        m_PinActive = false;
 }
 
 void MaterialEditor::DrawDragPin() {
@@ -181,23 +210,42 @@ void MaterialEditor::DrawDragPin() {
     ImGuiIO& io = ImGui::GetIO();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    int sign = (m_IsInputPin) ? -1 : 1;
     std::shared_ptr<Node> node = FindNodeById(m_SourcePinNodeId);
     ImVec2 lineP1 = CalculatePinPosition(node, m_SourcePinIndex, m_IsInputPin);
     ImVec2 lineP4 = ImGui::GetMousePos();
 
-    float innerPointXOffset = std::abs(lineP4.x - lineP1.x) / 3.0f;
-    float innerPointYOffset = (lineP4.y - lineP1.y) / 8.0f;
+    DrawLine(lineP1, lineP4, m_IsInputPin);
+}
 
-    ImVec2 lineP2 = ImVec2(lineP1.x + innerPointXOffset * sign, lineP1.y + innerPointYOffset);
-    ImVec2 lineP3 = ImVec2(lineP4.x - innerPointXOffset * sign, lineP4.y - innerPointYOffset);
+void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin) {
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    draw_list->AddBezierCubic(lineP1, lineP2, lineP3, lineP4, nodePinColour, lineThickness, lineSegments);
+    int sign = (startIsInputPin) ? -1 : 1;
+    float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f;
+    float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
+
+    ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
+    ImVec2 lineP3 = ImVec2(lineEnd.x - innerPointXOffset * sign, lineEnd.y - innerPointYOffset);
+
+    draw_list->AddBezierCubic(lineStart, lineP2, lineP3, lineEnd, nodePinColour, lineThickness, lineSegments);
 }
 
 void MaterialEditor::DrawNodeConnections() {
-    
-    
+    for (std::shared_ptr<Node> node : m_EditMaterialNodeGraph) {
+        for (int i = 0; i < node->InputPins.size(); i++) {
+            InputPin& nodeInputPin = node->InputPins[i];
+            if (nodeInputPin.ConnectedNodeId == IcePick::UUID::Unitialised()) // not connected to any node
+                continue;
+
+            std::shared_ptr<Node> connectedOutputNode = FindNodeById(nodeInputPin.ConnectedNodeId);
+            unsigned int connectedOutputPinIndex = nodeInputPin.ConnectedPinIndex;
+
+            ImVec2 inputPinLocation = CalculatePinPosition(node, i, true);
+            ImVec2 outputPinLocation = CalculatePinPosition(connectedOutputNode, connectedOutputPinIndex, false);
+
+            DrawLine(inputPinLocation, outputPinLocation, true);
+        }
+    }    
 }
 
 bool MaterialEditor::NodeExists(IcePick::UUID nodeId) {
@@ -235,6 +283,39 @@ std::shared_ptr<Node> MaterialEditor::FindNodeById(IcePick::UUID nodeId) {
 
     IP_ASSERT(false, "Invalid Node Id");
     return nullptr;
+}
+
+void MaterialEditor::ConnectActivePin(std::shared_ptr<Node> destinationNode, unsigned int destinationPinIndex, bool destinationIsInputPin) {
+    m_PinActive = false;
+    // trying to connect pins of the same type (input-input, output-output)
+    if (destinationIsInputPin == m_IsInputPin)
+        return;
+
+    if (destinationNode->Id == m_SourcePinNodeId)
+        return;
+
+    if (destinationIsInputPin) {
+        std::shared_ptr<Node> sourceNode = FindNodeById(m_SourcePinNodeId);
+        if (sourceNode == nullptr) { // how did you achieve this?
+            return;
+        }
+
+        DisconnectPins(destinationNode, destinationPinIndex, true);
+        InputPin& destPin = destinationNode->InputPins[destinationPinIndex];
+        destPin.ConnectedNodeId = m_SourcePinNodeId;
+        destPin.ConnectedPinIndex = m_SourcePinIndex;
+
+        OutputPin& sourcePin = sourceNode->OutputPins[m_SourcePinIndex];
+        sourcePin.ConnectedNodeIds.push_back(destinationNode->Id);
+        sourcePin.ConnectedPinIndices.push_back(destinationPinIndex);
+    }
+    else {
+
+    }
+}
+
+void MaterialEditor::DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin) {
+
 }
 
 MaterialEditor::~MaterialEditor() {
