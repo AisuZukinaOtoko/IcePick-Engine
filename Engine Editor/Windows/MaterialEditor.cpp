@@ -34,6 +34,8 @@ void MaterialEditor::Render() {
 		const int imageSize = 300;
 		ImGui::ImageButton("##MaterialButton", (void*)1, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::Text("Active Pin: %d", m_PinActive);
+        ImGui::Text("Source index: %d", m_SourcePinIndex);
+        ImGui::Text("Source is input: %d", m_IsInputPin);
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
@@ -83,11 +85,15 @@ void MaterialEditor::DrawCanvas() {
     if (drag_delta.x == 0.0f && drag_delta.y == 0.0f)
         ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
     if (ImGui::BeginPopup("context")) {        
-        if (ImGui::MenuItem("Texture Node", NULL, false)) { 
-            m_EditMaterialNodeGraph.push_back(std::make_shared<TextureNode>(IcePick::UUID::Unitialised()));
+        if (ImGui::MenuItem("Texture Node", NULL, false)) {
+            std::shared_ptr<TextureNode> newNode = std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
+            newNode->CanvasPosition = mouse_pos_in_canvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
         }
         if (ImGui::MenuItem("Vector3 Node", NULL, false)) { 
-            
+            std::shared_ptr<Vector3Node> newNode = std::make_shared<Vector3Node>();
+            newNode->CanvasPosition = mouse_pos_in_canvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
         }
         ImGui::EndPopup();
     }
@@ -115,6 +121,7 @@ void MaterialEditor::DrawNodes() {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 offset = m_CanvasScreenPos;
     ImVec2 mousePos = ImGui::GetMousePos();
+    bool mousePressed = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
 
     for (int i = 0; i < m_EditMaterialNodeGraph.size(); i++) {
@@ -135,14 +142,14 @@ void MaterialEditor::DrawNodes() {
         for (int j = 0; j < node->InputPins.size(); j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
-
-            draw_list->AddCircleFilled(pinPosition, pinRadius, nodePinColour, pinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
-            ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
-
             float dx = pinPosition.x - mousePos.x;
             float dy = pinPosition.y - mousePos.y;
             bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+
+            ImU32 colour = (currentPinHovered) ? nodePinColourHovered : nodePinColour;
+            draw_list->AddCircleFilled(pinPosition, pinRadius, colour, pinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
+            ImGui::InvisibleButton("inputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
             bool currentPinActive = ImGui::IsItemActive();
 
             if (currentPinActive) {
@@ -150,12 +157,15 @@ void MaterialEditor::DrawNodes() {
                 m_SourcePinIndex = j;
                 m_IsInputPin = true;
                 m_SourcePinNodeId = node->Id;
+                DrawDragPin();
             }
-            
-            DrawDragPin();
 
             if (currentPinHovered && mouseReleased && m_PinActive) {
                 ConnectActivePin(node, j, true);
+            }
+
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentPinHovered && mousePressed) {
+                DisconnectPins(node, j, true);
             }
 
             ImGui::PopID();
@@ -164,14 +174,15 @@ void MaterialEditor::DrawNodes() {
         for (int j = 0; j < node->OutputPins.size(); j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, false);
-
-            draw_list->AddCircleFilled(pinPosition, pinRadius, nodePinColour, pinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
-            ImGui::InvisibleButton("nodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
-
             float dx = pinPosition.x - mousePos.x;
             float dy = pinPosition.y - mousePos.y;
             bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+
+            ImU32 colour = (currentPinHovered) ? nodePinColourHovered : nodePinColour;
+            draw_list->AddCircleFilled(pinPosition, pinRadius, colour, pinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
+            ImGui::InvisibleButton("outputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
+
             bool currentPinActive = ImGui::IsItemActive();
 
             if (currentPinActive) {
@@ -179,12 +190,15 @@ void MaterialEditor::DrawNodes() {
                 m_SourcePinIndex = j;
                 m_IsInputPin = false;
                 m_SourcePinNodeId = node->Id;
-            }            
-
-            DrawDragPin();
+                DrawDragPin();
+            }
 
             if (currentPinHovered && mouseReleased && m_PinActive) {
                 ConnectActivePin(node, j, false);
+            }
+
+            if (ImGui::IsKeyDown(ImGuiKey_LeftShift) && currentPinHovered && mousePressed) {
+                DisconnectPins(node, j, false);
             }
 
             ImGui::PopID();
@@ -310,12 +324,57 @@ void MaterialEditor::ConnectActivePin(std::shared_ptr<Node> destinationNode, uns
         sourcePin.ConnectedPinIndices.push_back(destinationPinIndex);
     }
     else {
+        std::shared_ptr<Node> sourceNode = FindNodeById(m_SourcePinNodeId);
+        if (sourceNode == nullptr) { // how did you achieve this?
+            return;
+        }
 
+        DisconnectPins(sourceNode, m_SourcePinIndex, true);
+        InputPin& sourcePin = sourceNode->InputPins[m_SourcePinIndex];
+        sourcePin.ConnectedNodeId = destinationNode->Id;
+        sourcePin.ConnectedPinIndex = destinationPinIndex;
+
+        OutputPin& destPin = destinationNode->OutputPins[destinationPinIndex];
+        destPin.ConnectedNodeIds.push_back(m_SourcePinNodeId);
+        destPin.ConnectedPinIndices.push_back(m_SourcePinIndex);
     }
 }
 
 void MaterialEditor::DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin) {
+    if (isInputPin) { // disconnect one connection
+        InputPin& pin = node->InputPins[pinIndex];
+        IcePick::UUID connectedNodeId = pin.ConnectedNodeId;
+        unsigned int connectedPinIndex = pin.ConnectedPinIndex;
 
+        if (!NodeExists(connectedNodeId)) {
+            // something weird happened
+            return;
+        }
+
+        std::shared_ptr<Node> connectedNode = FindNodeById(connectedNodeId);
+        OutputPin& connectedPin = connectedNode->OutputPins[connectedPinIndex];
+        
+        pin.DeleteConnection();
+        connectedPin.DeleteConnection(node->Id, pinIndex);
+    }
+    else { // disconnect every connection
+        OutputPin& pin = node->OutputPins[pinIndex];
+        for (int connectionIndex = 0; connectionIndex < pin.ConnectedNodeIds.size(); connectionIndex++) {
+            IcePick::UUID connectedNodeId = pin.ConnectedNodeIds[connectionIndex];
+            unsigned int connectedPinIndex = pin.ConnectedPinIndices[connectionIndex];
+
+            if (!NodeExists(connectedNodeId)) {
+                // something weird happened
+                continue;
+            }
+
+            std::shared_ptr<Node> connectedNode = FindNodeById(connectedNodeId);
+            InputPin& connectedInputPin = connectedNode->InputPins[connectedPinIndex];
+            connectedInputPin.DeleteConnection();
+        }
+        pin.ConnectedNodeIds.clear();
+        pin.ConnectedPinIndices.clear();
+    }
 }
 
 MaterialEditor::~MaterialEditor() {

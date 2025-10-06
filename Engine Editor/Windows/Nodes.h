@@ -14,6 +14,7 @@ namespace Pin {
 struct InputPin {
 	InputPin() = delete;
 	InputPin(Pin::PinType type, std::string label) : Type(type), Label(label) {}
+	void DeleteConnection();
 
 	Pin::PinType Type;
 	std::string Label;
@@ -24,6 +25,7 @@ struct InputPin {
 struct OutputPin {
 	OutputPin() = delete;
 	OutputPin(Pin::PinType type, std::string label) : Type(type), Label(label) {}
+	void DeleteConnection(IcePick::UUID connectedNode, unsigned int pinIndex);
 
 	Pin::PinType Type;
 	std::string Label;
@@ -49,4 +51,9 @@ private:
 class BSDFNode : public Node {
 public:
 	BSDFNode();
+};
+
+class Vector3Node : public Node {
+public:
+	Vector3Node();
 };

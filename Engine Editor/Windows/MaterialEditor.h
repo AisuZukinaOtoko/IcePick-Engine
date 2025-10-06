@@ -56,4 +56,5 @@ private:
 	ImU32 nodeBgColour = IM_COL32(20, 20, 20, 255);
 	ImU32 nodeHeaderColour = IM_COL32(0xD2, 0xA1, 0x02, 255);
 	ImU32 nodePinColour = IM_COL32(255, 255, 255, 255);
+	ImU32 nodePinColourHovered = IM_COL32(100, 100, 255, 255);
 };
