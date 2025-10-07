@@ -6,7 +6,11 @@
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
 
+
+
 namespace IcePick {
+	class EngineAPI;
+
 	class EngineLayer : public Layer {
 	public:
 		void OnAttach() override;
@@ -27,6 +31,7 @@ namespace IcePick {
 		//void InitThumbnailBuffer
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
+		friend class EngineAPI;
 		FrameBuffer m_FrameBuffer;
 		FrameBuffer m_ThumbnailBuffer;
 		AssetLoader m_AssetLoader;

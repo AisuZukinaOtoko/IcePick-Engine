@@ -45,5 +45,4 @@ Vector3Node::Vector3Node() {
 	InputPins.emplace_back(Pin::FLOAT32, "Y");
 	InputPins.emplace_back(Pin::FLOAT32, "Z");
 	OutputPins.emplace_back(Pin::VEC3, "XYZ");
-	OutputPins.emplace_back(Pin::VEC3, "TEMP");
 }

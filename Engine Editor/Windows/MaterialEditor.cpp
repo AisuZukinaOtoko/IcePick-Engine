@@ -123,6 +123,8 @@ void MaterialEditor::DrawNodes() {
     ImVec2 mousePos = ImGui::GetMousePos();
     bool mousePressed = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+    float labelPadding = 5.0f;
+    ImU32 labelColour = IM_COL32(255, 255, 255, 255);
 
     for (int i = 0; i < m_EditMaterialNodeGraph.size(); i++) {
         ImGui::PushID(i);
@@ -151,6 +153,11 @@ void MaterialEditor::DrawNodes() {
             ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
             ImGui::InvisibleButton("inputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
             bool currentPinActive = ImGui::IsItemActive();
+
+            std::string& label = node->InputPins[j].Label;
+            ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
+            ImVec2 labelPosition = ImVec2(pinPosition.x + pinRadius + labelPadding, pinPosition.y - (labelSize.y / 2.0f));
+            draw_list->AddText(labelPosition, labelColour, label.c_str());
 
             if (currentPinActive) {
                 m_PinActive = true;
@@ -182,8 +189,12 @@ void MaterialEditor::DrawNodes() {
             draw_list->AddCircleFilled(pinPosition, pinRadius, colour, pinSegments);
             ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
             ImGui::InvisibleButton("outputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
-
             bool currentPinActive = ImGui::IsItemActive();
+
+            std::string& label = node->OutputPins[j].Label;
+            ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());          
+            ImVec2 labelPosition = ImVec2(pinPosition.x - pinRadius - labelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
+            draw_list->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label.c_str());
 
             if (currentPinActive) {
                 m_PinActive = true;

@@ -10,9 +10,14 @@ public:
 		ATTACHMENT_COUNT,
 	};
 
+	enum Type {
+		DEFERRED = 0,
+		FORWARD
+	};
+
 	FrameBuffer();
 	~FrameBuffer();
-	bool Init(int width, int height);
+	bool Init(int width, int height, Type type);
 	void Bind();
 	void UnBind();
 	void Clear();
@@ -23,7 +28,9 @@ public:
 
 	void GetEntMatPixelData(int x, int y, void* pixelData);
 private:
+	Type m_Type;
 	int m_Width, m_Height;
+	unsigned int m_AttachmentCount = 0;
 	unsigned int m_ID = 0;
 	unsigned int m_AttachmentIDs[ATTACHMENT_COUNT];
 	unsigned int m_DepthTexID = 0;

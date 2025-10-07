@@ -17,6 +17,10 @@ IcePick::UUID IcePick::EngineAPI::LoadTextureFromAsset(std::filesystem::path ass
 	return m_Engine->LoadTextureFromAsset(assetPath);
 }
 
+IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::path assetPath) {
+	return m_Engine->m_AssetLoader.LoadMesh(assetPath);
+}
+
 void IcePick::EngineAPI::SetRenderTargetDefault() {
 	m_Engine->SetRenderTargetDefault();
 }

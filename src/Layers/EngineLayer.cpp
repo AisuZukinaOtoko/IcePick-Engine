@@ -11,8 +11,7 @@ static IcePick::Input gameInput;
 
 void IcePick::EngineLayer::OnAttach() {
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
-	m_FrameBuffer.Init(windowSize.x, windowSize.y);
-	m_ThumbnailBuffer.Init(120, 120);
+	m_FrameBuffer.Init(windowSize.x, windowSize.y, FrameBuffer::DEFERRED);
 	m_AssetLoader.Init();
 	m_CurrentScene.OnBegin();
 }

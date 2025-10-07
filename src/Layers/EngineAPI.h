@@ -14,6 +14,8 @@ namespace IcePick {
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 
+		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
+
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
