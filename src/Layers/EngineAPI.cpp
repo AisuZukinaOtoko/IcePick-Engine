@@ -21,6 +21,10 @@ IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::pat
 	return m_Engine->m_AssetLoader.LoadMesh(assetPath);
 }
 
+void IcePick::EngineAPI::RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId) {
+	m_Engine->RenderMeshNode(mesh.RootMeshNode, modelMatrix, mesh.MaterialSlots, entityId);
+}
+
 void IcePick::EngineAPI::SetRenderTargetDefault() {
 	m_Engine->SetRenderTargetDefault();
 }

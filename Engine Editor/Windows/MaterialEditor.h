@@ -9,9 +9,11 @@ public:
 	MaterialEditor() = delete;
 	MaterialEditor(IcePick::EngineAPI engineAPI);
 	void SetEditMaterial(IcePick::UUID materialID);
+	void OnUpdate(DeltaTime dt);
 	void Render();
 	~MaterialEditor();
 private:
+	void PreviewMaterial();
 	void DrawCanvas();
 	void DrawNodes();
 	void DrawDragPin();
@@ -30,7 +32,6 @@ private:
 
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;
-	EditorRenderer m_Renderer;
 	const char* m_ID = "Material Editor";
 
 	IcePick::UUID m_EditMaterialId = IcePick::UUID::Unitialised();
@@ -44,6 +45,17 @@ private:
 	ImVec2 m_CanvasScreenPos;
 	ImVec2 m_CanvasScrolling;
 
+	// Preview render variables
+	const int previewImageSize = 300;
+	float viewRadius = 3.0f;
+	float viewAzimuth = 0.0f;
+	float viewElevation = 0.0f;
+	bool previewWindowRightClicked = false;
+	bool lockCursorFirstFrame = false;
+	EditorRenderer m_Renderer;
+	IcePick::MeshRendererComponent previewMesh;
+
+	// Node render variables
 	float nodeWidth = 150.0f;
 	float nodePadding = 30.0f;
 	float nodeHeaderHeight = 30.0f;

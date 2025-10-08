@@ -55,6 +55,7 @@ void IcePick::EditorLayer::OnChangeEditMaterial(UUID editMaterialID) {
 void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {
     m_Viewport.OnUpdate(dt);
     m_ScenePanel.OnUpdate(dt);
+    m_MaterialEditor.OnUpdate(dt);
 }
 
 void IcePick::EditorLayer::OnDetach() {

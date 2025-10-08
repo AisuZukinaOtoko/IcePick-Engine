@@ -8,6 +8,9 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_Renderer(engineAPI)
 {
     m_CanvasScrolling = ImVec2(0.0f, 0.0f);
+    m_Renderer.editorCamera.aspectRatio = 1.0f;
+    m_Renderer.Init(previewImageSize, previewImageSize);
+    previewMesh = m_EngineAPI.LoadMesh("res/Assets/sphere.glb");
 }
 
 void MaterialEditor::SetEditMaterial(IcePick::UUID materialID) {
@@ -16,6 +19,27 @@ void MaterialEditor::SetEditMaterial(IcePick::UUID materialID) {
 
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
+}
+
+void MaterialEditor::OnUpdate(DeltaTime dt) {
+    glm::vec2 mouseDelta = (previewWindowRightClicked) ? m_EngineAPI.GetMouseDelta() : glm::vec2(0.0f, 0.0f);
+    if (lockCursorFirstFrame) {
+        mouseDelta = glm::vec2(0.0f, 0.0f);
+        lockCursorFirstFrame = false;
+    }
+    float mouseSensitivity = 0.01f;
+
+    viewAzimuth -= mouseDelta.x * mouseSensitivity;
+    viewElevation += mouseDelta.y * mouseSensitivity;
+    viewElevation = glm::clamp(viewElevation, -1.5f, 1.5f);
+
+    glm::vec3& position = m_Renderer.editorCamera.cameraPosition;
+    position.x = viewRadius * cos(viewElevation) * sin(viewAzimuth);
+    position.y = viewRadius * sin(viewElevation);
+    position.z = viewRadius * cos(viewElevation) * cos(viewAzimuth);
+
+    glm::vec3 cameraFront = glm::vec3(0.0f) - position;
+    m_Renderer.editorCamera.cameraFront = glm::normalize(cameraFront);
 }
 
 void MaterialEditor::Render() {
@@ -31,17 +55,35 @@ void MaterialEditor::Render() {
 
 		ImGui::TableNextRow(ImGuiTableRowFlags_None);
 		ImGui::TableNextColumn();
-		const int imageSize = 300;
-		ImGui::ImageButton("##MaterialButton", (void*)1, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+        PreviewMaterial();
+		ImGui::ImageButton("##MaterialButton", (void*)m_Renderer.GetRenderTexture(), ImVec2(previewImageSize, previewImageSize), ImVec2(0, 1), ImVec2(1, 0));
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()) {
+            IcePickRenderer::RequestCursorLock();
+            previewWindowRightClicked = true;
+            lockCursorFirstFrame = true;
+        }
+        else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+            IcePickRenderer::RequestCursorUnlock();
+            previewWindowRightClicked = false;
+        }
         ImGui::Text("Active Pin: %d", m_PinActive);
         ImGui::Text("Source index: %d", m_SourcePinIndex);
         ImGui::Text("Source is input: %d", m_IsInputPin);
+        ImGui::Text("Preview right clicked: %d", previewWindowRightClicked);
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
 		ImGui::EndTable();
 	}
 	ImGui::End();
+}
+
+void MaterialEditor::PreviewMaterial() {
+    m_Renderer.Clear();
+    previewMesh.MaterialSlots[0] = m_EditMaterialId;
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    m_Renderer.RenderMesh(previewMesh, modelMatrix);
 }
 
 void MaterialEditor::DrawCanvas() {

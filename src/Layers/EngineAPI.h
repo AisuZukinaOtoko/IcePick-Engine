@@ -15,6 +15,7 @@ namespace IcePick {
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
+		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);
 
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();

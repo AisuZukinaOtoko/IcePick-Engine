@@ -30,7 +30,7 @@ uniform float u_RoughnessValue;
 uniform float u_MetalValue;
 uniform float u_EmissiveValue;
 
-const vec3 tempLightPosition = vec3(1.0f, 2.0f, 1.0f);
+const vec3 tempLightPosition = vec3(2.0f, 3.0f, 4.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const vec3 tempAmbientColour = vec3(0.02f, 0.015f, 0.015f);
 

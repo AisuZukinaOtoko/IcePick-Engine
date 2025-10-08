@@ -6,6 +6,30 @@ EditorRenderer::EditorRenderer(IcePick::EngineAPI engineAPI) :
 
 }
 
+void EditorRenderer::Init(unsigned int width, unsigned int height) {
+	m_FrameBuffer.Init(width, height, FrameBuffer::FORWARD);
+}
+
+void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix) {
+	m_FrameBuffer.Bind();
+
+	glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
+	IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
+	IcePickRenderer::SetRenderViewProjectionMatrix(editorCamera.GetViewProjectionMatrix());
+	IcePickRenderer::SetRenderCameraWorldPosition(editorCamera.cameraPosition);
+
+	m_EngineAPI.RenderMesh(mesh, modelMatrix, entt::null);
+	m_FrameBuffer.UnBind();
+}
+
+void EditorRenderer::Clear() {
+	m_FrameBuffer.Clear();
+}
+
+unsigned int EditorRenderer::GetRenderTexture() {
+	return m_FrameBuffer.GetColourTextureID();
+}
+
 void EditorRenderer::Destroy() {
 
 }
