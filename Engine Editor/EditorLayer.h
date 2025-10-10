@@ -9,7 +9,7 @@
 #include "Menu/Toolbar.h"
 #include "Styles/Styles.h"
 #include "../src/Layers/EngineAPI.h"
-#include "Windows/MaterialEditor.h"
+#include "Material Editor/MaterialEditor.h"
 
 namespace IcePick {
 	class EditorLayer : public Layer {

@@ -1,8 +1,10 @@
 #pragma once
 #include "../Layers/EngineAPI.h"
-#include "EditorRenderer.h"
+#include "../EditorRenderer.h"
 #include "Nodes.h"
 #include <memory>
+#include <unordered_map>
+#include <sstream>
 
 class MaterialEditor {
 public:
@@ -29,6 +31,11 @@ private:
 	// Disconnecting an input pin will disconnect the output pin linked to it
 	// Disconnecting an output pin will disconnect all input pins linked to it
 	void DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
+
+	// Material creation
+	void CompileMaterial();
+	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex);
+	std::unordered_map<IcePick::UUID, std::string, UUIDHasher> m_NodeIdentifiers;
 
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;

@@ -1,6 +1,6 @@
 #pragma once
 #include "../Layers/EngineAPI.h"
-#include "../Viewport/EditorCamera.h"
+#include "Viewport/EditorCamera.h"
 
 class EditorRenderer {
 public:

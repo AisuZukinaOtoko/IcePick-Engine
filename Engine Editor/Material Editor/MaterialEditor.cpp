@@ -7,6 +7,7 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI),
 	m_Renderer(engineAPI)
 {
+    Pin::InitPins();
     m_CanvasScrolling = ImVec2(0.0f, 0.0f);
     m_Renderer.editorCamera.aspectRatio = 1.0f;
     m_Renderer.Init(previewImageSize, previewImageSize);
@@ -67,10 +68,10 @@ void MaterialEditor::Render() {
             IcePickRenderer::RequestCursorUnlock();
             previewWindowRightClicked = false;
         }
-        ImGui::Text("Active Pin: %d", m_PinActive);
-        ImGui::Text("Source index: %d", m_SourcePinIndex);
-        ImGui::Text("Source is input: %d", m_IsInputPin);
-        ImGui::Text("Preview right clicked: %d", previewWindowRightClicked);
+        
+        if (ImGui::Button("Compile graph")) {
+            CompileMaterial();
+        }
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
@@ -428,6 +429,40 @@ void MaterialEditor::DisconnectPins(std::shared_ptr<Node> node, unsigned int pin
         pin.ConnectedNodeIds.clear();
         pin.ConnectedPinIndices.clear();
     }
+}
+
+void MaterialEditor::CompileMaterial() {
+    m_NodeIdentifiers.clear();
+    for (auto node : m_EditMaterialNodeGraph) {
+        node->Unitialise();
+    }
+
+    std::stringstream ss;
+    CreateShaderFromGraph(ss, m_EditMaterialNodeGraph[0], 0);
+    IP_LOG(ss.str());
+}
+
+std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex) {
+
+    // Get current node input values
+    for (InputPin& pin : node->InputPins) {
+        if (pin.ConnectedNodeId == IcePick::UUID::Unitialised()) {
+            pin.ShaderIdentifier = Pin::GetPinDefault(pin.Type);
+            continue;
+        }
+
+        if (!NodeExists(pin.ConnectedNodeId)) {
+            IP_LOG("Error compiling graph. Node not found.", IP_ERROR_LOG);
+            break;
+        }
+
+        std::shared_ptr<Node> connectedNode = FindNodeById(pin.ConnectedNodeId);
+        pin.ShaderIdentifier = CreateShaderFromGraph(ss, connectedNode, pin.ConnectedPinIndex);
+    }
+
+    node->Initialise(ss);
+    node->ParseNodeLogic(ss);
+    return node->GetPinOutput(outputPinIndex);
 }
 
 MaterialEditor::~MaterialEditor() {

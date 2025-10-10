@@ -177,13 +177,13 @@
     <ClCompile Include="Engine Editor\Styles\ThumbnailManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Windows\MaterialEditor.cpp">
+    <ClCompile Include="Engine Editor\Material Editor\MaterialEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Windows\EditorRenderer.cpp">
+    <ClCompile Include="Engine Editor\EditorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Windows\Nodes.cpp">
+    <ClCompile Include="Engine Editor\Material Editor\Nodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1679,13 +1679,13 @@
     <ClInclude Include="Engine Editor\Styles\ThumbnailManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Windows\MaterialEditor.h">
+    <ClInclude Include="Engine Editor\Material Editor\MaterialEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Windows\EditorRenderer.h">
+    <ClInclude Include="Engine Editor\EditorRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Windows\Nodes.h">
+    <ClInclude Include="Engine Editor\Material Editor\Nodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
