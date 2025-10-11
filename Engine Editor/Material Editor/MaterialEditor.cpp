@@ -1,4 +1,5 @@
 #include "MaterialEditor.h"
+#include "Nodes/Nodes.h"
 #include "imgui-docking/imgui.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
@@ -176,11 +177,11 @@ void MaterialEditor::DrawNodes() {
         ImVec2 nodePosition = CalculateNodePosition(node);
         ImVec2 nodeSize = CalculateNodeSize(node);
 
-        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), nodeBgColour, nodeCornerRounding, ImDrawFlags_RoundCornersAll);
-        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeHeaderHeight), nodeHeaderColour, nodeCornerRounding, ImDrawFlags_RoundCornersTop);
+        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), m_RenderInfo.NodeBgColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
+        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), m_RenderInfo.NodeHeaderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
 
         ImGui::SetCursorScreenPos(nodePosition);
-        ImGui::InvisibleButton("nodeHeader", ImVec2(nodeSize.x, nodeHeaderHeight), ImGuiButtonFlags_MouseButtonLeft);
+        ImGui::InvisibleButton("nodeHeader", ImVec2(nodeSize.x, m_RenderInfo.NodeHeaderHeight), ImGuiButtonFlags_MouseButtonLeft);
         const bool nodeHeaderHovered = ImGui::IsItemHovered();
         const bool nodeHeaderHeld = ImGui::IsItemActive();
 
@@ -189,17 +190,17 @@ void MaterialEditor::DrawNodes() {
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
             float dx = pinPosition.x - mousePos.x;
             float dy = pinPosition.y - mousePos.y;
-            bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+            bool currentPinHovered = (dx * dx + dy * dy) < (m_RenderInfo.PinRadius * m_RenderInfo.PinRadius);
 
-            ImU32 colour = (currentPinHovered) ? nodePinColourHovered : nodePinColour;
-            draw_list->AddCircleFilled(pinPosition, pinRadius, colour, pinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
-            ImGui::InvisibleButton("inputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
+            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius));
+            ImGui::InvisibleButton("inputNodePin", ImVec2(m_RenderInfo.PinRadius * 2, m_RenderInfo.PinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
             bool currentPinActive = ImGui::IsItemActive();
 
             std::string& label = node->InputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
-            ImVec2 labelPosition = ImVec2(pinPosition.x + pinRadius + labelPadding, pinPosition.y - (labelSize.y / 2.0f));
+            ImVec2 labelPosition = ImVec2(pinPosition.x + m_RenderInfo.PinRadius + labelPadding, pinPosition.y - (labelSize.y / 2.0f));
             draw_list->AddText(labelPosition, labelColour, label.c_str());
 
             if (currentPinActive) {
@@ -226,17 +227,17 @@ void MaterialEditor::DrawNodes() {
             ImVec2 pinPosition = CalculatePinPosition(node, j, false);
             float dx = pinPosition.x - mousePos.x;
             float dy = pinPosition.y - mousePos.y;
-            bool currentPinHovered = (dx * dx + dy * dy) < (pinRadius * pinRadius);
+            bool currentPinHovered = (dx * dx + dy * dy) < (m_RenderInfo.PinRadius * m_RenderInfo.PinRadius);
 
-            ImU32 colour = (currentPinHovered) ? nodePinColourHovered : nodePinColour;
-            draw_list->AddCircleFilled(pinPosition, pinRadius, colour, pinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - pinRadius, pinPosition.y - pinRadius));
-            ImGui::InvisibleButton("outputNodePin", ImVec2(pinRadius * 2, pinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
+            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius));
+            ImGui::InvisibleButton("outputNodePin", ImVec2(m_RenderInfo.PinRadius * 2, m_RenderInfo.PinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
             bool currentPinActive = ImGui::IsItemActive();
 
             std::string& label = node->OutputPins[j].Label;
-            ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());          
-            ImVec2 labelPosition = ImVec2(pinPosition.x - pinRadius - labelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
+            ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
+            ImVec2 labelPosition = ImVec2(pinPosition.x - m_RenderInfo.PinRadius - labelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
             draw_list->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label.c_str());
 
             if (currentPinActive) {
@@ -257,6 +258,8 @@ void MaterialEditor::DrawNodes() {
 
             ImGui::PopID();
         }
+
+        node->CustomRendering(m_EngineAPI, m_RenderInfo, m_CanvasScreenPos, m_CanvasScrolling);
 
         // Only update node position at the end to avoid inconsistencies with pins
         if (nodeHeaderHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
@@ -291,11 +294,11 @@ void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInpu
     int sign = (startIsInputPin) ? -1 : 1;
     float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f;
     float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
-
+    
     ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
     ImVec2 lineP3 = ImVec2(lineEnd.x - innerPointXOffset * sign, lineEnd.y - innerPointYOffset);
 
-    draw_list->AddBezierCubic(lineStart, lineP2, lineP3, lineEnd, nodePinColour, lineThickness, lineSegments);
+    draw_list->AddBezierCubic(lineStart, lineP2, lineP3, lineEnd, m_RenderInfo.NodePinColour, m_RenderInfo.LineThickness, m_RenderInfo.LineSegments);
 }
 
 void MaterialEditor::DrawNodeConnections() {
@@ -313,7 +316,7 @@ void MaterialEditor::DrawNodeConnections() {
 
             DrawLine(inputPinLocation, outputPinLocation, true);
         }
-    }    
+    }
 }
 
 bool MaterialEditor::NodeExists(IcePick::UUID nodeId) {
@@ -326,7 +329,7 @@ bool MaterialEditor::NodeExists(IcePick::UUID nodeId) {
 
 ImVec2 MaterialEditor::CalculateNodeSize(std::shared_ptr<Node> node) {
     int maxPins = std::max(node->InputPins.size(), node->OutputPins.size());
-    return ImVec2(nodeWidth, nodeHeaderHeight + (2 * nodePadding) + (maxPins - 1) * pinYSpacing);
+    return ImVec2(node->NodeWidth, m_RenderInfo.NodeHeaderHeight + (2 * m_RenderInfo.NodePadding) + (maxPins - 1) * m_RenderInfo.PinYSpacing);
 }
 
 ImVec2 MaterialEditor::CalculateNodePosition(std::shared_ptr<Node> node) {
@@ -336,10 +339,10 @@ ImVec2 MaterialEditor::CalculateNodePosition(std::shared_ptr<Node> node) {
 ImVec2 MaterialEditor::CalculatePinPosition(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin) {
     ImVec2 nodePosition = CalculateNodePosition(node);
     ImVec2 nodeSize = CalculateNodeSize(node);
-    ImVec2 pinPosition = 
+    ImVec2 pinPosition =
         (isInputPin) ?
-        ImVec2(nodePosition.x, nodePosition.y + nodeHeaderHeight + nodePadding + pinYSpacing * pinIndex) :
-        ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeHeaderHeight + nodePadding + pinYSpacing * pinIndex);
+        ImVec2(nodePosition.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight + m_RenderInfo.NodePadding + m_RenderInfo.PinYSpacing * pinIndex) :
+        ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight + m_RenderInfo.NodePadding + m_RenderInfo.PinYSpacing * pinIndex);
     return pinPosition;
 }
 
@@ -453,7 +456,7 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
 
         if (!NodeExists(pin.ConnectedNodeId)) {
             IP_LOG("Error compiling graph. Node not found.", IP_ERROR_LOG);
-            break;
+            return "";
         }
 
         std::shared_ptr<Node> connectedNode = FindNodeById(pin.ConnectedNodeId);

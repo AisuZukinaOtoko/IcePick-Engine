@@ -183,7 +183,16 @@
     <ClCompile Include="Engine Editor\EditorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Material Editor\Nodes.cpp">
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Nodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\TextureNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1685,7 +1694,19 @@
     <ClInclude Include="Engine Editor\EditorRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Material Editor\Nodes.h">
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\NodeBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Nodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Rendering\TextureNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

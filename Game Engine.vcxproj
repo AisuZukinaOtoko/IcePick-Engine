@@ -144,6 +144,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\TextureNode.cpp" />
     <ClCompile Include="Engine Editor\Menu\Toolbar.cpp" />
     <ClCompile Include="Engine Editor\Panels\AssetBrowser.cpp" />
     <ClCompile Include="Engine Editor\Panels\LogPanel.cpp" />
@@ -156,7 +159,7 @@
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="Engine Editor\EditorRenderer.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\MaterialEditor.cpp" />
-    <ClCompile Include="Engine Editor\Material Editor\Nodes.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Nodes.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
@@ -353,6 +356,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Nodes.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Rendering\TextureNode.h" />
     <ClInclude Include="Engine Editor\Menu\Toolbar.h" />
     <ClInclude Include="Engine Editor\Panels\AssetBrowser.h" />
     <ClInclude Include="Engine Editor\Panels\LogPanel.h" />
@@ -366,7 +373,7 @@
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="Engine Editor\EditorRenderer.h" />
     <ClInclude Include="Engine Editor\Material Editor\MaterialEditor.h" />
-    <ClInclude Include="Engine Editor\Material Editor\Nodes.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\NodeBase.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />

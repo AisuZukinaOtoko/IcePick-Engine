@@ -1,7 +1,7 @@
 #pragma once
 #include "../Layers/EngineAPI.h"
 #include "../EditorRenderer.h"
-#include "Nodes.h"
+#include "Nodes/NodeBase.h"
 #include <memory>
 #include <unordered_map>
 #include <sstream>
@@ -63,17 +63,5 @@ private:
 	IcePick::MeshRendererComponent previewMesh;
 
 	// Node render variables
-	float nodeWidth = 150.0f;
-	float nodePadding = 30.0f;
-	float nodeHeaderHeight = 30.0f;
-	float nodeCornerRounding = 9.0f;
-	float pinYSpacing = 30.0f;
-	float pinRadius = 6.0f;
-	int pinSegments = 10;
-	float lineThickness = 3.0f;
-	unsigned int lineSegments = 40;
-	ImU32 nodeBgColour = IM_COL32(20, 20, 20, 255);
-	ImU32 nodeHeaderColour = IM_COL32(0xD2, 0xA1, 0x02, 255);
-	ImU32 nodePinColour = IM_COL32(255, 255, 255, 255);
-	ImU32 nodePinColourHovered = IM_COL32(100, 100, 255, 255);
+	NodeRenderInfo m_RenderInfo;
 };
