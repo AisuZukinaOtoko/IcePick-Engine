@@ -70,6 +70,10 @@ IcePick::UUID IcePick::AssetLoader::LoadTextureFromAsset(std::filesystem::path& 
 	return m_TextureLoader.NewTextureFromAsset(assetPath);
 }
 
+IcePick::UUID IcePick::AssetLoader::CreateShaderFromSource(ShaderSource& source) {
+	return m_ShaderLoader.CreateShaderProgram(source);
+}
+
 const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
 	return m_MaterialLoader.GetMaterialAsset(Id);
 }

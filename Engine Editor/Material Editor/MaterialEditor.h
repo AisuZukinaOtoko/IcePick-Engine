@@ -5,11 +5,13 @@
 #include <memory>
 #include <unordered_map>
 #include <sstream>
+#include <filesystem>
 
 class MaterialEditor {
 public:
 	MaterialEditor() = delete;
 	MaterialEditor(IcePick::EngineAPI engineAPI);
+	void SetDropAssetPath(std::filesystem::path filePath);
 	void SetEditMaterial(IcePick::UUID materialID);
 	void OnUpdate(DeltaTime dt);
 	void Render();
@@ -21,6 +23,7 @@ private:
 	void DrawDragPin();
 	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
 	void DrawNodeConnections();
+	void ShowAddNodeOptions(ImVec2 mousePosInCanvas);
 	bool NodeExists(IcePick::UUID nodeId);
 	ImVec2 CalculateNodeSize(std::shared_ptr<Node> node);
 	ImVec2 CalculateNodePosition(std::shared_ptr<Node> node);
@@ -33,16 +36,21 @@ private:
 	void DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
 
 	// Material creation
+	bool m_GraphStateChanged = false;
+	bool m_AutoCompileGraph = true;
 	void CompileMaterial();
-	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex);
+	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth);
 	std::unordered_map<IcePick::UUID, std::string, UUIDHasher> m_NodeIdentifiers;
+	std::filesystem::path m_DropAssetPath;
 
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;
 	const char* m_ID = "Material Editor";
 
 	IcePick::UUID m_EditMaterialId = IcePick::UUID::Unitialised();
-	
+	IcePick::MaterialAsset m_EditMaterial;
+	IcePick::ShaderSource m_EditShaderSourceTemplate;
+
 	bool m_PinActive = false; //dragging a node pin
 	bool m_IsInputPin = false;
 	unsigned int m_SourcePinIndex = 0;

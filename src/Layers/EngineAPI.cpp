@@ -17,6 +17,30 @@ IcePick::UUID IcePick::EngineAPI::LoadTextureFromAsset(std::filesystem::path ass
 	return m_Engine->LoadTextureFromAsset(assetPath);
 }
 
+IcePick::UUID IcePick::EngineAPI::CreateShaderFromSource(ShaderSource& source) {
+	return m_Engine->m_AssetLoader.m_ShaderLoader.CreateShaderProgram(source);
+}
+
+IcePick::ShaderProgram& IcePick::EngineAPI::GetShaderProgram(UUID shaderId) {
+	return m_Engine->m_AssetLoader.m_ShaderLoader.GetShaderProgram(shaderId);
+}
+
+void IcePick::EngineAPI::UpdateShaderWithSource(UUID shaderId, ShaderSource& source) {
+	m_Engine->m_AssetLoader.m_ShaderLoader.ReloadShaderProgram(shaderId, source);
+}
+
+std::string IcePick::EngineAPI::LoadShaderSourceFile(std::filesystem::path filepath) {
+	return m_Engine->m_AssetLoader.m_ShaderLoader.LoadFile(filepath, 0);
+}
+
+const Texture& IcePick::EngineAPI::GetTexture(UUID textureId) {
+	return m_Engine->m_AssetLoader.m_TextureLoader.GetTexture(textureId);
+}
+
+void IcePick::EngineAPI::UpdateMaterialAsset(UUID materialId, MaterialAsset& material) {
+	m_Engine->m_AssetLoader.m_MaterialLoader.UpdateMaterial(materialId, material);
+}
+
 IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::path assetPath) {
 	return m_Engine->m_AssetLoader.LoadMesh(assetPath);
 }

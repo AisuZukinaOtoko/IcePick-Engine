@@ -13,6 +13,13 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_Renderer.editorCamera.aspectRatio = 1.0f;
     m_Renderer.Init(previewImageSize, previewImageSize);
     previewMesh = m_EngineAPI.LoadMesh("res/Assets/sphere.glb");
+
+    m_EditShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/pbr.vert.shader");
+    m_EditShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/gpass.frag.shader");
+}
+
+void MaterialEditor::SetDropAssetPath(std::filesystem::path filePath) {
+    m_DropAssetPath = filePath;
 }
 
 void MaterialEditor::SetEditMaterial(IcePick::UUID materialID) {
@@ -21,6 +28,27 @@ void MaterialEditor::SetEditMaterial(IcePick::UUID materialID) {
 
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
+
+    m_EditMaterial.MaterialTextures.clear();
+
+    std::string fragShader = m_EditShaderSourceTemplate.FragmentShaderSource;
+    std::string replaceTarget = "#uniforms";
+    size_t pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), "");
+    }
+
+    replaceTarget = "#shader";
+    pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), "");
+    }
+
+    IcePick::ShaderSource newShaderSource;
+    newShaderSource.VertexShaderSource = m_EditShaderSourceTemplate.VertexShaderSource;
+    newShaderSource.FragmentShaderSource = fragShader;
+
+    m_EditMaterial.ShaderID = m_EngineAPI.CreateShaderFromSource(newShaderSource);
 }
 
 void MaterialEditor::OnUpdate(DeltaTime dt) {
@@ -69,6 +97,8 @@ void MaterialEditor::Render() {
             IcePickRenderer::RequestCursorUnlock();
             previewWindowRightClicked = false;
         }
+
+        ImGui::Checkbox("Auto compile graph", &m_AutoCompileGraph);
         
         if (ImGui::Button("Compile graph")) {
             CompileMaterial();
@@ -82,7 +112,23 @@ void MaterialEditor::Render() {
 }
 
 void MaterialEditor::PreviewMaterial() {
+    if (m_AutoCompileGraph && m_GraphStateChanged) {
+        CompileMaterial();
+        m_GraphStateChanged = false;
+    }
+
     m_Renderer.Clear();
+
+    IcePick::ShaderProgram& materialShader = m_EngineAPI.GetShaderProgram(m_EditMaterial.ShaderID);
+    for (int i = 0; i < m_EditMaterial.MaterialTextures.size(); i++) {
+        std::string& textureSampler = m_EditMaterial.MaterialTextures[i].first;
+        IcePick::UUID textureId = m_EditMaterial.MaterialTextures[i].second;
+
+        const Texture& materialTexture = m_EngineAPI.GetTexture(textureId);
+        materialTexture.Bind(i);
+        materialShader.SetUniformInt32(textureSampler.c_str(), i);
+    }
+
     previewMesh.MaterialSlots[0] = m_EditMaterialId;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     m_Renderer.RenderMesh(previewMesh, modelMatrix);
@@ -116,7 +162,6 @@ void MaterialEditor::DrawCanvas() {
     const ImVec2 origin(canvas_p0.x + m_CanvasScrolling.x, canvas_p0.y + m_CanvasScrolling.y); // Lock scrolled origin
     const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
-
     // Pan (we use a zero mouse threshold when there's no context menu)
     // You may decide to make that threshold dynamic based on whether the mouse is hovering something etc.
     if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
@@ -128,17 +173,9 @@ void MaterialEditor::DrawCanvas() {
     ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
     if (drag_delta.x == 0.0f && drag_delta.y == 0.0f)
         ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-    if (ImGui::BeginPopup("context")) {        
-        if (ImGui::MenuItem("Texture Node", NULL, false)) {
-            std::shared_ptr<TextureNode> newNode = std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
-            newNode->CanvasPosition = mouse_pos_in_canvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
-        if (ImGui::MenuItem("Vector3 Node", NULL, false)) { 
-            std::shared_ptr<Vector3Node> newNode = std::make_shared<Vector3Node>();
-            newNode->CanvasPosition = mouse_pos_in_canvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
+
+    if (ImGui::BeginPopup("context")) {
+        ShowAddNodeOptions(mouse_pos_in_canvas);
         ImGui::EndPopup();
     }
 
@@ -167,8 +204,6 @@ void MaterialEditor::DrawNodes() {
     ImVec2 mousePos = ImGui::GetMousePos();
     bool mousePressed = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
     bool mouseReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
-    float labelPadding = 5.0f;
-    ImU32 labelColour = IM_COL32(255, 255, 255, 255);
 
     for (int i = 0; i < m_EditMaterialNodeGraph.size(); i++) {
         ImGui::PushID(i);
@@ -200,8 +235,8 @@ void MaterialEditor::DrawNodes() {
 
             std::string& label = node->InputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
-            ImVec2 labelPosition = ImVec2(pinPosition.x + m_RenderInfo.PinRadius + labelPadding, pinPosition.y - (labelSize.y / 2.0f));
-            draw_list->AddText(labelPosition, labelColour, label.c_str());
+            ImVec2 labelPosition = ImVec2(pinPosition.x + m_RenderInfo.PinRadius + m_RenderInfo.LabelPadding, pinPosition.y - (labelSize.y / 2.0f));
+            draw_list->AddText(labelPosition, m_RenderInfo.LabelColour, label.c_str());
 
             if (currentPinActive) {
                 m_PinActive = true;
@@ -237,7 +272,7 @@ void MaterialEditor::DrawNodes() {
 
             std::string& label = node->OutputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
-            ImVec2 labelPosition = ImVec2(pinPosition.x - m_RenderInfo.PinRadius - labelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
+            ImVec2 labelPosition = ImVec2(pinPosition.x - m_RenderInfo.PinRadius - m_RenderInfo.LabelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
             draw_list->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label.c_str());
 
             if (currentPinActive) {
@@ -259,7 +294,7 @@ void MaterialEditor::DrawNodes() {
             ImGui::PopID();
         }
 
-        node->CustomRendering(m_EngineAPI, m_RenderInfo, m_CanvasScreenPos, m_CanvasScrolling);
+        node->CustomRendering(m_EngineAPI, m_DropAssetPath, m_RenderInfo, m_CanvasScreenPos, m_CanvasScrolling);
 
         // Only update node position at the end to avoid inconsistencies with pins
         if (nodeHeaderHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
@@ -316,6 +351,43 @@ void MaterialEditor::DrawNodeConnections() {
 
             DrawLine(inputPinLocation, outputPinLocation, true);
         }
+    }
+}
+
+void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
+
+    if (ImGui::BeginMenu("Render Nodes")) {
+        if (ImGui::MenuItem("Texture Node", NULL, false)) {
+            std::shared_ptr<TextureNode> newNode = std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Math Nodes")) {
+        if (ImGui::MenuItem("Vector3 Node", NULL, false)) {
+            std::shared_ptr<Vector3Node> newNode = std::make_shared<Vector3Node>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Vector4 Node", NULL, false)) {
+            std::shared_ptr<Vector4Node> newNode = std::make_shared<Vector4Node>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+        ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Input Nodes")) {
+        if (ImGui::MenuItem("UV Node", NULL, false)) {
+            std::shared_ptr<UVNode> newNode = std::make_shared<UVNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        ImGui::EndMenu();
     }
 }
 
@@ -398,6 +470,8 @@ void MaterialEditor::ConnectActivePin(std::shared_ptr<Node> destinationNode, uns
 }
 
 void MaterialEditor::DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin) {
+    m_GraphStateChanged = true;
+
     if (isInputPin) { // disconnect one connection
         InputPin& pin = node->InputPins[pinIndex];
         IcePick::UUID connectedNodeId = pin.ConnectedNodeId;
@@ -439,13 +513,45 @@ void MaterialEditor::CompileMaterial() {
     for (auto node : m_EditMaterialNodeGraph) {
         node->Unitialise();
     }
+    m_EditMaterial.MaterialTextures.clear();
 
-    std::stringstream ss;
-    CreateShaderFromGraph(ss, m_EditMaterialNodeGraph[0], 0);
-    IP_LOG(ss.str());
+    
+    std::stringstream uniformSS;
+    std::stringstream shaderSS;
+
+    CreateShaderFromGraph(shaderSS, m_EditMaterialNodeGraph[0], 0, 0);
+    for (auto materialTexture : m_EditMaterial.MaterialTextures) {
+        uniformSS << "uniform sampler2D " << materialTexture.first << ";\n";
+    }
+
+    std::string fragShader = m_EditShaderSourceTemplate.FragmentShaderSource;
+
+    std::string replaceTarget = "#uniforms";
+    size_t pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), uniformSS.str());
+    }
+
+    replaceTarget = "#shader";
+    pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), shaderSS.str());
+    }
+
+    IcePick::ShaderSource newShaderSource;
+    newShaderSource.VertexShaderSource = m_EditShaderSourceTemplate.VertexShaderSource;
+    newShaderSource.FragmentShaderSource = fragShader;
+
+    m_EngineAPI.UpdateShaderWithSource(m_EditMaterial.ShaderID, newShaderSource);
+    m_EngineAPI.UpdateMaterialAsset(m_EditMaterialId, m_EditMaterial);
+    IP_LOG(fragShader);
 }
 
-std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex) {
+std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth) {
+    if (recursiveDepth > 100) {
+        IP_LOG("Error compiling graph. Max node recursion exceeded.", IP_ERROR_LOG);
+        return "";
+    }
 
     // Get current node input values
     for (InputPin& pin : node->InputPins) {
@@ -460,10 +566,10 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
         }
 
         std::shared_ptr<Node> connectedNode = FindNodeById(pin.ConnectedNodeId);
-        pin.ShaderIdentifier = CreateShaderFromGraph(ss, connectedNode, pin.ConnectedPinIndex);
+        pin.ShaderIdentifier = CreateShaderFromGraph(ss, connectedNode, pin.ConnectedPinIndex, recursiveDepth + 1);
     }
 
-    node->Initialise(ss);
+    node->Initialise(ss, m_EditMaterial);
     node->ParseNodeLogic(ss);
     return node->GetPinOutput(outputPinIndex);
 }

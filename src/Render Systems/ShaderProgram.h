@@ -22,13 +22,16 @@ namespace IcePick {
 
 		// Uniforms
 		void SetUniformUint32(const char* uniform, uint32_t value);
+		void SetUniformInt32(const char* uniform, int32_t value);
 	private:
 		unsigned int CompilerShader(unsigned int shaderType, const std::string& shaderSource);
 		unsigned int m_ShaderProgramID = 0;
 		bool m_ShaderProgramValid = false;
 
 		std::unordered_map<std::string, int> m_CachedUniformLocations;
-		inline void SetShaderUniform(int location, uint32_t value);
+		inline void SetShaderUniformUint32(int location, uint32_t value);
+		inline void SetShaderUniformInt32(int location, int32_t value);
 		void RegisterSetUniformUint32(const char* uniform, uint32_t value);
+		void RegisterSetUniformInt32(const char* uniform, int32_t value);
 	};
 }

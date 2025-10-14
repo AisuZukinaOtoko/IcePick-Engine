@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
 #include "MaterialAsset.h"
@@ -20,7 +20,7 @@ namespace IcePick {
 
 		void SetLoadMaterialShaderID(UUID materialShaderId);
 		//void SetDefaultMaterial(Material defaultMaterial);
-		void UpdateMaterial(const Material& other);
+		void UpdateMaterial(UUID materialId, const MaterialAsset& newMaterial);
 		void CleanUpAfterLoad();
 		void ShutDown(TextureLoader& textureLoader);
 	private:

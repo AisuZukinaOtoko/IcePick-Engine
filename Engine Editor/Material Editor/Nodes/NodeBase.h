@@ -5,6 +5,7 @@
 #include "../Scene Systems/UUID.h"
 #include "../Layers/EngineAPI.h"
 #include "imgui-docking/imgui.h"
+#include "../File Systems/MaterialAsset.h"
 
 namespace Pin {
 	enum PinType {
@@ -51,6 +52,8 @@ struct NodeRenderInfo {
 	int PinSegments = 10;
 	float LineThickness = 3.0f;
 	unsigned int LineSegments = 40;
+	float LabelPadding = 5.0f;
+	ImU32 LabelColour = IM_COL32(255, 255, 255, 255);
 	ImU32 NodeBgColour = IM_COL32(20, 20, 20, 255);
 	ImU32 NodeHeaderColour = IM_COL32(0xD2, 0xA1, 0x02, 255);
 	ImU32 NodePinColour = IM_COL32(255, 255, 255, 255);
@@ -62,8 +65,8 @@ public:
 	IcePick::UUID Id;
 	std::vector<InputPin> InputPins;
 	std::vector<OutputPin> OutputPins;
-	virtual void CustomRendering(IcePick::EngineAPI engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
-	virtual void Initialise(std::stringstream& ss) {}
+	virtual void CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
+	virtual void Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {}
 	virtual void ParseNodeLogic(std::stringstream& ss) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }
 	void Unitialise();

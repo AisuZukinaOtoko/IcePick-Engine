@@ -23,12 +23,14 @@ namespace IcePick {
 		unsigned int LoadTexture(std::filesystem::path texturePath);
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path& assetPath);
+		UUID CreateShaderFromSource(ShaderSource& source);
 		const MaterialAsset& GetMaterialAsset(UUID Id);
 		ShaderProgram& GetShaderProgram(UUID Id);
 		void ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial);
 		void ReloadShaderPrograms();
 		void ShutDown();
 	private:
+		friend class EngineAPI;
 		UUID m_PBRShaderProgramId = UUID::Unitialised();
 		const char* m_PBRVertShader = "res/shaders/pbr.vert.shader";
 		const char* m_PBRFragShader = "res/shaders/pbr.frag.shader";

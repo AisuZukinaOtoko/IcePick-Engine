@@ -9,37 +9,42 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 	OutputPins.emplace_back(Pin::FLOAT32, "B", ".b");
 	OutputPins.emplace_back(Pin::FLOAT32, "A", ".a");
 
-	NodeWidth = 200.0f;
+	NodeWidth = 160.0f;
 }
 
-void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
+void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-	unsigned int textureId = engineAPI.GetTextureRenderId(m_TextureId);
-	ImVec2 imagePos = ImVec2(CanvasPosition.x + canvasScreenPos.x + canvasScrolling.x, CanvasPosition.y + canvasScreenPos.y + canvasScrolling.y + renderInfo.NodeHeaderHeight);
-	ImVec2 imageSize = ImVec2(100.0f, 100.0f);
-	ImVec2 imageEnd = ImVec2(imagePos.x + imageSize.x, imagePos.y + imageSize.y);
-	draw_list->AddImage((void*)(intptr_t)textureId, imagePos, imageEnd, ImVec2(0, 1), ImVec2(1, 0));
+	float nodeMinHeight = renderInfo.PinYSpacing * std::min(InputPins.size(), OutputPins.size()) + 1 + renderInfo.PinRadius + renderInfo.LabelPadding;
+	float nodeMaxHeight = renderInfo.PinYSpacing * std::max(InputPins.size(), OutputPins.size());
+	ImVec2 imagePos = ImVec2(CanvasPosition.x + canvasScreenPos.x + canvasScrolling.x + renderInfo.PinRadius + renderInfo.LabelPadding, CanvasPosition.y + canvasScreenPos.y + canvasScrolling.y + renderInfo.NodeHeaderHeight + nodeMinHeight);
+	ImVec2 imageEnd = ImVec2(0.0f, imagePos.y + nodeMaxHeight - renderInfo.NodePadding);
+	imageEnd.x = imagePos.x + imageEnd.y - imagePos.y;
+	ImVec2 imageSize = ImVec2(imageEnd.x - imagePos.x, imageEnd.y - imagePos.y);
+	draw_list->AddImage((void*)(intptr_t)m_TextureRenderId, imagePos, imageEnd, ImVec2(0, 1), ImVec2(1, 0));
 
 	ImGui::SetCursorScreenPos(imagePos);
 	ImGui::InvisibleButton("textureTarget", imageSize);
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload("ASSET")) {
-			//DropMaterialIntoViewport();
-			m_TextureId = engineAPI.LoadTextureFromAsset("res/textures/black_fabric_diffuse.iptex");
+		if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
+			m_TextureId = engineAPI.LoadTextureFromAsset(dropAssetPath);
+			m_TextureRenderId = engineAPI.GetTextureRenderId(m_TextureId);
 		}
 		ImGui::EndDragDropTarget();
 	}
 
 }
 
-void TextureNode::Initialise(std::stringstream& ss) {
+void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
 	if (m_Initialised)
 		return;
 
+	std::string sampler = "sampler_" + std::to_string(Id);
+	editMaterial.MaterialTextures.push_back({ sampler, m_TextureId });
+
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& s1 = InputPins[0].ShaderIdentifier;
-	ss << "vec4 " << m_Identifier << " = texture(" << m_TextureId << "," << s1 << ");\n";
+	ss << "vec4 " << m_Identifier << " = texture(" << sampler << "," << s1 << ");\n";
 	m_Initialised = true;
 }
 

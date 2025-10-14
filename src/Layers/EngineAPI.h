@@ -14,6 +14,15 @@ namespace IcePick {
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 
+		UUID CreateShaderFromSource(ShaderSource& source);
+		ShaderProgram& GetShaderProgram(UUID shaderId);
+		void UpdateShaderWithSource(UUID shaderId, ShaderSource& source);
+		std::string LoadShaderSourceFile(std::filesystem::path filepath);
+
+		const Texture& GetTexture(UUID textureId);
+
+		void UpdateMaterialAsset(UUID materialId, MaterialAsset& material);
+
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
 		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);
 

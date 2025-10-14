@@ -162,7 +162,7 @@ namespace IcePickRenderer {
 
 		// shader textures
 		// tell texture units which textures
-		glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, material.AlbedoMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, material.NormalMap);
@@ -171,10 +171,10 @@ namespace IcePickRenderer {
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, material.MetallicMap);
 		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, material.EmissiveMap);
+		glBindTexture(GL_TEXTURE_2D, material.EmissiveMap);*/
 
 		// tell samplers which texture units
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "MaterialSampleFlags"), material.SampleBitmask);
+		/*glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "MaterialSampleFlags"), material.SampleBitmask);
 		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_AlbedoTexUnit"), 0);
 		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_NormalTexUnit"), 1);
 		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_RoughnessTexUnit"), 2);
@@ -182,7 +182,7 @@ namespace IcePickRenderer {
 		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_EmissiveUnit"), 4);
 
 		glUniform4fv(glGetUniformLocation(meshMaterial.ShaderID, "u_AlbedoColour"), 1, &material.AlbedoColour[0]);
-		glUniform3fv(glGetUniformLocation(meshMaterial.ShaderID, "u_SpecularColour"), 1, &material.SpecularColour[0]);
+		glUniform3fv(glGetUniformLocation(meshMaterial.ShaderID, "u_SpecularColour"), 1, &material.SpecularColour[0]);*/
 
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();

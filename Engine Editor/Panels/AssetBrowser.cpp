@@ -38,16 +38,19 @@ void AssetBrowser::Render() {
     for (const auto& file : std::filesystem::directory_iterator(m_CurrentBrowsingPath)) {
         tempIterator++;
         ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);
+        std::string assetType = "ASSET";
 
         if (file.is_regular_file()) {
             std::filesystem::path extension = file.path().extension();
 
             if (extension == ".iptex") {
+                assetType = "TEXTURE_ASSET";
                 std::filesystem::path fullAssetPath = std::filesystem::canonical(file.path());
                 IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
             }
             else if (extension == ".ipmat") {
+                assetType = "MATERIAL_ASSET";
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                     EditMaterialCallback(IcePick::UUID::Unitialised());
                 }
@@ -79,7 +82,7 @@ void AssetBrowser::Render() {
             std::filesystem::path assetPath = file.path();
             // Set the payload — it can be anything (structs, pointers, etc.)
             m_DragFilePath = assetPath.string();
-            ImGui::SetDragDropPayload("ASSET", nullptr, 0, ImGuiCond_Once);
+            ImGui::SetDragDropPayload(assetType.c_str(), nullptr, 0, ImGuiCond_Once);
 
             // Optionally show preview while dragging
             ImGui::ImageButton("##Hello", icon, ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1));

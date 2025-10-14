@@ -32,9 +32,8 @@ uniform float u_EmissiveValue;
 
 const vec3 tempLightPosition = vec3(2.0f, 3.0f, 4.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
-const vec3 tempAmbientColour = vec3(0.02f, 0.015f, 0.015f);
+const vec3 tempAmbientColour = vec3(0.22f, 0.215f, 0.215f);
 
-#include "math.shader"
 #include "picking.shader"
 
 void main() {
@@ -47,7 +46,7 @@ void main() {
     vec4 diffuseColour = ((MaterialSampleFlags & SAMPLE_ALBEDO) != 0) ? texture(u_AlbedoTexUnit, v_TexCoord) : u_AlbedoColour;
 
     if (dot(v_Normal, L)  < 0.0f){
-        OutputColour = vec4(tempAmbientColour, diffuseColour.a);
+        OutputColour = vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a);
     }
     else {
         OutputColour += vec4(tempAmbientColour, 0.0f); // ambient
@@ -55,7 +54,7 @@ void main() {
         OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
     }
 
-    OutColour = TempColour();
+    OutColour = diffuseColour;
     OutColour = OutputColour;
     OutNormal = vec4(v_Normal, 1.0f);
 #ifdef VIEW_PICKING

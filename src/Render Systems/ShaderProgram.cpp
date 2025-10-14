@@ -56,8 +56,12 @@ namespace IcePick {
 		m_CachedUniformLocations.clear();
 	}
 
-	inline void ShaderProgram::SetShaderUniform(int location, uint32_t value) {
+	inline void ShaderProgram::SetShaderUniformUint32(int location, uint32_t value) {
 		glUniform1ui(location, value);
+	}
+
+	inline void ShaderProgram::SetShaderUniformInt32(int location, int32_t value) {
+		glUniform1i(location, value);
 	}
 
 	void ShaderProgram::RegisterSetUniformUint32(const char* uniform, uint32_t value) {
@@ -68,7 +72,18 @@ namespace IcePick {
 		}
 
 		m_CachedUniformLocations.insert({ uniform, location });
-		SetShaderUniform(location, value);
+		SetShaderUniformUint32(location, value);
+	}
+
+	void ShaderProgram::RegisterSetUniformInt32(const char* uniform, int32_t value)	{
+		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
+		if (location < 0) {
+			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
+			return;
+		}
+
+		m_CachedUniformLocations.insert({ uniform, location });
+		SetShaderUniformInt32(location, value);
 	}
 
 	void ShaderProgram::SetUniformUint32(const char* uniform, uint32_t value) {
@@ -77,11 +92,25 @@ namespace IcePick {
 
 		if (iterator != m_CachedUniformLocations.end()) {
 			int location = iterator->second;			
-			SetShaderUniform(location, value);
+			SetShaderUniformUint32(location, value);
 			return;
 		}
 
 		RegisterSetUniformUint32(uniform, value);
+		UnBind();
+	}
+
+	void ShaderProgram::SetUniformInt32(const char* uniform, int32_t value)	{
+		Use();
+		auto iterator = m_CachedUniformLocations.find(uniform);
+
+		if (iterator != m_CachedUniformLocations.end()) {
+			int location = iterator->second;
+			SetShaderUniformInt32(location, value);
+			return;
+		}
+
+		RegisterSetUniformInt32(uniform, value);
 		UnBind();
 	}
 

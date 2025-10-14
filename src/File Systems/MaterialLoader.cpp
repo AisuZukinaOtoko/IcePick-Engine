@@ -121,8 +121,14 @@ namespace IcePick {
 		InvalidateCache();
 	}*/
 
-	void MaterialLoader::UpdateMaterial(const Material& other) {
+	void MaterialLoader::UpdateMaterial(UUID materialId, const MaterialAsset& newMaterial) {
+		auto materialIterator = m_LoadedMaterialAssets.find(materialId);
+		if (materialIterator == m_LoadedMaterialAssets.end())
+			return;
 
+		MaterialAsset& oldMaterial = materialIterator->second;
+		oldMaterial = newMaterial;
+		InvalidateCache();
 	}
 
 	UUID MaterialLoader::GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "../Scene Systems/UUID.h"
 #include "glm/glm.hpp"
+#include <vector>
 
 namespace IcePick {
 	class MaterialAsset {
@@ -19,6 +20,7 @@ namespace IcePick {
 
 		UUID ShaderID = UUID::Unitialised();
 		unsigned int SampleBitmask = 0;
+		std::vector<std::pair<std::string, IcePick::UUID>> MaterialTextures;
 
 		glm::vec4 AlbedoColour;
 		glm::vec3 SpecularColour;
