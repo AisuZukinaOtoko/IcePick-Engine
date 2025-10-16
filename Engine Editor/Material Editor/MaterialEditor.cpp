@@ -87,7 +87,7 @@ void MaterialEditor::Render() {
 		ImGui::TableNextColumn();
 
         PreviewMaterial();
-		ImGui::ImageButton("##MaterialButton", (void*)m_Renderer.GetRenderTexture(), ImVec2(previewImageSize, previewImageSize), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((void*)m_Renderer.GetRenderTexture(), ImVec2(previewImageSize, previewImageSize), ImVec2(0, 1), ImVec2(1, 0));
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsItemHovered()) {
             IcePickRenderer::RequestCursorLock();
             previewWindowRightClicked = true;
