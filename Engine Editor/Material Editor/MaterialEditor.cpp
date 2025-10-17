@@ -49,6 +49,7 @@ void MaterialEditor::SetEditMaterial(IcePick::UUID materialID) {
     newShaderSource.FragmentShaderSource = fragShader;
 
     m_EditMaterial.ShaderID = m_EngineAPI.CreateShaderFromSource(newShaderSource);
+    IP_LOG("Editing a material currently creates a new shader, regardless of whether the material is saved or not.", IP_WARN_LOG);
 }
 
 void MaterialEditor::OnUpdate(DeltaTime dt) {

@@ -1689,9 +1689,6 @@
     <ClInclude Include="src\Vendor\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\File Systems\TextureAsset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Engine Editor\Styles\ThumbnailManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>

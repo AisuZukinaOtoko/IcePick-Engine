@@ -386,7 +386,6 @@
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
     <ClInclude Include="src\File Systems\ShaderLoader.h" />
-    <ClInclude Include="src\File Systems\TextureAsset.h" />
     <ClInclude Include="src\File Systems\TextureLoader.h" />
     <ClInclude Include="src\Layers\EngineAPI.h" />
     <ClInclude Include="src\Layers\EngineLayer.h" />

@@ -120,6 +120,16 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 		materialShader.SetUniformUint32("u_EntityId", (uint32_t)entityId);
 		materialShader.SetUniformUint32("u_MaterialSlotIndex", (uint32_t)parent.MaterialSlotIndex);
 
+		for (int i = 0; i < materialAsset.MaterialTextures.size(); i++) {
+			const std::string& textureSampler = materialAsset.MaterialTextures[i].first;
+			IcePick::UUID textureId = materialAsset.MaterialTextures[i].second;
+
+			const Texture& materialTexture = m_AssetLoader.GetTexture(textureId);
+			materialTexture.Bind(i);
+			materialShader.SetUniformInt32(textureSampler.c_str(), i);
+		}
+
+		materialShader.Use();
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
 		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, meshMaterial);
