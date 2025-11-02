@@ -70,6 +70,7 @@ void ScenePanel::ShowSceneHierarchy() {
 			if (ImGui::MenuItem("Delete Entity")) {
 				IcePick::DeleteEntity(m_SelectedEntity);
 				m_SelectedEntity = entt::null; // Deselect if deleted
+				SelectedEntityChangeCallback(entt::null);
 			}
 
 			ImGui::EndPopup();

@@ -29,18 +29,23 @@ void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem:
 		if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
 			m_TextureId = engineAPI.LoadTextureFromAsset(dropAssetPath);
 			m_TextureRenderId = engineAPI.GetTextureRenderId(m_TextureId);
+			MaterialInstanceStateChanged = true;
 		}
 		ImGui::EndDragDropTarget();
 	}
 
 }
 
-void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
+void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
 	if (m_Initialised)
 		return;
 
 	std::string sampler = "sampler_" + std::to_string(Id);
-	editMaterial.MaterialTextures.push_back({ sampler, m_TextureId });
+	IcePick::MaterialBaseTextureData materialBaseTextureData{ IcePick::UUID(), sampler };
+	editMaterialBase.MaterialTextures.push_back(materialBaseTextureData);
+
+	IcePick::MaterialInstanceData<IcePick::UUID> materialInstanceTextureData{ materialBaseTextureData.Id, m_TextureId };
+	editMaterialInstance.InstanceTextureData.push_back(materialInstanceTextureData);
 
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& s1 = InputPins[0].ShaderIdentifier;

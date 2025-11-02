@@ -8,7 +8,7 @@ Vector4Node::Vector4Node() {
 	OutputPins.emplace_back(Pin::VEC3, "XYZW", ".xyzw");
 }
 
-void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
+void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
 	if (m_Initialised)
 		return;
 

@@ -4,7 +4,7 @@ UVNode::UVNode() {
 	OutputPins.emplace_back(Pin::VEC2, "UV", "");
 }
 
-void UVNode::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
+void UVNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
 
 }
 

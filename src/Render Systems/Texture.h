@@ -18,9 +18,6 @@ public:
 	bool IsValid() const;
 	void Destroy();
 
-	// ID of the texture asset
-	int GetTextureID();
-
 	// ID of the opengl texture
 	unsigned int GetID() const;
 	
@@ -28,7 +25,6 @@ private:
 	void CreateTextureContext();
 	void SetTextureFormats();
 	void UploadTextureData();
-	int m_TextureID = -1;
 	unsigned int m_ID = 0;
 	std::string m_FilePath;
 	unsigned char* m_LocalBuffer = nullptr; // points to invalid memory after texture is created

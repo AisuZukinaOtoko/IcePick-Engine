@@ -149,7 +149,7 @@ namespace IcePickRenderer {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 		Material meshMaterial = material;
 		//Material& meshMaterial = GetMaterial(mesh.MaterialIndex);
-		glUseProgram(meshMaterial.ShaderID);
+		//glUseProgram(meshMaterial.ShaderID);
 
 		int location = glGetUniformLocation(meshMaterial.ShaderID, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);

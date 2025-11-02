@@ -7,7 +7,7 @@ Vector3Node::Vector3Node() {
 	OutputPins.emplace_back(Pin::VEC3, "XYZ", ".xyz");
 }
 
-void Vector3Node::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
+void Vector3Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
 	if (m_Initialised)
 		return;
 

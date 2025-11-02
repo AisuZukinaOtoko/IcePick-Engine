@@ -2,9 +2,9 @@
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
 #include "MaterialAsset.h"
+#include "MaterialBase.h"
 #include <unordered_map>
 #include <string>
-#include "../Render Systems/Materials.h"
 #include "../../ASSIMP/include/assimp/scene.h"
 
 namespace IcePick {
@@ -13,35 +13,52 @@ namespace IcePick {
 		MaterialLoader();
 		~MaterialLoader();
 
-		UUID NewMaterialFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
-		//Material GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader);
-		MaterialAsset& GetMaterialAsset(UUID Id);
-		void ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader, ShaderLoader& shaderLoader) const;
+		UUID NewMaterialBaseFromCopy(const MaterialBase& newMaterialBase);
+		UUID NewMaterialInstanceFromCopy(const MaterialInstance& newMaterialInstance);
+		UUID NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
+		
+		MaterialBase& GetMaterialBase(UUID Id);
+		MaterialInstance& GetMaterialInstance(UUID Id);
 
 		void SetLoadMaterialShaderID(UUID materialShaderId);
-		//void SetDefaultMaterial(Material defaultMaterial);
-		void UpdateMaterial(UUID materialId, const MaterialAsset& newMaterial);
+
+		void UpdateMaterialBase(UUID Id, const MaterialBase& newMaterialBase);
+		void UpdateMaterialInstance(UUID Id, const MaterialInstance& newMaterialInstance);
+		
 		void CleanUpAfterLoad();
 		void ShutDown(TextureLoader& textureLoader);
 	private:
-		UUID m_CachedMaterialId = UUID::Unitialised();
+		enum MaterialTextureTypes {
+			DIFFUSE_TEXTURE = 0,
+			TYPE_COUNT
+		};
+		std::vector<std::string> m_DefaultMaterialTextureSamplerIdentifiers;
+
+		UUID m_CachedMaterialBaseId = UUID::Unitialised();
+		UUID m_CachedMaterialInstanceId = UUID::Unitialised();
 
 		// Shader ID applied to materials loaded from external files
 		UUID m_LoadMaterialShaderId = UUID::Unitialised();
-		MaterialAsset m_CachedMaterial;
-		MaterialAsset m_DefaultMaterial;
+
+
+		MaterialBase m_CachedMaterialBase;
+		MaterialBase m_DefaultMaterialBase;
+		MaterialInstance m_CachedMaterialInstance;
+		MaterialInstance m_DefaultMaterialInstance;
 		void InvalidateCache();
 
 		// Helper functions when creating a new material
 		UUID GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader);
-		void GetSceneMaterialColours(MaterialAsset& materialAsset, aiMaterial* mat);
-		UUID RegisterMaterialAsset(const MaterialAsset& materialAsset);
-		void SetMaterialSampleBits(MaterialAsset& materialAsset, UUID defualtTextureId);
+		void SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
 
-		std::unordered_map<UUID, MaterialAsset, UUIDHasher> m_LoadedMaterialAssets;
+		UUID RegisterMaterialBase(const MaterialBase& materialBase);
+		UUID RegisterMaterialInstance(const MaterialInstance& materialInstance);
+
+		std::unordered_map<UUID, MaterialBase, UUIDHasher> m_LoadedMaterialBases;
+		std::unordered_map<UUID, MaterialInstance, UUIDHasher> m_LoadedMaterialInstances;
 		
-		// Cache for loaded scene materials used during loading a multiple materials within a scene. Cleared after each scene is loaded.
-		std::unordered_map<unsigned int, UUID> m_CachedSceneMaterials;
+		// Cache for loaded scene material instances used during loading a multiple materials within a scene. Cleared after each scene is loaded.
+		std::unordered_map<unsigned int, UUID> m_CachedSceneMaterialInstances;
 	};
 }
 

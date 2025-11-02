@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\NodeGraphManager.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp" />
@@ -161,10 +162,11 @@
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="Engine Editor\EditorRenderer.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\MaterialEditor.cpp" />
-    <ClCompile Include="Engine Editor\Material Editor\Nodes\Nodes.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\NodeBase.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
+    <ClCompile Include="src\File Systems\MaterialBase.cpp" />
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
     <ClCompile Include="src\File Systems\SceneLoader.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
@@ -209,6 +211,7 @@
   <ItemGroup>
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
+    <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\depth.shader" />
     <None Include="res\shaders\gpass.frag.shader" />
     <None Include="res\shaders\material.shader" />
@@ -359,6 +362,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
+    <ClInclude Include="Engine Editor\Material Editor\NodeGraphManager.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.h" />
@@ -383,6 +387,7 @@
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
     <ClInclude Include="src\File Systems\MaterialAsset.h" />
+    <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
     <ClInclude Include="src\File Systems\ShaderLoader.h" />

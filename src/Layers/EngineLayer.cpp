@@ -2,6 +2,7 @@
 #include "EngineLayer.h"
 #include "../LogSystem.h"
 #include "../Event Systems/Input.h"
+#include "EngineAPI.h"
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
@@ -111,25 +112,20 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 	for (unsigned int vertexArrayID : parent.VertexArrayIDs) {
 		MeshComponent mesh = { vertexArrayID, -1, MeshComponent::STATIC };
 
-		UUID meshMaterialId = (parent.MaterialSlotIndex != -1) ? materialSlots[parent.MaterialSlotIndex] : UUID::Unitialised();
+		UUID meshMaterialInstanceId = (parent.MaterialSlotIndex != -1) ? materialSlots[parent.MaterialSlotIndex] : UUID::Unitialised();
+		const MaterialInstance& meshMaterialInstance = m_AssetLoader.GetMaterialInstance(meshMaterialInstanceId);
+		MaterialBase& meshMaterialBase = m_AssetLoader.GetMaterialBase(meshMaterialInstance.MaterialBaseId);
+
+		meshMaterialBase.BindMaterialInstanceTextures(shared_from_this(), meshMaterialInstance);
+
+
+		ShaderProgram& materialBaseShader = m_AssetLoader.GetShaderProgram(meshMaterialBase.ShaderId);
+		materialBaseShader.SetUniformUint32("u_EntityId", (uint32_t)entityId);
+		materialBaseShader.SetUniformUint32("u_MaterialSlotIndex", (uint32_t)parent.MaterialSlotIndex);
+
+		materialBaseShader.Use();
 		Material meshMaterial;
-		const MaterialAsset& materialAsset = m_AssetLoader.GetMaterialAsset(meshMaterialId);
-		m_AssetLoader.ConstructMaterialFromAsset(materialAsset, meshMaterial);
-
-		ShaderProgram& materialShader = m_AssetLoader.GetShaderProgram(materialAsset.ShaderID);
-		materialShader.SetUniformUint32("u_EntityId", (uint32_t)entityId);
-		materialShader.SetUniformUint32("u_MaterialSlotIndex", (uint32_t)parent.MaterialSlotIndex);
-
-		for (int i = 0; i < materialAsset.MaterialTextures.size(); i++) {
-			const std::string& textureSampler = materialAsset.MaterialTextures[i].first;
-			IcePick::UUID textureId = materialAsset.MaterialTextures[i].second;
-
-			const Texture& materialTexture = m_AssetLoader.GetTexture(textureId);
-			materialTexture.Bind(i);
-			materialShader.SetUniformInt32(textureSampler.c_str(), i);
-		}
-
-		materialShader.Use();
+		meshMaterial.ShaderID = materialBaseShader.GetID();
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
 		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, meshMaterial);

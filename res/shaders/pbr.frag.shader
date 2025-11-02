@@ -56,6 +56,7 @@ void main() {
 
     OutColour = diffuseColour;
     OutColour = OutputColour;
+    OutColour = vec4(1.0f);
     OutNormal = vec4(v_Normal, 1.0f);
 #ifdef VIEW_PICKING
     OutEntityMat = GetEntityMatSlot();

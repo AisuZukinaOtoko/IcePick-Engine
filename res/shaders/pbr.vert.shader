@@ -11,6 +11,7 @@ uniform mat4 u_MVP;
 uniform mat4 u_Modelmatrix;
 uniform mat3 u_NormalMatrix;
 
+
 void main() {
     gl_Position = u_MVP * vec4(position, 1.0f);
     v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;

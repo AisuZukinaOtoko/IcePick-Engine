@@ -11,7 +11,7 @@
 namespace IcePick {
 	class EngineAPI;
 
-	class EngineLayer : public Layer {
+	class EngineLayer : public Layer, public std::enable_shared_from_this<EngineLayer> {
 	public:
 		void OnAttach() override;
 		void OnUpdate(DeltaTime dt) override;

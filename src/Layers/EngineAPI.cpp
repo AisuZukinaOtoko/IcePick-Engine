@@ -37,8 +37,20 @@ const Texture& IcePick::EngineAPI::GetTexture(UUID textureId) {
 	return m_Engine->m_AssetLoader.m_TextureLoader.GetTexture(textureId);
 }
 
-void IcePick::EngineAPI::UpdateMaterialAsset(UUID materialId, MaterialAsset& material) {
-	m_Engine->m_AssetLoader.m_MaterialLoader.UpdateMaterial(materialId, material);
+IcePick::UUID IcePick::EngineAPI::RegisterMaterialBase(const MaterialBase& materialBase) {
+	return m_Engine->m_AssetLoader.m_MaterialLoader.NewMaterialBaseFromCopy(materialBase);
+}
+
+IcePick::UUID IcePick::EngineAPI::RegisterMaterialInstance(const MaterialInstance& materialInstance) {
+	return m_Engine->m_AssetLoader.m_MaterialLoader.NewMaterialInstanceFromCopy(materialInstance);
+}
+
+void IcePick::EngineAPI::UpdateMaterialBase(UUID Id, const MaterialBase& materialBase) {
+	m_Engine->m_AssetLoader.m_MaterialLoader.UpdateMaterialBase(Id, materialBase);
+}
+
+void IcePick::EngineAPI::UpdateMaterialInstance(UUID Id, const MaterialInstance& materialInstance) {
+	m_Engine->m_AssetLoader.m_MaterialLoader.UpdateMaterialInstance(Id, materialInstance);
 }
 
 IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::path assetPath) {

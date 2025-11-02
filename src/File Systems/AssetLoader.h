@@ -9,11 +9,6 @@
 #include "assimp/scene.h"
 
 namespace IcePick {
-	struct Asset {
-		unsigned int ID = -1; // index
-		bool AssetLoaded = false;
-		std::filesystem::path FilePath;
-	};
 
 	class AssetLoader {
 	public:
@@ -24,10 +19,14 @@ namespace IcePick {
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path& assetPath);
 		UUID CreateShaderFromSource(ShaderSource& source);
-		const MaterialAsset& GetMaterialAsset(UUID Id);
+
+		MaterialBase& GetMaterialBase(UUID Id);
+		MaterialInstance& GetMaterialInstance(UUID Id);
+
+		//const MaterialAsset& GetMaterialAsset(UUID Id);
 		const Texture& GetTexture(UUID Id);
 		ShaderProgram& GetShaderProgram(UUID Id);
-		void ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial);
+		//void ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial);
 		void ReloadShaderPrograms();
 		void ShutDown();
 	private:

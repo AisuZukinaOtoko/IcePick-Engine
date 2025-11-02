@@ -1,7 +1,9 @@
 #pragma once
 #include "../Layers/EngineAPI.h"
 #include "../EditorRenderer.h"
+#include "../File Systems/MaterialBase.h"
 #include "Nodes/NodeBase.h"
+#include "NodeGraphManager.h"
 #include <memory>
 #include <unordered_map>
 #include <sstream>
@@ -47,15 +49,20 @@ private:
 	IcePick::EngineAPI m_EngineAPI;
 	const char* m_ID = "Material Editor";
 
-	IcePick::UUID m_EditMaterialId = IcePick::UUID::Unitialised();
-	IcePick::MaterialAsset m_EditMaterial;
-	IcePick::ShaderSource m_EditShaderSourceTemplate;
+	IcePick::UUID m_EditMaterialBaseId = IcePick::UUID::Unitialised();
+	IcePick::UUID m_MaterialEditorMaterialBaseId = IcePick::UUID::Unitialised();
+	IcePick::UUID m_MaterialEditorMaterialInstanceId = IcePick::UUID::Unitialised();
+
+	IcePick::MaterialBase m_MaterialEditorMaterialBase;
+	IcePick::MaterialInstance m_MaterialEditorMaterialInstance;
+	IcePick::ShaderSource m_MaterialEditorShaderSourceTemplate;
 
 	bool m_PinActive = false; //dragging a node pin
 	bool m_IsInputPin = false;
 	unsigned int m_SourcePinIndex = 0;
 	IcePick::UUID m_SourcePinNodeId = IcePick::UUID::Unitialised();
-	std::vector<std::shared_ptr<Node>> m_EditMaterialNodeGraph;
+	Graph m_EditMaterialNodeGraph;
+	NodeGraphManager m_GraphManager;
 
 	ImVec2 m_CanvasScreenPos;
 	ImVec2 m_CanvasScrolling;

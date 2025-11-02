@@ -21,7 +21,10 @@ namespace IcePick {
 
 		const Texture& GetTexture(UUID textureId);
 
-		void UpdateMaterialAsset(UUID materialId, MaterialAsset& material);
+		UUID RegisterMaterialBase(const MaterialBase& materialBase);
+		UUID RegisterMaterialInstance(const MaterialInstance& materialInstance);
+		void UpdateMaterialBase(UUID Id, const MaterialBase& materialBase);
+		void UpdateMaterialInstance(UUID Id, const MaterialInstance& materialInstance);
 
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
 		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);

@@ -3,17 +3,19 @@ layout(location = 0) out vec4 OutColour;
 layout(location = 1) out vec4 OutNormal;
 layout(location = 2) out uvec4 OutEntityMat;
 
-in vec3 v_Pos;
 in vec2 v_TexCoord;
 in vec3 v_Normal;
 
-uniform vec3 u_CameraPosition;
+uniform sampler2D  u_AlbedoTexUnit;
 
-#uniforms
 #include "picking.shader"
 
 void main() {
-#shader
+    vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
+    OutColour = diffuseColour;
+    OutColour = vec4(1.0f, 0.5f, 0.8f, 1.0f);
+    OutNormal = vec4(v_Normal, 1.0f);
+
 #ifdef VIEW_PICKING
     OutEntityMat = GetEntityMatSlot();
 #endif

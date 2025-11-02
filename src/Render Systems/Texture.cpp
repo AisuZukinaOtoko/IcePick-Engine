@@ -119,10 +119,6 @@ bool Texture::IsValid() const {
 	return m_TextureValid;
 }
 
-int Texture::GetTextureID() {
-	return m_TextureID;
-}
-
 unsigned int Texture::GetID() const {
 	return m_ID;
 }

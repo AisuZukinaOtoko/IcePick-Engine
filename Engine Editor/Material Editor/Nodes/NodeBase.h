@@ -5,7 +5,7 @@
 #include "../Scene Systems/UUID.h"
 #include "../Layers/EngineAPI.h"
 #include "imgui-docking/imgui.h"
-#include "../File Systems/MaterialAsset.h"
+#include "../File Systems/MaterialBase.h"
 
 namespace Pin {
 	enum PinType {
@@ -66,12 +66,14 @@ public:
 	std::vector<InputPin> InputPins;
 	std::vector<OutputPin> OutputPins;
 	virtual void CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
-	virtual void Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {}
+	virtual void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {}
 	virtual void ParseNodeLogic(std::stringstream& ss) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }
 	void Unitialise();
 	ImVec2 CanvasPosition;
 	unsigned int NodeWidth = 150.0f;
+	bool MaterialBaseStateChanged = false;
+	bool MaterialInstanceStateChanged = false;
 protected:
 	bool m_Initialised = false;
 	std::string m_Identifier;

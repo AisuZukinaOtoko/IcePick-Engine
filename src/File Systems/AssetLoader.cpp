@@ -61,9 +61,17 @@ IcePick::UUID IcePick::AssetLoader::CreateShaderFromSource(ShaderSource& source)
 	return m_ShaderLoader.CreateShaderProgram(source);
 }
 
-const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
-	return m_MaterialLoader.GetMaterialAsset(Id);
+IcePick::MaterialBase& IcePick::AssetLoader::GetMaterialBase(IcePick::UUID Id) {
+	return m_MaterialLoader.GetMaterialBase(Id);
 }
+
+IcePick::MaterialInstance& IcePick::AssetLoader::GetMaterialInstance(IcePick::UUID Id) {
+	return m_MaterialLoader.GetMaterialInstance(Id);
+}
+
+//const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
+//	return m_MaterialLoader.GetMaterialAsset(Id);
+//}
 
 const Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 	return m_TextureLoader.GetTexture(Id);
@@ -73,9 +81,9 @@ IcePick::ShaderProgram& IcePick::AssetLoader::GetShaderProgram(UUID Id) {
 	return m_ShaderLoader.GetShaderProgram(Id);;
 }
 
-void IcePick::AssetLoader::ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial) {
-	m_MaterialLoader.ConstructMaterial(materialAsset, resultMaterial, m_TextureLoader, m_ShaderLoader);
-}
+//void IcePick::AssetLoader::ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial) {
+//	m_MaterialLoader.ConstructMaterial(materialAsset, resultMaterial, m_TextureLoader, m_ShaderLoader);
+//}
 
 void IcePick::AssetLoader::ReloadShaderPrograms() {
 	ShaderSource shaderSource;
@@ -96,7 +104,7 @@ void IcePick::AssetLoader::UpdateIndices(const aiScene* scene) {
 }
 
 IcePick::UUID IcePick::AssetLoader::LoadSceneMaterial(const aiScene* scene, unsigned int materialIndex) {
-	return m_MaterialLoader.NewMaterialFromScene(scene, materialIndex, m_TextureLoader);
+	return m_MaterialLoader.NewMaterialInstanceFromScene(scene, materialIndex, m_TextureLoader);
 }
 
 unsigned int IcePick::AssetLoader::GetMeshMaterialSlot(std::vector<UUID>& materialSlots, UUID meshMaterial) {
@@ -116,8 +124,8 @@ void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& p
 		for (int i = 0; i < sceneNode->mNumMeshes; i++) {
 			const unsigned int meshIndex = sceneNode->mMeshes[i];
 			currentNode.VertexArrayIDs.push_back(GetIndex(MESH_INDEX, sceneNode->mMeshes[i]));
-			UUID nodeMaterialId = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
-			currentNode.MaterialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialId);
+			UUID nodeMaterialInsatnceId = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
+			currentNode.MaterialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialInsatnceId);
 		}
 	}
 

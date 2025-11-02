@@ -8,7 +8,7 @@ BSDFNode::BSDFNode() {
 	//InputPins.emplace_back(Pin::FLOAT32, "Emissive");
 }
 
-void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialAsset& editMaterial) {
+void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
 	if (m_Initialised)
 		return;
 

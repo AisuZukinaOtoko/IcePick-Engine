@@ -21,6 +21,12 @@ void AssetBrowser::Render() {
     if (ImGui::Button("Back")) {
         m_CurrentBrowsingPath = m_CurrentBrowsingPath.parent_path();
     }
+    ImGui::SameLine();
+
+    if (ImGui::Button("New")) {
+        IP_LOG("Import an asset.");
+    }
+
     ImGui::Separator();
 
     // Configuration

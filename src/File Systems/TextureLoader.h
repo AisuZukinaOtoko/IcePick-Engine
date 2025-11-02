@@ -38,7 +38,7 @@ namespace IcePick {
 		std::unordered_map<std::filesystem::path, UUID> m_CachedTextureAssetPaths;
 
 
-		// Cache for loaded scene textures used during loading a multiple materials within a scene. Cleared after each scene is loaded.
+		// Cache for loaded scene textures used during loading multiple materials within a scene. Cleared after each scene is loaded.
 		// Loaded materials within a scene contain indexed texture paths such as '*1'. This cache is to avoid loading duplicate indexed texture paths.
 		std::unordered_map<std::string, UUID> m_CachedSceneTexturePaths;
 	};

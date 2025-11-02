@@ -183,7 +183,7 @@
     <ClCompile Include="Engine Editor\EditorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Material Editor\Nodes\Nodes.cpp">
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\NodeBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\TextureNode.cpp">
@@ -199,6 +199,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\NodeGraphManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File Systems\MaterialBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -628,6 +634,7 @@
     <None Include="res\textures\black_fabric_diffuse.iptex" />
     <None Include="res\textures\black_fabric_rough.iptex" />
     <None Include="res\shaders\gpass.frag.shader" />
+    <None Include="res\shaders\defaultMaterialBase.frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -1717,6 +1724,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File Systems\MaterialBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\NodeGraphManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
