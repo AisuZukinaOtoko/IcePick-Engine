@@ -13,6 +13,8 @@ namespace IcePick {
 		unsigned int GetTexture(std::filesystem::path assetPath);
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
+		UUID LoadMaterialBaseFromAsset(std::filesystem::path assetPath);
+		UUID LoadMaterialInstanceFromAsset(std::filesystem::path assetPath);
 
 		UUID CreateShaderFromSource(ShaderSource& source);
 		ShaderProgram& GetShaderProgram(UUID shaderId);

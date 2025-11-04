@@ -209,8 +209,10 @@
     <ClCompile Include="src\Render Systems\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\Assets\test_material_instance.ipmti" />
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
+    <None Include="res\Assets\test_material.ipmtb" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\depth.shader" />
     <None Include="res\shaders\gpass.frag.shader" />
@@ -416,6 +418,7 @@
     <ClInclude Include="src\Render Systems\Texture.h" />
     <ClInclude Include="src\Utilities\Assert.h" />
     <ClInclude Include="src\Utilities\DebugStatistics.h" />
+    <ClInclude Include="src\Utilities\JsonUtils.h" />
     <ClInclude Include="src\Utilities\Timer.h" />
     <ClInclude Include="src\Vendor\entt\entt.h" />
     <ClInclude Include="src\Vendor\glm\common.hpp" />

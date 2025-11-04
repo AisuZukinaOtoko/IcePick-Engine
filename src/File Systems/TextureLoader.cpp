@@ -1,5 +1,6 @@
 #include "TextureLoader.h"
 #include "json.hpp"
+#include "../Utilities/JsonUtils.h"
 #include "../LogSystem.h"
 #include <fstream>
 
@@ -85,12 +86,15 @@ namespace IcePick {
 
 	UUID TextureLoader::NewTextureFromAsset(std::filesystem::path& assetPath) {
 		using nlohmann::json;
-
 		std::ifstream jsonFileStream(assetPath);
+
+		if (jsonFileStream.fail())
+			return UUID::Unitialised();
+
 		json assetFile = json::parse(jsonFileStream);
 
 		std::string assetVersion = assetFile.value("version", "0.0");
-		uint32_t textureId = assetFile.value("ID", 0u);
+		uint64_t textureId = JsonUtils::GetUint64(assetFile, "ID");
 		std::string sourcePath = assetFile.value("sourcePath", "");
 
 		jsonFileStream.close();
@@ -102,7 +106,7 @@ namespace IcePick {
 			m_CachedTextureAssetPaths.insert({ assetPath, textureId });
 
 		CleanUpAfterLoad();
-		return textureId;
+		return UUID{ textureId };
 	}
 
 	const Texture& TextureLoader::GetTexture(UUID id) {

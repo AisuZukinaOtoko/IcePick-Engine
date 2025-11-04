@@ -116,7 +116,8 @@ void MaterialEditor::Render() {
         }
 
         if (ImGui::Button("Save Material")) {
-            IP_LOG("Did NOT save the material.", IP_WARN_LOG);
+            IP_LOG("Saved material base.");
+            m_EngineAPI.UpdateMaterialBase(m_EditMaterialBaseId, m_MaterialEditorMaterialBase);
         }
 
 		ImGui::TableNextColumn();
@@ -554,7 +555,7 @@ void MaterialEditor::CompileMaterial() {
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
     IP_LOG("Compiling shader graph.");
-    IP_LOG(fragShader);
+    //IP_LOG(fragShader);
 }
 
 std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth) {

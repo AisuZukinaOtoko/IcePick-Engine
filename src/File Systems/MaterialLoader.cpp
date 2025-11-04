@@ -1,6 +1,9 @@
 #include "MaterialLoader.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
+#include "../Utilities/JsonUtils.h"
+#include "json.hpp"
+#include <fstream>
 
 namespace IcePick {
 	MaterialLoader::MaterialLoader() {
@@ -315,6 +318,111 @@ namespace IcePick {
 
 	UUID MaterialLoader::NewMaterialInstanceFromCopy(const MaterialInstance& newMaterialInstance) {
 		return RegisterMaterialInstance(newMaterialInstance);
+	}
+
+	UUID MaterialLoader::NewMaterialBaseFromAsset(std::filesystem::path& assetPath) {
+		using nlohmann::json;
+
+		const auto iterator = m_CachedMaterialBaseAssetPaths.find(assetPath);
+		if (iterator != m_CachedMaterialBaseAssetPaths.end()) // asset already loaded.
+			return iterator->second;
+
+
+		std::ifstream jsonFileStream(assetPath);
+
+		if (jsonFileStream.fail())
+			return UUID::Unitialised();
+
+		MaterialBase loadMaterialBase;
+		json assetFile = json::parse(jsonFileStream);
+
+		std::string assetVersion = assetFile.value("version", "0.0");
+
+
+		uint64_t materialId = JsonUtils::GetUint64(assetFile, "ID");
+		uint64_t shaderId = JsonUtils::GetUint64(assetFile, "shaderId");
+		uint64_t graphId = JsonUtils::GetUint64(assetFile, "graphId");
+
+		UUID Id{ materialId };
+		loadMaterialBase.Id = Id;
+		loadMaterialBase.ShaderId = UUID{ shaderId };
+		loadMaterialBase.ShaderGraphId = UUID{ graphId };
+
+		if (assetFile.contains("textureParameters") && assetFile["textureParameters"].is_array()) {
+			json& materialTextureParameters = assetFile["textureParameters"];
+			
+			for (auto textureIterator = materialTextureParameters.begin(); textureIterator != materialTextureParameters.end(); textureIterator++) {
+				MaterialBaseTextureData& materialBaseTextureData = loadMaterialBase.MaterialTextures.emplace_back();
+				materialBaseTextureData.Id = JsonUtils::GetUint64(*textureIterator, "Id");
+				materialBaseTextureData.SamplerIdentifier = textureIterator->value("sampler", "none");
+			}
+		}
+
+		jsonFileStream.close();
+
+		m_LoadedMaterialBases.insert({ Id, loadMaterialBase });
+		m_CachedMaterialBaseAssetPaths.insert({ assetPath, Id });
+
+		return Id;
+	}
+
+	UUID MaterialLoader::NewMaterialInstanceFromAsset(std::filesystem::path& assetPath) {
+		using nlohmann::json;
+
+		const auto iterator = m_CachedMaterialInstanceAssetPaths.find(assetPath);
+		if (iterator != m_CachedMaterialInstanceAssetPaths.end()) // asset already loaded.
+			return iterator->second;
+
+		/*{
+			"version": "0.1",
+				"ID" : 420,
+				"baseId" : 69,
+				"textureParameters" : [
+			{
+				"Id": 2,
+					"baseDataId" : 2,
+					"textureId" : 2
+			}
+				]
+		}*/
+
+
+		std::ifstream jsonFileStream(assetPath);
+
+		if (jsonFileStream.fail())
+			return UUID::Unitialised();
+
+		MaterialInstance loadMaterialInstance;
+		json assetFile = json::parse(jsonFileStream);
+
+		std::string assetVersion = assetFile.value("version", "0.0");
+
+
+		uint64_t materialInstanceId = JsonUtils::GetUint64(assetFile, "ID");
+		uint64_t materialBaseId = JsonUtils::GetUint64(assetFile, "baseId");
+
+		UUID Id{ materialInstanceId };
+		loadMaterialInstance.Id = Id;
+		loadMaterialInstance.MaterialBaseId = UUID{ materialBaseId };
+
+		if (assetFile.contains("textureParameters") && assetFile["textureParameters"].is_array()) {
+			json& materialTextureParameters = assetFile["textureParameters"];
+
+			for (auto textureIterator = materialTextureParameters.begin(); textureIterator != materialTextureParameters.end(); textureIterator++) {
+				UUID instanceParameterDataId = JsonUtils::GetUint64(*textureIterator, "Id");
+				UUID instanceParameterTextureBaseDataId = JsonUtils::GetUint64(*textureIterator, "baseDataId");
+				UUID instanceParameterTextureId = JsonUtils::GetUint64(*textureIterator, "textureId");
+				MaterialInstanceData<UUID>& instanceData = loadMaterialInstance.InstanceTextureData.emplace_back(instanceParameterTextureBaseDataId, instanceParameterTextureId);
+				instanceData.Id = instanceParameterDataId;
+			}
+		}
+
+		jsonFileStream.close();
+
+		m_LoadedMaterialInstances.insert({ Id, loadMaterialInstance });
+		m_CachedMaterialInstanceAssetPaths.insert({ assetPath, Id });
+
+		return Id;
 	}
 
 	// Only called when loading a new material

@@ -193,7 +193,8 @@ void Viewport::DropMaterialIntoViewport() {
 	IcePick::MeshRendererComponent& entityMeshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(viewEntity);
 
 	// TODO, use m_DropAssetPath to load/get a material from the asset browser, use UUID for material slot.
-	entityMeshRenderer.MaterialSlots[materialSlot] = IcePick::UUID::Unitialised();
+	IcePick::UUID droppedMaterialInstanceId = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
+	entityMeshRenderer.MaterialSlots[materialSlot] = droppedMaterialInstanceId;
 }
 
 Viewport::~Viewport() {

@@ -1,0 +1,12 @@
+{
+	"version": "0.1",
+	"ID": 420,
+	"baseId": 69,
+	"textureParameters": [
+		{
+			"Id": 2,
+			"baseDataId": 2,
+			"textureId": 2
+		}
+	]
+}

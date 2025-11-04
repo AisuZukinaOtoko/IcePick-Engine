@@ -55,11 +55,9 @@ void AssetBrowser::Render() {
                 IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
             }
-            else if (extension == ".ipmat") {
-                assetType = "MATERIAL_ASSET";
-                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                    EditMaterialCallback(IcePick::UUID::Unitialised());
-                }
+            else if (extension == ".ipmtb") {
+                assetType = "MATERIAL_BASE_ASSET";
+                
             }
             else {
                 icon = GetFileIcon(extension);
@@ -82,6 +80,16 @@ void AssetBrowser::Render() {
             if (file.is_directory()) {
                 m_CurrentBrowsingPath = file.path();
             }
+            else if (file.is_regular_file()) {
+                std::filesystem::path extension = file.path().extension();
+
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && extension == ".ipmtb") {
+                    IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
+                    EditMaterialCallback(materialBaseId);
+                }
+            }
+
+            
         }
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {

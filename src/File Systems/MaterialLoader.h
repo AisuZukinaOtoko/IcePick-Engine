@@ -16,6 +16,8 @@ namespace IcePick {
 		UUID NewMaterialBaseFromCopy(const MaterialBase& newMaterialBase);
 		UUID NewMaterialInstanceFromCopy(const MaterialInstance& newMaterialInstance);
 		UUID NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
+		UUID NewMaterialBaseFromAsset(std::filesystem::path& assetPath);
+		UUID NewMaterialInstanceFromAsset(std::filesystem::path& assetPath);
 		
 		MaterialBase& GetMaterialBase(UUID Id);
 		MaterialInstance& GetMaterialInstance(UUID Id);
@@ -57,6 +59,9 @@ namespace IcePick {
 		std::unordered_map<UUID, MaterialBase, UUIDHasher> m_LoadedMaterialBases;
 		std::unordered_map<UUID, MaterialInstance, UUIDHasher> m_LoadedMaterialInstances;
 		
+		std::unordered_map<std::filesystem::path, UUID> m_CachedMaterialBaseAssetPaths;
+		std::unordered_map<std::filesystem::path, UUID> m_CachedMaterialInstanceAssetPaths;
+
 		// Cache for loaded scene material instances used during loading a multiple materials within a scene. Cleared after each scene is loaded.
 		std::unordered_map<unsigned int, UUID> m_CachedSceneMaterialInstances;
 	};
