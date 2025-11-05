@@ -24,8 +24,37 @@ void AssetBrowser::Render() {
     ImGui::SameLine();
 
     if (ImGui::Button("New")) {
-        IP_LOG("Import an asset.");
+        ImGui::OpenPopup("NEW_ASSET");
+        //ImGui::OpenPopup("MaterialBaseCreate");
     }
+
+
+    if (ImGui::BeginPopup("NEW_ASSET")) {
+        ImGui::Text("Select an Asset Type.");
+        if (ImGui::Button("Material Base")) {
+            ImGui::OpenPopup("MaterialBaseCreate");     
+        }
+
+        if (ImGui::BeginPopupModal("MaterialBaseCreate")) {
+            ImGui::Text("Are you sure?");
+            if (ImGui::Button("Yes", ImVec2(120, 0))) {
+                IcePick::MaterialBase newMaterialBase;
+                newMaterialBase.ShaderId = 69;
+
+                std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / "newMaterial.ipmtb";
+                m_EngineAPI.SerializeMaterialBase(newMaterialBasePath, newMaterialBase);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("No", ImVec2(120, 0)))
+                ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
+        
+        ImGui::EndPopup();
+    }
+
+    
 
     ImGui::Separator();
 

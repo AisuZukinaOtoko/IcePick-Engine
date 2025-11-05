@@ -7,19 +7,7 @@
 
 namespace IcePick {
 	MaterialLoader::MaterialLoader() {
-		/*m_DefaultMaterial.ShaderID = UUID::Unitialised();
-		m_DefaultMaterial.AlbedoMap = 1;
-		m_DefaultMaterial.NormalMap = 1;
-		m_DefaultMaterial.RoughnessMap = 1;
-		m_DefaultMaterial.MetallicMap = 1;
-		m_DefaultMaterial.EmissiveMap = 1;
-		m_DefaultMaterial.AlbedoColour = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-		m_DefaultMaterial.SpecularColour = glm::vec3(0.0f, 1.0f, 1.0f);
-		m_DefaultMaterial.SampleBitmask = 0;*/
-		//m_DefaultMaterial.SampleBitmask |= MaterialAsset::ALBEDO;
-		//m_CachedMaterial = m_DefaultMaterial;
 		m_DefaultMaterialTextureSamplerIdentifiers.reserve(MaterialTextureTypes::TYPE_COUNT);
-
 		m_DefaultMaterialTextureSamplerIdentifiers.emplace_back("u_AlbedoTexUnit");
 
 		UUID baseTextureDataId{};
@@ -27,66 +15,12 @@ namespace IcePick {
 	}
 
 	void MaterialLoader::InvalidateCache() {
-		//m_CachedMaterialId = UUID::Unitialised();
-		//m_CachedMaterial = m_DefaultMaterial;
-
 		m_CachedMaterialBaseId = UUID::Unitialised();
 		m_CachedMaterialInstanceId = UUID::Unitialised();
 
 		m_CachedMaterialBase = m_DefaultMaterialBase;
 		m_CachedMaterialInstance = m_DefaultMaterialInstance;
 	}
-
-	//void MaterialLoader::ConstructMaterial(const MaterialAsset& mat, Material& result, TextureLoader& textureLoader, ShaderLoader& shaderLoader) const {
-	//	// Retrieving Texture IDs is expensive, so the check is necessary.
-	//	// We don't reset the mat.TextureID in case the user wants to re-activate(sample) it
-
-	//	// Albedo map
-	//	if (mat.SampleBitmask & MaterialAsset::ALBEDO)
-	//		result.AlbedoMap = textureLoader.GetTexture(mat.AlbedoTexture).GetID();
-	//	else
-	//		result.AlbedoMap = textureLoader.GetDefaultTexture().GetID();
-
-	//	// Normal map
-	//	if (mat.SampleBitmask & MaterialAsset::NORMAL)
-	//		result.NormalMap = textureLoader.GetTexture(mat.NormalTexture).GetID();
-	//	else
-	//		result.NormalMap = textureLoader.GetDefaultTexture().GetID();
-
-	//	// Roughness map
-	//	if (mat.SampleBitmask & MaterialAsset::ROUGHNESS)
-	//		result.RoughnessMap = textureLoader.GetTexture(mat.RoughnessTexture).GetID();
-	//	else
-	//		result.RoughnessMap = textureLoader.GetDefaultTexture().GetID();
-
-	//	// Metallic map
-	//	if (mat.SampleBitmask & MaterialAsset::METTALIC)
-	//		result.MetallicMap = textureLoader.GetTexture(mat.MetallicTexture).GetID();
-	//	else
-	//		result.MetallicMap = textureLoader.GetDefaultTexture().GetID();
-
-	//	// Emissive map
-	//	if (mat.SampleBitmask & MaterialAsset::EMISSIVE)
-	//		result.EmissiveMap = textureLoader.GetTexture(mat.EmissiveTexture).GetID();
-	//	else
-	//		result.EmissiveMap = textureLoader.GetDefaultTexture().GetID();
-
-	//	result.SampleBitmask = mat.SampleBitmask;
-	//	ShaderProgram& materialShader = shaderLoader.GetShaderProgram(mat.ShaderID);
-	//	result.ShaderID = materialShader.GetID();
-
-	//	result.AlbedoColour = mat.AlbedoColour;
-	//	result.SpecularColour = mat.SpecularColour;
-	//	result.RoughnessValue = mat.RoughnessValue;
-	//	result.MetalValue = mat.MetalValue;
-	//	result.EmissiveValue = mat.EmissiveValue;
-	//}
-
-	/*UUID MaterialLoader::RegisterMaterialAsset(const MaterialAsset& materialAsset) {
-		UUID materialId;
-		m_LoadedMaterialAssets.insert({ materialId, materialAsset });
-		return materialId;
-	}*/
 
 	UUID MaterialLoader::RegisterMaterialBase(const MaterialBase& materialBase) {
 		UUID materialBaseId;
@@ -99,45 +33,6 @@ namespace IcePick {
 		m_LoadedMaterialInstances.insert({ materialInsatnceId , materialInstance });
 		return materialInsatnceId;
 	}
-
-	/*Material MaterialLoader::GetMaterial(UUID id, TextureLoader& textureLoader, ShaderLoader& shaderLoader) {
-		if (id == UUID::Unitialised())
-			return m_DefaultMaterial;
-
-		if (id == m_CachedMaterialId)
-			return m_CachedMaterial;
-
-		m_CachedMaterialId = id;
-		auto iterator = m_LoadedMaterialAssets.find(id);
-		if (iterator == m_LoadedMaterialAssets.end()) {
-			m_CachedMaterial = m_DefaultMaterial;
-			return m_DefaultMaterial;
-		}
-
-		Material resultMaterial;
-		ConstructMaterial(iterator->second, resultMaterial, textureLoader, shaderLoader);
-		m_CachedMaterial = resultMaterial;
-		return resultMaterial;
-		
-	}*/
-
-	/*MaterialAsset& MaterialLoader::GetMaterialAsset(UUID Id) {
-		if (Id == UUID::Unitialised())
-			return m_DefaultMaterial;
-
-		if (Id == m_CachedMaterialId)
-			return m_CachedMaterial;
-
-		m_CachedMaterialId = Id;
-		auto iterator = m_LoadedMaterialAssets.find(Id);
-		if (iterator == m_LoadedMaterialAssets.end()) {
-			m_CachedMaterial = m_DefaultMaterial;
-			return m_DefaultMaterial;
-		}
-
-		m_CachedMaterial = iterator->second;
-		return iterator->second;
-	}*/
 
 	MaterialBase& MaterialLoader::GetMaterialBase(UUID Id) {
 		if (Id == UUID::Unitialised())
@@ -178,21 +73,6 @@ namespace IcePick {
 	void MaterialLoader::SetLoadMaterialShaderID(UUID materialShaderId)	{
 		m_LoadMaterialShaderId = materialShaderId;
 	}
-
-	/*void MaterialLoader::SetDefaultMaterial(Material defaultMaterial) {
-		m_DefaultMaterial = defaultMaterial;
-		InvalidateCache();
-	}*/
-
-	//void MaterialLoader::UpdateMaterial(UUID materialId, const MaterialAsset& newMaterial) {
-		/*auto materialIterator = m_LoadedMaterialAssets.find(materialId);
-		if (materialIterator == m_LoadedMaterialAssets.end())
-			return;
-
-		MaterialAsset& oldMaterial = materialIterator->second;
-		oldMaterial = newMaterial;
-		InvalidateCache();*/
-	//}
 
 	void MaterialLoader::UpdateMaterialBase(UUID Id, const MaterialBase& newMaterialBase) {
 		auto materialBaseIterator = m_LoadedMaterialBases.find(Id);
@@ -289,26 +169,9 @@ namespace IcePick {
 		auto iterator = m_CachedSceneMaterialInstances.find(materialIndex);
 		if (iterator != m_CachedSceneMaterialInstances.end())
 			return iterator->second;
-
-		//const unsigned int numMaterials = scene->mNumMaterials;
-		//IP_ASSERT(materialIndex <= numMaterials, "Material index out of bounds.");
-
-		//aiMaterial* mat = scene->mMaterials[materialIndex];
 		
 		MaterialInstance newMaterialInstance;
 		SetMaterialInstanceBaseTextureDataFromScene(newMaterialInstance, MaterialTextureTypes::DIFFUSE_TEXTURE, scene, materialIndex, textureLoader);
-		//UUID diffuseTextureId = GetSceneMaterialTexture(scene, aiTextureType_DIFFUSE, mat, textureLoader);
-		//newMaterialInstance.InstanceTextureData.emplace_back(m_DefaultMaterialBase.Id, diffuseTextureId);
-		//MaterialAsset newMaterial;
-		//newMaterial.ShaderID = m_LoadMaterialShaderId;
-		//newMaterial.AlbedoTexture = GetSceneMaterialTexture(scene, aiTextureType_DIFFUSE, mat, textureLoader);
-		//newMaterial.NormalTexture = GetSceneMaterialTexture(scene, aiTextureType_NORMALS, mat, textureLoader);
-		//newMaterial.RoughnessTexture = GetSceneMaterialTexture(scene, aiTextureType_SHININESS, mat, textureLoader);
-		//newMaterial.MetallicTexture = GetSceneMaterialTexture(scene, aiTextureType_METALNESS, mat, textureLoader);
-		//newMaterial.EmissiveTexture = GetSceneMaterialTexture(scene, aiTextureType_EMISSIVE, mat, textureLoader);
-
-		//GetSceneMaterialColours(newMaterial, mat);
-		//SetMaterialSampleBits(newMaterial, UUID::Unitialised());
 
 		UUID newMaterialInstanceId = RegisterMaterialInstance(newMaterialInstance);
 		m_CachedSceneMaterialInstances.insert({ materialIndex, newMaterialInstanceId });
@@ -330,7 +193,6 @@ namespace IcePick {
 		if (iterator != m_CachedMaterialBaseAssetPaths.end()) // asset already loaded.
 			return iterator->second;
 
-
 		std::ifstream jsonFileStream(assetPath);
 
 		if (jsonFileStream.fail())
@@ -339,10 +201,12 @@ namespace IcePick {
 		MaterialBase loadMaterialBase;
 		json assetFile = json::parse(jsonFileStream);
 
-		std::string assetVersion = assetFile.value("version", "0.0");
+		int assetVersion = assetFile.value("version", 0);
+		if (assetVersion < m_LoaderVersion) {
+			IP_LOG("Material base, " + assetPath.string() + ", is an outdated version. Loaded data may be incorrect.", IP_WARN_LOG);
+		}
 
-
-		uint64_t materialId = JsonUtils::GetUint64(assetFile, "ID");
+		uint64_t materialId = JsonUtils::GetUint64(assetFile, "Id");
 		uint64_t shaderId = JsonUtils::GetUint64(assetFile, "shaderId");
 		uint64_t graphId = JsonUtils::GetUint64(assetFile, "graphId");
 
@@ -376,20 +240,6 @@ namespace IcePick {
 		if (iterator != m_CachedMaterialInstanceAssetPaths.end()) // asset already loaded.
 			return iterator->second;
 
-		/*{
-			"version": "0.1",
-				"ID" : 420,
-				"baseId" : 69,
-				"textureParameters" : [
-			{
-				"Id": 2,
-					"baseDataId" : 2,
-					"textureId" : 2
-			}
-				]
-		}*/
-
-
 		std::ifstream jsonFileStream(assetPath);
 
 		if (jsonFileStream.fail())
@@ -398,10 +248,12 @@ namespace IcePick {
 		MaterialInstance loadMaterialInstance;
 		json assetFile = json::parse(jsonFileStream);
 
-		std::string assetVersion = assetFile.value("version", "0.0");
+		int assetVersion = assetFile.value("version", 0);
+		if (assetVersion < m_LoaderVersion) {
+			IP_LOG("Material instance, " + assetPath.string() + ", is an outdated version. Loaded data may be incorrect.", IP_WARN_LOG);
+		}
 
-
-		uint64_t materialInstanceId = JsonUtils::GetUint64(assetFile, "ID");
+		uint64_t materialInstanceId = JsonUtils::GetUint64(assetFile, "Id");
 		uint64_t materialBaseId = JsonUtils::GetUint64(assetFile, "baseId");
 
 		UUID Id{ materialInstanceId };
@@ -428,24 +280,57 @@ namespace IcePick {
 		return Id;
 	}
 
-	// Only called when loading a new material
-	// Unitialised material texture slots will not be sampled within the shader
-	/*void MaterialLoader::SetMaterialSampleBits(MaterialAsset& materialAsset, UUID defualtTextureId) {
-		if (materialAsset.AlbedoTexture != defualtTextureId)
-			materialAsset.SampleBitmask |= MaterialAsset::ALBEDO;
+	void MaterialLoader::SaveMaterialBase(std::filesystem::path assetPath, const MaterialBase& materialBase) {
+		nlohmann::json json;
 
-		if (materialAsset.NormalTexture != defualtTextureId)
-			materialAsset.SampleBitmask |= MaterialAsset::NORMAL;
+		json["version"] = m_LoaderVersion;
+		json["Id"] = static_cast<uint64_t>(materialBase.Id);
+		json["shaderId"] = static_cast<uint64_t>(materialBase.ShaderId);
+		json["graphId"] = static_cast<uint64_t>(materialBase.ShaderGraphId);
 
-		if (materialAsset.RoughnessTexture != defualtTextureId)
-			materialAsset.SampleBitmask |= MaterialAsset::ROUGHNESS;
+		nlohmann::json textureParameters = nlohmann::json::array();
+		for (const auto& materialBaseTexture : materialBase.MaterialTextures) {
+			nlohmann::json materialBaseTextureJson;
+			materialBaseTextureJson["Id"] = static_cast<uint64_t>(materialBaseTexture.Id);
+			materialBaseTextureJson["sampler"] = materialBaseTexture.SamplerIdentifier;
+			textureParameters.push_back(materialBaseTextureJson);
+		}
+		json["textureParameters"] = textureParameters;
 
-		if (materialAsset.MetallicTexture != defualtTextureId)
-			materialAsset.SampleBitmask |= MaterialAsset::METTALIC;
+		std::ofstream outFile(assetPath);
+		if (outFile.is_open()) {
+			outFile << std::setw(4) << json; // pretty print
+		}
+		else {
+			IP_LOG("Failed to save material base: " + assetPath.string(), IP_ERROR_LOG);
+		}
+	}
 
-		if (materialAsset.EmissiveTexture != defualtTextureId)
-			materialAsset.SampleBitmask |= MaterialAsset::EMISSIVE;
-	}*/
+	void MaterialLoader::SaveMaterialInstance(std::filesystem::path assetPath, const MaterialInstance& materialInstance) {
+		nlohmann::json json;
+
+		json["version"] = m_LoaderVersion;
+		json["Id"] = static_cast<uint64_t>(materialInstance.Id);
+		json["baseId"] = static_cast<uint64_t>(materialInstance.MaterialBaseId);
+
+		nlohmann::json textureParameters = nlohmann::json::array();
+		for (const auto& materialInstanceTextureData : materialInstance.InstanceTextureData) {
+			nlohmann::json materialBaseTextureJson;
+			materialBaseTextureJson["Id"] = static_cast<uint64_t>(materialInstanceTextureData.Id);
+			materialBaseTextureJson["baseDataId"] = static_cast<uint64_t>(materialInstanceTextureData.MaterialBaseDataId);
+			materialBaseTextureJson["textureId"] = static_cast<uint64_t>(materialInstanceTextureData.Data);
+			textureParameters.push_back(materialBaseTextureJson);
+		}
+		json["textureParameters"] = textureParameters;
+
+		std::ofstream outFile(assetPath);
+		if (outFile.is_open()) {
+			outFile << std::setw(4) << json; // pretty print
+		}
+		else {
+			IP_LOG("Failed to save material instance: " + assetPath.string(), IP_ERROR_LOG);
+		}
+	}
 
 	void MaterialLoader::CleanUpAfterLoad()	{
 		m_CachedSceneMaterialInstances.clear();

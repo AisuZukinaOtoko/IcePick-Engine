@@ -25,6 +25,14 @@ IcePick::UUID IcePick::EngineAPI::LoadMaterialInstanceFromAsset(std::filesystem:
 	return m_Engine->m_AssetLoader.m_MaterialLoader.NewMaterialInstanceFromAsset(assetPath);
 }
 
+void IcePick::EngineAPI::SerializeMaterialBase(std::filesystem::path assetPath, const MaterialBase& materialBase) {
+	m_Engine->m_AssetLoader.m_MaterialLoader.SaveMaterialBase(assetPath, materialBase);
+}
+
+void IcePick::EngineAPI::SerializeMaterialInstance(std::filesystem::path assetPath, const MaterialInstance& materialInstance) {
+	m_Engine->m_AssetLoader.m_MaterialLoader.SaveMaterialInstance(assetPath, materialInstance);
+}
+
 IcePick::MaterialBase& IcePick::EngineAPI::GetMaterialBase(UUID materialBaseId) {
 	return m_Engine->m_AssetLoader.m_MaterialLoader.GetMaterialBase(materialBaseId);
 }

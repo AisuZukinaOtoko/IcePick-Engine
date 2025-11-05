@@ -15,6 +15,7 @@ namespace IcePick {
 		static UUID Unitialised();
 		operator uint64_t() const { return m_ID;  }
 		bool operator==(const UUID& other) { return m_ID == other.m_ID; }
+		operator uint64_t() { return m_ID; }
 	private:
 		uint64_t m_ID;
 	};

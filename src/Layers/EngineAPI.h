@@ -13,8 +13,6 @@ namespace IcePick {
 		unsigned int GetTexture(std::filesystem::path assetPath);
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
-		UUID LoadMaterialBaseFromAsset(std::filesystem::path assetPath);
-		UUID LoadMaterialInstanceFromAsset(std::filesystem::path assetPath);
 
 		MaterialBase& GetMaterialBase(UUID materialBaseId);
 		MaterialInstance& GetMaterialInstance(UUID materialInstanceId);
@@ -26,6 +24,10 @@ namespace IcePick {
 
 		const Texture& GetTexture(UUID textureId);
 
+		UUID LoadMaterialBaseFromAsset(std::filesystem::path assetPath);
+		UUID LoadMaterialInstanceFromAsset(std::filesystem::path assetPath);
+		void SerializeMaterialBase(std::filesystem::path assetPath, const MaterialBase& materialBase);
+		void SerializeMaterialInstance(std::filesystem::path assetPath, const MaterialInstance& materialInstance);
 		UUID RegisterMaterialBase(const MaterialBase& materialBase);
 		UUID RegisterMaterialInstance(const MaterialInstance& materialInstance);
 		void UpdateMaterialBase(UUID Id, const MaterialBase& materialBase);
