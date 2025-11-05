@@ -56,8 +56,10 @@ void AssetBrowser::Render() {
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
             }
             else if (extension == ".ipmtb") {
-                assetType = "MATERIAL_BASE_ASSET";
-                
+                assetType = "MATERIAL_BASE_ASSET";                
+            }
+            else if (extension == ".ipmti") {
+                assetType = "MATERIAL_INSTANCE_ASSET";
             }
             else {
                 icon = GetFileIcon(extension);
@@ -94,7 +96,7 @@ void AssetBrowser::Render() {
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
             std::filesystem::path assetPath = file.path();
-            // Set the payload — it can be anything (structs, pointers, etc.)
+
             m_DragFilePath = assetPath.string();
             ImGui::SetDragDropPayload(assetType.c_str(), nullptr, 0, ImGuiCond_Once);
 

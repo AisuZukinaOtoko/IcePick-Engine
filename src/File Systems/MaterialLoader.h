@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
 #include "MaterialAsset.h"

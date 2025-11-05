@@ -16,6 +16,9 @@ namespace IcePick {
 		UUID LoadMaterialBaseFromAsset(std::filesystem::path assetPath);
 		UUID LoadMaterialInstanceFromAsset(std::filesystem::path assetPath);
 
+		MaterialBase& GetMaterialBase(UUID materialBaseId);
+		MaterialInstance& GetMaterialInstance(UUID materialInstanceId);
+
 		UUID CreateShaderFromSource(ShaderSource& source);
 		ShaderProgram& GetShaderProgram(UUID shaderId);
 		void UpdateShaderWithSource(UUID shaderId, ShaderSource& source);

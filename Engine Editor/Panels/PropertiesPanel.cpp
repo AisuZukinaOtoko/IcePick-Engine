@@ -4,7 +4,9 @@
 #include <iostream>
 #include <filesystem>
 
-PropertiesPanel::PropertiesPanel() {
+PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
+    m_EngineAPI(engineAPI)
+{
     m_ID = "Properties";
 }
 
@@ -106,15 +108,17 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     }
 
     if (HasComponent<TransformComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
             TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
             Vec3Control("Position", transform.Position, 0.05);
             Vec3Control("Rotation", transform.Rotation, 0.5);
             Vec3Control("Scale", transform.Scale, 0.03);
-        }        
+        }
     }
 
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
         MeshRendererComponent& meshRenderer = GetComponent<MeshRendererComponent>(m_SelectedEntity);
 
         if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -138,13 +142,18 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
         if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
+            flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
             if (ImGui::BeginTable("table_nested1", 1, flags)) {
 
                 for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
+                    IcePick::UUID materialInstanceId = meshRenderer.MaterialSlots[i];
+                    IcePick::MaterialInstance& materialInstance = m_EngineAPI.GetMaterialInstance(materialInstanceId);
+                    IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialInstance.MaterialBaseId);
+
+                    ImGui::PushID(i);
                     ImGui::TableNextRow(ImGuiTableRowFlags_None);
                     ImGui::TableSetColumnIndex(0);
 
-                    ImGui::PushID(i);
                     if (ImGui::BeginTable("Material", 2)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
@@ -159,15 +168,18 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                         }
                         ImGui::EndTable();
                     }
-                    ImGui::PopID();
 
                     if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                            meshRenderer.MaterialSlots[i] = UUID::Unitialised();
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
+                            meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
                             IP_LOG(m_DropAssetPath.c_str(), IP_WARN_LOG);
                         }
                         ImGui::EndDragDropTarget();
                     }
+
+                    MaterialInstanceParameters(materialBase, materialInstance);
+
+                    ImGui::PopID();
                 }
                 ImGui::EndTable();
             }
@@ -241,4 +253,56 @@ void PropertiesPanel::ColourPicker(const char* label, glm::vec3& rgb) {
 
     ImGui::Columns(1);
     ImGui::PopID();
+}
+
+void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance) {
+    bool baseHasParameters = materialBase.MaterialTextures.size();
+
+    if (baseHasParameters) {
+        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+        ImGui::TableSetColumnIndex(0);
+
+        if (ImGui::CollapsingHeader("Material Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::Indent();
+            if (ImGui::BeginTable("Texture parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialTextures.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseTextureParam = materialBase.MaterialTextures[i];
+                    IcePick::UUID baseDataId = baseTextureParam.Id;
+                    IcePick::UUID parameterTextureId = materialInstance.GetMaterialInstanceTextureId(baseDataId);
+                    unsigned int parameterTextureRenderId = m_EngineAPI.GetTextureRenderId(parameterTextureId);
+
+                    if (ImGui::BeginTable("Material Texture", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+                        const int imageSize = 45;
+                        ImGui::Image((void*)parameterTextureRenderId, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text("Material Texture");
+                        if (ImGui::Button("Clear")) {
+                            materialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
+                        }
+                        ImGui::EndTable();
+                    }
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
+                            IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
+                            materialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+                    ImGui::PopID();
+                }
+
+                    ImGui::EndTable();
+            }
+            ImGui::Unindent();
+        }
+    }
 }

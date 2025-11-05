@@ -84,7 +84,7 @@ void Viewport::Render(unsigned int renderTexture) {
 
 	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload("ASSET")) {
+		if (ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
 			DropMaterialIntoViewport();
 		}
 		ImGui::EndDragDropTarget();
@@ -192,7 +192,6 @@ void Viewport::DropMaterialIntoViewport() {
 
 	IcePick::MeshRendererComponent& entityMeshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(viewEntity);
 
-	// TODO, use m_DropAssetPath to load/get a material from the asset browser, use UUID for material slot.
 	IcePick::UUID droppedMaterialInstanceId = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
 	entityMeshRenderer.MaterialSlots[materialSlot] = droppedMaterialInstanceId;
 }

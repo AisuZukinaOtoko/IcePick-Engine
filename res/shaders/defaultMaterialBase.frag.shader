@@ -12,8 +12,8 @@ uniform sampler2D  u_AlbedoTexUnit;
 
 void main() {
     vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
+    OutColour = vec4(0.3f, 0.5f, 0.2f, 1.0f);
     OutColour = diffuseColour;
-    OutColour = vec4(1.0f, 0.5f, 0.8f, 1.0f);
     OutNormal = vec4(v_Normal, 1.0f);
 
 #ifdef VIEW_PICKING

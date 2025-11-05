@@ -21,6 +21,9 @@ namespace IcePick {
 		m_DefaultMaterialTextureSamplerIdentifiers.reserve(MaterialTextureTypes::TYPE_COUNT);
 
 		m_DefaultMaterialTextureSamplerIdentifiers.emplace_back("u_AlbedoTexUnit");
+
+		UUID baseTextureDataId{};
+		m_DefaultMaterialBase.MaterialTextures.push_back({ baseTextureDataId, m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE] });
 	}
 
 	void MaterialLoader::InvalidateCache() {

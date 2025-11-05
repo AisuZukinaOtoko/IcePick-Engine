@@ -29,6 +29,7 @@ namespace IcePick {
 		void ClearMaterialInstanceData();
 
 		UUID GetMaterialInstanceTextureId(UUID materialBaseDataId) const;
+		void SetMaterialInstanceTextureId(UUID materialBaseDataId, UUID textureId);
 	private:
 	};
 

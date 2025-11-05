@@ -33,6 +33,13 @@ void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, co
     }
 }
 
+void IcePick::MaterialInstance::SetMaterialInstanceTextureId(UUID materialBaseDataId, UUID textureId) {
+    for (auto& textureData : InstanceTextureData) {
+        if (textureData.MaterialBaseDataId == materialBaseDataId)
+            textureData.Data = textureId;
+    }
+}
+
 void IcePick::MaterialInstance::ClearMaterialInstanceData() {
 	InstanceTextureData.clear();
 }

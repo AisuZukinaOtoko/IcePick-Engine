@@ -7,7 +7,7 @@
 
 class PropertiesPanel {
 public:
-	PropertiesPanel();
+	PropertiesPanel(IcePick::EngineAPI engineAPI);
 	~PropertiesPanel() = default;
 	void SelectedProperties(const Styles& styles);
 	void SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback);
@@ -23,9 +23,11 @@ private:
 	void FloatSlider(const char* label, float* value, float min, float max);
 	void CheckBox(const char* label, bool* value);
 	void ColourPicker(const char* label, glm::vec3& rgb);
+	void MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance);
 	std::function<void(IcePick::UUID)> EditMaterialCallback;
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
 	entt::entity m_SelectedEntity = entt::null;
 	std::string m_DropAssetPath;
+	IcePick::EngineAPI m_EngineAPI;
 };
