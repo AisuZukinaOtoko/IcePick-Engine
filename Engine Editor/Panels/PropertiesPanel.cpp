@@ -82,10 +82,6 @@ void PropertiesPanel::SelectedProperties(const Styles& styles) {
     ImGui::End();
 }
 
-void PropertiesPanel::SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback) {
-    EditMaterialCallback = callback;
-}
-
 void PropertiesPanel::SetColumnWidth(float newWidth) {
     m_ColumnWidth = newWidth;
 }
@@ -164,7 +160,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
                         ImGui::Text("Material: %d", i);
                         if (ImGui::Button("Edit")) {
-                            EditMaterialCallback(meshRenderer.MaterialSlots[i]);
+                            IP_LOG("Cannot edit material instance.", IP_ERROR_LOG);
                         }
                         ImGui::EndTable();
                     }

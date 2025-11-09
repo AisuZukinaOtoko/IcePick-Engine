@@ -26,10 +26,11 @@ void MaterialEditor::SetDropAssetPath(std::filesystem::path filePath) {
     m_DropAssetPath = filePath;
 }
 
-void MaterialEditor::SetEditMaterial(IcePick::UUID materialBaseId) {
+void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
 	m_Open = true;
 
-    m_EditMaterialBaseId = materialBaseId;
+    m_EditMaterialBasePath = materialBasePath;
+    m_EditMaterialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(m_EditMaterialBasePath);;
 
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
@@ -58,7 +59,6 @@ void MaterialEditor::SetEditMaterial(IcePick::UUID materialBaseId) {
 
     m_MaterialEditorMaterialBase.ShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
     IP_LOG("Editing a material currently creates a new shader, regardless of whether the material is saved or not.", IP_WARN_LOG);
-    IP_LOG(newShaderSource.FragmentShaderSource);
 
 }
 
@@ -118,6 +118,7 @@ void MaterialEditor::Render() {
         if (ImGui::Button("Save Material")) {
             IP_LOG("Saved material base.");
             m_EngineAPI.UpdateMaterialBase(m_EditMaterialBaseId, m_MaterialEditorMaterialBase);
+            m_EngineAPI.SerializeMaterialBase(m_EditMaterialBasePath, m_MaterialEditorMaterialBase);
         }
 
 		ImGui::TableNextColumn();

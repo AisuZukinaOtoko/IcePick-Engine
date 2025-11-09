@@ -56,6 +56,7 @@ namespace IcePick {
 		void ClearMaterialBaseData();
 
 		void BindMaterialInstanceTextures(EngineAPI engineAPI, const MaterialInstance& materialInstance);
+		MaterialInstance CreateEmptyInstanceFromBase() const;
 	private:
 		unsigned int m_ShaderInputFlags = 0;
 	};

@@ -18,7 +18,6 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     auto editMaterialCallback = std::bind(&EditorLayer::OnChangeEditMaterial, this, std::placeholders::_1);
     m_Viewport.SetSelectedEntityChangeCallback(entityChangeCallback);
     m_ScenePanel.SetSelectedEntityChangeCallback(entityChangeCallback);
-    m_PropertiesPanel.SetEditMaterialCallback(editMaterialCallback);
     m_AssetBrowser.SetEditMaterialCallback(editMaterialCallback);
 }
 
@@ -49,8 +48,8 @@ void IcePick::EditorLayer::OnChangeSelectedEntity(entt::entity selectedEntity) {
     m_PropertiesPanel.SetSelectedEntity(selectedEntity);
 }
 
-void IcePick::EditorLayer::OnChangeEditMaterial(UUID editMaterialID) {
-    m_MaterialEditor.SetEditMaterial(editMaterialID);
+void IcePick::EditorLayer::OnChangeEditMaterial(std::filesystem::path editMaterialPath) {
+    m_MaterialEditor.SetEditMaterial(editMaterialPath);
 }
 
 void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {

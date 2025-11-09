@@ -33,6 +33,17 @@ void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, co
     }
 }
 
+IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() const {
+    MaterialInstance tempMaterialInstance;
+    tempMaterialInstance.MaterialBaseId = Id;
+
+    for (const auto& textureParameter : MaterialTextures) {
+        tempMaterialInstance.InstanceTextureData.emplace_back(textureParameter.Id, UUID::Unitialised());
+    }
+
+    return tempMaterialInstance;
+}
+
 void IcePick::MaterialInstance::SetMaterialInstanceTextureId(UUID materialBaseDataId, UUID textureId) {
     for (auto& textureData : InstanceTextureData) {
         if (textureData.MaterialBaseDataId == materialBaseDataId)

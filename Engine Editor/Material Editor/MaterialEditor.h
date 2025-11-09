@@ -14,7 +14,7 @@ public:
 	MaterialEditor() = delete;
 	MaterialEditor(IcePick::EngineAPI engineAPI);
 	void SetDropAssetPath(std::filesystem::path filePath);
-	void SetEditMaterial(IcePick::UUID materialID);
+	void SetEditMaterial(std::filesystem::path materialPath);
 	void OnUpdate(DeltaTime dt);
 	void Render();
 	~MaterialEditor();
@@ -49,6 +49,7 @@ private:
 	IcePick::EngineAPI m_EngineAPI;
 	const char* m_ID = "Material Editor";
 
+	std::filesystem::path m_EditMaterialBasePath;
 	IcePick::UUID m_EditMaterialBaseId = IcePick::UUID::Unitialised();
 	IcePick::UUID m_MaterialEditorMaterialBaseId = IcePick::UUID::Unitialised();
 	IcePick::UUID m_MaterialEditorMaterialInstanceId = IcePick::UUID::Unitialised();

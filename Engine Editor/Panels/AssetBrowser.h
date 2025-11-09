@@ -9,12 +9,12 @@ public:
 	AssetBrowser() = delete;
 	AssetBrowser(IcePick::EngineAPI engineAPI);
 	void Init(IcePick::EngineAPI& engineAPI, Styles styles);
-	void SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback);
+	void SetEditMaterialCallback(std::function<void(std::filesystem::path)> callback);
 	void Render();
 	std::string GetDragFilePath();
 private:
 	void* GetFileIcon(std::filesystem::path extension);
-	std::function<void(IcePick::UUID)> EditMaterialCallback;
+	std::function<void(std::filesystem::path)> EditMaterialCallback;
 	Styles m_Styles;
 	const char* m_Title = "Asset Browser";
 	std::string m_DragFilePath;

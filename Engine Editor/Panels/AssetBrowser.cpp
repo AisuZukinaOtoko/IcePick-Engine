@@ -11,7 +11,7 @@ void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
     m_Styles = styles;
 }
 
-void AssetBrowser::SetEditMaterialCallback(std::function<void(IcePick::UUID)> callback) {
+void AssetBrowser::SetEditMaterialCallback(std::function<void(std::filesystem::path)> callback) {
     EditMaterialCallback = callback;
 }
 
@@ -39,6 +39,7 @@ void AssetBrowser::Render() {
             ImGui::Text("Are you sure?");
             if (ImGui::Button("Yes", ImVec2(120, 0))) {
                 IcePick::MaterialBase newMaterialBase;
+                IP_LOG(std::to_string(newMaterialBase.Id), IP_WARN_LOG);
                 newMaterialBase.ShaderId = 69;
 
                 std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / "newMaterial.ipmtb";
@@ -74,9 +75,10 @@ void AssetBrowser::Render() {
         tempIterator++;
         ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);
         std::string assetType = "ASSET";
+        std::filesystem::path extension = file.path().extension();
 
         if (file.is_regular_file()) {
-            std::filesystem::path extension = file.path().extension();
+            //std::filesystem::path extension = file.path().extension();
 
             if (extension == ".iptex") {
                 assetType = "TEXTURE_ASSET";
@@ -112,16 +114,35 @@ void AssetBrowser::Render() {
                 m_CurrentBrowsingPath = file.path();
             }
             else if (file.is_regular_file()) {
-                std::filesystem::path extension = file.path().extension();
-
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && extension == ".ipmtb") {
                     IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
-                    EditMaterialCallback(materialBaseId);
+                    EditMaterialCallback(file.path());
                 }
             }
 
             
         }
+
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            if (extension == ".ipmtb") {
+                ImGui::OpenPopup("MATERIAL_BASE_OPTIONS");
+                IP_LOG("Open pop up.");
+            }
+        }
+
+        if (ImGui::BeginPopup("MATERIAL_BASE_OPTIONS")) {
+            if (ImGui::Button("Create material instance")) {
+                IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
+                const IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialBaseId);
+                std::filesystem::path materialInstancePath = m_CurrentBrowsingPath / "newMaterialInstance.ipmti";
+                IcePick::MaterialInstance newMaterialInstance = materialBase.CreateEmptyInstanceFromBase();
+
+                m_EngineAPI.SerializeMaterialInstance(materialInstancePath, newMaterialInstance);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
             std::filesystem::path assetPath = file.path();

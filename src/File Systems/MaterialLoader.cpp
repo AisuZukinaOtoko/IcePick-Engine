@@ -23,15 +23,13 @@ namespace IcePick {
 	}
 
 	UUID MaterialLoader::RegisterMaterialBase(const MaterialBase& materialBase) {
-		UUID materialBaseId;
-		m_LoadedMaterialBases.insert({ materialBaseId , materialBase });
-		return materialBaseId;
+		m_LoadedMaterialBases.insert({ materialBase.Id , materialBase });
+		return materialBase.Id;
 	}
 
 	UUID MaterialLoader::RegisterMaterialInstance(const MaterialInstance& materialInstance) {
-		UUID materialInsatnceId;
-		m_LoadedMaterialInstances.insert({ materialInsatnceId , materialInstance });
-		return materialInsatnceId;
+		m_LoadedMaterialInstances.insert({ materialInstance.Id , materialInstance });
+		return materialInstance.Id;
 	}
 
 	MaterialBase& MaterialLoader::GetMaterialBase(UUID Id) {
@@ -137,7 +135,7 @@ namespace IcePick {
 
 	void MaterialLoader::SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader) {
 		const unsigned int numMaterials = scene->mNumMaterials;
-		IP_ASSERT(materialIndex <= numMaterials, "Material index out of bounds.");
+		IP_ASSERT(materialIndex < numMaterials, "Material index out of bounds.");
 		aiMaterial* sceneMaterial = scene->mMaterials[materialIndex];
 		
 		aiTextureType sceneTextureType;
@@ -195,8 +193,10 @@ namespace IcePick {
 
 		std::ifstream jsonFileStream(assetPath);
 
-		if (jsonFileStream.fail())
+		if (jsonFileStream.fail()) {
+			IP_LOG("Failed to load material base: " + assetPath.string() + ".", IP_ERROR_LOG);
 			return UUID::Unitialised();
+		}
 
 		MaterialBase loadMaterialBase;
 		json assetFile = json::parse(jsonFileStream);
@@ -242,8 +242,10 @@ namespace IcePick {
 
 		std::ifstream jsonFileStream(assetPath);
 
-		if (jsonFileStream.fail())
+		if (jsonFileStream.fail()) {
+			IP_LOG("Failed to load material instance: " + assetPath.string() + ".", IP_ERROR_LOG);
 			return UUID::Unitialised();
+		}
 
 		MaterialInstance loadMaterialInstance;
 		json assetFile = json::parse(jsonFileStream);
