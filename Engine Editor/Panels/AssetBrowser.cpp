@@ -25,7 +25,6 @@ void AssetBrowser::Render() {
 
     if (ImGui::Button("New")) {
         ImGui::OpenPopup("NEW_ASSET");
-        //ImGui::OpenPopup("MaterialBaseCreate");
     }
 
 
@@ -39,7 +38,6 @@ void AssetBrowser::Render() {
             ImGui::Text("Are you sure?");
             if (ImGui::Button("Yes", ImVec2(120, 0))) {
                 IcePick::MaterialBase newMaterialBase;
-                IP_LOG(std::to_string(newMaterialBase.Id), IP_WARN_LOG);
                 newMaterialBase.ShaderId = 69;
 
                 std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / "newMaterial.ipmtb";
@@ -115,7 +113,6 @@ void AssetBrowser::Render() {
             }
             else if (file.is_regular_file()) {
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && extension == ".ipmtb") {
-                    IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
                     EditMaterialCallback(file.path());
                 }
             }

@@ -40,7 +40,7 @@ void main() {
     vec4 OutputColour = vec4(0.0f);
 
     vec3 L = normalize(tempLightPosition - v_Pos);
-    vec3 R = reflect(-L, v_Normal);
+    vec3 R = normalize(reflect(-L, normalize(v_Normal)));
     vec3 V = normalize(u_CameraPosition - v_Pos);
 
     vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
@@ -51,7 +51,7 @@ void main() {
     }
     else {
         OutputColour += vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a); // ambient
-        OutputColour += vec4(diffuseColour.rgb * dot(v_Normal, L), diffuseColour.a); // diffuse
+        OutputColour += vec4(diffuseColour.rgb * dot(normalize(v_Normal), L), diffuseColour.a); // diffuse
         OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
     }
 

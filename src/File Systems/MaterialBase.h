@@ -22,6 +22,8 @@ namespace IcePick {
 
 	class MaterialInstance {
 	public:
+		MaterialInstance() = default;
+		MaterialInstance(const MaterialInstance& other);
 		UUID Id;
 		UUID MaterialBaseId = UUID::Unitialised();
 		std::vector<MaterialInstanceData<UUID>> InstanceTextureData;

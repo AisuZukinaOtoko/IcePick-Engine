@@ -33,6 +33,13 @@ void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, co
     }
 }
 
+IcePick::MaterialInstance::MaterialInstance(const MaterialInstance& other) {
+    Id = other.Id;
+    MaterialBaseId = other.MaterialBaseId;
+    InstanceTextureData = other.InstanceTextureData;
+    IP_LOG("Copying material instance.");
+}
+
 IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() const {
     MaterialInstance tempMaterialInstance;
     tempMaterialInstance.MaterialBaseId = Id;

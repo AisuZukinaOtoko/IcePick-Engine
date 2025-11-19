@@ -1,12 +1,12 @@
 {
-	"version": 1,
-	"Id": 69,
-	"shaderId": 1,
-	"graphId": 420,
-	"textureParameters": [
-		{
-			"Id": 2,
-			"sampler": "u_AlbedoTexUnit"
-		}
-	]
+    "Id": 6510020079697164720,
+    "graphId": 0,
+    "shaderId": 9609809272258487700,
+    "textureParameters": [
+        {
+            "Id": 15319997717926769833,
+            "sampler": "sampler_4049768998512741313"
+        }
+    ],
+    "version": 1
 }

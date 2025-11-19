@@ -282,6 +282,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                         ImGui::Text("Material Texture");
                         if (ImGui::Button("Clear")) {
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
+                            m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                         }
                         ImGui::EndTable();
                     }
@@ -290,6 +291,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                         if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
                             IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
+                            m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                         }
                         ImGui::EndDragDropTarget();
                     }
