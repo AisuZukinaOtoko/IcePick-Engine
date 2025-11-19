@@ -209,10 +209,8 @@
     <ClCompile Include="src\Render Systems\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Assets\test_material_instance.ipmti" />
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
-    <None Include="res\Assets\test_material.ipmtb" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\depth.shader" />
     <None Include="res\shaders\gpass.frag.shader" />

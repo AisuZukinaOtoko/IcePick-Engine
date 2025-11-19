@@ -12,6 +12,7 @@ namespace IcePick {
 
 		UUID baseTextureDataId{};
 		m_DefaultMaterialBase.MaterialTextures.push_back({ baseTextureDataId, m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE] });
+		m_DefaultMaterialInstance.MaterialBaseId = m_DefaultMaterialBase.Id;
 	}
 
 	void MaterialLoader::InvalidateCache() {
@@ -169,6 +170,7 @@ namespace IcePick {
 			return iterator->second;
 		
 		MaterialInstance newMaterialInstance;
+		newMaterialInstance.MaterialBaseId = m_DefaultMaterialInstance.MaterialBaseId;
 		SetMaterialInstanceBaseTextureDataFromScene(newMaterialInstance, MaterialTextureTypes::DIFFUSE_TEXTURE, scene, materialIndex, textureLoader);
 
 		UUID newMaterialInstanceId = RegisterMaterialInstance(newMaterialInstance);

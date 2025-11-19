@@ -16,11 +16,6 @@ void IcePick::MaterialBase::ClearMaterialBaseData() {
 }
 
 void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, const MaterialInstance& materialInstance) {
-    if (Id != materialInstance.MaterialBaseId) {
-        //IP_LOG("Material Base and Instance mismatch.", IP_WARN_LOG);
-        //return;
-    }
-
     IcePick::ShaderProgram& materialShader = engineAPI.GetShaderProgram(ShaderId);
 
     for (int i = 0; i < MaterialTextures.size(); i++) {
@@ -37,7 +32,6 @@ IcePick::MaterialInstance::MaterialInstance(const MaterialInstance& other) {
     Id = other.Id;
     MaterialBaseId = other.MaterialBaseId;
     InstanceTextureData = other.InstanceTextureData;
-    IP_LOG("Copying material instance.");
 }
 
 IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() const {

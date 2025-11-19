@@ -1,9 +1,19 @@
 #include "AssetBrowser.h"
 #include <filesystem>
 
+static const unsigned int bufferSize = 255;
+static char TextInputBuffer[bufferSize];
+
+static void ClearTextInputBuffer() {
+    for (int i = 0; i < bufferSize; i++) {
+        TextInputBuffer[i] = '\0';
+    }
+}
+
 AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
+    ClearTextInputBuffer();
     m_CurrentBrowsingPath = std::filesystem::canonical("res/Assets");
 }
 
@@ -31,21 +41,23 @@ void AssetBrowser::Render() {
     if (ImGui::BeginPopup("NEW_ASSET")) {
         ImGui::Text("Select an Asset Type.");
         if (ImGui::Button("Material Base")) {
-            ImGui::OpenPopup("MaterialBaseCreate");     
+            ImGui::OpenPopup("Create Base Material");     
         }
 
-        if (ImGui::BeginPopupModal("MaterialBaseCreate")) {
-            ImGui::Text("Are you sure?");
-            if (ImGui::Button("Yes", ImVec2(120, 0))) {
+        if (ImGui::BeginPopupModal("Create Base Material")) {
+            ImGui::InputText("File name (.ipmtb)", TextInputBuffer, sizeof(TextInputBuffer));
+
+            if (ImGui::Button("Save", ImVec2(120, 0))) {
                 IcePick::MaterialBase newMaterialBase;
                 newMaterialBase.ShaderId = 69;
 
-                std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / "newMaterial.ipmtb";
+                std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
+                std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
                 m_EngineAPI.SerializeMaterialBase(newMaterialBasePath, newMaterialBase);
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("No", ImVec2(120, 0)))
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
                 ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }

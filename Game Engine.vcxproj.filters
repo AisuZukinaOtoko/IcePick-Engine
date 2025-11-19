@@ -635,8 +635,6 @@
     <None Include="res\textures\black_fabric_rough.iptex" />
     <None Include="res\shaders\gpass.frag.shader" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
-    <None Include="res\Assets\test_material.ipmtb" />
-    <None Include="res\Assets\test_material_instance.ipmti" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
