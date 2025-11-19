@@ -54,11 +54,14 @@ void AssetBrowser::Render() {
                 std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
                 std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
                 m_EngineAPI.SerializeMaterialBase(newMaterialBasePath, newMaterialBase);
+                ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
+            }
             ImGui::EndPopup();
         }
         
