@@ -7,22 +7,24 @@
 
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	IcePick::Event newEvent = {action, button, mods, MOUSE_EVENT};
+	IcePick::Event newEvent = {action, button, mods, IP_MOUSE_EVENT};
 	IcePick::IP_EventHandler.OnEvent(newEvent);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	IcePick::Event newEvent = { action, key, mods, KEYBOARD_EVENT };
+	IcePick::Event newEvent = { action, key, mods, IP_KEYBOARD_EVENT };
 	IcePick::IP_EventHandler.OnEvent(newEvent);
 }
 
 static void joystick_callback(int jid, int eventCode) {
+	
 	if (eventCode == GLFW_CONNECTED) {
 		// The joystick was connected
 		IP_LOG("Controller connected. Not yet supported.", IP_WARN_LOG);
 	}
 	else if (eventCode == GLFW_DISCONNECTED) {
 		// The joystick was disconnected
+		IP_LOG("Controller disconnected.", IP_WARN_LOG);
 	}
 }
 
@@ -59,10 +61,13 @@ glm::vec2 IcePick::EventHandler::GetCursorPos() {
 
 void IcePick::EventHandler::OnEvent(Event& event) {
 	for (auto& layer : IcePick::IP_LayerStack.m_Layers) {
-		if (event.flags & EVENT_HANDLED)
+		if (event.flags & IP_EVENT_HANDLED)
 			break;
 
 		layer->OnEvent(event);
 	}
 }
 
+void IcePick::EventHandler::NewFrame() {
+	
+}

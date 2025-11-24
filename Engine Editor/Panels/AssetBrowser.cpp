@@ -39,6 +39,7 @@ void AssetBrowser::Render() {
 
 
     if (ImGui::BeginPopup("NEW_ASSET")) {
+        bool closeMainPopUp = false;
         ImGui::Text("Select an Asset Type.");
         if (ImGui::Button("Material Base")) {
             ImGui::OpenPopup("Create Base Material");     
@@ -56,13 +57,19 @@ void AssetBrowser::Render() {
                 m_EngineAPI.SerializeMaterialBase(newMaterialBasePath, newMaterialBase);
                 ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
             }
             ImGui::SameLine();
             if (ImGui::Button("Cancel", ImVec2(120, 0))) {
                 ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
             }
             ImGui::EndPopup();
+        }
+
+        if (closeMainPopUp) {
+            ImGui::CloseCurrentPopup();
         }
         
         ImGui::EndPopup();

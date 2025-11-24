@@ -31,6 +31,33 @@ namespace IcePick {
 		, IP_MOUSE_4, IP_MOUSE_5, IP_MOUSE_ANY
 	};
 
+	enum ControllerID {
+		IP_CONTROLLER_1 = 0, IP_CONTROLLER_2, IP_CONTROLLER_3, IP_CONTROLLER_4,
+		IP_CONTROLLER_5, IP_CONTROLLER_6, IP_CONTROLLER_7, IP_CONTROLLER_8, IP_CONTROLLER_COUNT
+	};
+
+	enum ControllerButton {
+		IP_CONTROLLER_D_LEFT = 0, IP_CONTROLLER_D_RIGHT, IP_CONTROLLER_D_UP,	IP_CONTROLLER_D_DOWN,
+		IP_CONTROLLER_BUTTON_A, IP_CONTROLLER_BUTTON_B, IP_CONTROLLER_BUTTON_X, IP_CONTROLLER_BUTTON_Y,
+		IP_CONTROLLER_BUTTON_L1, IP_CONTROLLER_BUTTON_R1, IP_CONTROLLER_BUTTON_L3, IP_CONTROLLER_BUTTON_R3,
+		IP_CONTROLLER_BUTTON_START, IP_CONTROLLER_BUTTON_COUNT
+	};
+
+	enum ControllerTrigger {
+		IP_CONTROLLER_TRIGGER_LEFT = 0, IP_CONTROLLER_TRIGGER_RIGHT, IP_CONTROLLER_TRIGGER_COUNT
+	};
+
+	enum ControllerAxis {
+		IP_CONTROLLER_AXIS_LEFT = 0, IP_CONTROLLER_AXIS_RIGHT, IP_CONTROLLER_AXIS_COUNT
+	};
+
+	struct ControllerState {
+		ControllerID Id;
+		ControllerButton Buttons[IP_CONTROLLER_BUTTON_COUNT];
+		ControllerTrigger Triggers[IP_CONTROLLER_TRIGGER_COUNT];
+		ControllerAxis Axes[IP_CONTROLLER_AXIS_COUNT];
+	};
+
 	class Input {
 	public:
 		Input() = default;
@@ -44,8 +71,13 @@ namespace IcePick {
 		bool IsMouseButtonPressed(MouseButton button);
 		bool IsMouseButtonHeld(MouseButton button);
 		bool IsMouseButtonReleased(MouseButton button);
+
+		bool IsControllerButtonPressed(ControllerID controllerId, ControllerButton button);
 	private:
+		void ProcessKeyBoardMouseEvent(Event& event);
+		void ProcessControllerEvent(Event& event);
 		const int m_EventTypeCount = 350;
 		KeyButton m_KeysAndButtons[350];
+		ControllerState m_ControllerStates[IP_CONTROLLER_COUNT];
 	};
 }

@@ -1,17 +1,11 @@
 #include "Input.h"
 
 void IcePick::Input::OnEvent(Event& event) {
-	if (event.action == GLFW_PRESS) {
-		m_KeysAndButtons[event.code].m_Value = true;
-		m_KeysAndButtons[event.code].m_Checked = false;
-		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = true;
-		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Checked = false;
+	if (event.flags & (IP_KEYBOARD_EVENT | IP_MOUSE_EVENT)) {
+		ProcessKeyBoardMouseEvent(event);
 	}
-	else if (event.action == GLFW_RELEASE) {
-		m_KeysAndButtons[event.code].m_Value = false;
-		m_KeysAndButtons[event.code].m_Checked = false;
-		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = false;
-		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Checked = false;
+	else if (event.flags & IP_CONTROLLER_EVENT) {
+		ProcessControllerEvent(event);
 	}
 }
 
@@ -47,4 +41,27 @@ bool IcePick::Input::IsMouseButtonHeld(IcePick::MouseButton button){
 
 bool IcePick::Input::IsMouseButtonReleased(IcePick::MouseButton button) {
 	return !m_KeysAndButtons[button].m_Value;
+}
+
+void IcePick::Input::ProcessKeyBoardMouseEvent(Event& event) {
+	if (event.action == GLFW_PRESS) {
+		m_KeysAndButtons[event.code].m_Value = true;
+		m_KeysAndButtons[event.code].m_Checked = false;
+		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = true;
+		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Checked = false;
+	}
+	else if (event.action == GLFW_RELEASE) {
+		m_KeysAndButtons[event.code].m_Value = false;
+		m_KeysAndButtons[event.code].m_Checked = false;
+		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = false;
+		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Checked = false;
+	}
+}
+
+void IcePick::Input::ProcessControllerEvent(Event& event) {
+
+}
+
+bool IcePick::Input::IsControllerButtonPressed(ControllerID controllerId, ControllerButton button) {
+	return false;
 }

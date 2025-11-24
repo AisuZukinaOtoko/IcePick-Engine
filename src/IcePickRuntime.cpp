@@ -5,6 +5,7 @@
 #include "../Engine Editor/EditorLayer.h"
 #include <iostream>
 #include "Utilities/DebugStatistics.h"
+#include "Event Systems/EventHandler.h"
 
 using namespace IcePick;
 
@@ -53,6 +54,7 @@ void Engine::Run() {
 		}
 		glfwPollEvents();
 		IcePickRenderer::NewFrame();
+		IcePick::IP_EventHandler.NewFrame();
 
 		for (auto& layer : IP_LayerStack.m_Layers) {
 			layer->OnNewFrame();

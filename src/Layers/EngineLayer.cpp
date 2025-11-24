@@ -34,7 +34,7 @@ void IcePick::EngineLayer::OnEvent(Event& event) {
 
 	if ((event.action == IP_PRESS) && (event.code == IP_KEY_S) && (event.mods & GLFW_MOD_SHIFT)) {
 		IP_LOG("Shift-S pressed.");
-		event.flags |= EVENT_HANDLED;
+		event.flags |= IP_EVENT_HANDLED;
 	}
 
 	gameInput.OnEvent(event);

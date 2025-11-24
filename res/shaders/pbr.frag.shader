@@ -52,7 +52,7 @@ void main() {
     else {
         OutputColour += vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a); // ambient
         OutputColour += vec4(diffuseColour.rgb * dot(normalize(v_Normal), L), diffuseColour.a); // diffuse
-        OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
+        //OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
     }
 
     OutColour = vec4(1.0f);
