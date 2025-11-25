@@ -1,4 +1,6 @@
 #include "Input.h"
+#include "EventHandler.h"
+#include "../Utilities/Assert.h"
 
 void IcePick::Input::OnEvent(Event& event) {
 	if (event.flags & (IP_KEYBOARD_EVENT | IP_MOUSE_EVENT)) {
@@ -44,13 +46,13 @@ bool IcePick::Input::IsMouseButtonReleased(IcePick::MouseButton button) {
 }
 
 void IcePick::Input::ProcessKeyBoardMouseEvent(Event& event) {
-	if (event.action == GLFW_PRESS) {
+	if (event.action == IP_PRESS) {
 		m_KeysAndButtons[event.code].m_Value = true;
 		m_KeysAndButtons[event.code].m_Checked = false;
 		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = true;
 		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Checked = false;
 	}
-	else if (event.action == GLFW_RELEASE) {
+	else if (event.action == IP_RELEASE) {
 		m_KeysAndButtons[event.code].m_Value = false;
 		m_KeysAndButtons[event.code].m_Checked = false;
 		m_KeysAndButtons[IcePick::IP_KEY_ANY].m_Value = false;
@@ -59,9 +61,38 @@ void IcePick::Input::ProcessKeyBoardMouseEvent(Event& event) {
 }
 
 void IcePick::Input::ProcessControllerEvent(Event& event) {
-
+	IP_ASSERT(event.data < IP_CONTROLLER_COUNT, "Invalid controller ID");
+	if (event.action == IP_CONNECT) {
+		m_ControllerStates[event.data].ControllerConnected = true;
+	}
+	else if (event.action == IP_DISCONNECT) {
+		m_ControllerStates[event.data].ControllerConnected = false;
+	}
+	else {
+		m_ControllerStates[event.data].ControllerButtons[event.code].m_Value = event.action;
+		m_ControllerStates[event.data].ControllerButtons[event.code].m_Checked = false;
+	}	
 }
 
 bool IcePick::Input::IsControllerButtonPressed(ControllerID controllerId, ControllerButton button) {
-	return false;
+	IP_ASSERT(controllerId < IP_CONTROLLER_COUNT, "Invalid controller ID");
+	bool result = m_ControllerStates[controllerId].ControllerButtons[button].m_Value && !m_ControllerStates[controllerId].ControllerButtons[button].m_Checked;
+	m_ControllerStates[controllerId].ControllerButtons[button].m_Checked = true;
+	return result;
+}
+
+bool IcePick::Input::IsControllerButtonHeld(ControllerID controllerId, ControllerButton button) {
+	return m_ControllerStates[controllerId].ControllerButtons[button].m_Value;
+}
+
+bool IcePick::Input::IsControllerButtonReleased(ControllerID controllerId, ControllerButton button) {
+	return !IsControllerButtonHeld(controllerId, button);
+}
+
+float IcePick::Input::GetControllerTriggerValue(ControllerID controllerId, ControllerTrigger trigger) {
+	return 0.0f;
+}
+
+void IcePick::Input::GetControllerAxisValues(ControllerID controllerId, ControllerAxis axis, float* x, float* y) {
+
 }

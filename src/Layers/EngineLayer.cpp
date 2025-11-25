@@ -22,6 +22,18 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 		IP_LOG("Game layer pressed T.");
 	}
 
+	if (gameInput.IsMouseButtonPressed(IP_MOUSE_MIDDLE)) {
+		IP_LOG("Middle mouse button pressed.");
+	}
+
+	if (gameInput.IsControllerButtonPressed(IP_CONTROLLER_1, IP_CONTROLLER_BUTTON_SQUARE)) {
+		IP_LOG("Controller 1 pressed square.");
+	}
+
+	if (gameInput.IsControllerButtonHeld(IP_CONTROLLER_1, IP_CONTROLLER_DPAD_LEFT)) {
+		IP_LOG("Controller 1 is holding Dpad Up");
+	}
+
 	m_CurrentScene.OnUpdate(dt);
 	temp_DeleteLater++;
 }

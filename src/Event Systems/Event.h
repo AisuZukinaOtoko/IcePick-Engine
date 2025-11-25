@@ -9,6 +9,7 @@ namespace IcePick {
 		int action = 0;
 		int code = 0;
 		int mods = 0;
+		int data = 0;
 		unsigned int flags = 0;
 	};
 }

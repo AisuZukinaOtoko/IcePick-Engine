@@ -3,9 +3,13 @@
 #include "GLFW/glfw3.h"
 
 namespace IcePick {
-	struct KeyButton {
+	struct Button {
 		bool m_Value = false;
 		bool m_Checked = false;
+	};
+
+	struct Trigger {
+		float m_Value;
 	};
 
 	enum InputKey {
@@ -37,10 +41,11 @@ namespace IcePick {
 	};
 
 	enum ControllerButton {
-		IP_CONTROLLER_D_LEFT = 0, IP_CONTROLLER_D_RIGHT, IP_CONTROLLER_D_UP,	IP_CONTROLLER_D_DOWN,
-		IP_CONTROLLER_BUTTON_A, IP_CONTROLLER_BUTTON_B, IP_CONTROLLER_BUTTON_X, IP_CONTROLLER_BUTTON_Y,
+		IP_CONTROLLER_BUTTON_CROSS = 0, IP_CONTROLLER_BUTTON_CIRCLE, IP_CONTROLLER_BUTTON_SQUARE, IP_CONTROLLER_BUTTON_TRIANGLE,
+		IP_CONTROLLER_DPAD_UP, IP_CONTROLLER_DPAD_RIGHT, IP_CONTROLLER_DPAD_DOWN, IP_CONTROLLER_DPAD_LEFT,
 		IP_CONTROLLER_BUTTON_L1, IP_CONTROLLER_BUTTON_R1, IP_CONTROLLER_BUTTON_L3, IP_CONTROLLER_BUTTON_R3,
-		IP_CONTROLLER_BUTTON_START, IP_CONTROLLER_BUTTON_COUNT
+		IP_CONTROLLER_BUTTON_START, IP_CONTROLLER_BUTTON_SELECT, IP_CONTROLLER_BUTTON_PS,
+		IP_CONTROLLER_BUTTON_COUNT
 	};
 
 	enum ControllerTrigger {
@@ -51,11 +56,12 @@ namespace IcePick {
 		IP_CONTROLLER_AXIS_LEFT = 0, IP_CONTROLLER_AXIS_RIGHT, IP_CONTROLLER_AXIS_COUNT
 	};
 
-	struct ControllerState {
-		ControllerID Id;
-		ControllerButton Buttons[IP_CONTROLLER_BUTTON_COUNT];
+	struct ControllerInputState {
+		Button ControllerButtons[IP_CONTROLLER_BUTTON_COUNT];
 		ControllerTrigger Triggers[IP_CONTROLLER_TRIGGER_COUNT];
 		ControllerAxis Axes[IP_CONTROLLER_AXIS_COUNT];
+		ControllerID Id;
+		bool ControllerConnected = false;
 	};
 
 	class Input {
@@ -73,11 +79,16 @@ namespace IcePick {
 		bool IsMouseButtonReleased(MouseButton button);
 
 		bool IsControllerButtonPressed(ControllerID controllerId, ControllerButton button);
+		bool IsControllerButtonHeld(ControllerID controllerId, ControllerButton button);
+		bool IsControllerButtonReleased(ControllerID controllerId, ControllerButton button);
+
+		float GetControllerTriggerValue(ControllerID controllerId, ControllerTrigger trigger);
+		void GetControllerAxisValues(ControllerID controllerId, ControllerAxis axis, float* x, float* y);
 	private:
 		void ProcessKeyBoardMouseEvent(Event& event);
 		void ProcessControllerEvent(Event& event);
 		const int m_EventTypeCount = 350;
-		KeyButton m_KeysAndButtons[350];
-		ControllerState m_ControllerStates[IP_CONTROLLER_COUNT];
+		Button m_KeysAndButtons[350];
+		ControllerInputState m_ControllerStates[IP_CONTROLLER_COUNT];
 	};
 }
