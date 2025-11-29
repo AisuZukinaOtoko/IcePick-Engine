@@ -11,9 +11,6 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_MaterialEditor(engineAPI),
     m_PropertiesPanel(engineAPI)
 {
-    m_Styles.Init(engineAPI);
-    m_AssetBrowser.Init(m_EngineAPI, m_Styles);
-
     auto entityChangeCallback = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
     auto editMaterialCallback = std::bind(&EditorLayer::OnChangeEditMaterial, this, std::placeholders::_1);
     m_Viewport.SetSelectedEntityChangeCallback(entityChangeCallback);
@@ -30,13 +27,16 @@ void IcePick::EditorLayer::OnAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.Fonts->AddFontDefault();
 
+    ImGui::StyleColorsDark();
+    m_Styles.Init(m_EngineAPI);
+    m_AssetBrowser.Init(m_EngineAPI, m_Styles);
+
     std::filesystem::path fontPath = "res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
     m_EditorFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18.0f);
     io.Fonts->Build();
     if (!m_EditorFont)
         IP_LOG("Failed to load editor font: " + fontPath.string(), IP_WARN_LOG);
 
-    ImGui::StyleColorsDark();
     GLFWwindow* window = IcePickRenderer::GetRendererWindow();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();

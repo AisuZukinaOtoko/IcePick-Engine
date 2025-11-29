@@ -104,7 +104,10 @@ void IcePick::EventHandler::NewFrame() {
 			const unsigned int axisCount = 6;
 			for (unsigned int i = 0; i < axisCount; i++) {
 				m_ControllerStates[joystickId].axes[i] = state.axes[i];
+				IP_CORE_PROFILE_LOG("Some axis", state.axes[i]);
+				IP_CORE_PROFILE_POP();
 			}
+			
 
 			IP_CORE_PROFILE_LOG("Dpad Up", state.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP]);
 			IP_CORE_PROFILE_POP();
