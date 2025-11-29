@@ -145,23 +145,39 @@ void AssetBrowser::Render() {
         if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
             if (extension == ".ipmtb") {
                 ImGui::OpenPopup("MATERIAL_BASE_OPTIONS");
-                IP_LOG("Open pop up.");
             }
         }
 
         if (ImGui::BeginPopup("MATERIAL_BASE_OPTIONS")) {
             if (ImGui::Button("Create material instance")) {
-                IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
-                const IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialBaseId);
-                std::filesystem::path materialInstancePath = m_CurrentBrowsingPath / "newMaterialInstance.ipmti";
-                IcePick::MaterialInstance newMaterialInstance = materialBase.CreateEmptyInstanceFromBase();
+                ImGui::OpenPopup("Create Material Instance");
+                ClearTextInputBuffer();
+            }
 
-                m_EngineAPI.SerializeMaterialInstance(materialInstancePath, newMaterialInstance);
-                ImGui::CloseCurrentPopup();
+            if (ImGui::BeginPopupModal("Create Material Instance")) {
+                ImGui::InputText("File name (.ipmti)", TextInputBuffer, sizeof(TextInputBuffer));
+
+                if (ImGui::Button("Save", ImVec2(120, 0))) {
+                    std::string fileName = std::string(TextInputBuffer) + ".ipmti";
+
+                    IcePick::UUID materialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
+                    const IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialBaseId);
+                    std::filesystem::path materialInstancePath = m_CurrentBrowsingPath / fileName;
+                    IcePick::MaterialInstance newMaterialInstance = materialBase.CreateEmptyInstanceFromBase();
+
+                    m_EngineAPI.SerializeMaterialInstance(materialInstancePath, newMaterialInstance);
+                    ClearTextInputBuffer();
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                    ClearTextInputBuffer();
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
             }
             ImGui::EndPopup();
         }
-
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
             std::filesystem::path assetPath = file.path();
@@ -181,6 +197,8 @@ void AssetBrowser::Render() {
         ImGui::NextColumn();
         ImGui::PopID();
     }
+
+    
 
     ImGui::Columns(1);
 	ImGui::End();
