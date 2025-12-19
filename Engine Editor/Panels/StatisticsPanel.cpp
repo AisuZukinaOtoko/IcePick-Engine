@@ -7,7 +7,7 @@ StatisticsPanel::StatisticsPanel() {
 }
 
 void StatisticsPanel::ShowStats() {
-	IP_CORE_PROFILE_POP(); // Pop the total frame time profile
+	//IP_CORE_PROFILE_POP(); // Pop the total frame time profile
 
 	ImGui::Begin(m_Title);
 	const DebugCapture& rootDebugCapture = IP_GET_CORE_PROFILE();
@@ -16,8 +16,8 @@ void StatisticsPanel::ShowStats() {
 	}
 	ImGui::End();
 
-	IP_CORE_PROFILE_CLEAR();
-	IP_CORE_PROFILE_BEGIN("Frame Total");
+	//IP_CORE_PROFILE_CLEAR();
+	//IP_CORE_PROFILE_BEGIN("Frame Total");
 }
 
 void StatisticsPanel::RenderNodeRecursive(const DebugCapture& parentDebugCapture) {

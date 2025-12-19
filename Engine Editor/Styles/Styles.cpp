@@ -39,6 +39,7 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	style.Colors[ImGuiCol_TabSelectedOverline] = ImColor(0, 0, 0, 0);
 	style.Colors[ImGuiCol_TabDimmed] = ImColor(40, 40, 40, 255);
 	style.Colors[ImGuiCol_TabDimmedSelected] = ImColor(0, 140, 140, 255);
+	style.Colors[ImGuiCol_TabDimmedSelectedOverline] = ImColor(0, 140, 140, 0);
 	style.Colors[ImGuiCol_DockingPreview] = ImColor(0, 200, 200, 255);
 	style.Colors[ImGuiCol_DragDropTarget] = ImColor(0, 255, 255, 255);
 }

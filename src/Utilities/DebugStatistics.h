@@ -27,4 +27,6 @@ void IP_CORE_PROFILE_LOG(std::string propertyName, int propertyValue);
 void IP_CORE_PROFILE_LOG(std::string propertyName, float propertyValue);
 void IP_CORE_PROFILE_LOG(std::string propertyName, std::string propertyValue);
 
+void IP_CORE_PROFILE_CAPTURE();
+
 const DebugCapture& IP_GET_CORE_PROFILE();

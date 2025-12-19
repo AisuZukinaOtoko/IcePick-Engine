@@ -29,7 +29,7 @@ bool FrameBuffer::Init(int width, int height, Type type) {
 
 	// Colour texture
 	glBindTexture(GL_TEXTURE_2D, m_AttachmentIDs[COLOUR_TEXTURE]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (unsigned int)COLOUR_TEXTURE, GL_TEXTURE_2D, m_AttachmentIDs[COLOUR_TEXTURE], 0);

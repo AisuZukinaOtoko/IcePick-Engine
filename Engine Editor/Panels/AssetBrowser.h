@@ -13,6 +13,7 @@ public:
 	void Render();
 	std::string GetDragFilePath();
 private:
+	void MaterialBasePopupOptions(const std::filesystem::path& filepath);
 	void* GetFileIcon(std::filesystem::path extension);
 	std::function<void(std::filesystem::path)> EditMaterialCallback;
 	Styles m_Styles;

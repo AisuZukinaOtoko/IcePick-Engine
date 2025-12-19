@@ -70,11 +70,18 @@ public:
 	virtual void ParseNodeLogic(std::stringstream& ss) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }
 	void Unitialise();
+	std::string GetNodeType() { return m_NodeType; }
 	ImVec2 CanvasPosition;
 	unsigned int NodeWidth = 150.0f;
 	bool MaterialBaseStateChanged = false;
 	bool MaterialInstanceStateChanged = false;
+
+	bool nodeIsParameter = false;
+	bool nodeCanBeParamterized = true;
 protected:
 	bool m_Initialised = false;
 	std::string m_Identifier;
+	std::string m_NodeType = "base";
 };
+
+typedef std::vector<std::shared_ptr<Node>> Graph;

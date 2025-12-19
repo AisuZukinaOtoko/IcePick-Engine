@@ -201,10 +201,10 @@
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Material Editor\NodeGraphManager.cpp">
+    <ClCompile Include="src\File Systems\MaterialBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\File Systems\MaterialBase.cpp">
+    <ClCompile Include="Engine Editor\Utils\Serialize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -635,6 +635,7 @@
     <None Include="res\textures\black_fabric_rough.iptex" />
     <None Include="res\shaders\gpass.frag.shader" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
+    <None Include="res\shaders\toneMapper.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -1729,10 +1730,10 @@
     <ClInclude Include="src\File Systems\MaterialBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine Editor\Material Editor\NodeGraphManager.h">
+    <ClInclude Include="src\Utilities\JsonUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utilities\JsonUtils.h">
+    <ClInclude Include="Engine Editor\Utils\Serialize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

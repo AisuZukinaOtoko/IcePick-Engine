@@ -79,8 +79,10 @@ namespace IcePick {
 		auto iterator = m_LoadedShaders.find(shaderId);
 
 		// Shader program not found, so do not reload shader and do not create a new shader
-		if (iterator == m_LoadedShaders.end())
+		if (iterator == m_LoadedShaders.end()) {
+			IP_LOG("Cannot reload shader. Shader not found.", IP_WARN_LOG);
 			return;
+		}
 
 		ShaderProgram newShader;
 		newShader.CompileShaderProgram(shaderSource);

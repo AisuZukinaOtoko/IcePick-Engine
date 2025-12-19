@@ -11,6 +11,7 @@
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "../LogSystem.h"
+#include "../../src/Utilities/DebugStatistics.h"
 #include <math.h>
 
 static IcePick::Input keyState;
@@ -72,6 +73,7 @@ void Viewport::OnViewportEvent(IcePick::Event& event) {
 }
 
 void Viewport::Render(unsigned int renderTexture) {
+	IP_CORE_PROFILE_BEGIN("Viewport render");
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::Begin(m_ID);
 
@@ -118,6 +120,7 @@ void Viewport::Render(unsigned int renderTexture) {
 	//m_MouseDelta = (m_ViewportRightClicked) ? io.MouseDelta : ImVec2(0.0f, 0.0f);
 	ImGui::End();
 	ImGui::PopStyleVar();
+	IP_CORE_PROFILE_POP();
 }
 
 void Viewport::RenderEntityGizmos() {

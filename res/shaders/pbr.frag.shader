@@ -32,9 +32,11 @@ uniform float u_EmissiveValue;
 
 const vec3 tempLightPosition = vec3(2.0f, 3.0f, 4.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
-const vec3 tempAmbientColour = vec3(0.15f, 0.165f, 0.165f);
+const float tempLightIntensity = 0.68f;
+const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f);
 
 #include "picking.shader"
+#include "toneMapper.shader"
 
 void main() {
     vec4 OutputColour = vec4(0.0f);
@@ -44,20 +46,18 @@ void main() {
     vec3 V = normalize(u_CameraPosition - v_Pos);
 
     vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
-    //vec4 diffuseColour = ((MaterialSampleFlags & SAMPLE_ALBEDO) != 0) ? texture(u_AlbedoTexUnit, v_TexCoord) : u_AlbedoColour;
 
     if (dot(v_Normal, L)  < 0.0f){
         OutputColour = vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a);
     }
     else {
         OutputColour += vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a); // ambient
-        OutputColour += vec4(diffuseColour.rgb * dot(normalize(v_Normal), L), diffuseColour.a); // diffuse
-        //OutputColour += vec4(tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 0.0f); // specular
+        OutputColour += vec4((diffuseColour.rgb * dot(normalize(v_Normal), L)) * (tempLightColour * tempLightIntensity), diffuseColour.a); // diffuse
+        OutputColour += vec4(diffuseColour.rgb * tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 1.0f);
     }
 
-    OutColour = vec4(1.0f);
-    OutColour = diffuseColour;
     OutColour = OutputColour;
+    OutColour = vec4(PBRNeutralToneMapper(OutputColour.rgb), OutputColour.a);
     OutNormal = vec4(v_Normal, 1.0f);
 #ifdef VIEW_PICKING
     OutEntityMat = GetEntityMatSlot();

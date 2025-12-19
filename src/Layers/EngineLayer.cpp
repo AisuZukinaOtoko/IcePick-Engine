@@ -6,6 +6,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
+#include "../Utilities/DebugStatistics.h"
 
 
 static IcePick::Input gameInput;
@@ -81,10 +82,12 @@ void IcePick::EngineLayer::GetEntityMatPixelData(int x, int y, void* pixelData) 
 }
 
 void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
+	IP_CORE_PROFILE_BEGIN("Engine layer render.");
 	SetRenderTargetFrameBuffer();
 	m_CurrentScene.OnPreRender();
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
+	IP_CORE_PROFILE_POP();
 }
 
 void IcePick::EngineLayer::RenderEntityMeshes() {

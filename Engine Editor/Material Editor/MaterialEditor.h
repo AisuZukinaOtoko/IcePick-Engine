@@ -3,7 +3,6 @@
 #include "../EditorRenderer.h"
 #include "../File Systems/MaterialBase.h"
 #include "Nodes/NodeBase.h"
-#include "NodeGraphManager.h"
 #include <memory>
 #include <unordered_map>
 #include <sstream>
@@ -42,6 +41,7 @@ private:
 	bool m_AutoCompileGraph = true;
 	void CompileMaterial();
 	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth);
+	IcePick::ShaderSource GetShaderSourceFromGraph();
 	std::unordered_map<IcePick::UUID, std::string, UUIDHasher> m_NodeIdentifiers;
 	std::filesystem::path m_DropAssetPath;
 
@@ -50,10 +50,12 @@ private:
 	const char* m_ID = "Material Editor";
 
 	std::filesystem::path m_EditMaterialBasePath;
+	IcePick::UUID m_EditMaterialShaderId = IcePick::UUID::Unitialised();
 	IcePick::UUID m_EditMaterialBaseId = IcePick::UUID::Unitialised();
 	IcePick::UUID m_MaterialEditorMaterialBaseId = IcePick::UUID::Unitialised();
 	IcePick::UUID m_MaterialEditorMaterialInstanceId = IcePick::UUID::Unitialised();
 
+	IcePick::UUID m_MaterialEditorShaderId = IcePick::UUID::Unitialised();
 	IcePick::MaterialBase m_MaterialEditorMaterialBase;
 	IcePick::MaterialInstance m_MaterialEditorMaterialInstance;
 	IcePick::ShaderSource m_MaterialEditorShaderSourceTemplate;
@@ -63,7 +65,6 @@ private:
 	unsigned int m_SourcePinIndex = 0;
 	IcePick::UUID m_SourcePinNodeId = IcePick::UUID::Unitialised();
 	Graph m_EditMaterialNodeGraph;
-	NodeGraphManager m_GraphManager;
 
 	ImVec2 m_CanvasScreenPos;
 	ImVec2 m_CanvasScrolling;

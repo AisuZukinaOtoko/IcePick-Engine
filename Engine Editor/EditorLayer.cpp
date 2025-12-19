@@ -1,6 +1,7 @@
 #include "../src/IcePickCoreMinimal.h"
 #include "EditorLayer.h"
 #include "../src/Event Systems/Input.h"
+#include "../src/Utilities/DebugStatistics.h"
 #include "imgui-docking/ImGuizmo.h"
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
@@ -73,6 +74,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
 
+    IP_CORE_PROFILE_BEGIN("Editor layer");
     ImGui::PushFont(m_EditorFont);
     ImGuiViewport* mainViewPort = ImGui::GetMainViewport();
     ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
@@ -91,10 +93,14 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_PropertiesPanel.SelectedProperties(m_Styles);
     m_MaterialEditor.Render();
     m_Viewport.Render(payload.FrameBufferID);
+    IP_CORE_PROFILE_POP();
     m_StatisticsPanel.ShowStats();
 
     ImGui::PopFont();
+
+    IP_CORE_PROFILE_BEGIN("ImGui render");
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    IP_CORE_PROFILE_POP();
 }
 

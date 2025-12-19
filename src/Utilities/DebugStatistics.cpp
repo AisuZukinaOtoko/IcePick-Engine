@@ -14,6 +14,7 @@ struct CaptureEntry {
 };
 static std::vector<unsigned int> CaptureParentIndices;
 static DebugCapture RootCaptureNode = { "Root", "" };
+static DebugCapture SavedCaptured = { "Root", "" };
 
 static void TraverseInsert(DebugCapture& parentCapture, DebugCapture& insertCapture, unsigned int index) {
 	if (index == CaptureParentIndices.size()) {
@@ -79,18 +80,26 @@ void IP_CORE_PROFILE_LOG(std::string propertyName, int propertyValue) {
 void IP_CORE_PROFILE_LOG(std::string propertyName, float propertyValue) {
 	IP_CORE_PROFILE_LOG(propertyName, std::to_string(propertyValue));
 }
+
 void IP_CORE_PROFILE_LOG(std::string propertyName, std::string propertyValue) {
 	DebugCapture insert(propertyName, propertyValue);
 	TraverseInsert(RootCaptureNode, insert, 0);
 }
 
-const DebugCapture& IP_GET_CORE_PROFILE() {
-	return RootCaptureNode;
-}
 #else
 void IP_CORE_PROFILE_BEGIN(std::string propertyName) {}
 void IP_CORE_PROFILE_POP() {}
+void IP_CORE_PROFILE_CLEAR() {}
 void IP_CORE_PROFILE_LOG(std::string propertyName, int propertyValue) {}
 void IP_CORE_PROFILE_LOG(std::string propertyName, float propertyValue) {}
 void IP_CORE_PROFILE_LOG(std::string propertyName, std::string propertyValue) {}
+void IP_CORE_PROFILE_CAPTURE() {}
 #endif
+
+const DebugCapture& IP_GET_CORE_PROFILE() {
+	return SavedCaptured;
+}
+
+void IP_CORE_PROFILE_CAPTURE() {
+	SavedCaptured = RootCaptureNode;
+}

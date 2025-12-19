@@ -144,7 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
-    <ClCompile Include="Engine Editor\Material Editor\NodeGraphManager.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp" />
@@ -158,6 +157,7 @@
     <ClCompile Include="Engine Editor\Panels\StatisticsPanel.cpp" />
     <ClCompile Include="Engine Editor\Styles\Styles.cpp" />
     <ClCompile Include="Engine Editor\Styles\ThumbnailManager.cpp" />
+    <ClCompile Include="Engine Editor\Utils\Serialize.cpp" />
     <ClCompile Include="Engine Editor\Viewport\EditorCamera.cpp" />
     <ClCompile Include="Engine Editor\Viewport\Viewport.cpp" />
     <ClCompile Include="Engine Editor\EditorRenderer.cpp" />
@@ -219,6 +219,7 @@
     <None Include="res\shaders\pbr.frag.shader" />
     <None Include="res\shaders\pbr.vert.shader" />
     <None Include="res\shaders\picking.shader" />
+    <None Include="res\shaders\toneMapper.shader" />
     <None Include="res\textures\black_fabric_diffuse.iptex" />
     <None Include="res\textures\black_fabric_rough.iptex" />
     <None Include="src\Vendor\glm\detail\func_common.inl" />
@@ -362,7 +363,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
-    <ClInclude Include="Engine Editor\Material Editor\NodeGraphManager.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.h" />
@@ -378,6 +378,7 @@
     <ClInclude Include="Engine Editor\Panels\StatisticsPanel.h" />
     <ClInclude Include="Engine Editor\Styles\Styles.h" />
     <ClInclude Include="Engine Editor\Styles\ThumbnailManager.h" />
+    <ClInclude Include="Engine Editor\Utils\Serialize.h" />
     <ClInclude Include="Engine Editor\Viewport\EditorCamera.h" />
     <ClInclude Include="Engine Editor\Viewport\Viewport.h" />
     <ClInclude Include="Engine Editor\EditorRenderer.h" />

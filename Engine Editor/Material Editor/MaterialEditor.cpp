@@ -3,6 +3,7 @@
 #include "imgui-docking/imgui.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
+#include "../Utils/Serialize.h"
 
 MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI),
@@ -14,12 +15,18 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_Renderer.Init(previewImageSize, previewImageSize);
     previewMesh = m_EngineAPI.LoadMesh("res/Assets/sphere.glb");
 
+    m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
+
     m_MaterialEditorMaterialBaseId = m_EngineAPI.RegisterMaterialBase(m_MaterialEditorMaterialBase);
     m_MaterialEditorMaterialInstance.MaterialBaseId = m_MaterialEditorMaterialBaseId;
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
     m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/pbr.vert.shader");
     m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/gpass.frag.shader");
+
+    IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
+    m_MaterialEditorShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
+    m_MaterialEditorMaterialBase.ShaderId = m_MaterialEditorShaderId;
 }
 
 void MaterialEditor::SetDropAssetPath(std::filesystem::path filePath) {
@@ -30,7 +37,9 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
 	m_Open = true;
 
     m_EditMaterialBasePath = materialBasePath;
-    m_EditMaterialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(m_EditMaterialBasePath);;
+    m_EditMaterialBaseId = m_EngineAPI.LoadMaterialBaseFromAsset(m_EditMaterialBasePath);
+    const IcePick::MaterialBase& editMaterialBase = m_EngineAPI.GetMaterialBase(m_EditMaterialBaseId);
+    m_EditMaterialShaderId = editMaterialBase.ShaderId;
 
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
@@ -39,27 +48,6 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     m_MaterialEditorMaterialBase.ClearShaderInputs();
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
-
-    std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;
-    std::string replaceTarget = "#uniforms";
-    size_t pos = fragShader.find(replaceTarget);
-    if (pos != std::string::npos) {
-        fragShader.replace(pos, replaceTarget.length(), "");
-    }
-
-    replaceTarget = "#shader";
-    pos = fragShader.find(replaceTarget);
-    if (pos != std::string::npos) {
-        fragShader.replace(pos, replaceTarget.length(), "");
-    }
-
-    IcePick::ShaderSource newShaderSource;
-    newShaderSource.VertexShaderSource = m_MaterialEditorShaderSourceTemplate.VertexShaderSource;
-    newShaderSource.FragmentShaderSource = fragShader;
-
-    m_MaterialEditorMaterialBase.ShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
-    IP_LOG("Editing a material currently creates a new shader, regardless of whether the material is saved or not.", IP_WARN_LOG);
-
 }
 
 void MaterialEditor::OnUpdate(DeltaTime dt) {
@@ -117,8 +105,15 @@ void MaterialEditor::Render() {
 
         if (ImGui::Button("Save Material")) {
             IP_LOG("Saved material base.");
-            m_EngineAPI.UpdateMaterialBase(m_EditMaterialBaseId, m_MaterialEditorMaterialBase);
-            m_EngineAPI.SerializeMaterialBase(m_EditMaterialBasePath, m_MaterialEditorMaterialBase);
+            IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
+            IcePick::MaterialBase saveMaterialBase = m_MaterialEditorMaterialBase;
+            saveMaterialBase.Id = m_EditMaterialBaseId;
+            saveMaterialBase.ShaderId = m_EditMaterialShaderId;
+
+            m_EngineAPI.UpdateShaderWithSource(m_EditMaterialShaderId, newShaderSource);
+            m_EngineAPI.UpdateMaterialBase(m_EditMaterialBaseId, saveMaterialBase);
+            SerializeMaterialBase(m_EditMaterialBasePath, saveMaterialBase, m_EditMaterialNodeGraph, newShaderSource);
+            //m_EngineAPI.SerializeMaterialBase(m_EditMaterialBasePath, saveMaterialBase);
         }
 
 		ImGui::TableNextColumn();
@@ -525,37 +520,12 @@ void MaterialEditor::CompileMaterial() {
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
 
-    
-    std::stringstream uniformSS;
-    std::stringstream shaderSS;
+    IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
 
-    CreateShaderFromGraph(shaderSS, m_EditMaterialNodeGraph[0], 0, 0);
-    for (auto materialTexture : m_MaterialEditorMaterialBase.MaterialTextures) {
-        uniformSS << "uniform sampler2D " << materialTexture.SamplerIdentifier << ";\n";
-    }
-
-    std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;
-
-    std::string replaceTarget = "#uniforms";
-    size_t pos = fragShader.find(replaceTarget);
-    if (pos != std::string::npos) {
-        fragShader.replace(pos, replaceTarget.length(), uniformSS.str());
-    }
-
-    replaceTarget = "#shader";
-    pos = fragShader.find(replaceTarget);
-    if (pos != std::string::npos) {
-        fragShader.replace(pos, replaceTarget.length(), shaderSS.str());
-    }
-
-    IcePick::ShaderSource newShaderSource;
-    newShaderSource.VertexShaderSource = m_MaterialEditorShaderSourceTemplate.VertexShaderSource;
-    newShaderSource.FragmentShaderSource = fragShader;
-
-    m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorMaterialBase.ShaderId, newShaderSource);
+    m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorShaderId, newShaderSource);
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
-    IP_LOG("Compiling shader graph.");
+    //IP_LOG("Compiling shader graph.");
     //IP_LOG(fragShader);
 }
 
@@ -584,6 +554,36 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
     node->Initialise(ss, m_MaterialEditorMaterialBase, m_MaterialEditorMaterialInstance);
     node->ParseNodeLogic(ss);
     return node->GetPinOutput(outputPinIndex);
+}
+
+IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
+    std::stringstream uniformSS;
+    std::stringstream shaderSS;
+
+    CreateShaderFromGraph(shaderSS, m_EditMaterialNodeGraph[0], 0, 0);
+    for (auto materialTexture : m_MaterialEditorMaterialBase.MaterialTextures) {
+        uniformSS << "uniform sampler2D " << materialTexture.SamplerIdentifier << ";\n";
+    }
+
+    std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;
+
+    std::string replaceTarget = "#uniforms";
+    size_t pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), uniformSS.str());
+    }
+
+    replaceTarget = "#shader";
+    pos = fragShader.find(replaceTarget);
+    if (pos != std::string::npos) {
+        fragShader.replace(pos, replaceTarget.length(), shaderSS.str());
+    }
+
+    IcePick::ShaderSource newShaderSource;
+    newShaderSource.VertexShaderSource = m_MaterialEditorShaderSourceTemplate.VertexShaderSource;
+    newShaderSource.FragmentShaderSource = fragShader;
+
+    return newShaderSource;
 }
 
 MaterialEditor::~MaterialEditor() {

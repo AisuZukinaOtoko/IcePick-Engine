@@ -46,6 +46,8 @@ void Engine::Run() {
 
 	DeltaTime deltaTime;
 	while (m_EngineRunning) {
+		IP_CORE_PROFILE_CLEAR();
+		IP_CORE_PROFILE_BEGIN("Total frame time");
 		deltaTime.NewFrame();
 
 		if (IcePickRenderer::WindowShouldClose()) {
@@ -72,7 +74,12 @@ void Engine::Run() {
 			(*layerIt)->OnRender(payload);
 		}
 
+		IP_CORE_PROFILE_BEGIN("Swap buffers");
 		IcePickRenderer::EndFrame();		
+		IP_CORE_PROFILE_POP();
+
+		IP_CORE_PROFILE_POP();
+		IP_CORE_PROFILE_CAPTURE();
 	}
 }
 
