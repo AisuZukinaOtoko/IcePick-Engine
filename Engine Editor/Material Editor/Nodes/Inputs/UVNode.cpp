@@ -2,6 +2,7 @@
 
 UVNode::UVNode() {
 	OutputPins.emplace_back(Pin::VEC2, "UV", "");
+	m_NodeType = "uv";
 }
 
 void UVNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {

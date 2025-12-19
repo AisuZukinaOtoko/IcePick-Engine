@@ -5,6 +5,7 @@ Vector3Node::Vector3Node() {
 	InputPins.emplace_back(Pin::FLOAT32, "Y");
 	InputPins.emplace_back(Pin::FLOAT32, "Z");
 	OutputPins.emplace_back(Pin::VEC3, "XYZ", ".xyz");
+	m_NodeType = "vec3";
 }
 
 void Vector3Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {

@@ -9,6 +9,7 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 	OutputPins.emplace_back(Pin::FLOAT32, "B", ".b");
 	OutputPins.emplace_back(Pin::FLOAT32, "A", ".a");
 
+	m_NodeType = "texture";
 	NodeWidth = 160.0f;
 }
 

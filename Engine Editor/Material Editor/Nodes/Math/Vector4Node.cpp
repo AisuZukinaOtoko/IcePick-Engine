@@ -6,6 +6,7 @@ Vector4Node::Vector4Node() {
 	InputPins.emplace_back(Pin::FLOAT32, "Z");
 	InputPins.emplace_back(Pin::FLOAT32, "W");
 	OutputPins.emplace_back(Pin::VEC3, "XYZW", ".xyzw");
+	m_NodeType = "vec4";
 }
 
 void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {

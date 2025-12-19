@@ -1,0 +1,183 @@
+{
+    "Id": 7427581212309684239,
+    "graphId": 0,
+    "shaderGraph": [
+        {
+            "Id": 12424218263116528433,
+            "inputPins": [
+                {
+                    "connectedNodeId": 1561552959370436070,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodePosition": {
+                "x": 779.0,
+                "y": 282.0
+            },
+            "outputPins": [],
+            "type": "bsdf"
+        },
+        {
+            "Id": 16333779525311079005,
+            "inputPins": [
+                {
+                    "connectedNodeId": 14139437009185515546,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodePosition": {
+                "x": 252.0,
+                "y": 78.0
+            },
+            "outputPins": [
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [
+                        1561552959370436070
+                    ],
+                    "connectedPinIndices": [
+                        2
+                    ]
+                },
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [
+                        1561552959370436070
+                    ],
+                    "connectedPinIndices": [
+                        3
+                    ]
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 11212207703986102690,
+            "inputPins": [
+                {
+                    "connectedNodeId": 14139437009185515546,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodePosition": {
+                "x": 242.0,
+                "y": 409.0
+            },
+            "outputPins": [
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [
+                        1561552959370436070
+                    ],
+                    "connectedPinIndices": [
+                        1
+                    ]
+                },
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                },
+                {
+                    "connectedNodeIds": [],
+                    "connectedPinIndices": []
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 1561552959370436070,
+            "inputPins": [
+                {
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0
+                },
+                {
+                    "connectedNodeId": 11212207703986102690,
+                    "connectedPinIndex": 1
+                },
+                {
+                    "connectedNodeId": 16333779525311079005,
+                    "connectedPinIndex": 1
+                },
+                {
+                    "connectedNodeId": 16333779525311079005,
+                    "connectedPinIndex": 4
+                }
+            ],
+            "isParameter": false,
+            "nodePosition": {
+                "x": 550.0,
+                "y": 258.0
+            },
+            "outputPins": [
+                {
+                    "connectedNodeIds": [
+                        12424218263116528433
+                    ],
+                    "connectedPinIndices": [
+                        0
+                    ]
+                }
+            ],
+            "type": "vec4"
+        },
+        {
+            "Id": 14139437009185515546,
+            "inputPins": [],
+            "isParameter": false,
+            "nodePosition": {
+                "x": -87.0,
+                "y": 256.0
+            },
+            "outputPins": [
+                {
+                    "connectedNodeIds": [
+                        16333779525311079005,
+                        11212207703986102690
+                    ],
+                    "connectedPinIndices": [
+                        0,
+                        0
+                    ]
+                }
+            ],
+            "type": "uv"
+        }
+    ],
+    "shaderId": 69,
+    "shaderSource": {
+        "fragment": "#version 330 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_11212207703986102690;\nuniform sampler2D sampler_16333779525311079005;\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "vertex": "#version 330 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
+    },
+    "textureParameters": [
+        {
+            "Id": 16189046321966772866,
+            "sampler": "sampler_11212207703986102690"
+        },
+        {
+            "Id": 2343591068640056803,
+            "sampler": "sampler_16333779525311079005"
+        }
+    ],
+    "version": 1
+}

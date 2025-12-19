@@ -1,4 +1,5 @@
 #include "Serialize.h"
+#include "../Material Editor/Nodes/Nodes.h"
 #include "../../src/Utilities/JsonUtils.h"
 #include "../../src/LogSystem.h"
 #include <fstream>
@@ -24,6 +25,11 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 		nodeJsonObject["Id"] = static_cast<uint64_t>(node->Id);
 		nodeJsonObject["type"] = node->GetNodeType();
 		nodeJsonObject["isParameter"] = node->nodeIsParameter;
+
+		nlohmann::json nodePosition;
+		nodePosition["x"] = node->CanvasPosition.x;
+		nodePosition["y"] = node->CanvasPosition.y;
+		nodeJsonObject["nodePosition"] = nodePosition;
 
 		nlohmann::json inputPinsArrayJsonObject = nlohmann::json::array();
 		for (const auto& nodeInputPin : node->InputPins) {
@@ -71,4 +77,85 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 	else {
 		IP_LOG("Failed to save material base: " + assetPath.string(), IP_ERROR_LOG);
 	}
+}
+
+static std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
+	if (nodeType == "uv") {
+		return std::make_shared<UVNode>();
+	}
+	else if (nodeType == "vec3") {
+		return std::make_shared<Vector3Node>();
+	}
+	else if (nodeType == "vec4") {
+		return std::make_shared<Vector4Node>();
+	}
+	else if (nodeType == "bsdf") {
+		return std::make_shared<BSDFNode>();
+	}
+	else if (nodeType == "texture") {
+		return std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
+	}
+	else {
+		return std::make_shared<Node>();
+	}
+}
+
+Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::ShaderSource* loadShaderSource) {
+	using nlohmann::json;
+	Graph returnMaterialGraph;
+
+	std::ifstream jsonFileStream(assetPath);
+	if (jsonFileStream.fail()) {
+		IP_LOG("Failed to load material base: " + assetPath.string() + ".", IP_ERROR_LOG);
+		return returnMaterialGraph;
+	}
+
+	json assetFile = json::parse(jsonFileStream);
+	int assetVersion = assetFile.value("version", 0);
+	if (assetVersion < MATERIAL_BASE_ASSET_VERSION) {
+		IP_LOG("Material base, " + assetPath.string() + ", is an outdated version. Loaded data may be incorrect.", IP_WARN_LOG);
+	}
+
+	//uint64_t materialId = JsonUtils::GetUint64(assetFile, "Id");
+	//uint64_t shaderId = JsonUtils::GetUint64(assetFile, "shaderId");
+	//uint64_t graphId = JsonUtils::GetUint64(assetFile, "graphId");
+
+	/*UUID Id{ materialId };
+	loadMaterialBase.Id = Id;
+	loadMaterialBase.ShaderId = UUID{ shaderId };
+	loadMaterialBase.ShaderGraphId = UUID{ graphId };
+
+	if (assetFile.contains("textureParameters") && assetFile["textureParameters"].is_array()) {
+		json& materialTextureParameters = assetFile["textureParameters"];
+
+		for (auto textureIterator = materialTextureParameters.begin(); textureIterator != materialTextureParameters.end(); textureIterator++) {
+			MaterialBaseTextureData& materialBaseTextureData = loadMaterialBase.MaterialTextures.emplace_back();
+			materialBaseTextureData.Id = JsonUtils::GetUint64(*textureIterator, "Id");
+			materialBaseTextureData.SamplerIdentifier = textureIterator->value("sampler", "none");
+		}
+	}*/
+
+	if (assetFile.contains("shaderGraph") && assetFile["shaderGraph"].is_array()) {
+		json& shaderGraphNodes = assetFile["shaderGraph"];
+
+		for (auto nodeIterator = shaderGraphNodes.begin(); nodeIterator != shaderGraphNodes.end(); nodeIterator++) {
+			std::string nodeType = nodeIterator->value("type", "base");
+			std::shared_ptr<Node> node = CreateNodeByType(nodeType);
+
+			IcePick::UUID nodeId = JsonUtils::GetUint64(*nodeIterator, "Id");
+			bool nodeIsParameter = nodeIterator->value("isParameter", false);
+			json nodePosition = nodeIterator->at("nodePosition");
+			json inputPinsJson = nodeIterator->at("inputPins");
+			json outputPinsJson = nodeIterator->at("outputPins");
+
+			node->Id = nodeId;
+			node->nodeIsParameter = nodeIsParameter;
+			node->CanvasPosition = ImVec2(nodePosition.value("x", 0.0f), nodePosition.value("y", 0.0f));
+
+			returnMaterialGraph.push_back(node);
+		}
+	}
+
+	jsonFileStream.close();
+	return returnMaterialGraph;
 }

@@ -42,8 +42,13 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     m_EditMaterialShaderId = editMaterialBase.ShaderId;
 
     m_EditMaterialNodeGraph.clear();
-    m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
+    m_EditMaterialNodeGraph = LoadMaterialBaseEditorData(materialBasePath, nullptr);
 
+    if (!m_EditMaterialNodeGraph.size()) {
+        m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
+    }
+
+    CompileMaterial();
     //m_EditMaterial.MaterialTextures.clear();
     m_MaterialEditorMaterialBase.ClearShaderInputs();
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
