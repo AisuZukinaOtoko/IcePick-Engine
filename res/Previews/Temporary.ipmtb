@@ -1,156 +1,101 @@
 {
-    "Id": 7427581212309684239,
+    "Id": 8110846899231647792,
     "graphId": 0,
     "shaderGraph": [
         {
-            "Id": 12424218263116528433,
+            "Id": 5829110775456109325,
             "inputPins": [
                 {
-                    "connectedNodeId": 1561552959370436070,
+                    "connectedNodeId": 14235730043214462692,
                     "connectedPinIndex": 0
                 }
             ],
             "isParameter": false,
             "nodePosition": {
-                "x": 749.0,
-                "y": 209.0
+                "x": 461.0,
+                "y": 328.0
             },
             "outputPins": [],
             "type": "bsdf"
         },
         {
-            "Id": 16333779525311079005,
-            "inputPins": [
-                {
-                    "connectedNodeId": 14139437009185515546,
-                    "connectedPinIndex": 0
-                }
-            ],
-            "isParameter": false,
-            "nodePosition": {
-                "x": 252.0,
-                "y": 78.0
-            },
-            "outputPins": [
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": [
-                        {
-                            "nodeId": 1561552959370436070,
-                            "pinIndex": 2
-                        }
-                    ]
-                },
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": [
-                        {
-                            "nodeId": 1561552959370436070,
-                            "pinIndex": 3
-                        }
-                    ]
-                }
-            ],
-            "type": "texture"
-        },
-        {
-            "Id": 11212207703986102690,
-            "inputPins": [
-                {
-                    "connectedNodeId": 14139437009185515546,
-                    "connectedPinIndex": 0
-                }
-            ],
-            "isParameter": false,
-            "nodePosition": {
-                "x": 256.0,
-                "y": 363.0
-            },
-            "outputPins": [
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": [
-                        {
-                            "nodeId": 1561552959370436070,
-                            "pinIndex": 1
-                        }
-                    ]
-                },
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": []
-                },
-                {
-                    "connectionData": []
-                }
-            ],
-            "type": "texture"
-        },
-        {
-            "Id": 1561552959370436070,
+            "Id": 4362077005981382800,
             "inputPins": [
                 {
                     "connectedNodeId": 0,
                     "connectedPinIndex": 0
                 },
                 {
-                    "connectedNodeId": 11212207703986102690,
-                    "connectedPinIndex": 1
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0
                 },
                 {
-                    "connectedNodeId": 16333779525311079005,
-                    "connectedPinIndex": 1
-                },
-                {
-                    "connectedNodeId": 16333779525311079005,
-                    "connectedPinIndex": 4
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0
                 }
             ],
             "isParameter": false,
             "nodePosition": {
-                "x": 511.0,
-                "y": 225.0
+                "x": 147.0,
+                "y": 110.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "vec3"
+        },
+        {
+            "Id": 14235730043214462692,
+            "inputPins": [
+                {
+                    "connectedNodeId": 14610059897328137218,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodePosition": {
+                "x": 170.0,
+                "y": 314.0
             },
             "outputPins": [
                 {
                     "connectionData": [
                         {
-                            "nodeId": 12424218263116528433,
+                            "nodeId": 5829110775456109325,
                             "pinIndex": 0
                         }
                     ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
                 }
             ],
-            "type": "vec4"
+            "type": "texture"
         },
         {
-            "Id": 14139437009185515546,
+            "Id": 14610059897328137218,
             "inputPins": [],
             "isParameter": false,
             "nodePosition": {
-                "x": -12.0,
-                "y": 216.0
+                "x": -96.0,
+                "y": 328.0
             },
             "outputPins": [
                 {
                     "connectionData": [
                         {
-                            "nodeId": 16333779525311079005,
-                            "pinIndex": 0
-                        },
-                        {
-                            "nodeId": 11212207703986102690,
+                            "nodeId": 14235730043214462692,
                             "pinIndex": 0
                         }
                     ]

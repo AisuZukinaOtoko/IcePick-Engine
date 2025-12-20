@@ -24,6 +24,11 @@ void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem:
 	ImVec2 imageSize = ImVec2(imageEnd.x - imagePos.x, imageEnd.y - imagePos.y);
 	draw_list->AddImage((void*)(intptr_t)m_TextureRenderId, imagePos, imageEnd, ImVec2(0, 1), ImVec2(1, 0));
 
+	if (m_TextureRenderId == 0) {
+		m_TextureRenderId = engineAPI.GetTextureRenderId(m_TextureId); //Gets default texture for preview
+		MaterialInstanceStateChanged = true;
+	} 
+
 	ImGui::SetCursorScreenPos(imagePos);
 	ImGui::InvisibleButton("textureTarget", imageSize);
 	if (ImGui::BeginDragDropTarget()) {

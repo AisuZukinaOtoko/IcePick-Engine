@@ -43,16 +43,23 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 		nlohmann::json outputPinsArrayJsonObject = nlohmann::json::array();
 		for (const auto& nodeOutputPin : node->OutputPins) {
 			nlohmann::json outputPinObject;
+			nlohmann::json connectionDataArray = nlohmann::json::array();
+
 			nlohmann::json connectedNodeIdsArray = nlohmann::json::array();
 			nlohmann::json connectedPinIndicesArray = nlohmann::json::array();
 			
 			for (unsigned int index = 0; index < nodeOutputPin.ConnectedNodeIds.size(); index++) {
-				connectedNodeIdsArray.push_back(static_cast<uint64_t>(nodeOutputPin.ConnectedNodeIds[index]));
-				connectedPinIndicesArray.push_back(nodeOutputPin.ConnectedPinIndices[index]);
+				nlohmann::json connectionDataObject;
+				connectionDataObject["nodeId"] = static_cast<uint64_t>(nodeOutputPin.ConnectedNodeIds[index]);
+				connectionDataObject["pinIndex"] = nodeOutputPin.ConnectedPinIndices[index];
+				connectionDataArray.push_back(connectionDataObject);
+				//connectedNodeIdsArray.push_back(static_cast<uint64_t>(nodeOutputPin.ConnectedNodeIds[index]));
+				//connectedPinIndicesArray.push_back(nodeOutputPin.ConnectedPinIndices[index]);
 			}
 
-			outputPinObject["connectedNodeIds"] = connectedNodeIdsArray;
-			outputPinObject["connectedPinIndices"] = connectedPinIndicesArray;
+			//outputPinObject["connectedNodeIds"] = connectedNodeIdsArray;
+			//outputPinObject["connectedPinIndices"] = connectedPinIndicesArray;
+			outputPinObject["connectionData"] = connectionDataArray;
 			outputPinsArrayJsonObject.push_back(outputPinObject);
 		}
 		nodeJsonObject["outputPins"] = outputPinsArrayJsonObject;
@@ -145,12 +152,37 @@ Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::Shade
 			IcePick::UUID nodeId = JsonUtils::GetUint64(*nodeIterator, "Id");
 			bool nodeIsParameter = nodeIterator->value("isParameter", false);
 			json nodePosition = nodeIterator->at("nodePosition");
-			json inputPinsJson = nodeIterator->at("inputPins");
-			json outputPinsJson = nodeIterator->at("outputPins");
+			json inputPinsArrayJson = nodeIterator->at("inputPins");
+			json outputPinsArrayJson = nodeIterator->at("outputPins");
 
 			node->Id = nodeId;
 			node->nodeIsParameter = nodeIsParameter;
 			node->CanvasPosition = ImVec2(nodePosition.value("x", 0.0f), nodePosition.value("y", 0.0f));
+
+			unsigned int inputPinIndex = 0;
+			for (auto& inputPin : inputPinsArrayJson) {
+				IcePick::UUID connectedNodeId = JsonUtils::GetUint64(inputPin, "connectedNodeId");
+				unsigned int connectedPinIndex = inputPin.value("connectedPinIndex", 0);
+
+				node->InputPins[inputPinIndex].ConnectedNodeId = connectedNodeId;
+				node->InputPins[inputPinIndex].ConnectedPinIndex = connectedPinIndex;
+				inputPinIndex++;
+			}
+
+			unsigned int outputPinIndex = 0;
+			for (auto& outputPin : outputPinsArrayJson) {
+				json connectedDataArray = outputPin.at("connectionData");
+				OutputPin& currentOutputPin = node->OutputPins[outputPinIndex];
+
+				for (auto& connectionDataObject : connectedDataArray) {
+					IcePick::UUID connectedNodeId = JsonUtils::GetUint64(connectionDataObject, "nodeId");
+					unsigned int connectedPinIndex = connectionDataObject.at("pinIndex");
+
+					currentOutputPin.ConnectedNodeIds.push_back(connectedNodeId);
+					currentOutputPin.ConnectedPinIndices.push_back(connectedPinIndex);
+				}
+				outputPinIndex++;
+			}
 
 			returnMaterialGraph.push_back(node);
 		}

@@ -44,6 +44,7 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph = LoadMaterialBaseEditorData(materialBasePath, nullptr);
 
+    // material graph can never have 0 nodes
     if (!m_EditMaterialNodeGraph.size()) {
         m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
     }
