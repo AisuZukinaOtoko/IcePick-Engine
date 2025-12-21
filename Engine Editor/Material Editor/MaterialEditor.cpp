@@ -232,20 +232,23 @@ void MaterialEditor::DrawNodes() {
         for (int j = 0; j < node->InputPins.size(); j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
-            float dx = pinPosition.x - mousePos.x;
-            float dy = pinPosition.y - mousePos.y;
-            bool currentPinHovered = (dx * dx + dy * dy) < (m_RenderInfo.PinRadius * m_RenderInfo.PinRadius);
-
-            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
-            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius));
-            ImGui::InvisibleButton("inputNodePin", ImVec2(m_RenderInfo.PinRadius * 2, m_RenderInfo.PinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
-            bool currentPinActive = ImGui::IsItemActive();
 
             std::string& label = node->InputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
             ImVec2 labelPosition = ImVec2(pinPosition.x + m_RenderInfo.PinRadius + m_RenderInfo.LabelPadding, pinPosition.y - (labelSize.y / 2.0f));
             draw_list->AddText(labelPosition, m_RenderInfo.LabelColour, label.c_str());
+
+            bool mouseInRectX = (mousePos.x > pinPosition.x - m_RenderInfo.PinRadius) && (mousePos.x < labelPosition.x + labelSize.x);
+            bool mouseInRectY = (mousePos.y > labelPosition.y) && (mousePos.y < labelPosition.y + labelSize.y);
+            bool currentPinHovered = mouseInRectX && mouseInRectY;
+
+            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            ImVec2 cursorPos = ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius);
+            ImGui::SetCursorScreenPos(cursorPos);
+            ImGui::InvisibleButton("inputNodePin", ImVec2(labelPosition.x + labelSize.x - cursorPos.x, labelSize.y), ImGuiButtonFlags_MouseButtonLeft);
+            bool currentPinActive = ImGui::IsItemActive();
+
 
             if (currentPinActive) {
                 m_PinActive = true;
@@ -269,20 +272,22 @@ void MaterialEditor::DrawNodes() {
         for (int j = 0; j < node->OutputPins.size(); j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, false);
-            float dx = pinPosition.x - mousePos.x;
-            float dy = pinPosition.y - mousePos.y;
-            bool currentPinHovered = (dx * dx + dy * dy) < (m_RenderInfo.PinRadius * m_RenderInfo.PinRadius);
-
-            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
-            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
-            ImGui::SetCursorScreenPos(ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius));
-            ImGui::InvisibleButton("outputNodePin", ImVec2(m_RenderInfo.PinRadius * 2, m_RenderInfo.PinRadius * 2), ImGuiButtonFlags_MouseButtonLeft);
-            bool currentPinActive = ImGui::IsItemActive();
 
             std::string& label = node->OutputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
             ImVec2 labelPosition = ImVec2(pinPosition.x - m_RenderInfo.PinRadius - m_RenderInfo.LabelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
             draw_list->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label.c_str());
+
+            bool mouseInRectX = (mousePos.x < (pinPosition.x + m_RenderInfo.PinRadius)) && (mousePos.x > labelPosition.x);
+            bool mouseInRectY = (mousePos.y > labelPosition.y) && (mousePos.y < labelPosition.y + labelSize.y);
+            bool currentPinHovered = mouseInRectX && mouseInRectY;
+
+            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            ImGui::SetCursorScreenPos(labelPosition);
+            ImGui::InvisibleButton("outputNodePin", ImVec2(pinPosition.x + m_RenderInfo.PinRadius - labelPosition.x, labelSize.y), ImGuiButtonFlags_MouseButtonLeft);
+            bool currentPinActive = ImGui::IsItemActive();
+
 
             if (currentPinActive) {
                 m_PinActive = true;

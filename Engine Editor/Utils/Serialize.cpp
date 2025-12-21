@@ -86,7 +86,7 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 	}
 }
 
-static std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
+std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	if (nodeType == "uv") {
 		return std::make_shared<UVNode>();
 	}
