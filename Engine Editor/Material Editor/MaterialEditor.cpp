@@ -5,6 +5,9 @@
 #include "../Utilities/Assert.h"
 #include "../Utils/Serialize.h"
 
+static bool RenameNodeTextNeedsFocus = false;
+static glm::vec4 tempColour = glm::vec4(0.0f);
+
 MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI),
 	m_Renderer(engineAPI)
@@ -122,6 +125,8 @@ void MaterialEditor::Render() {
             //m_EngineAPI.SerializeMaterialBase(m_EditMaterialBasePath, saveMaterialBase);
         }
 
+        ImGui::ColorEdit3("##Colour", &tempColour.r, ImGuiColorEditFlags_PickerHueWheel);
+
 		ImGui::TableNextColumn();
 		DrawCanvas();
 		ImGui::EndTable();
@@ -144,7 +149,6 @@ void MaterialEditor::PreviewMaterial() {
 }
 
 void MaterialEditor::DrawCanvas() {
-
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));      // Disable padding
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));  // Set a background color
 	ImGui::BeginChild("canvas", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_NoMove);
@@ -183,10 +187,12 @@ void MaterialEditor::DrawCanvas() {
     if (drag_delta.x == 0.0f && drag_delta.y == 0.0f)
         ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     if (ImGui::BeginPopup("context")) {
         ShowAddNodeOptions(mouse_pos_in_canvas);
         ImGui::EndPopup();
     }
+    ImGui::PopStyleVar();
 
     // Draw grid + all lines in the canvas
     draw_list->PushClipRect(canvas_p0, canvas_p1, true);
@@ -197,7 +203,10 @@ void MaterialEditor::DrawCanvas() {
         draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y), ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
 
     DrawNodeConnections();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 5));
     DrawNodes();
+    ImGui::PopStyleVar();
+    
 
     draw_list->PopClipRect();
 
@@ -222,12 +231,50 @@ void MaterialEditor::DrawNodes() {
         ImVec2 nodeSize = CalculateNodeSize(node);
 
         draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), m_RenderInfo.NodeBgColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
-        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), m_RenderInfo.NodeHeaderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
+        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), node->NodeHeaderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
+
+        ImVec2 nodeTitleTextSize = ImGui::CalcTextSize(node->NodeName.c_str());
+        ImVec2 nodeTitleTextPosition = ImVec2(nodePosition.x + m_RenderInfo.LabelPadding, nodePosition.y + ((m_RenderInfo.NodeHeaderHeight - nodeTitleTextSize.y) / 2.0f));
+        if (node->Id != m_RenameNodeId)
+            draw_list->AddText(NULL, 20.0f, nodeTitleTextPosition, IM_COL32(255, 255, 255, 255), node->NodeName.c_str());
 
         ImGui::SetCursorScreenPos(nodePosition);
+        ImGui::SetNextItemAllowOverlap();
         ImGui::InvisibleButton("nodeHeader", ImVec2(nodeSize.x, m_RenderInfo.NodeHeaderHeight), ImGuiButtonFlags_MouseButtonLeft);
         const bool nodeHeaderHovered = ImGui::IsItemHovered();
         const bool nodeHeaderHeld = ImGui::IsItemActive();
+        const bool nodeHeaderRightClicked = nodeHeaderHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Right);
+
+        char inputTextBuffer[30] = {};
+        if (node->Id == m_RenameNodeId) {
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(25, 25, 25, 120));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
+
+            ImGui::SetCursorScreenPos(ImVec2(nodeTitleTextPosition.x, nodeTitleTextPosition.y - (m_RenderInfo.LabelPadding / 2.0f)));
+            ImGui::SetNextItemWidth(node->NodeWidth - (m_RenderInfo.LabelPadding * 2));
+            if (RenameNodeTextNeedsFocus) {
+                ImGui::SetKeyboardFocusHere();
+                RenameNodeTextNeedsFocus = false;
+            }
+            ImGui::InputText("##RenameNodeTextInput", inputTextBuffer, sizeof(inputTextBuffer));
+            if (ImGui::IsItemDeactivated()) {
+                node->NodeName = inputTextBuffer;
+                m_RenameNodeId = IcePick::UUID::Unitialised();
+            }
+
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor();
+        }
+
+        if (nodeHeaderRightClicked) {
+            ImGui::OpenPopup("NODE_OPTIONS");
+        }
+
+        if (ImGui::BeginPopup("NODE_OPTIONS")) {            
+            ShowNodeEditOptions(node);
+            ImGui::EndPopup();
+        }
+        
 
         for (int j = 0; j < node->InputPins.size(); j++) {
             ImGui::PushID(j);
@@ -341,7 +388,7 @@ void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInpu
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     int sign = (startIsInputPin) ? -1 : 1;
-    float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f;
+    float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f + 10.0f;
     float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
     
     ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
@@ -380,6 +427,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
     }
 
     if (ImGui::BeginMenu("Math Nodes")) {
+        if (ImGui::MenuItem("Float Node", NULL, false)) {
+            std::shared_ptr<FloatNode> newNode = std::make_shared<FloatNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Vector3 Node", NULL, false)) {
             std::shared_ptr<Vector3Node> newNode = std::make_shared<Vector3Node>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -402,6 +455,24 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
         }
 
         ImGui::EndMenu();
+    }
+}
+
+void MaterialEditor::ShowNodeEditOptions(std::shared_ptr<Node> node) {
+    std::string nodeParameterToggleText = (node->nodeIsParameter) ? "Demote from parameter" : "Convert to parameter";
+    if (ImGui::MenuItem(nodeParameterToggleText.c_str(), NULL, false, node->nodeCanBeParamterized)) {
+        node->nodeIsParameter = !node->nodeIsParameter;
+        m_GraphStateChanged = true;
+    }
+
+    if (ImGui::MenuItem("Rename node", NULL, false)) {
+        m_RenameNodeId = node->Id;
+        RenameNodeTextNeedsFocus = true;
+    }
+
+    if (ImGui::MenuItem("Delete node", NULL, false)) {
+        m_GraphStateChanged = true;
+        DeleteNode(node->Id);
     }
 }
 
@@ -522,12 +593,31 @@ void MaterialEditor::DisconnectPins(std::shared_ptr<Node> node, unsigned int pin
     }
 }
 
+void MaterialEditor::DeleteNode(IcePick::UUID nodeId) {
+    for (unsigned int i = 1; i < m_EditMaterialNodeGraph.size(); i++) { // Start at index 1 since node at index 0 should never be deleted
+        std::shared_ptr<Node>& node = m_EditMaterialNodeGraph[i];
+        if (node->Id == nodeId) {
+            for (unsigned int pinIndex = 0; pinIndex < node->InputPins.size(); pinIndex++) {
+                DisconnectPins(node, pinIndex, true);
+            }
+            for (unsigned int pinIndex = 0; pinIndex < node->OutputPins.size(); pinIndex++) {
+                DisconnectPins(node, pinIndex, false);
+            }
+
+            std::shared_ptr<Node> lastNode = m_EditMaterialNodeGraph.back();
+            node = lastNode;
+            m_EditMaterialNodeGraph.pop_back();
+            return;
+        }
+    }
+}
+
 void MaterialEditor::CompileMaterial() {
     m_NodeIdentifiers.clear();
-    for (auto node : m_EditMaterialNodeGraph) {
+    for (auto& node : m_EditMaterialNodeGraph) {
         node->Unitialise();
     }
-    //m_EditMaterial.MaterialTextures.clear();
+
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
 
@@ -536,8 +626,6 @@ void MaterialEditor::CompileMaterial() {
     m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorShaderId, newShaderSource);
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
-    //IP_LOG("Compiling shader graph.");
-    //IP_LOG(fragShader);
 }
 
 std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth) {

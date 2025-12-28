@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
@@ -364,6 +365,7 @@
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Nodes.h" />

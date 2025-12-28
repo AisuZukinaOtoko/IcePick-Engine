@@ -53,12 +53,8 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 				connectionDataObject["nodeId"] = static_cast<uint64_t>(nodeOutputPin.ConnectedNodeIds[index]);
 				connectionDataObject["pinIndex"] = nodeOutputPin.ConnectedPinIndices[index];
 				connectionDataArray.push_back(connectionDataObject);
-				//connectedNodeIdsArray.push_back(static_cast<uint64_t>(nodeOutputPin.ConnectedNodeIds[index]));
-				//connectedPinIndicesArray.push_back(nodeOutputPin.ConnectedPinIndices[index]);
 			}
 
-			//outputPinObject["connectedNodeIds"] = connectedNodeIdsArray;
-			//outputPinObject["connectedPinIndices"] = connectedPinIndicesArray;
 			outputPinObject["connectionData"] = connectionDataArray;
 			outputPinsArrayJsonObject.push_back(outputPinObject);
 		}
@@ -122,25 +118,6 @@ Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::Shade
 	if (assetVersion < MATERIAL_BASE_ASSET_VERSION) {
 		IP_LOG("Material base, " + assetPath.string() + ", is an outdated version. Loaded data may be incorrect.", IP_WARN_LOG);
 	}
-
-	//uint64_t materialId = JsonUtils::GetUint64(assetFile, "Id");
-	//uint64_t shaderId = JsonUtils::GetUint64(assetFile, "shaderId");
-	//uint64_t graphId = JsonUtils::GetUint64(assetFile, "graphId");
-
-	/*UUID Id{ materialId };
-	loadMaterialBase.Id = Id;
-	loadMaterialBase.ShaderId = UUID{ shaderId };
-	loadMaterialBase.ShaderGraphId = UUID{ graphId };
-
-	if (assetFile.contains("textureParameters") && assetFile["textureParameters"].is_array()) {
-		json& materialTextureParameters = assetFile["textureParameters"];
-
-		for (auto textureIterator = materialTextureParameters.begin(); textureIterator != materialTextureParameters.end(); textureIterator++) {
-			MaterialBaseTextureData& materialBaseTextureData = loadMaterialBase.MaterialTextures.emplace_back();
-			materialBaseTextureData.Id = JsonUtils::GetUint64(*textureIterator, "Id");
-			materialBaseTextureData.SamplerIdentifier = textureIterator->value("sampler", "none");
-		}
-	}*/
 
 	if (assetFile.contains("shaderGraph") && assetFile["shaderGraph"].is_array()) {
 		json& shaderGraphNodes = assetFile["shaderGraph"];

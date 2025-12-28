@@ -207,6 +207,9 @@
     <ClCompile Include="Engine Editor\Utils\Serialize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -1734,6 +1737,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Utils\Serialize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

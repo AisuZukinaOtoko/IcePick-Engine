@@ -82,7 +82,7 @@ void AssetBrowser::Render() {
     ImGui::Separator();
 
     // Configuration
-    const float iconSize = 120.0f;
+    const float iconSize = 90.0f;
     const float padding = 0.0f;
     const float cellSize = iconSize + padding;
     float panelWidth = ImGui::GetContentRegionAvail().x;

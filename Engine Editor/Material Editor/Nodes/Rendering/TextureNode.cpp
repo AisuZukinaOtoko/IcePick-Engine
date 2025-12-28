@@ -11,6 +11,9 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 
 	m_NodeType = "texture";
 	NodeWidth = 160.0f;
+	nodeIsParameter = true;
+	NodeName = "Texture";
+	NodeHeaderColour = ImU32(0xFF917410);
 }
 
 void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
@@ -47,7 +50,7 @@ void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 		return;
 
 	std::string sampler = "sampler_" + std::to_string(Id);
-	IcePick::MaterialBaseTextureData materialBaseTextureData{ IcePick::UUID(), sampler };
+	IcePick::MaterialBaseTextureData materialBaseTextureData{ NodeName, sampler, IcePick::UUID() };
 	editMaterialBase.MaterialTextures.push_back(materialBaseTextureData);
 
 	IcePick::MaterialInstanceData<IcePick::UUID> materialInstanceTextureData{ materialBaseTextureData.Id, m_TextureId };

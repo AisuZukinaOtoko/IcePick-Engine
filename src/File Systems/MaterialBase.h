@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "../Scene Systems/UUID.h"
+#include "../../src/Vendor/glm/glm.hpp"
 
 namespace IcePick {
 	class EngineAPI;
@@ -27,6 +28,8 @@ namespace IcePick {
 		UUID Id;
 		UUID MaterialBaseId = UUID::Unitialised();
 		std::vector<MaterialInstanceData<UUID>> InstanceTextureData;
+		std::vector<MaterialInstanceData<glm::vec4>> InstanceVec4Data;
+		std::vector<MaterialInstanceData<float>> InstanceFloatData;
 
 		void ClearMaterialInstanceData();
 
@@ -37,9 +40,21 @@ namespace IcePick {
 
 
 	struct MaterialBaseTextureData {
-		UUID Id;
+		std::string DisplayName;
 		std::string SamplerIdentifier;
-		//std::string DisplayName;
+		UUID Id;
+	};
+
+	struct MaterialBaseVec4Parameter {
+		std::string DisplayName;
+		glm::vec4 Vec4Data;
+		UUID Id;
+	};
+
+	struct MaterialBaseFloatParameter {
+		std::string DisplayName;
+		UUID Id;
+		float FloatData = 0.0f;
 	};
 
 	class MaterialBase {
@@ -52,6 +67,8 @@ namespace IcePick {
 		UUID ShaderId = UUID::Unitialised();
 		UUID ShaderGraphId = UUID::Unitialised();
 		std::vector<MaterialBaseTextureData> MaterialTextures;
+		std::vector<MaterialBaseVec4Parameter> MaterialVec4Parameters;
+		std::vector<MaterialBaseFloatParameter> MaterialFloatParameters;
 
 		void ClearShaderInputs();
 		void AddShaderInput(ShaderInput inputType);

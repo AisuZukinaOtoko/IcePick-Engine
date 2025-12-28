@@ -25,6 +25,7 @@ private:
 	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
 	void DrawNodeConnections();
 	void ShowAddNodeOptions(ImVec2 mousePosInCanvas);
+	void ShowNodeEditOptions(std::shared_ptr<Node> node);
 	bool NodeExists(IcePick::UUID nodeId);
 	ImVec2 CalculateNodeSize(std::shared_ptr<Node> node);
 	ImVec2 CalculateNodePosition(std::shared_ptr<Node> node);
@@ -35,6 +36,7 @@ private:
 	// Disconnecting an input pin will disconnect the output pin linked to it
 	// Disconnecting an output pin will disconnect all input pins linked to it
 	void DisconnectPins(std::shared_ptr<Node> node, unsigned int pinIndex, bool isInputPin);
+	void DeleteNode(IcePick::UUID nodeId);
 
 	// Material creation
 	bool m_GraphStateChanged = false;
@@ -64,6 +66,7 @@ private:
 	bool m_IsInputPin = false;
 	unsigned int m_SourcePinIndex = 0;
 	IcePick::UUID m_SourcePinNodeId = IcePick::UUID::Unitialised();
+	IcePick::UUID m_RenameNodeId = IcePick::UUID::Unitialised();
 	Graph m_EditMaterialNodeGraph;
 
 	ImVec2 m_CanvasScreenPos;

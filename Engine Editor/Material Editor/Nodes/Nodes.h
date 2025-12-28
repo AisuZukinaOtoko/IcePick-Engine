@@ -1,6 +1,7 @@
 #pragma once
 #include "NodeBase.h"
 #include "Inputs/UVNode.h"
+#include "Math/FloatNode.h"
 #include "Math/Vector3Node.h"
 #include "Math/Vector4Node.h"
 #include "Rendering/TextureNode.h"

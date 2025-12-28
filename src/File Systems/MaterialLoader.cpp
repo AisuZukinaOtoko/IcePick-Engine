@@ -11,7 +11,7 @@ namespace IcePick {
 		m_DefaultMaterialTextureSamplerIdentifiers.emplace_back("u_AlbedoTexUnit");
 
 		UUID baseTextureDataId{};
-		m_DefaultMaterialBase.MaterialTextures.push_back({ baseTextureDataId, m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE] });
+		m_DefaultMaterialBase.MaterialTextures.push_back({ "Diffuse Texture", m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE], baseTextureDataId });
 		m_DefaultMaterialInstance.MaterialBaseId = m_DefaultMaterialBase.Id;
 	}
 
