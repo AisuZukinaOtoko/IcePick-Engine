@@ -1,5 +1,6 @@
 #include "AssetBrowser.h"
 #include <filesystem>
+#include "../Utils/Serialize.h"
 #include "../../src/Utilities/DebugStatistics.h"
 
 static const unsigned int bufferSize = 255;
@@ -52,11 +53,14 @@ void AssetBrowser::Render() {
 
             if (ImGui::Button("Save", ImVec2(120, 0))) {
                 IcePick::MaterialBase newMaterialBase;
-                newMaterialBase.ShaderId = 69;
+                newMaterialBase.ShaderId = IcePick::UUID{};
+                IcePick::ShaderSource newMaterialShaderSource;
+                Graph newMaterialShaderGraph;
 
                 std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
                 std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
-                m_EngineAPI.SerializeMaterialBase(newMaterialBasePath, newMaterialBase);
+                SerializeMaterialBase(newMaterialBasePath, newMaterialBase, newMaterialShaderGraph, newMaterialShaderSource);
+
                 ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
                 closeMainPopUp = true;

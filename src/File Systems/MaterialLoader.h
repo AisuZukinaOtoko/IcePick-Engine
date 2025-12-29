@@ -16,7 +16,7 @@ namespace IcePick {
 		UUID NewMaterialBaseFromCopy(const MaterialBase& newMaterialBase);
 		UUID NewMaterialInstanceFromCopy(const MaterialInstance& newMaterialInstance);
 		UUID NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
-		UUID NewMaterialBaseFromAsset(std::filesystem::path& assetPath);
+		UUID NewMaterialBaseFromAsset(std::filesystem::path& assetPath, ShaderLoader& shaderLoader);
 		UUID NewMaterialInstanceFromAsset(std::filesystem::path& assetPath);
 		void SaveMaterialBase(std::filesystem::path assetPath, const MaterialBase& materialBase);
 		void SaveMaterialInstance(std::filesystem::path assetPath, const MaterialInstance& materialInstance);

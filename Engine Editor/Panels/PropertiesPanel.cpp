@@ -159,16 +159,13 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                         ImGui::TableNextColumn();
 
                         ImGui::Text("Material: %d", i);
-                        if (ImGui::Button("Edit")) {
-                            IP_LOG("Cannot edit material instance.", IP_ERROR_LOG);
-                        }
+                        
                         ImGui::EndTable();
                     }
 
                     if (ImGui::BeginDragDropTarget()) {
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
                             meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
-                            IP_LOG(m_DropAssetPath.c_str(), IP_WARN_LOG);
                         }
                         ImGui::EndDragDropTarget();
                     }
@@ -279,7 +276,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
 
                         ImGui::TableNextColumn();
 
-                        ImGui::Text("Material Texture");
+                        ImGui::Text(baseTextureParam.DisplayName.c_str());
                         if (ImGui::Button("Clear")) {
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
                             m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.

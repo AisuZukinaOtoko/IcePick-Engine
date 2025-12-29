@@ -115,6 +115,7 @@ void MaterialEditor::Render() {
         if (ImGui::Button("Save Material")) {
             IP_LOG("Saved material base.");
             IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
+            IP_LOG(newShaderSource.FragmentShaderSource, IP_WARN_LOG);
             IcePick::MaterialBase saveMaterialBase = m_MaterialEditorMaterialBase;
             saveMaterialBase.Id = m_EditMaterialBaseId;
             saveMaterialBase.ShaderId = m_EditMaterialShaderId;
@@ -613,19 +614,21 @@ void MaterialEditor::DeleteNode(IcePick::UUID nodeId) {
 }
 
 void MaterialEditor::CompileMaterial() {
-    m_NodeIdentifiers.clear();
-    for (auto& node : m_EditMaterialNodeGraph) {
-        node->Unitialise();
-    }
+   // m_NodeIdentifiers.clear();
+    //for (auto& node : m_EditMaterialNodeGraph) {
+    //    node->Unitialise();
+    //}
 
-    m_MaterialEditorMaterialBase.ClearMaterialBaseData();
-    m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
+    //m_MaterialEditorMaterialBase.ClearMaterialBaseData();
+    //m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
 
     m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorShaderId, newShaderSource);
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
+
+    IP_LOG(newShaderSource.FragmentShaderSource);
 }
 
 std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth) {
@@ -656,6 +659,13 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
 }
 
 IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
+    for (auto& node : m_EditMaterialNodeGraph) {
+        node->Unitialise();
+    }
+
+    m_MaterialEditorMaterialBase.ClearMaterialBaseData();
+    m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
+
     std::stringstream uniformSS;
     std::stringstream shaderSS;
 

@@ -18,7 +18,7 @@ IcePick::UUID IcePick::EngineAPI::LoadTextureFromAsset(std::filesystem::path ass
 }
 
 IcePick::UUID IcePick::EngineAPI::LoadMaterialBaseFromAsset(std::filesystem::path assetPath) {
-	return m_Engine->m_AssetLoader.m_MaterialLoader.NewMaterialBaseFromAsset(assetPath);
+	return m_Engine->m_AssetLoader.m_MaterialLoader.NewMaterialBaseFromAsset(assetPath, m_Engine->m_AssetLoader.m_ShaderLoader);
 }
 
 IcePick::UUID IcePick::EngineAPI::LoadMaterialInstanceFromAsset(std::filesystem::path assetPath) {

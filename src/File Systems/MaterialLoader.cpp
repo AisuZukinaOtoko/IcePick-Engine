@@ -186,7 +186,7 @@ namespace IcePick {
 		return RegisterMaterialInstance(newMaterialInstance);
 	}
 
-	UUID MaterialLoader::NewMaterialBaseFromAsset(std::filesystem::path& assetPath) {
+	UUID MaterialLoader::NewMaterialBaseFromAsset(std::filesystem::path& assetPath, ShaderLoader& shaderLoader) {
 		using nlohmann::json;
 
 		const auto iterator = m_CachedMaterialBaseAssetPaths.find(assetPath);
@@ -226,6 +226,12 @@ namespace IcePick {
 				materialBaseTextureData.SamplerIdentifier = textureIterator->value("sampler", "none");
 			}
 		}
+
+		json shaderSourceJson = assetFile["shaderSource"];
+		ShaderSource shaderSource;
+		shaderSource.VertexShaderSource = shaderSourceJson.at("vertex");
+		shaderSource.FragmentShaderSource = shaderSourceJson.at("fragment");
+		shaderLoader.CreateShaderProgramWithId(shaderSource, shaderId);
 
 		jsonFileStream.close();
 

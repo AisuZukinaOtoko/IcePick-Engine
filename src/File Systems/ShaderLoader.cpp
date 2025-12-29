@@ -75,6 +75,18 @@ namespace IcePick {
 		return RegisterShaderProgram(shader);
 	}
 
+	void ShaderLoader::CreateShaderProgramWithId(ShaderSource& shaderSource, UUID Id) {
+		ShaderProgram shader;
+		shader.CompileShaderProgram(shaderSource);
+
+		if (!shader.IsValid()) {
+			shader.Destroy();
+			return;
+		}
+
+		m_LoadedShaders.insert({ Id, shader });
+	}
+
 	void ShaderLoader::ReloadShaderProgram(UUID shaderId, ShaderSource& shaderSource) {
 		auto iterator = m_LoadedShaders.find(shaderId);
 

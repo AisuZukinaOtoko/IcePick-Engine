@@ -17,6 +17,7 @@ namespace IcePick {
 		// Returns the shader source file with preprocessing
 		std::string LoadFile(std::filesystem::path filePath, unsigned int includeDepth);
 		UUID CreateShaderProgram(ShaderSource& shaderSource);
+		void CreateShaderProgramWithId(ShaderSource& shaderSource, UUID Id);
 
 		void ReloadShaderProgram(UUID shaderId, ShaderSource& shaderSource);
 		ShaderProgram& GetShaderProgram(UUID shaderId);
