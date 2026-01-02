@@ -28,13 +28,14 @@ namespace IcePick {
 		UUID Id;
 		UUID MaterialBaseId = UUID::Unitialised();
 		std::vector<MaterialInstanceData<UUID>> InstanceTextureData;
-		std::vector<MaterialInstanceData<glm::vec4>> InstanceVec4Data;
+		//std::vector<MaterialInstanceData<glm::vec4>> InstanceVec4Data;
 		std::vector<MaterialInstanceData<float>> InstanceFloatData;
 
 		void ClearMaterialInstanceData();
 
 		UUID GetMaterialInstanceTextureId(UUID materialBaseDataId) const;
 		void SetMaterialInstanceTextureId(UUID materialBaseDataId, UUID textureId);
+		float GetMaterialInstanceFloatParameter(UUID materialBaseDataId) const;
 	private:
 	};
 
@@ -45,16 +46,16 @@ namespace IcePick {
 		UUID Id;
 	};
 
-	struct MaterialBaseVec4Parameter {
+	/*struct MaterialBaseVec4Parameter {
 		std::string DisplayName;
 		glm::vec4 Vec4Data;
 		UUID Id;
-	};
+	};*/
 
 	struct MaterialBaseFloatParameter {
 		std::string DisplayName;
+		std::string ShaderIdentifier;
 		UUID Id;
-		float FloatData = 0.0f;
 	};
 
 	class MaterialBase {
@@ -67,14 +68,14 @@ namespace IcePick {
 		UUID ShaderId = UUID::Unitialised();
 		UUID ShaderGraphId = UUID::Unitialised();
 		std::vector<MaterialBaseTextureData> MaterialTextures;
-		std::vector<MaterialBaseVec4Parameter> MaterialVec4Parameters;
+		//std::vector<MaterialBaseVec4Parameter> MaterialVec4Parameters;
 		std::vector<MaterialBaseFloatParameter> MaterialFloatParameters;
 
 		void ClearShaderInputs();
 		void AddShaderInput(ShaderInput inputType);
 		void ClearMaterialBaseData();
 
-		void BindMaterialInstanceTextures(EngineAPI engineAPI, const MaterialInstance& materialInstance);
+		void BindMaterialInstanceParameters(EngineAPI engineAPI, const MaterialInstance& materialInstance);
 		MaterialInstance CreateEmptyInstanceFromBase() const;
 	private:
 		unsigned int m_ShaderInputFlags = 0;

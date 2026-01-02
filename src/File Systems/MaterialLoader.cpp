@@ -224,6 +224,22 @@ namespace IcePick {
 				MaterialBaseTextureData& materialBaseTextureData = loadMaterialBase.MaterialTextures.emplace_back();
 				materialBaseTextureData.Id = JsonUtils::GetUint64(*textureIterator, "Id");
 				materialBaseTextureData.SamplerIdentifier = textureIterator->value("sampler", "none");
+#ifndef RELEASE
+				materialBaseTextureData.DisplayName = textureIterator->value("displayName", "Texture");
+#endif
+			}
+		}
+
+		if (assetFile.contains("floatParameters") && assetFile["floatParameters"].is_array()) {
+			json& materialFloatParameters = assetFile["floatParameters"];
+
+			for (auto floatIterator = materialFloatParameters.begin(); floatIterator != materialFloatParameters.end(); floatIterator++) {
+				MaterialBaseFloatParameter& materialBaseFloatParameter = loadMaterialBase.MaterialFloatParameters.emplace_back();
+				materialBaseFloatParameter.Id = JsonUtils::GetUint64(*floatIterator, "Id");
+				materialBaseFloatParameter.ShaderIdentifier = floatIterator->value("shaderIdentifier", "none");
+#ifndef RELEASE
+				materialBaseFloatParameter.DisplayName = floatIterator->value("displayName", "Float");
+#endif
 			}
 		}
 
@@ -282,6 +298,18 @@ namespace IcePick {
 			}
 		}
 
+		if (assetFile.contains("floatParameters") && assetFile["floatParameters"].is_array()) {
+			json& materialFloatParameters = assetFile["floatParameters"];
+
+			for (auto floatIterator = materialFloatParameters.begin(); floatIterator != materialFloatParameters.end(); floatIterator++) {
+				UUID instanceFloatParameterDataId = JsonUtils::GetUint64(*floatIterator, "Id");
+				UUID instanceFloatParameterBaseDataId = JsonUtils::GetUint64(*floatIterator, "baseDataId");
+				float instanceParameterFloatValue = floatIterator->value("value", 0.0f);
+				MaterialInstanceData<float>& instanceData = loadMaterialInstance.InstanceFloatData.emplace_back(instanceFloatParameterBaseDataId, instanceParameterFloatValue);
+				instanceData.Id = instanceFloatParameterDataId;
+			}
+		}
+
 		jsonFileStream.close();
 
 		m_LoadedMaterialInstances.insert({ Id, loadMaterialInstance });
@@ -332,6 +360,16 @@ namespace IcePick {
 			textureParameters.push_back(materialBaseTextureJson);
 		}
 		json["textureParameters"] = textureParameters;
+
+		nlohmann::json floatParameters = nlohmann::json::array();
+		for (const auto& materialInstanceFloatData : materialInstance.InstanceFloatData) {
+			nlohmann::json materialBaseFloatJson;
+			materialBaseFloatJson["Id"] = static_cast<uint64_t>(materialInstanceFloatData.Id);
+			materialBaseFloatJson["baseDataId"] = static_cast<uint64_t>(materialInstanceFloatData.MaterialBaseDataId);
+			materialBaseFloatJson["value"] = materialInstanceFloatData.Data;
+			floatParameters.push_back(materialBaseFloatJson);
+		}
+		json["floatParameters"] = floatParameters;
 
 		std::ofstream outFile(assetPath);
 		if (outFile.is_open()) {

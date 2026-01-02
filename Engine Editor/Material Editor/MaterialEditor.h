@@ -24,6 +24,7 @@ private:
 	void DrawDragPin();
 	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
 	void DrawNodeConnections();
+	void ShowEditMaterialBaseParameters();
 	void ShowAddNodeOptions(ImVec2 mousePosInCanvas);
 	void ShowNodeEditOptions(std::shared_ptr<Node> node);
 	bool NodeExists(IcePick::UUID nodeId);

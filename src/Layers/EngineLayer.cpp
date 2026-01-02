@@ -131,7 +131,7 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 		const MaterialInstance& meshMaterialInstance = m_AssetLoader.GetMaterialInstance(meshMaterialInstanceId);
 		MaterialBase& meshMaterialBase = m_AssetLoader.GetMaterialBase(meshMaterialInstance.MaterialBaseId);
 
-		meshMaterialBase.BindMaterialInstanceTextures(shared_from_this(), meshMaterialInstance);
+		meshMaterialBase.BindMaterialInstanceParameters(shared_from_this(), meshMaterialInstance);
 
 
 		ShaderProgram& materialBaseShader = m_AssetLoader.GetShaderProgram(meshMaterialBase.ShaderId);

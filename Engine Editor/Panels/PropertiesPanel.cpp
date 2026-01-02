@@ -249,7 +249,7 @@ void PropertiesPanel::ColourPicker(const char* label, glm::vec3& rgb) {
 }
 
 void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance) {
-    bool baseHasParameters = materialBase.MaterialTextures.size();
+    bool baseHasParameters = materialBase.MaterialTextures.size() || materialBase.MaterialFloatParameters.size();
 
     if (baseHasParameters) {
         ImGui::TableNextRow(ImGuiTableRowFlags_None);
@@ -297,6 +297,41 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
 
                     ImGui::EndTable();
             }
+
+            if (ImGui::BeginTable("Float parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialFloatParameters.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseFloatParameter = materialBase.MaterialFloatParameters[i];
+
+                    if (ImGui::BeginTable("Instance Float Parameter", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text(baseFloatParameter.DisplayName.c_str());
+                        ImGui::TableNextColumn();
+
+                        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space.
+                        for (int j = 0; j < materialInstance.InstanceFloatData.size(); j++) {
+                            auto& instanceFloatData = materialInstance.InstanceFloatData[j];
+
+                            if (instanceFloatData.MaterialBaseDataId != baseFloatParameter.Id)
+                                continue;
+
+                            if (ImGui::DragFloat("##Material Instance Float", &instanceFloatData.Data, 0.005)) {
+                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            }
+                        }                        
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
+
             ImGui::Unindent();
         }
     }

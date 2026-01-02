@@ -47,13 +47,12 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph = LoadMaterialBaseEditorData(materialBasePath, nullptr);
 
-    // material graph can never have 0 nodes
+    // material graph should never have 0 nodes
     if (!m_EditMaterialNodeGraph.size()) {
         m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
     }
 
     CompileMaterial();
-    //m_EditMaterial.MaterialTextures.clear();
     m_MaterialEditorMaterialBase.ClearShaderInputs();
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
@@ -107,7 +106,7 @@ void MaterialEditor::Render() {
         }
 
         ImGui::Checkbox("Auto compile graph", &m_AutoCompileGraph);
-        
+        ImGui::SameLine();
         if (ImGui::Button("Compile graph")) {
             CompileMaterial();
         }
@@ -115,7 +114,6 @@ void MaterialEditor::Render() {
         if (ImGui::Button("Save Material")) {
             IP_LOG("Saved material base.");
             IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
-            IP_LOG(newShaderSource.FragmentShaderSource, IP_WARN_LOG);
             IcePick::MaterialBase saveMaterialBase = m_MaterialEditorMaterialBase;
             saveMaterialBase.Id = m_EditMaterialBaseId;
             saveMaterialBase.ShaderId = m_EditMaterialShaderId;
@@ -123,8 +121,10 @@ void MaterialEditor::Render() {
             m_EngineAPI.UpdateShaderWithSource(m_EditMaterialShaderId, newShaderSource);
             m_EngineAPI.UpdateMaterialBase(m_EditMaterialBaseId, saveMaterialBase);
             SerializeMaterialBase(m_EditMaterialBasePath, saveMaterialBase, m_EditMaterialNodeGraph, newShaderSource);
-            //m_EngineAPI.SerializeMaterialBase(m_EditMaterialBasePath, saveMaterialBase);
         }
+
+        ImGui::Separator();
+        ShowEditMaterialBaseParameters();
 
         ImGui::ColorEdit3("##Colour", &tempColour.r, ImGuiColorEditFlags_PickerHueWheel);
 
@@ -136,13 +136,21 @@ void MaterialEditor::Render() {
 }
 
 void MaterialEditor::PreviewMaterial() {
-    if (m_AutoCompileGraph && m_GraphStateChanged) {
+    bool nodeChangesMade = false;
+    for (auto& node : m_EditMaterialNodeGraph) {
+        if (node->MaterialBaseStateChanged || node->MaterialInstanceStateChanged) {
+            nodeChangesMade = true;
+            node->MaterialBaseStateChanged = false;
+            node->MaterialInstanceStateChanged = false;
+        }
+    }
+
+    if (m_AutoCompileGraph && (m_GraphStateChanged || nodeChangesMade)) {
         CompileMaterial();
         m_GraphStateChanged = false;
     }
 
     m_Renderer.Clear();
-    m_MaterialEditorMaterialBase.BindMaterialInstanceTextures(m_EngineAPI, m_MaterialEditorMaterialInstance);
 
     previewMesh.MaterialSlots[0] = m_MaterialEditorMaterialInstanceId;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
@@ -261,6 +269,7 @@ void MaterialEditor::DrawNodes() {
             if (ImGui::IsItemDeactivated()) {
                 node->NodeName = inputTextBuffer;
                 m_RenameNodeId = IcePick::UUID::Unitialised();
+                m_GraphStateChanged = true; //to update the labels on the edit widgets
             }
 
             ImGui::PopStyleVar();
@@ -414,6 +423,77 @@ void MaterialEditor::DrawNodeConnections() {
             DrawLine(inputPinLocation, outputPinLocation, true);
         }
     }
+}
+
+void MaterialEditor::ShowEditMaterialBaseParameters() {
+    ImGui::BeginChild("EditMaterialBaseParameters");
+    if (ImGui::BeginTable("Texture parameters", 1)) {
+        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+        ImGui::TableSetColumnIndex(0);
+
+        //for (int i = 0; i < m_MaterialEditorMaterialBase.MaterialTextures.size(); i++) {
+        //    ImGui::PushID(i);
+        //    auto& baseTextureParam = m_MaterialEditorMaterialBase.MaterialTextures[i];
+        //    IcePick::UUID baseDataId = baseTextureParam.Id;
+        //    IcePick::UUID parameterTextureId = m_MaterialEditorMaterialInstance.GetMaterialInstanceTextureId(baseDataId);
+        //    unsigned int parameterTextureRenderId = m_EngineAPI.GetTextureRenderId(parameterTextureId);
+
+        //    if (ImGui::BeginTable("Material Texture", 2)) {
+        //        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+        //        ImGui::TableNextColumn();
+        //        const int imageSize = 45;
+        //        ImGui::Image((void*)parameterTextureRenderId, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+        //        ImGui::TableNextColumn();
+
+        //        ImGui::Text(baseTextureParam.DisplayName.c_str());
+        //        if (ImGui::Button("Clear")) {
+        //            m_MaterialEditorMaterialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
+        //            m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // Calling update will invalidate the cache. This is desired.
+        //        }
+        //        ImGui::EndTable();
+        //    }
+
+        //    if (ImGui::BeginDragDropTarget()) {
+        //        if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
+        //            IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
+        //            m_MaterialEditorMaterialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
+        //            m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // Calling update will invalidate the cache. This is desired.
+        //        }
+        //        ImGui::EndDragDropTarget();
+        //    }
+        //    ImGui::PopID();
+        //}
+
+        for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceFloatData.size(); i++) {
+            ImGui::PushID(i);
+            auto& instanceFloatData = m_MaterialEditorMaterialInstance.InstanceFloatData[i];
+
+            if (ImGui::BeginTable("Instance Float Parameter", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+
+                std::string parameterName = "Float parameter.";
+                for (const auto& baseFloatData : m_MaterialEditorMaterialBase.MaterialFloatParameters) {
+                    if (baseFloatData.Id == instanceFloatData.MaterialBaseDataId) {
+                        parameterName = baseFloatData.DisplayName;
+                    }
+                }
+                ImGui::Text(parameterName.c_str());
+                ImGui::TableNextColumn();
+
+                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+                if (ImGui::DragFloat("##Material Instance Float", &instanceFloatData.Data, 0.005)) {
+                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                }
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
+        }
+
+        ImGui::EndTable();
+    }
+    ImGui::EndChild();
 }
 
 void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
@@ -614,21 +694,11 @@ void MaterialEditor::DeleteNode(IcePick::UUID nodeId) {
 }
 
 void MaterialEditor::CompileMaterial() {
-   // m_NodeIdentifiers.clear();
-    //for (auto& node : m_EditMaterialNodeGraph) {
-    //    node->Unitialise();
-    //}
-
-    //m_MaterialEditorMaterialBase.ClearMaterialBaseData();
-    //m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
-
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
 
     m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorShaderId, newShaderSource);
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
-
-    IP_LOG(newShaderSource.FragmentShaderSource);
 }
 
 std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth) {
@@ -670,8 +740,12 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
     std::stringstream shaderSS;
 
     CreateShaderFromGraph(shaderSS, m_EditMaterialNodeGraph[0], 0, 0);
-    for (auto materialTexture : m_MaterialEditorMaterialBase.MaterialTextures) {
+    for (const auto& materialTexture : m_MaterialEditorMaterialBase.MaterialTextures) {
         uniformSS << "uniform sampler2D " << materialTexture.SamplerIdentifier << ";\n";
+    }
+
+    for (const auto& materialFloatParameter : m_MaterialEditorMaterialBase.MaterialFloatParameters) {
+        uniformSS << "uniform float " << materialFloatParameter.ShaderIdentifier << ";\n";
     }
 
     std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;

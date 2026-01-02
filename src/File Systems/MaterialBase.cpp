@@ -13,9 +13,10 @@ void IcePick::MaterialBase::AddShaderInput(ShaderInput inputType) {
 
 void IcePick::MaterialBase::ClearMaterialBaseData() {
 	MaterialTextures.clear();
+    MaterialFloatParameters.clear();
 }
 
-void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, const MaterialInstance& materialInstance) {
+void IcePick::MaterialBase::BindMaterialInstanceParameters(EngineAPI engineAPI, const MaterialInstance& materialInstance) {
     IcePick::ShaderProgram& materialShader = engineAPI.GetShaderProgram(ShaderId);
 
     for (int i = 0; i < MaterialTextures.size(); i++) {
@@ -26,12 +27,19 @@ void IcePick::MaterialBase::BindMaterialInstanceTextures(EngineAPI engineAPI, co
         materialTexture.Bind(i);
         materialShader.SetUniformInt32(textureSampler.c_str(), i);
     }
+
+    for (int i = 0; i < MaterialFloatParameters.size(); i++) {
+        std::string& floatUniform = MaterialFloatParameters[i].ShaderIdentifier;
+        float instanceFloatDataValue = materialInstance.GetMaterialInstanceFloatParameter(MaterialFloatParameters[i].Id);
+        materialShader.SetUniformFloat(floatUniform.c_str(), instanceFloatDataValue);
+    }
 }
 
 IcePick::MaterialInstance::MaterialInstance(const MaterialInstance& other) {
     Id = other.Id;
     MaterialBaseId = other.MaterialBaseId;
     InstanceTextureData = other.InstanceTextureData;
+    InstanceFloatData = other.InstanceFloatData;
 }
 
 IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() const {
@@ -40,6 +48,10 @@ IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() c
 
     for (const auto& textureParameter : MaterialTextures) {
         tempMaterialInstance.InstanceTextureData.emplace_back(textureParameter.Id, UUID::Unitialised());
+    }
+
+    for (const auto& floatParameter : MaterialFloatParameters) {
+        tempMaterialInstance.InstanceFloatData.emplace_back(floatParameter.Id, 0.0f);
     }
 
     return tempMaterialInstance;
@@ -54,6 +66,7 @@ void IcePick::MaterialInstance::SetMaterialInstanceTextureId(UUID materialBaseDa
 
 void IcePick::MaterialInstance::ClearMaterialInstanceData() {
 	InstanceTextureData.clear();
+    InstanceFloatData.clear();
 }
 
 IcePick::UUID IcePick::MaterialInstance::GetMaterialInstanceTextureId(UUID materialBaseDataId) const {
@@ -63,4 +76,13 @@ IcePick::UUID IcePick::MaterialInstance::GetMaterialInstanceTextureId(UUID mater
     }
 
     return UUID::Unitialised();
+}
+
+float IcePick::MaterialInstance::GetMaterialInstanceFloatParameter(UUID materialBaseDataId) const {
+    for (const auto& floatData : InstanceFloatData) {
+        if (floatData.MaterialBaseDataId == materialBaseDataId)
+            return floatData.Data;
+    }
+
+    return 0.0f;
 }

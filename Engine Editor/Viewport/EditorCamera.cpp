@@ -1,14 +1,15 @@
 #include "EditorCamera.h"
 #include "../IcePickCoreMinimal.h"
 #include "../Vendor/glm/gtc/matrix_transform.hpp"
+#include "../../src/Utilities/DebugStatistics.h"
 
 EditorCamera::EditorCamera() {
-    cameraPosition = glm::vec3(0.0f);
-    cameraFront = glm::vec3(0.0f);
+    cameraPosition = glm::vec3(1.5f, 2.25f, 1.5f);
+    cameraFront = glm::vec3(0.0f) - cameraPosition;
     cameraUp = {0.0f, 1.0f, 0.0f};
 
-    yaw = glm::radians(45.0f);
-    pitch = glm::radians(30.0f);
+    yaw = -135.0f;
+    pitch = 35.0f;
     aspectRatio = 1920.0f / 1080.0f;
     cameraFOV = glm::radians(45.0f);
 }

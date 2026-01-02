@@ -50,7 +50,7 @@ void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 		return;
 
 	std::string sampler = "sampler_" + std::to_string(Id);
-	IcePick::MaterialBaseTextureData materialBaseTextureData{ NodeName, sampler, IcePick::UUID() };
+	IcePick::MaterialBaseTextureData materialBaseTextureData{ NodeName, sampler, Id };
 	editMaterialBase.MaterialTextures.push_back(materialBaseTextureData);
 
 	IcePick::MaterialInstanceData<IcePick::UUID> materialInstanceTextureData{ materialBaseTextureData.Id, m_TextureId };

@@ -23,6 +23,7 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 	for (const auto& node : shaderGraph) {
 		nlohmann::json nodeJsonObject;
 		nodeJsonObject["Id"] = static_cast<uint64_t>(node->Id);
+		nodeJsonObject["nodeName"] = node->NodeName;
 		nodeJsonObject["type"] = node->GetNodeType();
 		nodeJsonObject["isParameter"] = node->nodeIsParameter;
 
@@ -69,9 +70,20 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 		nlohmann::json materialBaseTextureJson;
 		materialBaseTextureJson["Id"] = static_cast<uint64_t>(materialBaseTexture.Id);
 		materialBaseTextureJson["sampler"] = materialBaseTexture.SamplerIdentifier;
+		materialBaseTextureJson["displayName"] = materialBaseTexture.DisplayName;
 		textureParameters.push_back(materialBaseTextureJson);
 	}
 	json["textureParameters"] = textureParameters;
+
+	nlohmann::json floatParameters = nlohmann::json::array();
+	for (const auto& materialBaseFloatParameter : materialBase.MaterialFloatParameters) {
+		nlohmann::json materialBaseFloatJson;
+		materialBaseFloatJson["Id"] = static_cast<uint64_t>(materialBaseFloatParameter.Id);
+		materialBaseFloatJson["shaderIdentifier"] = materialBaseFloatParameter.ShaderIdentifier;
+		materialBaseFloatJson["displayName"] = materialBaseFloatParameter.DisplayName;
+		floatParameters.push_back(materialBaseFloatJson);
+	}
+	json["floatParameters"] = floatParameters;
 
 	std::ofstream outFile(assetPath);
 	if (outFile.is_open()) {
@@ -98,8 +110,11 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "texture") {
 		return std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
 	}
+	else if (nodeType == "float") {
+		return std::make_shared<FloatNode>();
+	}
 	else {
-		return std::make_shared<Node>();
+		IP_ASSERT(false, "Node of that type cannot be created from save load.");
 	}
 }
 
@@ -135,6 +150,7 @@ Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::Shade
 			node->Id = nodeId;
 			node->nodeIsParameter = nodeIsParameter;
 			node->CanvasPosition = ImVec2(nodePosition.value("x", 0.0f), nodePosition.value("y", 0.0f));
+			node->NodeName = nodeIterator->value("nodeName", "");
 
 			unsigned int inputPinIndex = 0;
 			for (auto& inputPin : inputPinsArrayJson) {

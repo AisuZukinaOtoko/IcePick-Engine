@@ -12,10 +12,13 @@ void FloatNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::p
 	if (nodeIsParameter)
 		return;
 
-	ImVec2 inputPos = ImVec2(CanvasPosition.x + canvasScreenPos.x + canvasScrolling.x + renderInfo.LabelPadding, CanvasPosition.y + canvasScreenPos.y + canvasScrolling.y + renderInfo.NodeHeaderHeight);
+	ImVec2 inputPos = ImVec2(CanvasPosition.x + canvasScreenPos.x + canvasScrolling.x + renderInfo.LabelPadding, CanvasPosition.y + canvasScreenPos.y + canvasScrolling.y + renderInfo.NodeHeaderHeight + (renderInfo.PinYSpacing / 2) + renderInfo.LabelPadding);
 	ImGui::SetCursorScreenPos(inputPos);
 	ImGui::SetNextItemWidth(NodeWidth / 2.0f);
-	ImGui::InputFloat("##FloatInput", &m_Value);
+	ImGui::DragFloat("##FloatInput", &m_Value, 0.005);
+	if (ImGui::IsItemDeactivatedAfterEdit()) {
+		MaterialBaseStateChanged = true;
+	}
 }
 
 void FloatNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
@@ -23,7 +26,11 @@ void FloatNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMat
 		return;
 
 	if (nodeIsParameter) {
-		
+		IcePick::MaterialBaseFloatParameter materialBaseFloatParameter{ NodeName, m_Identifier, Id };
+		editMaterialBase.MaterialFloatParameters.push_back(materialBaseFloatParameter);
+
+		IcePick::MaterialInstanceData<float> materialInstanceFloatParameter{ materialBaseFloatParameter.Id, m_Value };
+		editMaterialInstance.InstanceFloatData.push_back(materialInstanceFloatParameter);
 	}
 
 	m_Initialised = true;
