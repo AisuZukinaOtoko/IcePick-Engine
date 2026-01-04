@@ -3,7 +3,6 @@
 #include <string>
 #include <filesystem>
 #include <vector>
-#include "../Render Systems/Materials.h"
 #include "UUID.h"
 
 namespace IcePick {

@@ -139,11 +139,9 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 		materialBaseShader.SetUniformUint32("u_MaterialSlotIndex", (uint32_t)parent.MaterialSlotIndex);
 
 		materialBaseShader.Use();
-		Material meshMaterial;
-		meshMaterial.ShaderID = materialBaseShader.GetID();
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
-		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, meshMaterial);
+		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, materialBaseShader);
 	}
 
 	for (const MeshNode& meshNode : parent.Children) {

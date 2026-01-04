@@ -2,6 +2,7 @@
 #include "json.hpp"
 #include "../Utilities/JsonUtils.h"
 #include "../LogSystem.h"
+#include "../Utilities/Assert.h"
 #include <fstream>
 
 namespace IcePick {

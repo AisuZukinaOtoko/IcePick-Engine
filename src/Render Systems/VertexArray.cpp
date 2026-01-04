@@ -1,7 +1,6 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "Renderer.h"
-#include "Texture.h"
 
 VertexArray::VertexArray() {
 	glGenVertexArrays(1, &m_ID);

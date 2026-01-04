@@ -1,5 +1,6 @@
 #include "AssetLoader.h"
 #include "../IcePickCoreMinimal.h"
+#include "../Render Systems/Vertex.h"
 #include "../Render Systems/VertexBuffer.h"
 #include "../Render Systems/IndexBuffer.h"
 #include "../Render Systems/VertexArray.h"
@@ -69,10 +70,6 @@ IcePick::MaterialInstance& IcePick::AssetLoader::GetMaterialInstance(IcePick::UU
 	return m_MaterialLoader.GetMaterialInstance(Id);
 }
 
-//const IcePick::MaterialAsset& IcePick::AssetLoader::GetMaterialAsset(UUID Id) {
-//	return m_MaterialLoader.GetMaterialAsset(Id);
-//}
-
 const Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 	return m_TextureLoader.GetTexture(Id);
 }
@@ -80,10 +77,6 @@ const Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 IcePick::ShaderProgram& IcePick::AssetLoader::GetShaderProgram(UUID Id) {
 	return m_ShaderLoader.GetShaderProgram(Id);;
 }
-
-//void IcePick::AssetLoader::ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial) {
-//	m_MaterialLoader.ConstructMaterial(materialAsset, resultMaterial, m_TextureLoader, m_ShaderLoader);
-//}
 
 void IcePick::AssetLoader::ReloadShaderPrograms() {
 	ShaderSource shaderSource;

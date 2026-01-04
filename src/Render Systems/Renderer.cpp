@@ -4,10 +4,6 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
-#include "Materials.h"
-#include "../Vendor/imgui-docking/imgui.h"
-#include "../Vendor/imgui-docking/imgui_impl_glfw.h"
-#include "../Vendor/imgui-docking/imgui_impl_opengl3.h"
 #include "../Vendor/glm/glm.hpp"
 #include "../Vendor/glm/gtc/matrix_transform.hpp"
 #include "../../src/LogSystem.h"
@@ -145,44 +141,18 @@ namespace IcePickRenderer {
 		RenderWorldNormalMatrix = WorldNormalMatrix;
 	}
 
-	void DrawMesh(const MeshComponent& mesh, glm::mat4 modelTransformMatrix, const IcePick::Material& material) {
+	void DrawMesh(const MeshComponent& mesh, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram) {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
-		Material meshMaterial = material;
-		//Material& meshMaterial = GetMaterial(mesh.MaterialIndex);
-		//glUseProgram(meshMaterial.ShaderID);
 
-		int location = glGetUniformLocation(meshMaterial.ShaderID, "u_MVP"); // location negative if uniform not found
+		unsigned int shaderId = shaderProgram.GetID();
+		int location = glGetUniformLocation(shaderId, "u_MVP"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
-		location = glGetUniformLocation(meshMaterial.ShaderID, "u_Modelmatrix"); // location negative if uniform not found
+		location = glGetUniformLocation(shaderId, "u_Modelmatrix"); // location negative if uniform not found
 		glUniformMatrix4fv(location, 1, GL_FALSE, &modelTransformMatrix[0][0]);
-		location = glGetUniformLocation(meshMaterial.ShaderID, "u_NormalMatrix"); // location negative if uniform not found
+		location = glGetUniformLocation(shaderId, "u_NormalMatrix"); // location negative if uniform not found
 		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
-		location = glGetUniformLocation(meshMaterial.ShaderID, "u_CameraPosition"); // location negative if uniform not found
+		location = glGetUniformLocation(shaderId, "u_CameraPosition"); // location negative if uniform not found
 		glUniform3fv(location, 1, &CameraPosition[0]);
-
-		// shader textures
-		// tell texture units which textures
-		/*glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, material.AlbedoMap);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.NormalMap);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, material.RoughnessMap);
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, material.MetallicMap);
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, material.EmissiveMap);*/
-
-		// tell samplers which texture units
-		/*glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "MaterialSampleFlags"), material.SampleBitmask);
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_AlbedoTexUnit"), 0);
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_NormalTexUnit"), 1);
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_RoughnessTexUnit"), 2);
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_MetallicUnit"), 3);
-		glUniform1i(glGetUniformLocation(meshMaterial.ShaderID, "u_EmissiveUnit"), 4);
-
-		glUniform4fv(glGetUniformLocation(meshMaterial.ShaderID, "u_AlbedoColour"), 1, &material.AlbedoColour[0]);
-		glUniform3fv(glGetUniformLocation(meshMaterial.ShaderID, "u_SpecularColour"), 1, &material.SpecularColour[0]);*/
 
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();

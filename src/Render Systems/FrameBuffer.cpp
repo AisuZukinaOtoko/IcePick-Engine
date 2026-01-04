@@ -1,6 +1,7 @@
 #include "FrameBuffer.h"
 #include "Renderer.h"
 #include "../LogSystem.h"
+#include "../Utilities/Assert.h"
 #include "entt/entt.h"
 
 using namespace IcePick;

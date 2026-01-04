@@ -112,14 +112,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ASSIMP_STATIC;GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)src\Vendor;$(SolutionDir)Dependencies\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\LUA\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)src\Vendor;$(SolutionDir)Dependencies\ASSIMP\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc143-mt.lib;glfw3_mt.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\LUA;$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;glfw3_mt.lib;opengl32.lib;glew32s.lib;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ASSIMP_STATIC;GLEW_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)src\Vendor;$(SolutionDir)Dependencies\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\LUA\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)src\Vendor;$(SolutionDir)Dependencies\ASSIMP\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -138,8 +138,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc143-mt.lib;glfw3_mt.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\LUA;$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;glfw3_mt.lib;opengl32.lib;glew32s.lib;lua54.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -397,7 +397,6 @@
     <ClInclude Include="src\File Systems\TextureLoader.h" />
     <ClInclude Include="src\Layers\EngineAPI.h" />
     <ClInclude Include="src\Layers\EngineLayer.h" />
-    <ClInclude Include="src\Render Systems\Materials.h" />
     <ClInclude Include="src\Render Systems\ShaderProgram.h" />
     <ClInclude Include="src\Render Systems\Vertex.h" />
     <ClInclude Include="src\Render Systems\VertexLayout.h" />
@@ -408,7 +407,6 @@
     <ClInclude Include="src\Event Systems\EventHandler.h" />
     <ClInclude Include="src\Layers\Layer.h" />
     <ClInclude Include="src\LogSystem.h" />
-    <ClInclude Include="src\File Systems\AssetDefinitions.h" />
     <ClInclude Include="src\IcePickCoreMinimal.h" />
     <ClInclude Include="src\IcePickRuntime.h" />
     <ClInclude Include="src\Render Systems\FrameBuffer.h" />
@@ -727,6 +725,123 @@
     <ClInclude Include="src\Vendor\imgui-docking\imstb_truetype.h" />
     <ClInclude Include="src\Vendor\imgui-docking\ImZoomSlider.h" />
     <ClInclude Include="src\Vendor\json.hpp" />
+    <ClInclude Include="src\Vendor\sol\abort.hpp" />
+    <ClInclude Include="src\Vendor\sol\assert.hpp" />
+    <ClInclude Include="src\Vendor\sol\as_args.hpp" />
+    <ClInclude Include="src\Vendor\sol\as_returns.hpp" />
+    <ClInclude Include="src\Vendor\sol\base_traits.hpp" />
+    <ClInclude Include="src\Vendor\sol\bind_traits.hpp" />
+    <ClInclude Include="src\Vendor\sol\bytecode.hpp" />
+    <ClInclude Include="src\Vendor\sol\call.hpp" />
+    <ClInclude Include="src\Vendor\sol\compatibility.hpp" />
+    <ClInclude Include="src\Vendor\sol\compatibility\compat-5.3.c.h" />
+    <ClInclude Include="src\Vendor\sol\compatibility\compat-5.3.h" />
+    <ClInclude Include="src\Vendor\sol\compatibility\compat-5.4.h" />
+    <ClInclude Include="src\Vendor\sol\compatibility\lua_version.hpp" />
+    <ClInclude Include="src\Vendor\sol\config.hpp" />
+    <ClInclude Include="src\Vendor\sol\coroutine.hpp" />
+    <ClInclude Include="src\Vendor\sol\debug.hpp" />
+    <ClInclude Include="src\Vendor\sol\demangle.hpp" />
+    <ClInclude Include="src\Vendor\sol\deprecate.hpp" />
+    <ClInclude Include="src\Vendor\sol\detail\build_version.hpp" />
+    <ClInclude Include="src\Vendor\sol\dump_handler.hpp" />
+    <ClInclude Include="src\Vendor\sol\ebco.hpp" />
+    <ClInclude Include="src\Vendor\sol\environment.hpp" />
+    <ClInclude Include="src\Vendor\sol\epilogue.hpp" />
+    <ClInclude Include="src\Vendor\sol\error.hpp" />
+    <ClInclude Include="src\Vendor\sol\error_handler.hpp" />
+    <ClInclude Include="src\Vendor\sol\forward.hpp" />
+    <ClInclude Include="src\Vendor\sol\forward_as.hpp" />
+    <ClInclude Include="src\Vendor\sol\forward_detail.hpp" />
+    <ClInclude Include="src\Vendor\sol\function.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_result.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types_core.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types_overloaded.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types_stateful.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types_stateless.hpp" />
+    <ClInclude Include="src\Vendor\sol\function_types_templated.hpp" />
+    <ClInclude Include="src\Vendor\sol\inheritance.hpp" />
+    <ClInclude Include="src\Vendor\sol\in_place.hpp" />
+    <ClInclude Include="src\Vendor\sol\load_result.hpp" />
+    <ClInclude Include="src\Vendor\sol\lua_table.hpp" />
+    <ClInclude Include="src\Vendor\sol\lua_value.hpp" />
+    <ClInclude Include="src\Vendor\sol\make_reference.hpp" />
+    <ClInclude Include="src\Vendor\sol\metatable.hpp" />
+    <ClInclude Include="src\Vendor\sol\object.hpp" />
+    <ClInclude Include="src\Vendor\sol\object_base.hpp" />
+    <ClInclude Include="src\Vendor\sol\optional.hpp" />
+    <ClInclude Include="src\Vendor\sol\optional_implementation.hpp" />
+    <ClInclude Include="src\Vendor\sol\overload.hpp" />
+    <ClInclude Include="src\Vendor\sol\packaged_coroutine.hpp" />
+    <ClInclude Include="src\Vendor\sol\pairs_iterator.hpp" />
+    <ClInclude Include="src\Vendor\sol\pointer_like.hpp" />
+    <ClInclude Include="src\Vendor\sol\policies.hpp" />
+    <ClInclude Include="src\Vendor\sol\prologue.hpp" />
+    <ClInclude Include="src\Vendor\sol\property.hpp" />
+    <ClInclude Include="src\Vendor\sol\protect.hpp" />
+    <ClInclude Include="src\Vendor\sol\protected_function.hpp" />
+    <ClInclude Include="src\Vendor\sol\protected_function_result.hpp" />
+    <ClInclude Include="src\Vendor\sol\protected_handler.hpp" />
+    <ClInclude Include="src\Vendor\sol\proxy_base.hpp" />
+    <ClInclude Include="src\Vendor\sol\raii.hpp" />
+    <ClInclude Include="src\Vendor\sol\reference.hpp" />
+    <ClInclude Include="src\Vendor\sol\resolve.hpp" />
+    <ClInclude Include="src\Vendor\sol\sol.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack\detail\pairs.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check_get.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check_get_qualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check_get_unqualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check_qualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_check_unqualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_core.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_field.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_get.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_get_qualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_get_unqualified.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_guard.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_iterator.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_pop.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_probe.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_proxy.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_proxy_base.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_push.hpp" />
+    <ClInclude Include="src\Vendor\sol\stack_reference.hpp" />
+    <ClInclude Include="src\Vendor\sol\state.hpp" />
+    <ClInclude Include="src\Vendor\sol\state_handling.hpp" />
+    <ClInclude Include="src\Vendor\sol\state_view.hpp" />
+    <ClInclude Include="src\Vendor\sol\string_view.hpp" />
+    <ClInclude Include="src\Vendor\sol\table.hpp" />
+    <ClInclude Include="src\Vendor\sol\table_core.hpp" />
+    <ClInclude Include="src\Vendor\sol\table_iterator.hpp" />
+    <ClInclude Include="src\Vendor\sol\table_proxy.hpp" />
+    <ClInclude Include="src\Vendor\sol\thread.hpp" />
+    <ClInclude Include="src\Vendor\sol\tie.hpp" />
+    <ClInclude Include="src\Vendor\sol\traits.hpp" />
+    <ClInclude Include="src\Vendor\sol\trampoline.hpp" />
+    <ClInclude Include="src\Vendor\sol\tuple.hpp" />
+    <ClInclude Include="src\Vendor\sol\types.hpp" />
+    <ClInclude Include="src\Vendor\sol\unicode.hpp" />
+    <ClInclude Include="src\Vendor\sol\unique_usertype_traits.hpp" />
+    <ClInclude Include="src\Vendor\sol\unreachable.hpp" />
+    <ClInclude Include="src\Vendor\sol\unsafe_function.hpp" />
+    <ClInclude Include="src\Vendor\sol\unsafe_function_result.hpp" />
+    <ClInclude Include="src\Vendor\sol\userdata.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_container.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_container_launch.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_core.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_proxy.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_storage.hpp" />
+    <ClInclude Include="src\Vendor\sol\usertype_traits.hpp" />
+    <ClInclude Include="src\Vendor\sol\utility\is_integer.hpp" />
+    <ClInclude Include="src\Vendor\sol\utility\to_string.hpp" />
+    <ClInclude Include="src\Vendor\sol\variadic_args.hpp" />
+    <ClInclude Include="src\Vendor\sol\variadic_results.hpp" />
+    <ClInclude Include="src\Vendor\sol\version.hpp" />
+    <ClInclude Include="src\Vendor\sol\wrapper.hpp" />
     <ClInclude Include="src\Vendor\stb_image.h" />
     <ClInclude Include="src\Render Systems\VertexArray.h" />
     <ClInclude Include="src\Render Systems\VertexBuffer.h" />

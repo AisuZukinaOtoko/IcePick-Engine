@@ -23,10 +23,8 @@ namespace IcePick {
 		MaterialBase& GetMaterialBase(UUID Id);
 		MaterialInstance& GetMaterialInstance(UUID Id);
 
-		//const MaterialAsset& GetMaterialAsset(UUID Id);
 		const Texture& GetTexture(UUID Id);
 		ShaderProgram& GetShaderProgram(UUID Id);
-		//void ConstructMaterialFromAsset(const MaterialAsset& materialAsset, Material& resultMaterial);
 		void ReloadShaderPrograms();
 		void ShutDown();
 	private:

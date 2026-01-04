@@ -9,7 +9,7 @@
 #include "FrameBuffer.h"
 #include "../Vendor/imgui-docking/imgui.h"
 #include "../Vendor/glm/glm.hpp"
-#include "Materials.h"
+#include "ShaderProgram.h"
 
 
 namespace  IcePick {
@@ -21,7 +21,7 @@ namespace IcePickRenderer {
 	void TerminateRenderer();
 	void NewFrame();
 	void EndFrame();
-	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix, const IcePick::Material& material);
+	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
 	bool WindowShouldClose();

@@ -1,7 +1,4 @@
 #pragma once
-#include <vector>
-#include <stdexcept>
-#include "Vertex.h"
 
 class VertexBuffer {
 public:

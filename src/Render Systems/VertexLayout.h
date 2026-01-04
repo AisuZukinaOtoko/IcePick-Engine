@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <cstddef>
-#include "../Utilities/Assert.h"
+#include <stdexcept>
 
 namespace IcePickRenderer {
 	struct VertexBufferElement {
