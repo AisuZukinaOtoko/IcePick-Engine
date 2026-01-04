@@ -6,7 +6,6 @@
 #include "../Utils/Serialize.h"
 
 static bool RenameNodeTextNeedsFocus = false;
-static glm::vec4 tempColour = glm::vec4(0.0f);
 
 MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI),
@@ -125,8 +124,6 @@ void MaterialEditor::Render() {
 
         ImGui::Separator();
         ShowEditMaterialBaseParameters();
-
-        ImGui::ColorEdit3("##Colour", &tempColour.r, ImGuiColorEditFlags_PickerHueWheel);
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
