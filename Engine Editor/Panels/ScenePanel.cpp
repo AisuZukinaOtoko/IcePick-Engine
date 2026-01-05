@@ -53,8 +53,8 @@ void ScenePanel::ShowSceneHierarchy() {
 					IcePick::AddComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
 				}
 
-				if (ImGui::MenuItem("Material component")) {
-					IcePick::AddComponent<IcePick::MaterialComponent>(m_SelectedEntity);
+				if (ImGui::MenuItem("Script component")) {
+					IcePick::AddComponent<IcePick::ScriptComponent>(m_SelectedEntity);
 				}
 
 				if (ImGui::MenuItem("Rigid body component")) {

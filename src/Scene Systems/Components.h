@@ -35,10 +35,10 @@ namespace IcePick {
 		bool MeshVisible = true;
 		bool CastShadows = false;
 		bool ReceiveShadows = false;
-	};	
+	};
 
-	struct MaterialComponent {
-		unsigned int MaterialIndex;
+	struct ScriptComponent {
+		bool Active = true;
 	};
 
 	struct SpriteRendererComponent {

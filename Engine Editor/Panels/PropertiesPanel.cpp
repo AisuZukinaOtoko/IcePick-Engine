@@ -179,9 +179,9 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         }        
     }
 
-    if (HasComponent<MaterialComponent>(m_SelectedEntity)) {
-        MaterialComponent& material = GetComponent<MaterialComponent>(m_SelectedEntity);
-        TextProperty("Material index", std::to_string(material.MaterialIndex).c_str());
+    if (HasComponent<ScriptComponent>(m_SelectedEntity)) {
+        ScriptComponent& scriptComponent = GetComponent<ScriptComponent>(m_SelectedEntity);
+        CheckBox("Script active", &scriptComponent.Active);
     }
 
     if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
