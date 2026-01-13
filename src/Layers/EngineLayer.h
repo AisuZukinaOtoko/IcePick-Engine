@@ -5,6 +5,7 @@
 #include "../Scene Systems/Scene.h"
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
+#include "../Scene Systems/ScriptRunner.h"
 
 
 
@@ -35,9 +36,9 @@ namespace IcePick {
 		FrameBuffer m_FrameBuffer;
 		FrameBuffer m_ThumbnailBuffer;
 		AssetLoader m_AssetLoader;
+		ScriptRunner m_ScriptRunner;
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
-		int temp_DeleteLater = 0;
 		Scene m_CurrentScene;
 	};
 }

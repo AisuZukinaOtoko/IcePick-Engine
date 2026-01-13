@@ -117,6 +117,9 @@ void AssetBrowser::Render() {
             else if (extension == ".ipmti") {
                 assetType = "MATERIAL_INSTANCE_ASSET";
             }
+            else if (extension == ".lua") {
+                assetType = "SCRIPT_ASSET";
+            }
             else {
                 icon = GetFileIcon(extension);
             }

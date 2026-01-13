@@ -14,6 +14,7 @@ static IcePick::Input gameInput;
 void IcePick::EngineLayer::OnAttach() {
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
 	m_FrameBuffer.Init(windowSize.x, windowSize.y, FrameBuffer::DEFERRED);
+	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
 	m_CurrentScene.OnBegin();
 }
@@ -35,8 +36,25 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 		IP_LOG("Controller 1 is holding Dpad Up");
 	}
 
+	auto& ActiveSceneRegistry = GetActiveSceneRegistry();
+	auto scriptedEntitiesView = ActiveSceneRegistry.view<ScriptComponent>();
+
+	for (entt::entity entity : scriptedEntitiesView) {
+		ScriptComponent& entityScriptComponent = ActiveSceneRegistry.get<ScriptComponent>(entity);
+
+		if (!entityScriptComponent.IsValid || !entityScriptComponent.Active)
+			continue;
+
+		sol::protected_function updateFunction = entityScriptComponent.OnUpdateFunction;
+		sol::protected_function_result result = updateFunction(entityScriptComponent.Self, dt.GetDelta());
+
+		if (!result.valid()) {
+			sol::error err = result;
+			IP_LOG(err.what(), IP_ERROR_LOG);
+		}
+	}
+
 	m_CurrentScene.OnUpdate(dt);
-	temp_DeleteLater++;
 }
 
 void IcePick::EngineLayer::OnNewFrame() {
@@ -151,4 +169,7 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 
 void IcePick::EngineLayer::OnDetach() {
 	m_AssetLoader.ShutDown();
+	m_ScriptRunner.ShutDown();
+	auto& SceneRegistry = GetActiveSceneRegistry();
+	SceneRegistry.clear();
 }

@@ -85,6 +85,10 @@ void IcePick::EngineAPI::RenderMesh(MeshRendererComponent& mesh, glm::mat4& mode
 	m_Engine->RenderMeshNode(mesh.RootMeshNode, modelMatrix, mesh.MaterialSlots, entityId);
 }
 
+IcePick::ScriptComponent IcePick::EngineAPI::LoadScript(std::filesystem::path scriptPath) {
+	return m_Engine->m_ScriptRunner.CreateScriptComponentFromFile(scriptPath);
+}
+
 void IcePick::EngineAPI::SetRenderTargetDefault() {
 	m_Engine->SetRenderTargetDefault();
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
+#include "sol/sol.hpp"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -38,6 +39,14 @@ namespace IcePick {
 	};
 
 	struct ScriptComponent {
+		sol::environment ScriptEnvironment;
+		sol::table Self;
+
+		sol::function OnCreateFunction;
+		sol::function OnUpdateFunction;
+		sol::function OnDestroyFunction;
+
+		bool IsValid = false;
 		bool Active = true;
 	};
 

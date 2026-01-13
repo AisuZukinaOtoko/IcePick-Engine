@@ -210,6 +210,9 @@
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene Systems\ScriptRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -639,6 +642,8 @@
     <None Include="res\shaders\gpass.frag.shader" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\toneMapper.shader" />
+    <None Include="res\Scripts\Core.lua" />
+    <None Include="res\Scripts\Script.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -2085,6 +2090,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Vendor\sol\wrapper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene Systems\ScriptRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

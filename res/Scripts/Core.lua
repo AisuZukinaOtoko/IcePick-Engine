@@ -1,0 +1,1 @@
+Log("Hello from the core lua script", 1)

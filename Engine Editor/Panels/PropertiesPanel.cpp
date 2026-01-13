@@ -180,8 +180,36 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     }
 
     if (HasComponent<ScriptComponent>(m_SelectedEntity)) {
-        ScriptComponent& scriptComponent = GetComponent<ScriptComponent>(m_SelectedEntity);
-        CheckBox("Script active", &scriptComponent.Active);
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ScriptComponent& scriptComponent = GetComponent<ScriptComponent>(m_SelectedEntity);
+
+            if (ImGui::BeginTable("Script", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+                const int imageSize = 45;
+                ImGui::ImageButton("##ScriptButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+                ImGui::TableNextColumn();
+
+                ImGui::Text("Entity Script");
+
+                ImGui::Button("Edit");
+
+                ImGui::EndTable();
+            }
+
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
+                    IP_LOG("Drop lua script.");
+                    scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath);
+                    //scriptComponent = 
+                    //meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
+                }
+                ImGui::EndDragDropTarget();
+            }
+            CheckBox("Script active", &scriptComponent.Active);
+        }
     }
 
     if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
