@@ -46,11 +46,16 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 			continue;
 
 		sol::protected_function updateFunction = entityScriptComponent.OnUpdateFunction;
+
+		if (!updateFunction.valid())
+			continue;
+
 		sol::protected_function_result result = updateFunction(entityScriptComponent.Self, dt.GetDelta());
 
 		if (!result.valid()) {
 			sol::error err = result;
 			IP_LOG(err.what(), IP_ERROR_LOG);
+			entityScriptComponent.Active = false;
 		}
 	}
 

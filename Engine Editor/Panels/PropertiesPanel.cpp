@@ -202,7 +202,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
                     IP_LOG("Drop lua script.");
-                    scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath);
+                    scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
                     //scriptComponent = 
                     //meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
                 }

@@ -36,7 +36,7 @@ namespace IcePick {
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
 		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);
 
-		ScriptComponent LoadScript(std::filesystem::path scriptPath);
+		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
 
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
