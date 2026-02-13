@@ -81,7 +81,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::DockSpaceOverViewport(dockspace_id, mainViewPort, ImGuiDockNodeFlags_PassthruCentralNode);
 
     m_Toolbar.Render();
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();

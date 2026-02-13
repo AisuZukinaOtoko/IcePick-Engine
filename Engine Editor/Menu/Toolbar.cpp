@@ -28,6 +28,12 @@ void Toolbar::Render() {
             if (ImGui::MenuItem("Reload Shaders")) {
                 m_EngineAPI.ReloadShaders();
             }
+
+            ImGui::SetNextItemShortcut(ImGuiMod_Alt | ImGuiKey_S);
+            if (ImGui::MenuItem("Reload Scripts (Alt+S)")) {
+                m_EngineAPI.ReloadScripts();
+                IP_LOG("Reloading entity scripts.");
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();

@@ -170,6 +170,7 @@
     <ClCompile Include="src\File Systems\MaterialBase.cpp" />
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
     <ClCompile Include="src\File Systems\SceneLoader.cpp" />
+    <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
     <ClCompile Include="src\File Systems\TextureLoader.cpp" />
@@ -396,6 +397,8 @@
     <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
+    <ClInclude Include="src\Scene Systems\Script.h" />
+    <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />
     <ClInclude Include="src\File Systems\ShaderLoader.h" />
     <ClInclude Include="src\File Systems\TextureLoader.h" />

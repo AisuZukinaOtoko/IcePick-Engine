@@ -42,21 +42,33 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 	for (entt::entity entity : scriptedEntitiesView) {
 		ScriptComponent& entityScriptComponent = ActiveSceneRegistry.get<ScriptComponent>(entity);
 
-		if (!entityScriptComponent.IsValid || !entityScriptComponent.Active)
+		if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised())
 			continue;
 
-		sol::protected_function updateFunction = entityScriptComponent.OnUpdateFunction;
+		Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
 
-		if (!updateFunction.valid())
+		if (!entityScript.IsValid)
 			continue;
 
-		sol::protected_function_result result = updateFunction(entityScriptComponent.Self, dt.GetDelta());
-
+		sol::protected_function_result result = entityScript.OnUpdateFunction(entityScriptComponent.Self, dt.GetDelta());
 		if (!result.valid()) {
 			sol::error err = result;
 			IP_LOG(err.what(), IP_ERROR_LOG);
 			entityScriptComponent.Active = false;
 		}
+
+		/*sol::protected_function updateFunction = entityScriptComponent.OnUpdateFunction;
+
+		if (!updateFunction.valid())
+			continue;*/
+
+		/*sol::protected_function_result result = updateFunction(entityScriptComponent.Self, dt.GetDelta());
+
+		if (!result.valid()) {
+			sol::error err = result;
+			IP_LOG(err.what(), IP_ERROR_LOG);
+			entityScriptComponent.Active = false;
+		}*/
 	}
 
 	m_CurrentScene.OnUpdate(dt);

@@ -89,6 +89,10 @@ IcePick::ScriptComponent IcePick::EngineAPI::LoadScript(std::filesystem::path sc
 	return m_Engine->m_ScriptRunner.CreateScriptComponentFromFile(scriptPath, entityId);
 }
 
+void IcePick::EngineAPI::ReloadScripts() {
+	m_Engine->m_ScriptRunner.ReloadScripts();
+}
+
 void IcePick::EngineAPI::SetRenderTargetDefault() {
 	m_Engine->SetRenderTargetDefault();
 }

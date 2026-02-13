@@ -1,4 +1,5 @@
 #include "ScriptRunner.h"
+#include "ScriptAPI.h"
 #include "../LogSystem.h"
 #include "glm/glm.hpp"
 #include <fstream>
@@ -6,8 +7,16 @@
 namespace IcePick {
 
 	void ScriptRunner::Init() {
-		m_LuaState.open_libraries(sol::lib::base);
+		m_LuaState.open_libraries(sol::lib::base, sol::lib::math);
 		m_LuaState.set_function("Log", IP_LOG);
+
+		m_LuaState.set_function("GetWorldPosition", ScriptAPI::GetWorldPosition);
+		m_LuaState.set_function("GetWorldRotation", ScriptAPI::GetWorldRotation);
+		m_LuaState.set_function("GetWorldScale", ScriptAPI::GetWorldScale);
+
+		m_LuaState.set_function("SetWorldPosition", ScriptAPI::SetWorldPosition);
+		m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
+		m_LuaState.set_function("SetWorldScale", ScriptAPI::SetWorldScale);
 
 		m_LuaState.new_usertype<glm::vec3>(
 			"vec3",
@@ -20,60 +29,75 @@ namespace IcePick {
 			);
 	}
 
-	ScriptComponent ScriptRunner::CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId) {
-		auto scriptIterator = m_LoadedScriptComponents.find(scriptPath);
-		if (scriptIterator != m_LoadedScriptComponents.end()) {
-			ScriptComponent& savedScriptComponent = scriptIterator->second;
-
-			ScriptComponent returnScriptComponent = savedScriptComponent;
-			returnScriptComponent.Self = m_LuaState.create_table();
-			returnScriptComponent.Self["Id"] = (uint32_t)entityId;
-
-			if (returnScriptComponent.OnCreateFunction.valid()) {
-				sol::protected_function_result result = returnScriptComponent.OnCreateFunction(returnScriptComponent.Self);
-
-				if (!result.valid()) {
-					sol::error err = result;
-					IP_LOG(err.what(), IP_ERROR_LOG);
-					returnScriptComponent.Active = false;
-				}
-			}
-
-			return returnScriptComponent;
+	UUID ScriptRunner::LoadAndRegisterScript(const std::filesystem::path& scriptPath) {
+		auto scriptIterator = m_LoadedScriptPaths.find(scriptPath);
+		if (scriptIterator != m_LoadedScriptPaths.end()) {
+			return scriptIterator->second;
 		}
 
-		ScriptComponent returnScriptComponent;
 		std::string scriptSource = ReadScriptFile(scriptPath);
-		sol::load_result scriptChunk = m_LuaState.load(scriptSource);	
+		Script newScript = CreateScript(scriptSource);
+		
+		if (!newScript.IsValid) {
+			return UUID::Unitialised();
+		}
+
+		UUID newScriptId;
+		m_LoadedScripts.insert({ newScriptId, newScript});
+		m_LoadedScriptPaths.insert({ scriptPath, newScriptId });
+
+		return newScriptId;
+	}
+
+	Script ScriptRunner::CreateScript(const std::string& scriptSource) {
+		Script newScript;
+		sol::load_result scriptChunk = m_LuaState.load(scriptSource);
 
 		if (!scriptChunk.valid()) {
 			IP_LOG("Invalid script.", IP_ERROR_LOG);
-			return returnScriptComponent;
+			return newScript;
 		}
-		
-		sol::environment componentEnvironment = sol::environment(m_LuaState, sol::create, m_LuaState.globals());
-		scriptChunk(componentEnvironment);
 
-		returnScriptComponent.ScriptEnvironment = componentEnvironment;
+		sol::environment scriptEnvironment = sol::environment(m_LuaState, sol::create, m_LuaState.globals());
+		scriptChunk(scriptEnvironment);
+
+		newScript.IsValid = true;
+		newScript.ScriptEnvironment = scriptEnvironment;
+		newScript.OnCreateFunction = scriptEnvironment["OnCreate"];
+		newScript.OnUpdateFunction = scriptEnvironment["OnUpdate"];
+		newScript.OnDestroyFunction = scriptEnvironment["OnDestroy"];
+
+		return newScript;
+	}
+
+	Script& ScriptRunner::GetScriptById(UUID scriptId) {
+		auto scriptIterator = m_LoadedScripts.find(scriptId);
+		if (scriptIterator == m_LoadedScripts.end()) {
+			return m_EmptyScript;
+		}
+
+		return scriptIterator->second;
+	}
+
+	void ScriptRunner::ReloadScripts() {
+		for (auto& scriptPath : m_LoadedScriptPaths) {
+			std::string scriptSource = ReadScriptFile(scriptPath.first);
+			Script reloadedScript = CreateScript(scriptSource);
+
+			if (!reloadedScript.IsValid)
+				continue;
+
+			m_LoadedScripts.insert_or_assign(scriptPath.second, reloadedScript);
+		}
+	}
+
+	ScriptComponent ScriptRunner::CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId) {
+		ScriptComponent returnScriptComponent;
+		returnScriptComponent.ScriptId = LoadAndRegisterScript(scriptPath);
 		returnScriptComponent.Self = m_LuaState.create_table();
 		returnScriptComponent.Self["Id"] = (uint32_t)entityId;
+		returnScriptComponent.Self["temp"] = 0;
 
-		returnScriptComponent.OnCreateFunction = componentEnvironment["OnCreate"];
-		returnScriptComponent.OnUpdateFunction = componentEnvironment["OnUpdate"];
-		returnScriptComponent.OnDestroyFunction = componentEnvironment["OnDestroy"];
-		returnScriptComponent.IsValid = true;
-
-		if (returnScriptComponent.OnCreateFunction.valid()) {
-			sol::protected_function_result result = returnScriptComponent.OnCreateFunction(returnScriptComponent.Self);
-
-			if (!result.valid()) {
-				sol::error err = result;
-				IP_LOG(err.what(), IP_ERROR_LOG);
-				returnScriptComponent.Active = false;
-			}
-		}
-
-		m_LoadedScriptComponents.insert({ scriptPath, returnScriptComponent });
 		return returnScriptComponent;
 	}
 
@@ -89,6 +113,7 @@ namespace IcePick {
 	}
 
 	void ScriptRunner::ShutDown() {
-		m_LoadedScriptComponents.clear();
+		m_LoadedScripts.clear();
+		m_LoadedScriptPaths.clear();
 	}
 }

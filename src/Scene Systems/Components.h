@@ -39,14 +39,8 @@ namespace IcePick {
 	};
 
 	struct ScriptComponent {
-		sol::environment ScriptEnvironment = sol::nil;
+		UUID ScriptId = UUID::Unitialised();
 		sol::table Self = sol::nil;
-
-		sol::function OnCreateFunction = sol::nil;
-		sol::function OnUpdateFunction = sol::nil;
-		sol::function OnDestroyFunction = sol::nil;
-
-		bool IsValid = false;
 		bool Active = true;
 	};
 
