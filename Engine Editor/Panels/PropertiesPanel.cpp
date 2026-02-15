@@ -4,6 +4,8 @@
 #include <iostream>
 #include <filesystem>
 
+static char InputTextBuffer[30];
+
 PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
@@ -100,7 +102,8 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
     if (HasComponent<TagComponent>(m_SelectedEntity)) {
         TagComponent& tag = GetComponent<TagComponent>(m_SelectedEntity);
-        TextProperty("Name", tag.value.c_str());
+        //TextProperty("Name", tag.value.c_str());
+        InputTextProperty("Name", tag.value);
     }
 
     if (HasComponent<TransformComponent>(m_SelectedEntity)) {
@@ -173,6 +176,10 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                     MaterialInstanceParameters(materialBase, materialInstance);
 
                     ImGui::PopID();
+
+                    /*if (i < meshRenderer.MaterialSlots.size() - 1) {
+                        ImGui::Separator();
+                    }*/
                 }
                 ImGui::EndTable();
             }
@@ -203,8 +210,6 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
                     IP_LOG("Drop lua script.");
                     scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
-                    //scriptComponent = 
-                    //meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -212,16 +217,24 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         }
     }
 
-    if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
-        RigidBodyComponent& rigidBody = GetComponent<RigidBodyComponent>(m_SelectedEntity);
-        Vec3Control("Velocity", rigidBody.Velocity, 0.01);
-        FloatSlider("Mass", &rigidBody.Mass, 0.01f, 100.0f);
+    if (HasComponent<PointLightComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+            PointLightComponent& pointLightComponent = GetComponent<PointLightComponent>(m_SelectedEntity);
+            ColourPicker("Colour", pointLightComponent.Colour);
+            FloatSlider("Intensity", &pointLightComponent.Intensity, 0.0f, 10.0f);
+        }
     }
 
-    if (HasComponent<SphereColliderComponent>(m_SelectedEntity)) {
-        SphereColliderComponent& sphereCollider = GetComponent<SphereColliderComponent>(m_SelectedEntity);
-        Vec3Control("Offset", sphereCollider.PositionOffset, 0.01);
-        FloatSlider("Radius", &sphereCollider.Radius, 0.0f, 100.0f);
+    if (HasComponent<DirectionalLightComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Directional Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+            DirectionalLightComponent& directionalLightComponent = GetComponent<DirectionalLightComponent>(m_SelectedEntity);
+            ColourPicker("Colour", directionalLightComponent.Colour);
+            FloatSlider("Intensity", &directionalLightComponent.Intensity, 0.0f, 10.0f);
+            FloatSlider("Azimuth", &directionalLightComponent.Azimuth, 0.0f, 360.0f);
+            FloatSlider("Elevation", &directionalLightComponent.Elevation, -180.0f, 180.0f);
+        }
     }
 
 }
@@ -233,6 +246,31 @@ void PropertiesPanel::TextProperty(const char* label, const char* property) {
     ImGui::NextColumn();
     ImGui::Text(property);
     ImGui::Columns(1);
+}
+
+void PropertiesPanel::InputTextProperty(const char* label, std::string& text) {
+    ImGui::PushID(label);
+    std::snprintf(InputTextBuffer, sizeof(InputTextBuffer), "%s", text.c_str());
+
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text(label);
+
+    ImGui::NextColumn();
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(85, 85, 85, 120));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
+    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+
+    ImGui::InputText("##TextInput", InputTextBuffer, sizeof(InputTextBuffer));
+    if (ImGui::IsItemDeactivated() && (strlen(InputTextBuffer) != 0)) {
+        text = InputTextBuffer;
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor();
+
+    ImGui::Columns(1);
+    ImGui::PopID();
 }
 
 void PropertiesPanel::FloatSlider(const char* label, float* value, float min, float max) {

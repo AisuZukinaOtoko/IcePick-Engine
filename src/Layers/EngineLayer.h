@@ -6,7 +6,7 @@
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
 #include "../Scene Systems/ScriptRunner.h"
-
+#include "EngineRuntimeStates.h"
 
 
 namespace IcePick {
@@ -33,6 +33,7 @@ namespace IcePick {
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		friend class EngineAPI;
+		RuntimeState m_CurrentRuntimeState = RuntimeState::RUNNING;
 		FrameBuffer m_FrameBuffer;
 		FrameBuffer m_ThumbnailBuffer;
 		AssetLoader m_AssetLoader;

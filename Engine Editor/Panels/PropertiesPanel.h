@@ -19,6 +19,7 @@ private:
 	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
 	void TextProperty(const char* label, const char* property);
+	void InputTextProperty(const char* label, std::string& text);
 	void FloatSlider(const char* label, float* value, float min, float max);
 	void CheckBox(const char* label, bool* value);
 	void ColourPicker(const char* label, glm::vec3& rgb);

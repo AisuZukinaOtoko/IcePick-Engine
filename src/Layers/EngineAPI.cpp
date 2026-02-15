@@ -105,6 +105,14 @@ void IcePick::EngineAPI::ReloadShaders() {
 	m_Engine->ReloadShaders();
 }
 
+void IcePick::EngineAPI::SetEngineRuntimeState(RuntimeState newRuntimeState) {
+	m_Engine->m_CurrentRuntimeState = newRuntimeState;
+}
+
+IcePick::RuntimeState IcePick::EngineAPI::QueryEngineRuntimeState() {
+	return m_Engine->m_CurrentRuntimeState;
+}
+
 void IcePick::EngineAPI::GetRendererWindowSize(int& x, int& y) {
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
 	x = windowSize.x;

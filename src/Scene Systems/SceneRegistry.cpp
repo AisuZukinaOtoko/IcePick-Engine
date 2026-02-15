@@ -3,21 +3,53 @@
 #include <string>
 
 static entt::registry IP_SceneRegistry;
-static int EntityCount = 0;
+static int DefaultTagCount = 0;
+
+static IcePick::TagComponent GetDefaultTag() {
+    IcePick::TagComponent returnTag{};
+    returnTag.value = "Object: " + std::to_string(DefaultTagCount);
+    DefaultTagCount++;
+    return returnTag;
+}
 
 entt::entity IcePick::NewEntity() {
     entt::entity newEntity = IP_SceneRegistry.create();
 
-//#ifndef RELEASE
-    std::string newEntityTag = "Object: " + std::to_string(EntityCount);
-    IP_SceneRegistry.emplace<IDComponent>(newEntity);
-    IP_SceneRegistry.emplace<TagComponent>(newEntity, newEntityTag);
-//#else
-//    IP_ASSERT(false, "Not implemented");
-//    IP_SceneRegistry.emplace<TagComponent>(newEntity);
-//#endif
-    IP_SceneRegistry.emplace<TransformComponent>(newEntity);
-    EntityCount++;
+    AddComponent<TagComponent>(newEntity, GetDefaultTag());
+    AddComponent<TransformComponent>(newEntity);    
+    return newEntity;
+}
+
+entt::entity IcePick::NewPointLight() {
+    entt::entity newEntity = IP_SceneRegistry.create();
+
+    TagComponent tag = GetDefaultTag();
+    tag.Type = TagComponent::EntityType::POINT_LIGHT;
+    AddComponent<TagComponent>(newEntity, tag);
+
+    AddComponent<TransformComponent>(newEntity);
+    AddComponent<PointLightComponent>(newEntity);
+    return newEntity;
+}
+
+entt::entity IcePick::NewDirectionalLight() {
+    entt::entity newEntity = IP_SceneRegistry.create();
+    
+    TagComponent tag = GetDefaultTag();
+    tag.Type = TagComponent::EntityType::DIRECTIONAL_LIGHT;
+    AddComponent<TagComponent>(newEntity, tag);
+
+    AddComponent<DirectionalLightComponent>(newEntity);
+    return newEntity;
+}
+
+entt::entity IcePick::NewTerrain() {
+    entt::entity newEntity = IP_SceneRegistry.create();
+
+    TagComponent tag = GetDefaultTag();
+    tag.Type = TagComponent::EntityType::TERRAIN;
+    AddComponent<TagComponent>(newEntity, tag);
+
     return newEntity;
 }
 

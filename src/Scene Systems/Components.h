@@ -8,14 +8,10 @@
 
 namespace IcePick {
 
-	struct IDComponent {
-		UUID ID;
-	};
-
-	struct MeshComponent {
+	struct MeshComponent { // Deprecated
 		unsigned int MeshVertexArrayRegistryIndex = 0;
 		int MaterialIndex = -1;
-		enum Type { STATIC = 0, ANIMATED } MeshType;
+		enum Type { STATIC = 0, SKINNED } MeshType;
 	};
 
 	struct MeshNode {
@@ -44,16 +40,14 @@ namespace IcePick {
 		bool Active = true;
 	};
 
-	struct SpriteRendererComponent {
-		unsigned int Texture;
-		glm::ivec4 TextureSourceRect;
-
-		std::filesystem::path TextureFilePath = "";
-		bool TextureLoaded = false;
-	};
-
 	struct TagComponent {
 		std::string value;
+		enum class EntityType {
+			ENTITY = 0,
+			POINT_LIGHT,
+			DIRECTIONAL_LIGHT,
+			TERRAIN
+		} Type;
 	};
 	
 	struct TransformComponent {
@@ -62,28 +56,15 @@ namespace IcePick {
 		glm::vec3 Scale = glm::vec3(1.0f);
 	};
 
-	struct RigidBodyComponent {
-		glm::vec3 Velocity;
-		float Mass;
-	};
-
-	struct LightComponent {
-		glm::vec3 PositionOffset;
+	struct PointLightComponent {
 		glm::vec3 Colour;
-		glm::vec3 Direction;
-		enum Type { POINT = 0, DIRECTIONAL, SPOT } LightType;
-		float Intensity;
+		float Intensity = 1.0f;
 	};
 
-	struct SphereColliderComponent {
-		glm::vec3 PositionOffset;
-		float Radius;
-	};
-
-	struct CubeColliderComponent {
-		glm::vec3 PositionOffset;
-		glm::vec3 RotationOffset;
-		float Width;
-		float Height;
+	struct DirectionalLightComponent {
+		glm::vec3 Colour;
+		float Azimuth = 0.0f;
+		float Elevation = 0.0f;
+		float Intensity = 1.0f;
 	};
 }

@@ -5,6 +5,10 @@
 
 namespace IcePick {
 	entt::entity NewEntity();
+	entt::entity NewPointLight();
+	entt::entity NewDirectionalLight();
+	entt::entity NewTerrain();
+
 	entt::entity FindEntityByTag(TagComponent&);
 	entt::registry& GetActiveSceneRegistry();
 

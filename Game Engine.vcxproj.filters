@@ -2104,6 +2104,12 @@
     <ClInclude Include="src\Scene Systems\Script.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Vendor\IconsFontAwesome4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Layers\EngineRuntimeStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\CatWithHat.png">

@@ -3,6 +3,7 @@
 #include "../src/Event Systems/Input.h"
 #include "../src/Utilities/DebugStatistics.h"
 #include "imgui-docking/ImGuizmo.h"
+#include "IconsFontAwesome4.h"
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
@@ -28,12 +29,26 @@ void IcePick::EditorLayer::OnAttach() {
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.Fonts->AddFontDefault();
 
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.PixelSnapH = true;
+
     ImGui::StyleColorsDark();
     m_Styles.Init(m_EngineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
+    m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
 
     std::filesystem::path fontPath = "res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
+    std::filesystem::path iconFontPath = "res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";
     m_EditorFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18.0f);
+
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+
+    io.Fonts->AddFontFromFileTTF(
+        iconFontPath.string().c_str(), 18.0f,
+        &config, icon_ranges
+    );
+
     io.Fonts->Build();
     if (!m_EditorFont)
         IP_LOG("Failed to load editor font: " + fontPath.string(), IP_WARN_LOG);

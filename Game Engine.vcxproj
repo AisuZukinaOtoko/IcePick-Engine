@@ -397,6 +397,7 @@
     <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
+    <ClInclude Include="src\Layers\EngineRuntimeStates.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />
@@ -715,6 +716,7 @@
     <ClInclude Include="src\Vendor\glm\vec3.hpp" />
     <ClInclude Include="src\Vendor\glm\vec4.hpp" />
     <ClInclude Include="src\Vendor\glm\vector_relational.hpp" />
+    <ClInclude Include="src\Vendor\IconsFontAwesome4.h" />
     <ClInclude Include="src\Vendor\imgui-docking\GraphEditor.h" />
     <ClInclude Include="src\Vendor\imgui-docking\imconfig.h" />
     <ClInclude Include="src\Vendor\imgui-docking\ImCurveEdit.h" />

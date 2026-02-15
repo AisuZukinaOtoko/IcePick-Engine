@@ -10,6 +10,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/matrix_decompose.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "IconsFontAwesome4.h"
 #include "../LogSystem.h"
 #include "../../src/Utilities/DebugStatistics.h"
 #include <math.h>
@@ -92,7 +93,7 @@ void Viewport::Render(unsigned int renderTexture) {
 		ImGui::EndDragDropTarget();
 	}
 
-	//ImGuiIO& io = ImGui::GetIO();
+	RenderViewportControls();
 
 	if (m_SelectedEntity != entt::null) {
 		RenderEntityGizmos();
@@ -165,6 +166,44 @@ void Viewport::RenderEntityGizmos() {
 		entityTransform.Rotation = glm::degrees(euler);;
 	}
 
+}
+
+void Viewport::RenderViewportControls() {
+	ImVec2 buttonSize{ 40, 40 };
+	ImVec2 viewportControlPosition{ (m_ViewportSize.x / 2) - (buttonSize.x / 2), 26};
+
+	ImGui::SetCursorPos(viewportControlPosition);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(45, 45, 45, 120));
+
+	IcePick::RuntimeState currentEngineRuntimeState = m_EngineAPI.QueryEngineRuntimeState();
+	switch (currentEngineRuntimeState) {
+
+	case IcePick::RuntimeState::STOPPED:
+		if (ImGui::Button(ICON_FA_PLAY, buttonSize)) {
+			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::RUNNING);
+		}
+		break;
+
+	case IcePick::RuntimeState::PAUSED:
+		break;
+
+	case IcePick::RuntimeState::RUNNING:
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+		if (ImGui::Button(ICON_FA_STOP, buttonSize)) {
+			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
+		}
+		ImGui::PopStyleColor();
+		break;
+	default:
+		break;
+	}
+	
+	ImGui::PopStyleColor();
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
 }
 
 void Viewport::GetViewportDebugData(uint32_t* debugData) {

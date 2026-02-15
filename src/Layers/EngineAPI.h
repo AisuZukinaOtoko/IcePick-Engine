@@ -38,10 +38,15 @@ namespace IcePick {
 
 		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
 		void ReloadScripts();
-
+		
+		// Engine functions
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
+
+		void SetEngineRuntimeState(RuntimeState newRuntimeState);
+		RuntimeState QueryEngineRuntimeState();
+
 
 		void GetRendererWindowSize(int& x, int& y);
 		glm::vec2 GetMousePos();
