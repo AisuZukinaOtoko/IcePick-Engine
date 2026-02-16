@@ -24,6 +24,12 @@ private:
 	void CheckBox(const char* label, bool* value);
 	void ColourPicker(const char* label, glm::vec3& rgb);
 	void MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance);
+	void EntityDropTargetProperty(const char* label, entt::entity& entityProperty);
+
+	// Component Properties
+	void MeshRendererDetails(const Styles& styles);
+	void ScriptComponentDetails(const Styles& styles);
+	void CameraControllerDetails();
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
 	entt::entity m_SelectedEntity = entt::null;

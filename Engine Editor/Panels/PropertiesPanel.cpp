@@ -6,6 +6,30 @@
 
 static char InputTextBuffer[30];
 
+static const char* CameraControllerModeToString(IcePick::CameraControllerComponent::ControllerMode mode) {
+    switch (mode) {
+    case IcePick::CameraControllerComponent::ControllerMode::NONE:
+        return "None";
+    case IcePick::CameraControllerComponent::ControllerMode::FOLLOW:
+        return "Follow";
+    case IcePick::CameraControllerComponent::ControllerMode::FREE_LOOK:
+        return "Free look";
+    default:
+        return "Error";
+    }
+}
+
+static const char* CameraControllerInterpolationToString(IcePick::CameraControllerComponent::Interpolation interpolation) {
+    switch (interpolation) {
+    case IcePick::CameraControllerComponent::Interpolation::NONE:
+        return "None";
+    case IcePick::CameraControllerComponent::Interpolation::LINEAR:
+        return "Linear";
+    default:
+        return "Error";
+    }
+}
+
 PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
@@ -118,102 +142,18 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
 
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
         ImGui::Spacing();
-        MeshRendererComponent& meshRenderer = GetComponent<MeshRendererComponent>(m_SelectedEntity);
-
-        if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
-            TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
-            CheckBox("Visible", &meshRenderer.MeshVisible);
-            CheckBox("Cast shadows", &meshRenderer.CastShadows);
-            CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
-
-            ImGui::Text("Drop an asset here!");
-            ImGui::NextColumn();
-            ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
-            if (ImGui::BeginDragDropTarget()) {
-                ImGui::Text("Dropping something");
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                    meshRenderer.MeshFilePath = m_DropAssetPath;
-                    meshRenderer.MeshLoaded = false;
-                }
-                ImGui::EndDragDropTarget();
-            }
-        }
-
-        if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
-            flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
-            if (ImGui::BeginTable("table_nested1", 1, flags)) {
-
-                for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
-                    IcePick::UUID materialInstanceId = meshRenderer.MaterialSlots[i];
-                    IcePick::MaterialInstance& materialInstance = m_EngineAPI.GetMaterialInstance(materialInstanceId);
-                    IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialInstance.MaterialBaseId);
-
-                    ImGui::PushID(i);
-                    ImGui::TableNextRow(ImGuiTableRowFlags_None);
-                    ImGui::TableSetColumnIndex(0);
-
-                    if (ImGui::BeginTable("Material", 2)) {
-                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
-                        ImGui::TableNextColumn();
-                        const int imageSize = 45;
-                        ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
-
-                        ImGui::TableNextColumn();
-
-                        ImGui::Text("Material: %d", i);
-                        
-                        ImGui::EndTable();
-                    }
-
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
-                            meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
-                        }
-                        ImGui::EndDragDropTarget();
-                    }
-
-                    MaterialInstanceParameters(materialBase, materialInstance);
-
-                    ImGui::PopID();
-
-                    /*if (i < meshRenderer.MaterialSlots.size() - 1) {
-                        ImGui::Separator();
-                    }*/
-                }
-                ImGui::EndTable();
-            }
-        }        
+        MeshRendererDetails(styles);
     }
 
     if (HasComponent<ScriptComponent>(m_SelectedEntity)) {
         ImGui::Spacing();
-        if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ScriptComponent& scriptComponent = GetComponent<ScriptComponent>(m_SelectedEntity);
+        ScriptComponentDetails(styles);
+    }
 
-            if (ImGui::BeginTable("Script", 2)) {
-                ImGui::TableNextRow(ImGuiTableRowFlags_None);
-                ImGui::TableNextColumn();
-                const int imageSize = 45;
-                ImGui::ImageButton("##ScriptButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
-
-                ImGui::TableNextColumn();
-
-                ImGui::Text("Entity Script");
-
-                ImGui::Button("Edit");
-
-                ImGui::EndTable();
-            }
-
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
-                    IP_LOG("Drop lua script.");
-                    scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
-                }
-                ImGui::EndDragDropTarget();
-            }
-            CheckBox("Script active", &scriptComponent.Active);
+    if (HasComponent<CameraControllerComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Camera Controller", ImGuiTreeNodeFlags_DefaultOpen)) {
+            CameraControllerDetails();
         }
     }
 
@@ -307,8 +247,7 @@ void PropertiesPanel::ColourPicker(const char* label, glm::vec3& rgb) {
 
     ImGui::Text(label);
     ImGui::NextColumn();
-    ImGui::ColorEdit4("##Colour", &rgb.r, ImGuiColorEditFlags_PickerHueWheel);
-    //ImGui::ColorPicker3("##Colour", &rgb.r, ImGuiColorEditFlags_PickerHueWheel);
+    ImGui::ColorEdit3("##Colour", &rgb.r, ImGuiColorEditFlags_PickerHueWheel);
 
     ImGui::Columns(1);
     ImGui::PopID();
@@ -401,4 +340,161 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
             ImGui::Unindent();
         }
     }
+}
+
+void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& entityProperty) {
+
+}
+
+void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
+    IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+
+    if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+        TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
+        CheckBox("Visible", &meshRenderer.MeshVisible);
+        CheckBox("Cast shadows", &meshRenderer.CastShadows);
+        CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
+
+        ImGui::Text("Drop an asset here!");
+        ImGui::NextColumn();
+        ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
+        if (ImGui::BeginDragDropTarget()) {
+            ImGui::Text("Dropping something");
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+                meshRenderer.MeshFilePath = m_DropAssetPath;
+                meshRenderer.MeshLoaded = false;
+            }
+            ImGui::EndDragDropTarget();
+        }
+    }
+
+    if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
+        ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
+        flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
+        if (ImGui::BeginTable("table_nested1", 1, flags)) {
+
+            for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
+                IcePick::UUID materialInstanceId = meshRenderer.MaterialSlots[i];
+                IcePick::MaterialInstance& materialInstance = m_EngineAPI.GetMaterialInstance(materialInstanceId);
+                IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialInstance.MaterialBaseId);
+
+                ImGui::PushID(i);
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                if (ImGui::BeginTable("Material", 2)) {
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                    ImGui::TableNextColumn();
+                    const int imageSize = 45;
+                    ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+                    ImGui::TableNextColumn();
+
+                    ImGui::Text("Material: %d", i);
+
+                    ImGui::EndTable();
+                }
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
+                        meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                MaterialInstanceParameters(materialBase, materialInstance);
+
+                ImGui::PopID();
+
+                /*if (i < meshRenderer.MaterialSlots.size() - 1) {
+                    ImGui::Separator();
+                }*/
+            }
+            ImGui::EndTable();
+        }
+    }
+}
+
+void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
+    if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
+        IcePick::ScriptComponent& scriptComponent = IcePick::GetComponent<IcePick::ScriptComponent>(m_SelectedEntity);
+
+        if (ImGui::BeginTable("Script", 2)) {
+            ImGui::TableNextRow(ImGuiTableRowFlags_None);
+            ImGui::TableNextColumn();
+            const int imageSize = 45;
+            ImGui::ImageButton("##ScriptButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::TableNextColumn();
+
+            ImGui::Text("Entity Script");
+
+            ImGui::Button("Edit");
+
+            ImGui::EndTable();
+        }
+
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
+                IP_LOG("Drop lua script.");
+                scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
+            }
+            ImGui::EndDragDropTarget();
+        }
+        CheckBox("Script active", &scriptComponent.Active);
+    }
+}
+
+void PropertiesPanel::CameraControllerDetails() {
+    using namespace IcePick;
+    CameraControllerComponent& cameraController = IcePick::GetComponent<CameraControllerComponent>(m_SelectedEntity);
+
+    Vec3Control("Position", cameraController.Position, 0.2f);
+
+    ImGui::Spacing();
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text("Mode");
+    ImGui::NextColumn();
+    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+    if (ImGui::BeginCombo("##ControllerMode", CameraControllerModeToString(cameraController.Mode))) {
+        for (int i = 0; i < (int)CameraControllerComponent::ControllerMode::COUNT; ++i) {
+            CameraControllerComponent::ControllerMode value = static_cast<CameraControllerComponent::ControllerMode>(i);
+            bool selected = (cameraController.Mode == value);
+
+            if (ImGui::Selectable(CameraControllerModeToString(value), selected))
+                cameraController.Mode = value;
+
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+    ImGui::Columns(1);
+    
+
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text("Interpolation");
+    ImGui::NextColumn();
+    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+    if (ImGui::BeginCombo("##InterpolationMode", CameraControllerInterpolationToString(cameraController.EnterInterpolation))) {
+        for (int i = 0; i < (int)CameraControllerComponent::Interpolation::COUNT; ++i) {
+            CameraControllerComponent::Interpolation value = static_cast<CameraControllerComponent::Interpolation>(i);
+            bool selected = (cameraController.EnterInterpolation == value);
+
+            if (ImGui::Selectable(CameraControllerInterpolationToString(value), selected))
+                cameraController.EnterInterpolation = value;
+
+            if (selected)
+                ImGui::SetItemDefaultFocus();
+        }
+
+        ImGui::EndCombo();
+    }
+    ImGui::Columns(1);
+
+
+    FloatSlider("FOV", &cameraController.FOV, 1.0f, 179.0f);
 }

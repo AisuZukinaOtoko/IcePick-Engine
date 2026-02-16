@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "sol/sol.hpp"
+#include "entt/entt.h"
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -44,6 +45,7 @@ namespace IcePick {
 		std::string value;
 		enum class EntityType {
 			ENTITY = 0,
+			CAMERA_CONTROLLER,
 			POINT_LIGHT,
 			DIRECTIONAL_LIGHT,
 			TERRAIN
@@ -66,5 +68,30 @@ namespace IcePick {
 		float Azimuth = 0.0f;
 		float Elevation = 0.0f;
 		float Intensity = 1.0f;
+	};
+
+	struct CameraControllerComponent {
+		glm::vec3 Position;
+
+		entt::entity FollowTarget = entt::null;
+		entt::entity LookAtTarget = entt::null;
+
+		enum class ControllerMode {
+			NONE = 0,
+			FOLLOW,
+			FREE_LOOK,
+			COUNT
+		} Mode;
+
+		enum class Interpolation {
+			NONE = 0,
+			LINEAR,
+			COUNT
+		} EnterInterpolation; // when switching to this controller, how should the camera be interpolated
+
+		float InterpolationDuration = 1.0f;
+		float Pitch = 0.0f;
+		float Yaw = 0.0f;
+		float FOV = 45.0f;
 	};
 }

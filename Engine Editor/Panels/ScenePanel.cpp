@@ -3,6 +3,9 @@
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
 	switch (tag.Type) {
+	case IcePick::TagComponent::EntityType::CAMERA_CONTROLLER:
+		return ICON_FA_CAMERA;
+		break;
 	case IcePick::TagComponent::EntityType::POINT_LIGHT:
 		return ICON_FA_LIGHTBULB_O;
 		break;
@@ -47,6 +50,10 @@ void ScenePanel::ShowSceneHierarchy() {
 	if (ImGui::BeginMenu(ICON_FA_PLUS " Add")) {
 		if (ImGui::MenuItem(ICON_FA_CUBE " Entity")) {
 			IcePick::NewEntity();
+		}
+
+		if (ImGui::MenuItem(ICON_FA_CAMERA " Camera controller")) {
+			IcePick::NewCameraController();
 		}
 
 		if (ImGui::MenuItem(ICON_FA_LIGHTBULB_O " Point light")) {

@@ -20,6 +20,17 @@ entt::entity IcePick::NewEntity() {
     return newEntity;
 }
 
+entt::entity IcePick::NewCameraController() {
+    entt::entity newEntity = IP_SceneRegistry.create();
+
+    TagComponent tag = GetDefaultTag();
+    tag.Type = TagComponent::EntityType::CAMERA_CONTROLLER;
+    AddComponent<TagComponent>(newEntity, tag);
+
+    AddComponent<CameraControllerComponent>(newEntity);
+    return newEntity;
+}
+
 entt::entity IcePick::NewPointLight() {
     entt::entity newEntity = IP_SceneRegistry.create();
 

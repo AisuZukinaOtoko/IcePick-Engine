@@ -5,6 +5,7 @@
 
 namespace IcePick {
 	entt::entity NewEntity();
+	entt::entity NewCameraController();
 	entt::entity NewPointLight();
 	entt::entity NewDirectionalLight();
 	entt::entity NewTerrain();
