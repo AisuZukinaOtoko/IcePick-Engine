@@ -101,6 +101,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();
 
+    m_PropertiesPanel.SetDropEntity(m_ScenePanel.GetDraggedEntity());
     m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_MaterialEditor.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());

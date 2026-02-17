@@ -12,10 +12,14 @@ public:
 	void OnUpdate(DeltaTime dt);
 	void ShowSceneHierarchy();
 	bool EntitySelected();
+
+	entt::entity GetDraggedEntity();
 	entt::entity GetSelectedEntity();
 private:
 	std::function<void(entt::entity)> SelectedEntityChangeCallback;
 	const char* m_Title;
+	entt::entity m_DraggedEntity = entt::null;
 	entt::entity m_SelectedEntity = entt::null;
 	bool m_EntitySelected = false;
+	bool m_IsDraggingItem = false;
 };

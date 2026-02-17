@@ -13,6 +13,7 @@ public:
 	void SetColumnWidth(float newWidth);
 	void SetSelectedEntity(entt::entity entity);
 
+	void SetDropEntity(entt::entity entity);
 	void SetDropAssetPath(std::string filePath);
 private:
 	void PanelSetup();
@@ -32,6 +33,8 @@ private:
 	void CameraControllerDetails();
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
+
+	entt::entity m_DroppedEntity = entt::null;
 	entt::entity m_SelectedEntity = entt::null;
 	std::string m_DropAssetPath;
 	IcePick::EngineAPI m_EngineAPI;

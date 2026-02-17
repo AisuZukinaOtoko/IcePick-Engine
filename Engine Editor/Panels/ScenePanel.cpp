@@ -85,13 +85,28 @@ void ScenePanel::ShowSceneHierarchy() {
 
 		if (ImGui::IsItemClicked()) {
 			m_SelectedEntity = entity;
-			m_EntitySelected = true;
+		}
+
+		if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+			m_IsDraggingItem = true;
+		}
+
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
+			if (!m_IsDraggingItem)
+				m_EntitySelected = true;
 		}
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
 			m_SelectedEntity = entity;
 			m_EntitySelected = true;
 			ImGui::OpenPopup("Options");
+		}
+
+		if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+			m_DraggedEntity = entity;
+			ImGui::SetDragDropPayload("SCENE_ENTITY", nullptr, 0, ImGuiCond_Once);
+			ImGui::Text("%s %s", icon, entityTag.value.c_str());
+			ImGui::EndDragDropSource();
 		}
 
 		if (ImGui::BeginPopup("Options"))
@@ -123,11 +138,19 @@ void ScenePanel::ShowSceneHierarchy() {
 		}
 	}
 
+	if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+		m_IsDraggingItem = false;
+	}
+
 	ImGui::End();
 }
 
 bool ScenePanel::EntitySelected() {
 	return m_EntitySelected;
+}
+
+entt::entity ScenePanel::GetDraggedEntity() {
+	return m_DraggedEntity;
 }
 
 entt::entity ScenePanel::GetSelectedEntity() {

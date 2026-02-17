@@ -9,9 +9,9 @@ function OnCreate(self)
 end
 
 function OnUpdate(self, dt)
-	self.temp = self.temp + 1;
+	self.temp = self.temp + (0.3 * dt);
 	local position = GetWorldPosition(self.Id);
-	position.y = math.sin(math.rad(self.temp)); -- set current entity y-pos to entity health in degrees
+	position.z = math.sin(math.rad(self.temp)); -- set current entity x-pos to temp variable in degrees
 
 	--for i = self.temp, self.temp + 1000 do
 	--	self.temp = self.temp + 1;

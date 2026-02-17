@@ -1,6 +1,7 @@
 #include "PropertiesPanel.h"
 #include "PanelCommon.h"
 #include "../Scene Systems/SceneRegistry.h"
+#include "IconsFontAwesome4.h"
 #include <iostream>
 #include <filesystem>
 
@@ -116,6 +117,10 @@ void PropertiesPanel::SetSelectedEntity(entt::entity entity) {
     m_SelectedEntity = entity;
 }
 
+void PropertiesPanel::SetDropEntity(entt::entity entity) {
+    m_DroppedEntity = entity;
+}
+
 void PropertiesPanel::SetDropAssetPath(std::string filePath) {
     m_DropAssetPath = filePath;
 }
@@ -220,6 +225,7 @@ void PropertiesPanel::FloatSlider(const char* label, float* value, float min, fl
 
     ImGui::Text(label);
     ImGui::NextColumn();
+    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
     ImGui::SliderFloat("##slider", value, min, max, "%.1f");
 
     ImGui::Columns(1);
@@ -343,7 +349,31 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
 }
 
 void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& entityProperty) {
+    ImGui::PushID(label);
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text(label);
 
+    ImGui::NextColumn();
+
+    std::string entityName = "None";
+    if (IcePick::HasComponent<IcePick::TagComponent>(entityProperty)) {
+        IcePick::TagComponent& tag = IcePick::GetComponent<IcePick::TagComponent>(entityProperty);
+        entityName = tag.value;
+    }
+
+    std::string buttonText = std::string(ICON_FA_CUBE) + " " + entityName;
+    ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+    if (ImGui::BeginDragDropTarget()) {
+        if (ImGui::AcceptDragDropPayload("SCENE_ENTITY")) {
+            entityProperty = m_DroppedEntity;
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
 }
 
 void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
@@ -435,7 +465,7 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         }
 
         if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
+            if (ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
                 IP_LOG("Drop lua script.");
                 scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
             }
@@ -472,11 +502,18 @@ void PropertiesPanel::CameraControllerDetails() {
         ImGui::EndCombo();
     }
     ImGui::Columns(1);
+
+    ImGui::Spacing();
+    EntityDropTargetProperty("Follow Target", cameraController.FollowTarget);
+
+    ImGui::Spacing();
+    EntityDropTargetProperty("Look At Target", cameraController.LookAtTarget);
     
+    ImGui::SeparatorText("Interpolation");
 
     ImGui::Columns(2);
     ImGui::SetColumnWidth(0, m_ColumnWidth);
-    ImGui::Text("Interpolation");
+    ImGui::Text("Interpolation Style");
     ImGui::NextColumn();
     ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
     if (ImGui::BeginCombo("##InterpolationMode", CameraControllerInterpolationToString(cameraController.EnterInterpolation))) {
@@ -495,6 +532,10 @@ void PropertiesPanel::CameraControllerDetails() {
     }
     ImGui::Columns(1);
 
+    ImGui::Spacing();
+    FloatSlider("Duration", &cameraController.InterpolationDuration, 0.0f, 10.0f);
 
+
+    ImGui::SeparatorText("View Settings");
     FloatSlider("FOV", &cameraController.FOV, 1.0f, 179.0f);
 }
