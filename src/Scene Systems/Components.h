@@ -18,8 +18,9 @@ namespace IcePick {
 	struct MeshNode {
 		glm::mat4 NodeTransform = glm::mat4(1.0f);
 		std::vector<unsigned int> VertexArrayIDs; // meshes
+		std::vector<unsigned int> MaterialSlotIndices;
 		std::vector<MeshNode> Children;
-		unsigned int MaterialSlotIndex = (unsigned int)-1;
+		//unsigned int MaterialSlotIndex = (unsigned int)-1;
 	};
 
 	struct MeshRendererComponent {

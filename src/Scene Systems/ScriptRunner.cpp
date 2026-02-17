@@ -45,6 +45,7 @@ namespace IcePick {
 		UUID newScriptId;
 		m_LoadedScripts.insert({ newScriptId, newScript});
 		m_LoadedScriptPaths.insert({ scriptPath, newScriptId });
+		m_LoadedScriptToScripPathMap.insert({ newScriptId, scriptPath });
 
 		return newScriptId;
 	}
@@ -91,6 +92,14 @@ namespace IcePick {
 		}
 	}
 
+	std::filesystem::path ScriptRunner::GetScriptPath(UUID scriptId) {
+		auto scriptPathIterator = m_LoadedScriptToScripPathMap.find(scriptId);
+		if (scriptPathIterator != m_LoadedScriptToScripPathMap.end())
+			return scriptPathIterator->second;
+
+		return "";
+	}
+
 	ScriptComponent ScriptRunner::CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId) {
 		ScriptComponent returnScriptComponent;
 		returnScriptComponent.ScriptId = LoadAndRegisterScript(scriptPath);
@@ -115,5 +124,6 @@ namespace IcePick {
 	void ScriptRunner::ShutDown() {
 		m_LoadedScripts.clear();
 		m_LoadedScriptPaths.clear();
+		m_LoadedScriptToScripPathMap.clear();
 	}
 }

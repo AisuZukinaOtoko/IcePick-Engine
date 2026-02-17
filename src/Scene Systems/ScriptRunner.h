@@ -15,6 +15,7 @@ namespace IcePick {
 
 		Script& GetScriptById(UUID scriptId);
 		void ReloadScripts();
+		std::filesystem::path GetScriptPath(UUID scriptId);
 	private:
 		Script m_EmptyScript;
 		UUID LoadAndRegisterScript(const std::filesystem::path& scriptPath);
@@ -23,6 +24,7 @@ namespace IcePick {
 
 		std::unordered_map<UUID, Script, UUIDHasher> m_LoadedScripts;
 		std::unordered_map<std::filesystem::path, UUID> m_LoadedScriptPaths;
+		std::unordered_map<UUID, std::filesystem::path, UUIDHasher> m_LoadedScriptToScripPathMap;
 
 		sol::state m_LuaState;
 	};

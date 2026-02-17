@@ -2,6 +2,7 @@
 #include "PanelCommon.h"
 #include "../Scene Systems/SceneRegistry.h"
 #include "IconsFontAwesome4.h"
+#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 
@@ -449,29 +450,42 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
     if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
         IcePick::ScriptComponent& scriptComponent = IcePick::GetComponent<IcePick::ScriptComponent>(m_SelectedEntity);
 
-        if (ImGui::BeginTable("Script", 2)) {
-            ImGui::TableNextRow(ImGuiTableRowFlags_None);
-            ImGui::TableNextColumn();
-            const int imageSize = 45;
-            ImGui::ImageButton("##ScriptButton", (void*)styles.GetIconTexture(Styles::ICON_GENERIC_FILE), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, m_ColumnWidth);
+        ImGui::Text("Script");
+        ImGui::NextColumn();
 
-            ImGui::TableNextColumn();
-
-            ImGui::Text("Entity Script");
-
-            ImGui::Button("Edit");
-
-            ImGui::EndTable();
+        if (ImGui::Button(ICON_FA_TRASH)) {
+            scriptComponent.ScriptId = IcePick::UUID::Unitialised();
+            scriptComponent.Active = false;
         }
+
+        ImGui::SameLine();
+        std::filesystem::path scriptPath = m_EngineAPI.GetScriptPathById(scriptComponent.ScriptId);
+        std::string buttonText;
+        if (scriptPath.empty())
+            buttonText = std::string(ICON_FA_EXCLAMATION) + " None";
+        else
+            buttonText = std::string(ICON_FA_FILE_TEXT) + " " + scriptPath.stem().string();
+        ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
         if (ImGui::BeginDragDropTarget()) {
             if (ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
-                IP_LOG("Drop lua script.");
                 scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
             }
             ImGui::EndDragDropTarget();
         }
+
+        ImGui::Columns(1);
+
         CheckBox("Script active", &scriptComponent.Active);
+        
+        if (ImGui::Button(ICON_FA_PENCIL_SQUARE_O "Edit Script")) {
+            std::string editScriptCommand = "code " + scriptPath.string();
+            int result = std::system(editScriptCommand.c_str());
+            if (result != 0)
+                IP_LOG("Failed to open Visual Studio Code.", IP_ERROR_LOG);
+        }
     }
 }
 

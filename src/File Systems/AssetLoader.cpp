@@ -118,7 +118,8 @@ void IcePick::AssetLoader::ProcessSceneNode(const aiNode* sceneNode, MeshNode& p
 			const unsigned int meshIndex = sceneNode->mMeshes[i];
 			currentNode.VertexArrayIDs.push_back(GetIndex(MESH_INDEX, sceneNode->mMeshes[i]));
 			UUID nodeMaterialInsatnceId = LoadSceneMaterial(scene, scene->mMeshes[meshIndex]->mMaterialIndex);
-			currentNode.MaterialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialInsatnceId);
+			unsigned int materialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialInsatnceId);
+			currentNode.MaterialSlotIndices.push_back(materialSlotIndex);
 		}
 	}
 
@@ -208,7 +209,9 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath.string(), aiProcess_Triangulate |
 		aiProcess_FixInfacingNormals |
-		aiProcess_CalcTangentSpace
+		aiProcess_CalcTangentSpace |
+		aiProcess_GenUVCoords |
+		aiProcess_OptimizeMeshes
 	);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {

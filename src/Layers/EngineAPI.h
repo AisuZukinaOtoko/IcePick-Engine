@@ -38,6 +38,7 @@ namespace IcePick {
 
 		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
 		void ReloadScripts();
+		std::filesystem::path GetScriptPathById(UUID scriptId);
 		
 		// Engine functions
 		void SetRenderTargetDefault();

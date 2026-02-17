@@ -93,6 +93,10 @@ void IcePick::EngineAPI::ReloadScripts() {
 	m_Engine->m_ScriptRunner.ReloadScripts();
 }
 
+std::filesystem::path IcePick::EngineAPI::GetScriptPathById(UUID scriptId) {
+	return m_Engine->m_ScriptRunner.GetScriptPath(scriptId);
+}
+
 void IcePick::EngineAPI::SetRenderTargetDefault() {
 	m_Engine->SetRenderTargetDefault();
 }
