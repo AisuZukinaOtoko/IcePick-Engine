@@ -20,7 +20,6 @@ namespace IcePick {
 		std::vector<unsigned int> VertexArrayIDs; // meshes
 		std::vector<unsigned int> MaterialSlotIndices;
 		std::vector<MeshNode> Children;
-		//unsigned int MaterialSlotIndex = (unsigned int)-1;
 	};
 
 	struct MeshRendererComponent {
@@ -39,7 +38,7 @@ namespace IcePick {
 	struct ScriptComponent {
 		UUID ScriptId = UUID::Unitialised();
 		sol::table Self = sol::nil;
-		bool Active = true;
+		bool Active = false;
 	};
 
 	struct TagComponent {

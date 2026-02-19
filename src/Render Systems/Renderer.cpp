@@ -50,7 +50,7 @@ namespace IcePickRenderer {
 			return false;
 
 		glfwMakeContextCurrent(MainTargetWindow);
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 		glfwMaximizeWindow(MainTargetWindow);
 		glfwGetWindowSize(MainTargetWindow, &MainTargetWindowSize[0], &MainTargetWindowSize[1]);
 		IP_ASSERT((MainTargetWindowSize[0] != 0 && MainTargetWindowSize[1] != 0), "Invalid window size");

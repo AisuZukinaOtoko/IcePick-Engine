@@ -1,5 +1,6 @@
 
 function OnCreate(self)
+	Log("Hello World.", 0);
 	self.health = 0;
 	self.temp = 0;
 

@@ -102,6 +102,7 @@ namespace IcePick {
 
 	ScriptComponent ScriptRunner::CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId) {
 		ScriptComponent returnScriptComponent;
+		returnScriptComponent.Active = true;
 		returnScriptComponent.ScriptId = LoadAndRegisterScript(scriptPath);
 		returnScriptComponent.Self = m_LuaState.create_table();
 		returnScriptComponent.Self["Id"] = (uint32_t)entityId;

@@ -2,7 +2,7 @@
 #include "PanelCommon.h"
 #include "../Scene Systems/SceneRegistry.h"
 #include "IconsFontAwesome4.h"
-#include <cstdlib>
+#include "../Utils/Serialize.h"
 #include <iostream>
 #include <filesystem>
 
@@ -481,10 +481,7 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         CheckBox("Script active", &scriptComponent.Active);
         
         if (ImGui::Button(ICON_FA_PENCIL_SQUARE_O "Edit Script")) {
-            std::string editScriptCommand = "code " + scriptPath.string();
-            int result = std::system(editScriptCommand.c_str());
-            if (result != 0)
-                IP_LOG("Failed to open Visual Studio Code.", IP_ERROR_LOG);
+            OpenScriptEditor(scriptPath);
         }
     }
 }

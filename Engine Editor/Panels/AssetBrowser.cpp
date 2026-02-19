@@ -48,6 +48,10 @@ void AssetBrowser::Render() {
             ImGui::OpenPopup("Create Base Material");     
         }
 
+        if (ImGui::Button("Script")) {
+            ImGui::OpenPopup("Create New Script");
+        }
+
         if (ImGui::BeginPopupModal("Create Base Material")) {
             ImGui::InputText("File name (.ipmtb)", TextInputBuffer, sizeof(TextInputBuffer));
 
@@ -60,6 +64,28 @@ void AssetBrowser::Render() {
                 std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
                 std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
                 SerializeMaterialBase(newMaterialBasePath, newMaterialBase, newMaterialShaderGraph, newMaterialShaderSource);
+
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (ImGui::BeginPopupModal("Create New Script")) {
+            ImGui::InputText("File name (.lua)", TextInputBuffer, sizeof(TextInputBuffer));
+
+            if (ImGui::Button("Save", ImVec2(120, 0))) {
+
+                std::string fileName = std::string(TextInputBuffer) + ".lua";
+                std::filesystem::path newScriptPath = m_CurrentBrowsingPath / fileName;
+                CreateNewScriptTemplate(newScriptPath);
 
                 ClearTextInputBuffer();
                 ImGui::CloseCurrentPopup();
@@ -99,9 +125,9 @@ void AssetBrowser::Render() {
     int tempIterator = 0;
     for (const auto& file : std::filesystem::directory_iterator(m_CurrentBrowsingPath)) {
         tempIterator++;
-        ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);
         std::string assetType = "ASSET";
         std::filesystem::path extension = file.path().extension();
+        ImTextureID icon = GetFileIcon(extension);
 
         if (file.is_regular_file()) {
 
@@ -119,9 +145,6 @@ void AssetBrowser::Render() {
             }
             else if (extension == ".lua") {
                 assetType = "SCRIPT_ASSET";
-            }
-            else {
-                icon = GetFileIcon(extension);
             }
         }
         else if (file.is_directory()) {
@@ -144,6 +167,9 @@ void AssetBrowser::Render() {
             else if (file.is_regular_file()) {
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && extension == ".ipmtb") {
                     EditMaterialCallback(file.path());
+                }
+                else if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && extension == ".lua") {
+                    OpenScriptEditor(file.path());
                 }
             }            
         }
@@ -233,7 +259,7 @@ std::string AssetBrowser::GetDragFilePath() {
     return m_DragFilePath;
 }
 
-void* AssetBrowser::GetFileIcon(std::filesystem::path extension) {
+void* AssetBrowser::GetFileIcon(const std::filesystem::path& extension) {
     void* icon;
     if (extension == ".fbx") {
         icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FBX_FILE);
@@ -243,6 +269,12 @@ void* AssetBrowser::GetFileIcon(std::filesystem::path extension) {
     }
     else if (extension == ".obj") {
         icon = (void*)m_Styles.GetIconTexture(Styles::ICON_OBJ_FILE);
+    }
+    else if (extension == ".ipmtb" || extension == ".ipmti") {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET);
+    }
+    else if (extension == ".lua") {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_SCRIPT_ASSET);
     }
     else {
         icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);

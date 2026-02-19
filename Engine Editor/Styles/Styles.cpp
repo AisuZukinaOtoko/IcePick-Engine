@@ -9,7 +9,8 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_GLB_FILE] = engineAPI.GetTexture("res/textures/icons/glb_icon.png");
 	m_IconTextures[ICON_OBJ_FILE] = engineAPI.GetTexture("res/textures/icons/obj_icon.png");
 	m_IconTextures[ICON_STATIC_MESH_ASSET] = engineAPI.GetTexture("res/textures/icons/cube_icon.png");
-	m_IconTextures[ICON_MATERIAL_ASSET] = engineAPI.GetTexture("res/textures/icons/globe_icon.png");
+	m_IconTextures[ICON_MATERIAL_ASSET] = engineAPI.GetTexture("res/textures/icons/material_icon.png");
+	m_IconTextures[ICON_SCRIPT_ASSET] = engineAPI.GetTexture("res/textures/icons/lua_icon.png");
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.Colors[ImGuiCol_WindowBg] = ImColor(22, 22, 22, 255);
 	style.Colors[ImGuiCol_ChildBg] = ImColor(22, 22, 22, 255);

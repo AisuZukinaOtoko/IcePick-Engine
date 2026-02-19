@@ -2,6 +2,7 @@
 #include "../Material Editor/Nodes/Nodes.h"
 #include "../../src/Utilities/JsonUtils.h"
 #include "../../src/LogSystem.h"
+#include <cstdlib>
 #include <fstream>
 
 constexpr unsigned int MATERIAL_BASE_ASSET_VERSION = 1;
@@ -183,4 +184,31 @@ Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::Shade
 
 	jsonFileStream.close();
 	return returnMaterialGraph;
+}
+
+void CreateNewScriptTemplate(const std::filesystem::path& scriptPath) {
+	std::ofstream outFile(scriptPath);
+	outFile << 
+R"(
+-- Delete functions you do not need
+function OnCreate(self)
+	Log("Hello from the core lua script", 0);
+end
+
+function OnUpdate(self, dt)
+	
+end
+
+function OnDestroy(self)
+	Log("Entity destroyed", 0);
+end
+)";
+	outFile.close();
+}
+
+void OpenScriptEditor(const std::filesystem::path& scriptPath) {
+	std::string editScriptCommand = "code " + scriptPath.string();
+	int result = std::system(editScriptCommand.c_str());
+	if (result != 0)
+		IP_LOG("Failed to open Visual Studio Code.", IP_ERROR_LOG);
 }
