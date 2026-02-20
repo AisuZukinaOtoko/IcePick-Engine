@@ -45,7 +45,7 @@
     <ClCompile Include="src\IcePickCoreMinimal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene Systems\Camera.cpp">
+    <ClCompile Include="src\Scene Systems\SceneCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Vendor\imgui-docking\imgui.cpp">
@@ -1546,7 +1546,7 @@
     <ClInclude Include="src\IcePickCoreMinimal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene Systems\Camera.h">
+    <ClInclude Include="src\Scene Systems\SceneCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Vendor\imgui-docking\imconfig.h">

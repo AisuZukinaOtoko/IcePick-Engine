@@ -1,4 +1,5 @@
 #include "SceneRegistry.h"
+#include "SceneCamera.h"
 #include "../Utilities/Assert.h"
 #include <string>
 
@@ -61,6 +62,18 @@ entt::entity IcePick::NewTerrain() {
     tag.Type = TagComponent::EntityType::TERRAIN;
     AddComponent<TagComponent>(newEntity, tag);
 
+    return newEntity;
+}
+
+entt::entity IcePick::AddSceneCamera() {
+    entt::entity newEntity = IP_SceneRegistry.create();
+
+    TagComponent tag;
+    tag.value = "Scene Camera";
+    tag.Type = TagComponent::EntityType::CAMERA;
+    AddComponent<TagComponent>(newEntity, tag);
+
+    AddComponent<SceneCamera>(newEntity);
     return newEntity;
 }
 

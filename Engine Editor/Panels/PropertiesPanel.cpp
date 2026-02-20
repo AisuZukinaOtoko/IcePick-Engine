@@ -1,6 +1,7 @@
 #include "PropertiesPanel.h"
 #include "PanelCommon.h"
 #include "../Scene Systems/SceneRegistry.h"
+#include "../../src/Scene Systems/SceneCamera.h"
 #include "IconsFontAwesome4.h"
 #include "../Utils/Serialize.h"
 #include <iostream>
@@ -30,6 +31,35 @@ static const char* CameraControllerInterpolationToString(IcePick::CameraControll
     default:
         return "Error";
     }
+}
+
+static void CameraControllerDropTargetProperty(const char* label, IcePick::SceneCamera& sceneCamera, entt::entity droppedSceneObject, float columnWidth) {
+    ImGui::PushID(label);
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, columnWidth);
+    ImGui::Text(label);
+
+    ImGui::NextColumn();
+
+    entt::entity cameraControllerId = sceneCamera.GetCameraControllerId();
+    std::string cameraControllerName = "None";
+    if (IcePick::HasComponent<IcePick::TagComponent>(cameraControllerId)) {
+        IcePick::TagComponent& tag = IcePick::GetComponent<IcePick::TagComponent>(cameraControllerId);
+        cameraControllerName = tag.value;
+    }
+
+    std::string buttonText = std::string(ICON_FA_VIDEO_CAMERA) + " " + cameraControllerName;
+    ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+    if (ImGui::BeginDragDropTarget()) {
+        if (ImGui::AcceptDragDropPayload("CAMERA_CONTROLLER")) {
+            sceneCamera.SetNewCameraController(droppedSceneObject);
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
 }
 
 PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
@@ -144,6 +174,11 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             Vec3Control("Rotation", transform.Rotation, 0.5);
             Vec3Control("Scale", transform.Scale, 0.03);
         }
+    }
+
+    if (HasComponent<SceneCamera>(m_SelectedEntity)) {
+        ImGui::Spacing();
+        CameraDetails();
     }
 
     if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
@@ -375,6 +410,11 @@ void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& 
 
     ImGui::Columns(1);
     ImGui::PopID();
+}
+
+void PropertiesPanel::CameraDetails() {
+    IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(m_SelectedEntity);
+    CameraControllerDropTargetProperty("Default camera controller", sceneCamera, m_DroppedEntity, m_ColumnWidth);
 }
 
 void PropertiesPanel::MeshRendererDetails(const Styles& styles) {

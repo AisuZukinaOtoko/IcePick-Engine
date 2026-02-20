@@ -28,6 +28,7 @@ private:
 	void EntityDropTargetProperty(const char* label, entt::entity& entityProperty);
 
 	// Component Properties
+	void CameraDetails();
 	void MeshRendererDetails(const Styles& styles);
 	void ScriptComponentDetails(const Styles& styles);
 	void CameraControllerDetails();

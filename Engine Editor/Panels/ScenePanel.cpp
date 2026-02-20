@@ -3,18 +3,16 @@
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
 	switch (tag.Type) {
-	case IcePick::TagComponent::EntityType::CAMERA_CONTROLLER:
+	case IcePick::TagComponent::EntityType::CAMERA:
 		return ICON_FA_CAMERA;
-		break;
+	case IcePick::TagComponent::EntityType::CAMERA_CONTROLLER:
+		return ICON_FA_VIDEO_CAMERA;
 	case IcePick::TagComponent::EntityType::POINT_LIGHT:
 		return ICON_FA_LIGHTBULB_O;
-		break;
 	case IcePick::TagComponent::EntityType::DIRECTIONAL_LIGHT:
 		return ICON_FA_SUN_O;
-		break;
 	case IcePick::TagComponent::EntityType::TERRAIN:
 		return ICON_FA_MAP;
-		break;
 	default:
 		return ICON_FA_CUBE;
 	}
@@ -43,16 +41,12 @@ void ScenePanel::OnUpdate(DeltaTime dt) {
 void ScenePanel::ShowSceneHierarchy() {
 	ImGui::Begin(m_Title);
 
-	/*if (ImGui::Button(ICON_FA_PLUS " Add")) {
-		IcePick::NewEntity();
-	}*/
-
 	if (ImGui::BeginMenu(ICON_FA_PLUS " Add")) {
 		if (ImGui::MenuItem(ICON_FA_CUBE " Entity")) {
 			IcePick::NewEntity();
 		}
 
-		if (ImGui::MenuItem(ICON_FA_CAMERA " Camera controller")) {
+		if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera controller")) {
 			IcePick::NewCameraController();
 		}
 
@@ -102,9 +96,14 @@ void ScenePanel::ShowSceneHierarchy() {
 			ImGui::OpenPopup("Options");
 		}
 
-		if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 			m_DraggedEntity = entity;
-			ImGui::SetDragDropPayload("SCENE_ENTITY", nullptr, 0, ImGuiCond_Once);
+			std::string sceneObjectType = "ERROR";
+			if (entityTag.Type == IcePick::TagComponent::EntityType::ENTITY)
+				sceneObjectType = "SCENE_ENTITY";
+			else if (entityTag.Type == IcePick::TagComponent::EntityType::CAMERA_CONTROLLER)
+				sceneObjectType = "CAMERA_CONTROLLER";
+			ImGui::SetDragDropPayload(sceneObjectType.c_str(), nullptr, 0, ImGuiCond_Once);
 			ImGui::Text("%s %s", icon, entityTag.value.c_str());
 			ImGui::EndDragDropSource();
 		}

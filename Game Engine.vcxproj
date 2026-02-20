@@ -186,7 +186,7 @@
     <ClCompile Include="src\Render Systems\Renderer.cpp" />
     <ClCompile Include="src\Render Systems\ShaderProgram.cpp" />
     <ClCompile Include="src\Render Systems\Vertex.cpp" />
-    <ClCompile Include="src\Scene Systems\Camera.cpp" />
+    <ClCompile Include="src\Scene Systems\SceneCamera.cpp" />
     <ClCompile Include="src\Scene Systems\Scene.cpp" />
     <ClCompile Include="src\Render Systems\Texture.cpp" />
     <ClCompile Include="src\Scene Systems\SceneRegistry.cpp" />
@@ -420,7 +420,7 @@
     <ClInclude Include="src\Render Systems\FrameBuffer.h" />
     <ClInclude Include="src\Render Systems\IndexBuffer.h" />
     <ClInclude Include="src\Render Systems\Renderer.h" />
-    <ClInclude Include="src\Scene Systems\Camera.h" />
+    <ClInclude Include="src\Scene Systems\SceneCamera.h" />
     <ClInclude Include="src\Scene Systems\Scene.h" />
     <ClInclude Include="src\Render Systems\Texture.h" />
     <ClInclude Include="src\Utilities\Assert.h" />

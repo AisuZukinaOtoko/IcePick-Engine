@@ -16,6 +16,7 @@ void IcePick::EngineLayer::OnAttach() {
 	m_FrameBuffer.Init(windowSize.x, windowSize.y, FrameBuffer::DEFERRED);
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
+	m_SceneCameraId = AddSceneCamera();
 	m_CurrentScene.OnBegin();
 }
 

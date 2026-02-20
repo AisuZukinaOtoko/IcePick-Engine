@@ -41,5 +41,6 @@ namespace IcePick {
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 		Scene m_CurrentScene;
+		entt::entity m_SceneCameraId = entt::null;
 	};
 }
