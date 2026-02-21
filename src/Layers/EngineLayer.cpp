@@ -7,6 +7,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 #include "../Utilities/DebugStatistics.h"
+#include "../Scene Systems/SceneCamera.h"
 
 
 static IcePick::Input gameInput;
@@ -63,6 +64,10 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 	}
 
 	m_CurrentScene.OnUpdate(dt);
+	SceneCamera& sceneCamera = GetComponent<SceneCamera>(m_SceneCameraId);
+	sceneCamera.OnUpdate(dt);
+	IcePickRenderer::SetRenderCameraWorldPosition(sceneCamera.cameraPosition);
+	IcePickRenderer::SetRenderViewProjectionMatrix(sceneCamera.GetViewProjectionMatrix());
 }
 
 void IcePick::EngineLayer::OnNewFrame() {

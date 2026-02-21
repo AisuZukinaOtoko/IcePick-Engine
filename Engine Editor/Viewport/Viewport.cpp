@@ -5,6 +5,7 @@
 #include "imgui-docking/imgui_impl_glfw.h"
 #include "imgui-docking/imgui_impl_opengl3.h"
 #include "../Scene Systems/SceneRegistry.h"
+#include "../Scene Systems/SceneCamera.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -47,6 +48,14 @@ void Viewport::OnUpdate(DeltaTime dt) {
 		m_LockCursorFirstFrame = false;
 	}
 
+	auto& activeSceneRegistry = IcePick::GetActiveSceneRegistry();
+	auto sceneCameraView = activeSceneRegistry.view<IcePick::SceneCamera>();
+
+	for (auto entity : sceneCameraView) {
+		IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(entity);
+		sceneCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
+	}
+
 	m_EditorCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
 	m_EditorCamera.yaw += mouseDelta.x * 0.2;
 	m_EditorCamera.pitch += mouseDelta.y * 0.152;
@@ -59,6 +68,11 @@ void Viewport::OnUpdate(DeltaTime dt) {
 void Viewport::OnViewportEvent(IcePick::Event& event) {
 	keyState.OnEvent(event);
 
+	if (m_GameIsFocused && keyState.IsKeyPressed(IcePick::IP_KEY_ESC)) {
+		IcePickRenderer::RequestCursorUnlock();
+		m_GameIsFocused = false;
+	}
+
 	if (m_SelectedEntity != entt::null) {
 		if (keyState.IsKeyPressed(IcePick::IP_KEY_1))
 			m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
@@ -70,6 +84,10 @@ void Viewport::OnViewportEvent(IcePick::Event& event) {
 
 	if (m_ViewportRightClicked) {
 		m_EditorCamera.OnKeyPress(event.action, event.code);
+	}
+
+	if (!m_GameIsFocused) {
+		event.flags |= IP_EVENT_HANDLED;
 	}
 }
 
@@ -86,6 +104,7 @@ void Viewport::Render(unsigned int renderTexture) {
 	m_WindowMousePosition = ImVec2(mousePos.x - m_WindowPosition.x, mousePos.y - m_WindowPosition.y);
 
 	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	
 	if (ImGui::BeginDragDropTarget()) {
 		if (ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
 			DropMaterialIntoViewport();
@@ -95,30 +114,37 @@ void Viewport::Render(unsigned int renderTexture) {
 
 	RenderViewportControls();
 
-	if (m_SelectedEntity != entt::null) {
+	if ((m_SelectedEntity != entt::null) && !m_GameIsPlaying) {
 		RenderEntityGizmos();
-	}	
-
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered() && !m_UsingGizmo) {
-		uint32_t pixelData[2] = { 0, 0 };
-		GetViewportDebugData(pixelData);
-		m_EntitySelected = true;
-		m_SelectedEntity = (entt::entity)pixelData[0];
 	}
 
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered()) {
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
+		if (m_GameIsPlaying && !m_GameIsFocused) {
+			IcePickRenderer::RequestCursorLock();
+			m_GameIsFocused = true;
+			IP_LOG("Press Esc to unlock the cursor.");
+		}
+
+		if (!m_GameIsPlaying && !m_UsingGizmo) {
+			uint32_t pixelData[2] = { 0, 0 };
+			GetViewportDebugData(pixelData);
+			m_EntitySelected = true;
+			m_SelectedEntity = (entt::entity)pixelData[0];
+		}
+	}
+
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && ImGui::IsWindowHovered() && !m_GameIsPlaying) {
 		IcePickRenderer::RequestCursorLock();
 		m_ViewportRightClicked = true;
 		m_LockCursorFirstFrame = true;
 	}
 
-	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && !m_GameIsPlaying) {
 		IcePickRenderer::RequestCursorUnlock();
 		m_ViewportRightClicked = false;
 		m_LockCursorFirstFrame = false;
 	}
 
-	//m_MouseDelta = (m_ViewportRightClicked) ? io.MouseDelta : ImVec2(0.0f, 0.0f);
 	ImGui::End();
 	ImGui::PopStyleVar();
 	IP_CORE_PROFILE_POP();
@@ -184,6 +210,7 @@ void Viewport::RenderViewportControls() {
 	case IcePick::RuntimeState::STOPPED:
 		if (ImGui::Button(ICON_FA_PLAY, buttonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::RUNNING);
+			m_GameIsPlaying = true;
 		}
 		break;
 
@@ -194,6 +221,7 @@ void Viewport::RenderViewportControls() {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 		if (ImGui::Button(ICON_FA_STOP, buttonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
+			m_GameIsPlaying = false;
 		}
 		ImGui::PopStyleColor();
 		break;

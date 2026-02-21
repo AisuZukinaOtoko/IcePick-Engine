@@ -34,6 +34,7 @@ private:
 	void CameraControllerDetails();
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
+	float m_ValueColumnWidth = 100.0f;
 
 	entt::entity m_DroppedEntity = entt::null;
 	entt::entity m_SelectedEntity = entt::null;

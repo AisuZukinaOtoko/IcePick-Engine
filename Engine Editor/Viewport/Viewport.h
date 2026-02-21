@@ -29,6 +29,9 @@ private:
 	const char* m_ID = "Viewport";
 	bool m_ViewportRightClicked = false;
 
+	bool m_GameIsPlaying = false;
+	bool m_GameIsFocused = false; // Do not process game events from the editor
+
 	// To disable mouse deltas for the first frame after locking the cursor.
 	// GLFW moves the cursor to the center of the screen, which messes with mouse deltas.
 	// As a result, the viewport camera will not move on the first frame

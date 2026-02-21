@@ -1,4 +1,5 @@
 #include "SceneCamera.h"
+#include "SceneRegistry.h"
 #include "../Vendor/glm/gtc/matrix_transform.hpp"
 
 namespace IcePick {
@@ -27,6 +28,14 @@ namespace IcePick {
 		direction.y = -sin(glm::radians(pitch));
 		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		cameraFront = glm::normalize(direction);
+
+		if (HasComponent<CameraControllerComponent>(m_CameraControllerId)) {
+			CameraControllerComponent& currentCameraController = GetComponent<CameraControllerComponent>(m_CameraControllerId);
+			if (currentCameraController.Mode == CameraControllerComponent::ControllerMode::FREE_LOOK && HasComponent<TransformComponent>(currentCameraController.LookAtTarget)) {
+				TransformComponent& lookAtTargetTransform = GetComponent<TransformComponent>(currentCameraController.LookAtTarget);
+				cameraFront = glm::normalize(lookAtTargetTransform.Position - cameraPosition);
+			}
+		}
 	}
 
 	void SceneCamera::SetNewCameraController(entt::entity cameraControllerId) {

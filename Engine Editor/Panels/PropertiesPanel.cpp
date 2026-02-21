@@ -70,13 +70,19 @@ PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
 
 void PropertiesPanel::PanelSetup() {
     ImVec2 availableSpace = ImGui::GetContentRegionAvail();
-    m_ColumnWidth = availableSpace.x / 3.0f;
+    const float labelsToValuesColumnRatio = 45.0f / 100.0f;
+    m_ColumnWidth = availableSpace.x * labelsToValuesColumnRatio;
+    m_ValueColumnWidth = availableSpace.x - m_ColumnWidth;
 }
 
 void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const float dragSpeed) {
+    float vecComponentSpace = m_ValueColumnWidth / 3.0f;
+    float labelToValueSpaceRatio = 26 / 100.0f;
+    float vecComponentLabelSpace = vecComponentSpace * labelToValueSpaceRatio;
+    float vecComponentValueSpace = vecComponentSpace * (1 - labelToValueSpaceRatio);
+
     ImGui::PushID(label);
 
-    // Styling
     ImGui::Columns(2);
     ImGui::SetColumnWidth(0, m_ColumnWidth);
     ImGui::Text(label);
@@ -89,37 +95,34 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const fl
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.3f, 0.1f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.2f, 0.0f, 1.0f));
 
-    ImGui::Button("X");
+    ImGui::Button("X", ImVec2(vecComponentLabelSpace, 0.0f));
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
-    ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
+    ImGui::SetNextItemWidth(vecComponentValueSpace);
     ImGui::DragFloat("##DragX", &values.x, dragSpeed, 0.0f, 0.0f, "%.2f");
-    ImGui::PopItemWidth();
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4f, 0.7f, 0.0f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.8f, 0.1f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.6f, 0.0f, 1.0f));
 
     ImGui::SameLine();
-    ImGui::Button("Y");
+    ImGui::Button("Y", ImVec2(vecComponentLabelSpace, 0.0f));
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
-    ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
+    ImGui::SetNextItemWidth(vecComponentValueSpace);
     ImGui::DragFloat("##DragY", &values.y, dragSpeed, 0.0f, 0.0f, "%.2f");
-    ImGui::PopItemWidth();
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.8f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2f, 0.3f, 0.9f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.2f, 0.7f, 1.0f));
 
     ImGui::SameLine();
-    ImGui::Button("Z");
+    ImGui::Button("Z", ImVec2(vecComponentLabelSpace, 0.0f));
     ImGui::PopStyleColor(3);
     ImGui::SameLine();
-    ImGui::PushItemWidth(m_ColumnWidth / 2.0f);
+    ImGui::SetNextItemWidth(vecComponentValueSpace);
     ImGui::DragFloat("##DragZ", &values.z, dragSpeed, 0.0f, 0.0f, "%.2f");
 
-    ImGui::PopItemWidth();
     ImGui::Columns(1);
     ImGui::PopStyleVar(2);
 
@@ -158,11 +161,9 @@ void PropertiesPanel::SetDropAssetPath(std::string filePath) {
 
 void PropertiesPanel::EntityProperties(const Styles& styles) {
     using namespace IcePick;
-    ImVec2 windowSize = ImGui::GetWindowSize();
 
     if (HasComponent<TagComponent>(m_SelectedEntity)) {
         TagComponent& tag = GetComponent<TagComponent>(m_SelectedEntity);
-        //TextProperty("Name", tag.value.c_str());
         InputTextProperty("Name", tag.value);
     }
 
