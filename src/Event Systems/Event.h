@@ -6,10 +6,10 @@ constexpr auto IP_EVENT_HANDLED = (0b1 << 3);
 
 namespace IcePick {
 	struct Event {
-		int action = 0;
-		int code = 0;
-		int mods = 0;
-		int data = 0;
-		unsigned int flags = 0;
+		int action = 0; // e.g press/release
+		int code = 0; // key/button/axis code
+		int mods = 0; // e.g shift/ctrl held
+		int data = 0; // e.g controller Id
+		unsigned int flags = 0; // keyboard/mouse/controller/flow flags
 	};
 }

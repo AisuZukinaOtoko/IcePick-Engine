@@ -113,6 +113,10 @@ namespace IcePickRenderer {
 		return MainTargetWindowSize;
 	}
 
+	bool IsCursorLocked() {
+		return (glfwGetInputMode(MainTargetWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED);
+	}
+
 	void RequestCursorLock() {
 		glfwSetInputMode(MainTargetWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}

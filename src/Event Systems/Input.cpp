@@ -76,7 +76,8 @@ void IcePick::Input::ProcessControllerEvent(Event& event) {
 
 bool IcePick::Input::IsControllerButtonPressed(ControllerID controllerId, ControllerButton button) {
 	IP_ASSERT(controllerId < IP_CONTROLLER_COUNT, "Invalid controller ID");
-	bool result = m_ControllerStates[controllerId].ControllerButtons[button].m_Value && !m_ControllerStates[controllerId].ControllerButtons[button].m_Checked;
+	IP_ASSERT(button < IP_CONTROLLER_BUTTON_COUNT, "Invalid controller button");
+	bool result = m_ControllerStates[(unsigned int)controllerId].ControllerButtons[(unsigned int)button].m_Value && !m_ControllerStates[(unsigned int)controllerId].ControllerButtons[(unsigned int)button].m_Checked;
 	m_ControllerStates[controllerId].ControllerButtons[button].m_Checked = true;
 	return result;
 }
@@ -90,9 +91,9 @@ bool IcePick::Input::IsControllerButtonReleased(ControllerID controllerId, Contr
 }
 
 float IcePick::Input::GetControllerTriggerValue(ControllerID controllerId, ControllerTrigger trigger) {
-	return 0.0f;
+	return IP_EventHandler.GetControllerAxis(controllerId, trigger);
 }
 
-void IcePick::Input::GetControllerAxisValues(ControllerID controllerId, ControllerAxis axis, float* x, float* y) {
-
+float IcePick::Input::GetControllerAxisValue(ControllerID controllerId, ControllerAxis axis) {
+	return IP_EventHandler.GetControllerAxis(controllerId, axis);
 }

@@ -80,7 +80,7 @@ namespace IcePick {
 		enum class ControllerMode {
 			NONE = 0,
 			FOLLOW,
-			FREE_LOOK,
+			THIRD_PERSON,
 			COUNT
 		} Mode;
 

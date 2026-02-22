@@ -53,7 +53,8 @@ namespace IcePick {
 	};
 
 	enum ControllerAxis {
-		IP_CONTROLLER_AXIS_LEFT = 0, IP_CONTROLLER_AXIS_RIGHT, IP_CONTROLLER_AXIS_COUNT
+		IP_CONTROLLER_AXIS_LEFT_X = IP_CONTROLLER_TRIGGER_COUNT, IP_CONTROLLER_AXIS_LEFT_Y, IP_CONTROLLER_AXIS_RIGHT_X,
+		IP_CONTROLLER_AXIS_RIGHT_Y, IP_CONTROLLER_AXIS_COUNT
 	};
 
 	struct ControllerInputState {
@@ -83,7 +84,7 @@ namespace IcePick {
 		bool IsControllerButtonReleased(ControllerID controllerId, ControllerButton button);
 
 		float GetControllerTriggerValue(ControllerID controllerId, ControllerTrigger trigger);
-		void GetControllerAxisValues(ControllerID controllerId, ControllerAxis axis, float* x, float* y);
+		float GetControllerAxisValue(ControllerID controllerId, ControllerAxis axis);
 	private:
 		void ProcessKeyBoardMouseEvent(Event& event);
 		void ProcessControllerEvent(Event& event);

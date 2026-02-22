@@ -25,22 +25,6 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 	if (m_CurrentRuntimeState != RuntimeState::RUNNING) // Engine is either paused or stopped. Editor only
 		return;
 
-	if (gameInput.IsKeyPressed(IP_KEY_T)) {
-		IP_LOG("Game layer pressed T.");
-	}
-
-	if (gameInput.IsMouseButtonPressed(IP_MOUSE_MIDDLE)) {
-		IP_LOG("Middle mouse button pressed.");
-	}
-
-	if (gameInput.IsControllerButtonPressed(IP_CONTROLLER_1, IP_CONTROLLER_BUTTON_SQUARE)) {
-		IP_LOG("Controller 1 pressed square.");
-	}
-
-	if (gameInput.IsControllerButtonHeld(IP_CONTROLLER_1, IP_CONTROLLER_DPAD_LEFT)) {
-		IP_LOG("Controller 1 is holding Dpad Up");
-	}
-
 	auto& ActiveSceneRegistry = GetActiveSceneRegistry();
 	auto scriptedEntitiesView = ActiveSceneRegistry.view<ScriptComponent>();
 
@@ -65,7 +49,7 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 
 	m_CurrentScene.OnUpdate(dt);
 	SceneCamera& sceneCamera = GetComponent<SceneCamera>(m_SceneCameraId);
-	sceneCamera.OnUpdate(dt);
+	sceneCamera.OnUpdate(gameInput, dt);
 	IcePickRenderer::SetRenderCameraWorldPosition(sceneCamera.cameraPosition);
 	IcePickRenderer::SetRenderViewProjectionMatrix(sceneCamera.GetViewProjectionMatrix());
 }

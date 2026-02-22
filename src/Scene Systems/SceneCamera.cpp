@@ -1,3 +1,4 @@
+#include "../Render Systems/Renderer.h"
 #include "SceneCamera.h"
 #include "SceneRegistry.h"
 #include "../Vendor/glm/gtc/matrix_transform.hpp"
@@ -18,7 +19,7 @@ namespace IcePick {
 		return glm::perspective(cameraFOV, aspectRatio, cameraNearClip, cameraFarClip) * glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 	}
 
-	void SceneCamera::OnUpdate(DeltaTime dt) {
+	void SceneCamera::OnUpdate(Input& inputState, DeltaTime dt) {
 		if (pitch > 89.0f)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
@@ -31,9 +32,8 @@ namespace IcePick {
 
 		if (HasComponent<CameraControllerComponent>(m_CameraControllerId)) {
 			CameraControllerComponent& currentCameraController = GetComponent<CameraControllerComponent>(m_CameraControllerId);
-			if (currentCameraController.Mode == CameraControllerComponent::ControllerMode::FREE_LOOK && HasComponent<TransformComponent>(currentCameraController.LookAtTarget)) {
-				TransformComponent& lookAtTargetTransform = GetComponent<TransformComponent>(currentCameraController.LookAtTarget);
-				cameraFront = glm::normalize(lookAtTargetTransform.Position - cameraPosition);
+			if (currentCameraController.Mode == CameraControllerComponent::ControllerMode::THIRD_PERSON) {
+				ThirdPersonCameraControllerUpdate(inputState, currentCameraController, dt);
 			}
 		}
 	}
@@ -44,6 +44,35 @@ namespace IcePick {
 
 	entt::entity SceneCamera::GetCameraControllerId() {
 		return m_CameraControllerId;
+	}
+
+	void SceneCamera::ThirdPersonCameraControllerUpdate(Input& inputState, CameraControllerComponent& cameraController, DeltaTime dt) {
+		if (!HasComponent<TransformComponent>(cameraController.LookAtTarget)) {
+			return;
+		}
+
+		TransformComponent& lookAtTargetTransform = GetComponent<TransformComponent>(cameraController.LookAtTarget);
+
+		glm::vec2 mouseDelta = glm::vec2(0.0f);
+		if (IcePickRenderer::IsCursorLocked()) {
+			mouseDelta = IcePickRenderer::GetMouseDelta();
+		}
+
+		float mouseSensitivity = 0.01f;
+		float viewRadius = 5.0f;
+
+		cameraController.Yaw -= mouseDelta.x * mouseSensitivity;
+		cameraController.Pitch += mouseDelta.y * mouseSensitivity;
+		cameraController.Pitch = glm::clamp(cameraController.Pitch, -1.5f, 1.5f);
+
+		glm::vec3& position = cameraController.Position;
+		position.x = viewRadius * cos(cameraController.Pitch) * sin(cameraController.Yaw);
+		position.y = viewRadius * sin(cameraController.Pitch);
+		position.z = viewRadius * cos(cameraController.Pitch) * cos(cameraController.Yaw);
+		position += lookAtTargetTransform.Position;
+
+		cameraPosition = cameraController.Position;
+		cameraFront = glm::normalize(lookAtTargetTransform.Position - cameraPosition);
 	}
 
 }

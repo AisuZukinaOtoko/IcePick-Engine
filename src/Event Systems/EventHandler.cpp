@@ -8,6 +8,7 @@
 #include <fstream>
 
 static std::vector<IcePick::ControllerButton> ControllerButtonMap;
+static std::vector<unsigned int> ControllerAxisMap;
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	IcePick::Event newEvent = {action, button, mods, 0, IP_MOUSE_EVENT};
@@ -24,6 +25,7 @@ static void joystick_callback(int joystickId, int eventCode) {
 	IcePick::IP_EventHandler.OnEvent(newEvent);
 	if (eventCode == IP_CONNECT) {
 		IP_LOG("Controller connected. Not yet supported.", IP_WARN_LOG);
+		IP_LOG(std::to_string(joystickId), IP_WARN_LOG);
 	}
 	else if (eventCode == IP_DISCONNECT) {
 		IP_LOG("Controller disconnected.", IP_WARN_LOG);
@@ -52,7 +54,7 @@ bool IcePick::EventHandler::InitForController() {
 
 	glfwUpdateGamepadMappings(fileString.c_str());
 
-	const unsigned int buttonMapSize = 15;
+	const unsigned int buttonMapSize = IP_CONTROLLER_BUTTON_COUNT;
 	ControllerButtonMap.reserve(buttonMapSize);
 	for (int i = 0; i < buttonMapSize; i++) {
 		ControllerButtonMap.push_back(IP_CONTROLLER_BUTTON_CROSS);
@@ -73,6 +75,19 @@ bool IcePick::EventHandler::InitForController() {
 	ControllerButtonMap[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT] = IP_CONTROLLER_DPAD_RIGHT;
 	ControllerButtonMap[GLFW_GAMEPAD_BUTTON_DPAD_DOWN] = IP_CONTROLLER_DPAD_DOWN;
 	ControllerButtonMap[GLFW_GAMEPAD_BUTTON_DPAD_LEFT] = IP_CONTROLLER_DPAD_LEFT;
+
+	const unsigned int controllerAxisMapSize = IP_CONTROLLER_AXIS_COUNT;
+	ControllerAxisMap.reserve(controllerAxisMapSize);
+	for (int i = 0; i < controllerAxisMapSize; i++) {
+		ControllerAxisMap.push_back(IP_CONTROLLER_AXIS_LEFT_X);
+	}
+	ControllerAxisMap[IP_CONTROLLER_TRIGGER_LEFT] = GLFW_GAMEPAD_AXIS_LEFT_TRIGGER;
+	ControllerAxisMap[IP_CONTROLLER_TRIGGER_RIGHT] = GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER;
+	ControllerAxisMap[IP_CONTROLLER_AXIS_LEFT_X] = GLFW_GAMEPAD_AXIS_LEFT_X;
+	ControllerAxisMap[IP_CONTROLLER_AXIS_LEFT_Y] = GLFW_GAMEPAD_AXIS_LEFT_Y;
+	ControllerAxisMap[IP_CONTROLLER_AXIS_RIGHT_X] = GLFW_GAMEPAD_AXIS_RIGHT_X;
+	ControllerAxisMap[IP_CONTROLLER_AXIS_RIGHT_Y] = GLFW_GAMEPAD_AXIS_RIGHT_Y;
+
 	return true;
 }
 
@@ -104,16 +119,10 @@ void IcePick::EventHandler::NewFrame() {
 			const unsigned int axisCount = 6;
 			for (unsigned int i = 0; i < axisCount; i++) {
 				m_ControllerStates[joystickId].axes[i] = state.axes[i];
-				IP_CORE_PROFILE_LOG("Some axis", state.axes[i]);
-				IP_CORE_PROFILE_POP();
 			}
-			
 
-			IP_CORE_PROFILE_LOG("Dpad Up", state.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP]);
-			IP_CORE_PROFILE_POP();
-
-			const unsigned int buttonCount = 15;
-			for (unsigned int i = 0; i < axisCount; i++) {
+			const unsigned int buttonCount = IP_CONTROLLER_BUTTON_COUNT;
+			for (unsigned int i = 0; i < buttonCount; i++) {
 				unsigned int previousFrameButtonState = m_ControllerStates[joystickId].buttons[i];
 				unsigned int currentFrameButtonState = state.buttons[i];
 
@@ -126,4 +135,8 @@ void IcePick::EventHandler::NewFrame() {
 			}
 		}
 	}
+}
+
+float IcePick::EventHandler::GetControllerAxis(unsigned int controllerId, unsigned int axisId) {
+	return m_ControllerStates[controllerId].axes[ControllerAxisMap[axisId]];
 }

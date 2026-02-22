@@ -17,6 +17,7 @@ namespace IcePick {
 		glm::vec2 GetCursorPos();
 		void OnEvent(Event& event);
 		void NewFrame();
+		float GetControllerAxis(unsigned int controllerId, unsigned int axisId);
 	private:
 		static constexpr unsigned int m_MaxControllerCount = 4;
 		ControllerState m_ControllerStates[m_MaxControllerCount];

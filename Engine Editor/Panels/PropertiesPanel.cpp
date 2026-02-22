@@ -15,8 +15,8 @@ static const char* CameraControllerModeToString(IcePick::CameraControllerCompone
         return "None";
     case IcePick::CameraControllerComponent::ControllerMode::FOLLOW:
         return "Follow";
-    case IcePick::CameraControllerComponent::ControllerMode::FREE_LOOK:
-        return "Free look";
+    case IcePick::CameraControllerComponent::ControllerMode::THIRD_PERSON:
+        return "Third Person Camera";
     default:
         return "Error";
     }
