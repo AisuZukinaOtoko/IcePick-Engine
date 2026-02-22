@@ -8,8 +8,8 @@ namespace IcePick {
 		bool m_Checked = false;
 	};
 
-	struct Trigger {
-		float m_Value;
+	enum InputPeripheral {
+		IP_KEYBOARD_MOUSE, IP_CONTROLLER, IP_PERIPHERAL_COUNT
 	};
 
 	enum InputKey {
@@ -85,9 +85,15 @@ namespace IcePick {
 
 		float GetControllerTriggerValue(ControllerID controllerId, ControllerTrigger trigger);
 		float GetControllerAxisValue(ControllerID controllerId, ControllerAxis axis);
+
+		glm::vec2 GetLookActionAxes();
+		glm::vec2 GetWalkActionAxes();
 	private:
 		void ProcessKeyBoardMouseEvent(Event& event);
 		void ProcessControllerEvent(Event& event);
+		InputPeripheral m_CurrentInputType = InputPeripheral::IP_KEYBOARD_MOUSE;
+		ControllerID m_CurrentControllerId = ControllerID::IP_CONTROLLER_1;
+
 		const int m_EventTypeCount = 350;
 		Button m_KeysAndButtons[350];
 		ControllerInputState m_ControllerStates[IP_CONTROLLER_COUNT];

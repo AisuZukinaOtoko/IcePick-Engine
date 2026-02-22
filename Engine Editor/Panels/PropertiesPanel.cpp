@@ -14,7 +14,7 @@ static const char* CameraControllerModeToString(IcePick::CameraControllerCompone
     case IcePick::CameraControllerComponent::ControllerMode::NONE:
         return "None";
     case IcePick::CameraControllerComponent::ControllerMode::FOLLOW:
-        return "Follow";
+        return "Follow (Not implemented)";
     case IcePick::CameraControllerComponent::ControllerMode::THIRD_PERSON:
         return "Third Person Camera";
     default:
@@ -555,39 +555,39 @@ void PropertiesPanel::CameraControllerDetails() {
     }
     ImGui::Columns(1);
 
-    ImGui::Spacing();
-    EntityDropTargetProperty("Follow Target", cameraController.FollowTarget);
+    //ImGui::Spacing();
+    //EntityDropTargetProperty("Follow Target", cameraController.FollowTarget);
 
     ImGui::Spacing();
     EntityDropTargetProperty("Look At Target", cameraController.LookAtTarget);
     
-    ImGui::SeparatorText("Interpolation");
+    //ImGui::SeparatorText("Interpolation");
 
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, m_ColumnWidth);
-    ImGui::Text("Interpolation Style");
-    ImGui::NextColumn();
-    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-    if (ImGui::BeginCombo("##InterpolationMode", CameraControllerInterpolationToString(cameraController.EnterInterpolation))) {
-        for (int i = 0; i < (int)CameraControllerComponent::Interpolation::COUNT; ++i) {
-            CameraControllerComponent::Interpolation value = static_cast<CameraControllerComponent::Interpolation>(i);
-            bool selected = (cameraController.EnterInterpolation == value);
+    //ImGui::Columns(2);
+    //ImGui::SetColumnWidth(0, m_ColumnWidth);
+    //ImGui::Text("Interpolation Style");
+    //ImGui::NextColumn();
+    //ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+    //if (ImGui::BeginCombo("##InterpolationMode", CameraControllerInterpolationToString(cameraController.EnterInterpolation))) {
+    //    for (int i = 0; i < (int)CameraControllerComponent::Interpolation::COUNT; ++i) {
+    //        CameraControllerComponent::Interpolation value = static_cast<CameraControllerComponent::Interpolation>(i);
+    //        bool selected = (cameraController.EnterInterpolation == value);
 
-            if (ImGui::Selectable(CameraControllerInterpolationToString(value), selected))
-                cameraController.EnterInterpolation = value;
+    //        if (ImGui::Selectable(CameraControllerInterpolationToString(value), selected))
+    //            cameraController.EnterInterpolation = value;
 
-            if (selected)
-                ImGui::SetItemDefaultFocus();
-        }
+    //        if (selected)
+    //            ImGui::SetItemDefaultFocus();
+    //    }
 
-        ImGui::EndCombo();
-    }
-    ImGui::Columns(1);
+    //    ImGui::EndCombo();
+    //}
+    //ImGui::Columns(1);
 
-    ImGui::Spacing();
-    FloatSlider("Duration", &cameraController.InterpolationDuration, 0.0f, 10.0f);
+    //ImGui::Spacing();
+    //FloatSlider("Duration", &cameraController.InterpolationDuration, 0.0f, 10.0f);
 
 
-    ImGui::SeparatorText("View Settings");
-    FloatSlider("FOV", &cameraController.FOV, 1.0f, 179.0f);
+    //ImGui::SeparatorText("View Settings");
+    //FloatSlider("FOV", &cameraController.FOV, 1.0f, 179.0f);
 }

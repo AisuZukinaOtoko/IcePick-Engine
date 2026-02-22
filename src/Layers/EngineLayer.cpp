@@ -1,7 +1,6 @@
 #include "../Render Systems/Renderer.h"
 #include "EngineLayer.h"
 #include "../LogSystem.h"
-#include "../Event Systems/Input.h"
 #include "EngineAPI.h"
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
@@ -10,7 +9,7 @@
 #include "../Scene Systems/SceneCamera.h"
 
 
-static IcePick::Input gameInput;
+IcePick::Input IcePick::EngineLayer::GameInput;
 
 void IcePick::EngineLayer::OnAttach() {
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
@@ -49,7 +48,7 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 
 	m_CurrentScene.OnUpdate(dt);
 	SceneCamera& sceneCamera = GetComponent<SceneCamera>(m_SceneCameraId);
-	sceneCamera.OnUpdate(gameInput, dt);
+	sceneCamera.OnUpdate(GameInput, dt);
 	IcePickRenderer::SetRenderCameraWorldPosition(sceneCamera.cameraPosition);
 	IcePickRenderer::SetRenderViewProjectionMatrix(sceneCamera.GetViewProjectionMatrix());
 }
@@ -61,11 +60,11 @@ void IcePick::EngineLayer::OnNewFrame() {
 void IcePick::EngineLayer::OnEvent(Event& event) {
 
 	if ((event.action == IP_PRESS) && (event.code == IP_KEY_S) && (event.mods & GLFW_MOD_SHIFT)) {
-		IP_LOG("Shift-S pressed.");
+		IP_LOG("Shift-S pressed. Does nothing tho :)");
 		event.flags |= IP_EVENT_HANDLED;
 	}
 
-	gameInput.OnEvent(event);
+	GameInput.OnEvent(event);
 }
 
 unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePath) {

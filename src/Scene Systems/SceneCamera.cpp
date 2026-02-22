@@ -53,16 +53,16 @@ namespace IcePick {
 
 		TransformComponent& lookAtTargetTransform = GetComponent<TransformComponent>(cameraController.LookAtTarget);
 
-		glm::vec2 mouseDelta = glm::vec2(0.0f);
+		glm::vec2 lookDelta = glm::vec2(0.0f);
 		if (IcePickRenderer::IsCursorLocked()) {
-			mouseDelta = IcePickRenderer::GetMouseDelta();
+			lookDelta = inputState.GetLookActionAxes();
 		}
 
 		float mouseSensitivity = 0.01f;
 		float viewRadius = 5.0f;
 
-		cameraController.Yaw -= mouseDelta.x * mouseSensitivity;
-		cameraController.Pitch += mouseDelta.y * mouseSensitivity;
+		cameraController.Yaw -= lookDelta.x * mouseSensitivity;
+		cameraController.Pitch += lookDelta.y * mouseSensitivity;
 		cameraController.Pitch = glm::clamp(cameraController.Pitch, -1.5f, 1.5f);
 
 		glm::vec3& position = cameraController.Position;

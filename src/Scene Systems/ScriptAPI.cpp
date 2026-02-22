@@ -1,5 +1,7 @@
+#include "../Layers/EngineLayer.h"
 #include "ScriptAPI.h"
 #include "SceneRegistry.h"
+#include "SceneCamera.h"
 
 namespace ScriptAPI {
 	glm::vec3& GetWorldPosition(entt::entity entityId) {
@@ -12,6 +14,22 @@ namespace ScriptAPI {
 
 	glm::vec3 GetWorldScale(entt::entity entityId) {
 		return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Scale;
+	}
+
+	glm::vec3 GetSceneCameraFront() {
+		auto& sceneRegistry = IcePick::GetActiveSceneRegistry();
+		auto sceneCameraView = sceneRegistry.view<IcePick::SceneCamera>();
+		entt::entity sceneCameraId = sceneCameraView.front();
+
+		if (sceneCameraId == entt::null)
+			return glm::vec3(0.0f);
+
+		IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(sceneCameraId);
+		return sceneCamera.cameraFront;
+	}
+
+	glm::vec2 GetWalkActionAxes() {
+		return IcePick::EngineLayer::GameInput.GetWalkActionAxes();
 	}
 
 	void SetWorldPosition(entt::entity entityId, glm::vec3& position) {

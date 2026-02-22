@@ -1,3 +1,4 @@
+#include "../Render Systems/Renderer.h"
 #include "Input.h"
 #include "EventHandler.h"
 #include "../Utilities/Assert.h"
@@ -5,9 +6,12 @@
 void IcePick::Input::OnEvent(Event& event) {
 	if (event.flags & (IP_KEYBOARD_EVENT | IP_MOUSE_EVENT)) {
 		ProcessKeyBoardMouseEvent(event);
+		m_CurrentInputType = InputPeripheral::IP_KEYBOARD_MOUSE;
 	}
 	else if (event.flags & IP_CONTROLLER_EVENT) {
 		ProcessControllerEvent(event);
+		m_CurrentInputType = InputPeripheral::IP_CONTROLLER;
+		m_CurrentControllerId = static_cast<ControllerID>(event.data);
 	}
 }
 
@@ -96,4 +100,37 @@ float IcePick::Input::GetControllerTriggerValue(ControllerID controllerId, Contr
 
 float IcePick::Input::GetControllerAxisValue(ControllerID controllerId, ControllerAxis axis) {
 	return IP_EventHandler.GetControllerAxis(controllerId, axis);
+}
+
+glm::vec2 IcePick::Input::GetLookActionAxes() {
+	glm::vec2 lookAxes{ 0.0f, 0.0f };
+	if (m_CurrentInputType == InputPeripheral::IP_KEYBOARD_MOUSE) {
+		lookAxes = IcePickRenderer::GetMouseDelta();
+	}
+	else if (m_CurrentInputType == InputPeripheral::IP_CONTROLLER) {
+		float controllerSensitivityMultiplier = 2.0f;
+		lookAxes.x = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_X);
+		lookAxes.y = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_Y);
+		lookAxes *= controllerSensitivityMultiplier;
+	}
+
+	return lookAxes;
+}
+
+glm::vec2 IcePick::Input::GetWalkActionAxes() {
+	glm::vec2 walkActionAxes{ 0.0f, 0.0f };
+
+	if (m_CurrentInputType == InputPeripheral::IP_KEYBOARD_MOUSE) {
+		bool wPressed = IsKeyHeld(IP_KEY_W);
+		bool aPressed = IsKeyHeld(IP_KEY_A);
+		bool sPressed = IsKeyHeld(IP_KEY_S);
+		bool dPressed = IsKeyHeld(IP_KEY_D);
+		walkActionAxes = { (float)wPressed - (float)sPressed, (float)dPressed - (float)aPressed };
+	}
+	else if (m_CurrentInputType == InputPeripheral::IP_CONTROLLER) {
+		walkActionAxes.x = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_LEFT_X);
+		walkActionAxes.y = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_LEFT_Y);
+	}
+
+	return walkActionAxes;
 }

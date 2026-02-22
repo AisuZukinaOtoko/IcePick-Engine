@@ -116,7 +116,7 @@ void IcePick::EventHandler::NewFrame() {
 
 		GLFWgamepadstate state;
 		if (glfwGetGamepadState(joystickId, &state)) {
-			const unsigned int axisCount = 6;
+			const unsigned int axisCount = IP_CONTROLLER_AXIS_COUNT;
 			for (unsigned int i = 0; i < axisCount; i++) {
 				m_ControllerStates[joystickId].axes[i] = state.axes[i];
 			}

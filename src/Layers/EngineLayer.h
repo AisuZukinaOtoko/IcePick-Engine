@@ -1,6 +1,7 @@
 #pragma once
 #include "../Render Systems/Renderer.h"
 #include "Layer.h"
+#include "../Event Systems/Input.h"
 #include "../Render Systems/FrameBuffer.h"
 #include "../Scene Systems/Scene.h"
 #include "../Scene Systems/SceneRegistry.h"
@@ -18,6 +19,7 @@ namespace IcePick {
 		void OnUpdate(DeltaTime dt) override;
 		void OnDetach() override;
 
+		static Input GameInput;
 		void OnEvent(Event& event) override;
 		void OnNewFrame() override;
 		void OnRender(RenderPayload& payload) override;

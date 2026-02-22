@@ -5,9 +5,18 @@ function OnCreate(self)
 end
 
 function OnUpdate(self, dt)
-	self.temp = self.temp + (0.3 * dt);
+	local cameraFront = GetSceneCameraFrontVector();
+
+	-- Using Action axes instead of buttons/direct peripherals
+	-- This allows the engine to choose which input to choose.
+	-- It handles Keyboard-Mouse, Controllers
+	local walkAxes = GetWalkActionAxes();
+
+	-- NB This math is wrong!!
+	local walkingDirection = vec3.new(cameraFront.x * walkAxes.x, 0.0, cameraFront.z * walkAxes.y); --TODO: Add normalize function for vectors
+
 	local position = GetWorldPosition(self.Id);
-	position.y = math.sin(math.rad(self.temp)); -- set current entity pos to temp variable in degrees
+	SetWorldPosition(self.Id, position + walkingDirection);
 end
 
 function OnDestroy(self)
