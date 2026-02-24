@@ -1,4 +1,5 @@
 #include "Serialize.h"
+#include "../Material Editor/Nodes/Utils.h"
 #include "../Material Editor/Nodes/Nodes.h"
 #include "../../src/Utilities/JsonUtils.h"
 #include "../../src/LogSystem.h"
@@ -38,6 +39,7 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 			nlohmann::json inputPinJsonObject;
 			inputPinJsonObject["connectedNodeId"] = static_cast<uint64_t>(nodeInputPin.ConnectedNodeId);
 			inputPinJsonObject["connectedPinIndex"] = nodeInputPin.ConnectedPinIndex;
+			inputPinJsonObject["connectedPinType"] = GetPinTypeString(nodeInputPin.ConnectedPinType);
 			inputPinsArrayJsonObject.push_back(inputPinJsonObject);
 		}
 		nodeJsonObject["inputPins"] = inputPinsArrayJsonObject;
@@ -99,6 +101,24 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	if (nodeType == "uv") {
 		return std::make_shared<UVNode>();
 	}
+	else if (nodeType == "add") {
+		return std::make_shared<AddNode>();
+	}
+	else if (nodeType == "subtract") {
+		return std::make_shared<SubtractNode>();
+	}
+	else if (nodeType == "multiply") {
+		return std::make_shared<MultiplyNode>();
+	}
+	else if (nodeType == "divide") {
+		return std::make_shared<DivideNode>();
+	}
+	else if (nodeType == "decimal") {
+		return std::make_shared<DecimalNode>();
+	}
+	else if (nodeType == "vec2") {
+		return std::make_shared<Vector2Node>();
+	}
 	else if (nodeType == "vec3") {
 		return std::make_shared<Vector3Node>();
 	}
@@ -157,9 +177,11 @@ Graph LoadMaterialBaseEditorData(std::filesystem::path assetPath, IcePick::Shade
 			for (auto& inputPin : inputPinsArrayJson) {
 				IcePick::UUID connectedNodeId = JsonUtils::GetUint64(inputPin, "connectedNodeId");
 				unsigned int connectedPinIndex = inputPin.value("connectedPinIndex", 0);
+				std::string connectedPinType = inputPin.value("connectedPinType", "any");
 
 				node->InputPins[inputPinIndex].ConnectedNodeId = connectedNodeId;
 				node->InputPins[inputPinIndex].ConnectedPinIndex = connectedPinIndex;
+				node->InputPins[inputPinIndex].ConnectedPinType = GetPinTypeFromString(connectedPinType);
 				inputPinIndex++;
 			}
 
@@ -207,7 +229,7 @@ end
 }
 
 void OpenScriptEditor(const std::filesystem::path& scriptPath) {
-	std::string editScriptCommand = "code " + scriptPath.string();
+	std::string editScriptCommand = "code \"" + scriptPath.string() + "\"";
 	int result = std::system(editScriptCommand.c_str());
 	if (result != 0)
 		IP_LOG("Failed to open Visual Studio Code.", IP_ERROR_LOG);

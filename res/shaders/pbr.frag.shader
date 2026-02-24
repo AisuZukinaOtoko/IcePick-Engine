@@ -41,7 +41,8 @@ const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f);
 void main() {
     vec4 OutputColour = vec4(0.0f);
 
-    vec3 L = normalize(tempLightPosition - v_Pos);
+    vec3 L = normalize(tempLightPosition - vec3(0.0f));
+    //vec3 L = normalize(tempLightPosition - v_Pos);
     vec3 R = normalize(reflect(-L, normalize(v_Normal)));
     vec3 V = normalize(u_CameraPosition - v_Pos);
 
@@ -56,7 +57,7 @@ void main() {
         OutputColour += vec4(diffuseColour.rgb * tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 1.0f);
     }
 
-    OutColour = OutputColour;
+    //OutColour = vec4(vec3(1.0f) * noise3(v_TexCoord.x), 1.0f);
     OutColour = vec4(PBRNeutralToneMapper(OutputColour.rgb), OutputColour.a);
     OutNormal = vec4(v_Normal, 1.0f);
 #ifdef VIEW_PICKING

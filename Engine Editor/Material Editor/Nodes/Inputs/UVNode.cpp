@@ -2,6 +2,7 @@
 
 UVNode::UVNode() {
 	OutputPins.emplace_back(Pin::VEC2, "UV", "");
+	NodeName = "Model UV";
 	m_NodeType = "uv";
 }
 

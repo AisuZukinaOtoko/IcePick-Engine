@@ -18,7 +18,9 @@ namespace IcePick {
 		m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
 		m_LuaState.set_function("SetWorldScale", ScriptAPI::SetWorldScale);
 
-		m_LuaState.set_function("GetSceneCameraFrontVector", ScriptAPI::GetSceneCameraFront);
+		m_LuaState.set_function("GetSceneCameraFrontVector", ScriptAPI::GetSceneCameraFrontVector);
+		m_LuaState.set_function("GetSceneCameraRightVector", ScriptAPI::GetSceneCameraRightVector);
+
 		m_LuaState.set_function("GetWalkActionAxes", ScriptAPI::GetWalkActionAxes);
 
 		m_LuaState.new_usertype<glm::vec3>(
@@ -28,7 +30,8 @@ namespace IcePick {
 			"y", &glm::vec3::y,
 			"z", &glm::vec3::z,
 
-			sol::meta_function::addition, sol::overload([](const glm::vec3& v1, const glm::vec3& v2) { return v1 + v2; })
+			sol::meta_function::addition, sol::overload([](const glm::vec3& v1, const glm::vec3& v2) { return v1 + v2; }),
+			sol::meta_function::multiplication, sol::overload([](const glm::vec3& v1, const float& v2) { return v1 * v2; })
 			);
 
 		m_LuaState.new_usertype<glm::vec2>(
@@ -37,7 +40,8 @@ namespace IcePick {
 			"x", &glm::vec2::x,
 			"y", &glm::vec2::y,
 
-			sol::meta_function::addition, sol::overload([](const glm::vec2& v1, const glm::vec2& v2) { return v1 + v2; })
+			sol::meta_function::addition, sol::overload([](const glm::vec2& v1, const glm::vec2& v2) { return v1 + v2; }),
+			sol::meta_function::multiplication, sol::overload([](const glm::vec2& v1, const float& v2) { return v1 * v2; })
 			);
 	}
 

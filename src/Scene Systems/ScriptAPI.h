@@ -8,7 +8,8 @@ namespace ScriptAPI {
 	glm::vec3 GetWorldRotation(entt::entity entityId);
 	glm::vec3 GetWorldScale(entt::entity entityId);
 
-	glm::vec3 GetSceneCameraFront();
+	glm::vec3 GetSceneCameraFrontVector();
+	glm::vec3 GetSceneCameraRightVector();
 
 	glm::vec2 GetWalkActionAxes();
 

@@ -1,9 +1,9 @@
 #pragma once
 #include "../NodeBase.h"
 
-class Vector4Node : public Node {
+class DivideNode : public Node {
 public:
-	Vector4Node();
+	DivideNode();
 
 	void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) override;
 	void ParseNodeLogic(std::stringstream& ss) override;

@@ -3,7 +3,7 @@
 TextureNode::TextureNode(IcePick::UUID textureId) {
 	m_TextureId = textureId;
 	InputPins.emplace_back(Pin::VEC2, "UV");
-	OutputPins.emplace_back(Pin::VEC3, "RGBA", ".rgba");
+	OutputPins.emplace_back(Pin::VEC4, "RGBA", ".rgba");
 	OutputPins.emplace_back(Pin::FLOAT32, "R", ".r");
 	OutputPins.emplace_back(Pin::FLOAT32, "G", ".g");
 	OutputPins.emplace_back(Pin::FLOAT32, "B", ".b");
@@ -64,6 +64,11 @@ void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 
 void TextureNode::ParseNodeLogic(std::stringstream& ss) {
 
+}
+
+bool TextureNode::NodeStateValid() {
+	bool pinIsTypeVec2 = (InputPins[0].ConnectedPinType == Pin::PinType::VEC2);
+	return pinIsTypeVec2;
 }
 
 std::string TextureNode::GetPinOutput(unsigned int outputPinIndex) {

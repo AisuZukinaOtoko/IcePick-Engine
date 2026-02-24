@@ -9,7 +9,7 @@
 
 namespace Pin {
 	enum PinType {
-		VEC2, UVEC2,
+		ANY, BOOL, VEC2, UVEC2,
 		FLOAT32, VEC3, VEC4,
 		UINT8, UVEC3, UVEC4,
 		PIN_TYPE_COUNT
@@ -29,6 +29,7 @@ struct InputPin {
 	std::string ShaderIdentifier;
 	IcePick::UUID ConnectedNodeId = IcePick::UUID::Unitialised();
 	unsigned int ConnectedPinIndex = 0;
+	Pin::PinType ConnectedPinType = Pin::PinType::ANY;
 };
 
 struct OutputPin {
@@ -69,6 +70,7 @@ public:
 	virtual void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {}
 	virtual void ParseNodeLogic(std::stringstream& ss) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }
+	virtual bool NodeStateValid() { return true; }
 	void Unitialise();
 	std::string GetNodeType() { return m_NodeType; }
 	ImVec2 CanvasPosition;

@@ -16,7 +16,7 @@ namespace ScriptAPI {
 		return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Scale;
 	}
 
-	glm::vec3 GetSceneCameraFront() {
+	glm::vec3 GetSceneCameraFrontVector() {
 		auto& sceneRegistry = IcePick::GetActiveSceneRegistry();
 		auto sceneCameraView = sceneRegistry.view<IcePick::SceneCamera>();
 		entt::entity sceneCameraId = sceneCameraView.front();
@@ -26,6 +26,19 @@ namespace ScriptAPI {
 
 		IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(sceneCameraId);
 		return sceneCamera.cameraFront;
+	}
+
+	glm::vec3 GetSceneCameraRightVector() {
+		auto& sceneRegistry = IcePick::GetActiveSceneRegistry();
+		auto sceneCameraView = sceneRegistry.view<IcePick::SceneCamera>();
+		entt::entity sceneCameraId = sceneCameraView.front();
+
+		if (sceneCameraId == entt::null)
+			return glm::vec3(0.0f);
+
+		IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(sceneCameraId);
+		glm::vec3 cameraRight = glm::cross(sceneCamera.cameraFront, sceneCamera.cameraUp);
+		return cameraRight;
 	}
 
 	glm::vec2 GetWalkActionAxes() {

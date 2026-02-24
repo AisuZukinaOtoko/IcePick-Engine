@@ -138,6 +138,8 @@ void AssetBrowser::Render() {
                 icon = (void*)m_EngineAPI.GetTextureRenderId(textureId);
             }
             else if (extension == ".ipmtb") {
+                std::filesystem::path fullAssetPath = std::filesystem::canonical(file.path());
+                m_EngineAPI.LoadMaterialBaseFromAsset(file.path());
                 assetType = "MATERIAL_BASE_ASSET";                
             }
             else if (extension == ".ipmti") {

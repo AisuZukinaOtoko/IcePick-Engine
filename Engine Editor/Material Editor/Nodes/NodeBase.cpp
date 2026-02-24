@@ -4,6 +4,7 @@
 static std::string pinDefaults[Pin::PIN_TYPE_COUNT];
 
 void Pin::InitPins() {
+	pinDefaults[ANY] = "missing_value";
 	pinDefaults[VEC2] = "vec2(0.0f)";
 	pinDefaults[UVEC2] = "uvec2(0)";
 	pinDefaults[FLOAT32] = "0.0f";
@@ -22,6 +23,7 @@ std::string Pin::GetPinDefault(PinType type) {
 void InputPin::DeleteConnection() {
 	ConnectedNodeId = IcePick::UUID::Unitialised();
 	ConnectedPinIndex = 0;
+	ConnectedPinType = Pin::PinType::ANY;
 }
 
 void OutputPin::DeleteConnection(IcePick::UUID connectedNode, unsigned int pinIndex) {

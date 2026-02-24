@@ -6,6 +6,7 @@ BSDFNode::BSDFNode() {
 	//InputPins.emplace_back(Pin::FLOAT32, "Roughness");
 	//InputPins.emplace_back(Pin::FLOAT32, "Metallic");
 	//InputPins.emplace_back(Pin::FLOAT32, "Emissive");
+	NodeName = "Output";
 	m_NodeType = "bsdf";
 }
 
@@ -21,6 +22,11 @@ void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMate
 
 void BSDFNode::ParseNodeLogic(std::stringstream& ss) {
 
+}
+
+bool BSDFNode::NodeStateValid() {
+	bool pinIsTypeVec4 = (InputPins[0].ConnectedPinType == Pin::PinType::VEC4);
+	return pinIsTypeVec4;
 }
 
 std::string BSDFNode::GetPinOutput(unsigned int outputPinIndex) {

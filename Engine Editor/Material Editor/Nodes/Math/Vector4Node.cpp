@@ -5,8 +5,9 @@ Vector4Node::Vector4Node() {
 	InputPins.emplace_back(Pin::FLOAT32, "Y");
 	InputPins.emplace_back(Pin::FLOAT32, "Z");
 	InputPins.emplace_back(Pin::FLOAT32, "W");
-	OutputPins.emplace_back(Pin::VEC3, "XYZW", ".xyzw");
+	OutputPins.emplace_back(Pin::VEC4, "XYZW", ".xyzw");
 	m_NodeType = "vec4";
+	NodeName = "Vector4";
 	nodeCanBeParamterized = true;
 }
 
@@ -24,10 +25,16 @@ void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 }
 
 void Vector4Node::ParseNodeLogic(std::stringstream& ss) {
-	//std::string& s1 = InputPins[0].ShaderIdentifier;
-	//std::string& s2 = InputPins[1].ShaderIdentifier;
-	//std::string& s3 = InputPins[2].ShaderIdentifier;
-	//ss << "vec3 node_" << std::to_string(Id) << " = vec3(" << s1 << ", " << s2 << ", " << s3 << "); \n";
+	
+}
+
+bool Vector4Node::NodeStateValid() {
+	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedPinType == Pin::PinType::ANY);
+	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedPinType == Pin::PinType::ANY);
+	bool pin3IsScalarOrDefault = (InputPins[2].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[2].ConnectedPinType == Pin::PinType::ANY);
+	bool pin4IsScalarOrDefault = (InputPins[3].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[3].ConnectedPinType == Pin::PinType::ANY);
+	
+	return pin1IsScalarOrDefault && pin2IsScalarOrDefault && pin3IsScalarOrDefault && pin4IsScalarOrDefault;
 }
 
 std::string Vector4Node::GetPinOutput(unsigned int outputPinIndex) {

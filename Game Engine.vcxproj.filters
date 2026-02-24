@@ -216,6 +216,27 @@
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector2Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\AddNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\SubtractNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\MultiplyNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -2108,6 +2129,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Layers\EngineRuntimeStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector2Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\AddNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\SubtractNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\MultiplyNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

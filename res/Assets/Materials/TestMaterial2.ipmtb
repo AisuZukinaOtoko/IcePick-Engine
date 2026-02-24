@@ -1,0 +1,184 @@
+{
+    "Id": 9780421564651688606,
+    "floatParameters": [
+        {
+            "Id": 16043462965043777716,
+            "displayName": "Float",
+            "shaderIdentifier": "node_4885013037650742800"
+        }
+    ],
+    "graphId": 0,
+    "shaderGraph": [
+        {
+            "Id": 6375704447217611653,
+            "inputPins": [
+                {
+                    "connectedNodeId": 10587926285894130387,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Output",
+            "nodePosition": {
+                "x": 751.0,
+                "y": 351.0
+            },
+            "outputPins": [],
+            "type": "bsdf"
+        },
+        {
+            "Id": 16043462965043777716,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Float",
+            "nodePosition": {
+                "x": -152.0,
+                "y": 463.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 1072881847408713740,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 10587926285894130387,
+            "inputPins": [
+                {
+                    "connectedNodeId": 4942576908687368431,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                }
+            ],
+            "isParameter": true,
+            "nodeName": "Texture",
+            "nodePosition": {
+                "x": 488.0,
+                "y": 337.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 6375704447217611653,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 4942576908687368431,
+            "inputPins": [
+                {
+                    "connectedNodeId": 1072881847408713740,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Decimal",
+            "nodePosition": {
+                "x": 291.0,
+                "y": 335.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 10587926285894130387,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "decimal"
+        },
+        {
+            "Id": 9227759016321903649,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Model UV",
+            "nodePosition": {
+                "x": -153.0,
+                "y": 291.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 1072881847408713740,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "uv"
+        },
+        {
+            "Id": 1072881847408713740,
+            "inputPins": [
+                {
+                    "connectedNodeId": 9227759016321903649,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                },
+                {
+                    "connectedNodeId": 16043462965043777716,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Multiply",
+            "nodePosition": {
+                "x": 72.0,
+                "y": 345.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 4942576908687368431,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "multiply"
+        }
+    ],
+    "shaderId": 4096336346919824918,
+    "shaderSource": {
+        "fragment": "#version 330 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_10587926285894130387;\nuniform float node_4885013037650742800;\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec2 node_1072881847408713740 = v_TexCoord * node_4885013037650742800;\nvec2 node_4942576908687368431 = fract(node_1072881847408713740);\nvec4 node_10587926285894130387 = texture(sampler_10587926285894130387,node_4942576908687368431);\nOutColour = node_10587926285894130387.rgba;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "vertex": "#version 330 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
+    },
+    "textureParameters": [
+        {
+            "Id": 10587926285894130387,
+            "displayName": "Texture",
+            "sampler": "sampler_10587926285894130387"
+        }
+    ],
+    "version": 1
+}

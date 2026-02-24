@@ -145,7 +145,14 @@
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\AddNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\MultiplyNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\SubtractNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Utils.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector2Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
@@ -369,7 +376,14 @@
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\AddNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\FloatNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\MultiplyNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\SubtractNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Utils.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector2Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector3Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\Vector4Node.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Nodes.h" />

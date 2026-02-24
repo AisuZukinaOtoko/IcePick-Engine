@@ -236,6 +236,11 @@ void MaterialEditor::DrawNodes() {
         ImVec2 nodePosition = CalculateNodePosition(node);
         ImVec2 nodeSize = CalculateNodeSize(node);
 
+        bool nodeStateIsValid = node->NodeStateValid();
+        ImU32 borderColour = (nodeStateIsValid) ? IM_COL32(150, 150, 150, 255) : IM_COL32(200, 0, 0, 255);
+        float nodeBorderWidth = 2.0f;
+
+        draw_list->AddRectFilled(ImVec2(nodePosition.x - nodeBorderWidth, nodePosition.y - nodeBorderWidth), ImVec2(nodePosition.x + nodeSize.x + nodeBorderWidth, nodePosition.y + nodeSize.y + nodeBorderWidth), borderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
         draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), m_RenderInfo.NodeBgColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
         draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), node->NodeHeaderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
 
@@ -396,7 +401,8 @@ void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInpu
 
     int sign = (startIsInputPin) ? -1 : 1;
     float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f + 10.0f;
-    float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
+    //float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
+    float innerPointYOffset = 0;
     
     ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
     ImVec2 lineP3 = ImVec2(lineEnd.x - innerPointXOffset * sign, lineEnd.y - innerPointYOffset);
@@ -505,8 +511,44 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
     }
 
     if (ImGui::BeginMenu("Math Nodes")) {
+        if (ImGui::MenuItem("Add Node", NULL, false)) {
+            std::shared_ptr<AddNode> newNode = std::make_shared<AddNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Subtract Node", NULL, false)) {
+            std::shared_ptr<SubtractNode> newNode = std::make_shared<SubtractNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Multiply Node", NULL, false)) {
+            std::shared_ptr<MultiplyNode> newNode = std::make_shared<MultiplyNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Divide Node", NULL, false)) {
+            std::shared_ptr<DivideNode> newNode = std::make_shared<DivideNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Decimal Node", NULL, false)) {
+            std::shared_ptr<DecimalNode> newNode = std::make_shared<DecimalNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Float Node", NULL, false)) {
             std::shared_ptr<FloatNode> newNode = std::make_shared<FloatNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Vector2 Node", NULL, false)) {
+            std::shared_ptr<Vector2Node> newNode = std::make_shared<Vector2Node>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
@@ -607,13 +649,15 @@ void MaterialEditor::ConnectActivePin(std::shared_ptr<Node> destinationNode, uns
         }
 
         DisconnectPins(destinationNode, destinationPinIndex, true);
-        InputPin& destPin = destinationNode->InputPins[destinationPinIndex];
-        destPin.ConnectedNodeId = m_SourcePinNodeId;
-        destPin.ConnectedPinIndex = m_SourcePinIndex;
 
         OutputPin& sourcePin = sourceNode->OutputPins[m_SourcePinIndex];
         sourcePin.ConnectedNodeIds.push_back(destinationNode->Id);
         sourcePin.ConnectedPinIndices.push_back(destinationPinIndex);
+
+        InputPin& destPin = destinationNode->InputPins[destinationPinIndex];
+        destPin.ConnectedNodeId = m_SourcePinNodeId;
+        destPin.ConnectedPinIndex = m_SourcePinIndex;     
+        destPin.ConnectedPinType = sourcePin.Type;
     }
     else {
         std::shared_ptr<Node> sourceNode = FindNodeById(m_SourcePinNodeId);
@@ -622,13 +666,15 @@ void MaterialEditor::ConnectActivePin(std::shared_ptr<Node> destinationNode, uns
         }
 
         DisconnectPins(sourceNode, m_SourcePinIndex, true);
-        InputPin& sourcePin = sourceNode->InputPins[m_SourcePinIndex];
-        sourcePin.ConnectedNodeId = destinationNode->Id;
-        sourcePin.ConnectedPinIndex = destinationPinIndex;
 
         OutputPin& destPin = destinationNode->OutputPins[destinationPinIndex];
         destPin.ConnectedNodeIds.push_back(m_SourcePinNodeId);
         destPin.ConnectedPinIndices.push_back(m_SourcePinIndex);
+
+        InputPin& sourcePin = sourceNode->InputPins[m_SourcePinIndex];
+        sourcePin.ConnectedNodeId = destinationNode->Id;
+        sourcePin.ConnectedPinIndex = destinationPinIndex;
+        sourcePin.ConnectedPinType = destPin.Type;
     }
 }
 
@@ -718,6 +764,7 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
 
         std::shared_ptr<Node> connectedNode = FindNodeById(pin.ConnectedNodeId);
         pin.ShaderIdentifier = CreateShaderFromGraph(ss, connectedNode, pin.ConnectedPinIndex, recursiveDepth + 1);
+        pin.ConnectedPinType = connectedNode->OutputPins[pin.ConnectedPinIndex].Type;
     }
 
     node->Initialise(ss, m_MaterialEditorMaterialBase, m_MaterialEditorMaterialInstance);

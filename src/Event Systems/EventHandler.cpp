@@ -24,7 +24,7 @@ static void joystick_callback(int joystickId, int eventCode) {
 	IcePick::Event newEvent = { eventCode, 0, 0, joystickId, IP_CONTROLLER_EVENT };
 	IcePick::IP_EventHandler.OnEvent(newEvent);
 	if (eventCode == IP_CONNECT) {
-		IP_LOG("Controller connected. Not yet supported.", IP_WARN_LOG);
+		IP_LOG("Controller connected.", IP_WARN_LOG);
 		IP_LOG(std::to_string(joystickId), IP_WARN_LOG);
 	}
 	else if (eventCode == IP_DISCONNECT) {

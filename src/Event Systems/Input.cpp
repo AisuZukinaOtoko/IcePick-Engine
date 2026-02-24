@@ -108,7 +108,7 @@ glm::vec2 IcePick::Input::GetLookActionAxes() {
 		lookAxes = IcePickRenderer::GetMouseDelta();
 	}
 	else if (m_CurrentInputType == InputPeripheral::IP_CONTROLLER) {
-		float controllerSensitivityMultiplier = 2.0f;
+		float controllerSensitivityMultiplier = 10.0f;
 		lookAxes.x = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_X);
 		lookAxes.y = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_Y);
 		lookAxes *= controllerSensitivityMultiplier;
@@ -125,11 +125,11 @@ glm::vec2 IcePick::Input::GetWalkActionAxes() {
 		bool aPressed = IsKeyHeld(IP_KEY_A);
 		bool sPressed = IsKeyHeld(IP_KEY_S);
 		bool dPressed = IsKeyHeld(IP_KEY_D);
-		walkActionAxes = { (float)wPressed - (float)sPressed, (float)dPressed - (float)aPressed };
+		walkActionAxes = { (float)dPressed - (float)aPressed, (float)wPressed - (float)sPressed };
 	}
 	else if (m_CurrentInputType == InputPeripheral::IP_CONTROLLER) {
 		walkActionAxes.x = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_LEFT_X);
-		walkActionAxes.y = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_LEFT_Y);
+		walkActionAxes.y = -1 * GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_LEFT_Y);
 	}
 
 	return walkActionAxes;
