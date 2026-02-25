@@ -237,6 +237,12 @@
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\SplitVectorNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -663,7 +669,7 @@
     <None Include="res\shaders\picking.shader" />
     <None Include="res\textures\black_fabric_diffuse.iptex" />
     <None Include="res\textures\black_fabric_rough.iptex" />
-    <None Include="res\shaders\gpass.frag.shader" />
+    <None Include="res\shaders\materialTemplate.frag.shader" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\toneMapper.shader" />
     <None Include="res\Scripts\Core.lua" />
@@ -2150,6 +2156,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\SplitVectorNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

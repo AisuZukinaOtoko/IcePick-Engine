@@ -24,7 +24,7 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
     m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/pbr.vert.shader");
-    m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/gpass.frag.shader");
+    m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/materialTemplate.frag.shader");
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
     m_MaterialEditorShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
@@ -401,8 +401,8 @@ void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInpu
 
     int sign = (startIsInputPin) ? -1 : 1;
     float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f + 10.0f;
-    //float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
-    float innerPointYOffset = 0;
+    float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
+    //float innerPointYOffset = 0;
     
     ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
     ImVec2 lineP3 = ImVec2(lineEnd.x - innerPointXOffset * sign, lineEnd.y - innerPointYOffset);
@@ -564,12 +564,24 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
+
+        if (ImGui::MenuItem("Split Vector Node", NULL, false)) {
+            std::shared_ptr<SplitVectorNode> newNode = std::make_shared<SplitVectorNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
         ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Input Nodes")) {
         if (ImGui::MenuItem("UV Node", NULL, false)) {
             std::shared_ptr<UVNode> newNode = std::make_shared<UVNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("World Normal Node", NULL, false)) {
+            std::shared_ptr<WorldNormalNode> newNode = std::make_shared<WorldNormalNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }

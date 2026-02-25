@@ -8,6 +8,8 @@ BSDFNode::BSDFNode() {
 	//InputPins.emplace_back(Pin::FLOAT32, "Emissive");
 	NodeName = "Output";
 	m_NodeType = "bsdf";
+
+	NodeHeaderColour = ImU32(0xFF4B92C2);
 }
 
 void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {

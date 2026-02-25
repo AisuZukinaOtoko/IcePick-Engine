@@ -101,6 +101,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	if (nodeType == "uv") {
 		return std::make_shared<UVNode>();
 	}
+	else if (nodeType == "worldNormal") {
+		return std::make_shared<WorldNormalNode>();
+	}
 	else if (nodeType == "add") {
 		return std::make_shared<AddNode>();
 	}
@@ -124,6 +127,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	}
 	else if (nodeType == "vec4") {
 		return std::make_shared<Vector4Node>();
+	}
+	else if (nodeType == "splitVector") {
+		return std::make_shared<SplitVectorNode>();
 	}
 	else if (nodeType == "bsdf") {
 		return std::make_shared<BSDFNode>();

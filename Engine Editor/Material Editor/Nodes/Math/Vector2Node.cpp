@@ -24,6 +24,13 @@ void Vector2Node::ParseNodeLogic(std::stringstream& ss) {
 	
 }
 
+bool Vector2Node::NodeStateValid() {
+	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedNodeId == IcePick::UUID::Unitialised());
+
+	return pin1IsScalarOrDefault && pin2IsScalarOrDefault;
+}
+
 std::string Vector2Node::GetPinOutput(unsigned int outputPinIndex) {
 	return m_Identifier;
 }

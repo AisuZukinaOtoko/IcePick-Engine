@@ -27,9 +27,9 @@ void Vector3Node::ParseNodeLogic(std::stringstream& ss) {
 }
 
 bool Vector3Node::NodeStateValid() {
-	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedPinType == Pin::PinType::ANY);
-	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedPinType == Pin::PinType::ANY);
-	bool pin3IsScalarOrDefault = (InputPins[2].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[2].ConnectedPinType == Pin::PinType::ANY);
+	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin3IsScalarOrDefault = (InputPins[2].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[2].ConnectedNodeId == IcePick::UUID::Unitialised());
 
 	return pin1IsScalarOrDefault && pin2IsScalarOrDefault && pin3IsScalarOrDefault;
 }

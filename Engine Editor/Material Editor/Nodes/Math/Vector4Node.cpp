@@ -29,10 +29,10 @@ void Vector4Node::ParseNodeLogic(std::stringstream& ss) {
 }
 
 bool Vector4Node::NodeStateValid() {
-	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedPinType == Pin::PinType::ANY);
-	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedPinType == Pin::PinType::ANY);
-	bool pin3IsScalarOrDefault = (InputPins[2].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[2].ConnectedPinType == Pin::PinType::ANY);
-	bool pin4IsScalarOrDefault = (InputPins[3].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[3].ConnectedPinType == Pin::PinType::ANY);
+	bool pin1IsScalarOrDefault = (InputPins[0].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[0].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin2IsScalarOrDefault = (InputPins[1].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[1].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin3IsScalarOrDefault = (InputPins[2].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[2].ConnectedNodeId == IcePick::UUID::Unitialised());
+	bool pin4IsScalarOrDefault = (InputPins[3].ConnectedPinType == Pin::PinType::FLOAT32) || (InputPins[3].ConnectedNodeId == IcePick::UUID::Unitialised());
 	
 	return pin1IsScalarOrDefault && pin2IsScalarOrDefault && pin3IsScalarOrDefault && pin4IsScalarOrDefault;
 }
