@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 layout(location = 0) out vec4 OutColour;
 layout(location = 1) out vec4 OutNormal;
 layout(location = 2) out uvec4 OutEntityMat;
@@ -56,6 +56,9 @@ void main() {
         OutputColour += vec4((diffuseColour.rgb * dot(normalize(v_Normal), L)) * (tempLightColour * tempLightIntensity), diffuseColour.a); // diffuse
         OutputColour += vec4(diffuseColour.rgb * tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 1.0f);
     }
+
+    vec3 tmp = L * v_Normal;
+    vec3 result = pow(tmp, vec3(1.4f)); // Should compile
 
     //OutColour = vec4(vec3(1.0f) * noise3(v_TexCoord.x), 1.0f);
     OutColour = vec4(PBRNeutralToneMapper(OutputColour.rgb), OutputColour.a);

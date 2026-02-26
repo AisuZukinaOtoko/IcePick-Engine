@@ -144,6 +144,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\AddNode.cpp" />
@@ -377,6 +382,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\AddNode.h" />

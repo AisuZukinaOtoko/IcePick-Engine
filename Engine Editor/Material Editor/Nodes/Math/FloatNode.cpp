@@ -45,5 +45,5 @@ std::string FloatNode::GetPinOutput(unsigned int outputPinIndex) {
 		return m_Identifier;
 	}
 
-	return std::to_string(m_Value);
+	return std::to_string(m_Value) + "f";
 }

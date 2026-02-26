@@ -66,6 +66,8 @@ namespace IcePickRenderer {
 		}
 		
 		std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+		std::cout << "OpenGL shading language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -77,6 +79,7 @@ namespace IcePickRenderer {
 		glDebugMessageCallback(debugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
 		glDebugMessageControl(GL_DONT_CARE,	GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+
 
 		VertexArrays.reserve(100);
 		return true;

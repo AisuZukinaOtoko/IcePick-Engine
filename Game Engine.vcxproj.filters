@@ -243,6 +243,21 @@
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -2162,6 +2177,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

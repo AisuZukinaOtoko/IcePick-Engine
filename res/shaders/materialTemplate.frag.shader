@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 layout(location = 0) out vec4 OutColour;
 layout(location = 1) out vec4 OutNormal;
 layout(location = 2) out uvec4 OutEntityMat;
