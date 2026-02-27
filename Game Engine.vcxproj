@@ -145,12 +145,17 @@
   <ItemGroup>
     <ClCompile Include="Engine Editor\EditorLayer.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\CrossProductNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\DotProductNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\LengthNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\NormalizeNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.cpp" />
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldPositionNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\AddNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.cpp" />
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.cpp" />
@@ -383,12 +388,17 @@
   <ItemGroup>
     <ClInclude Include="Engine Editor\EditorLayer.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\CosineNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\CrossProductNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\DotProductNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\LengthNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\NormalizeNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\PowerNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\SineNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\TangentNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\UVNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldNormalNode.h" />
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldPositionNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\AddNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DecimalNode.h" />
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Math\DivideNode.h" />

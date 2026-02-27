@@ -523,6 +523,30 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
+        if (ImGui::MenuItem("Cross Product Node", NULL, false)) {
+            std::shared_ptr<CrossProductNode> newNode = std::make_shared<CrossProductNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Dot Product Node", NULL, false)) {
+            std::shared_ptr<DotProductNode> newNode = std::make_shared<DotProductNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Length Node", NULL, false)) {
+            std::shared_ptr<LengthNode> newNode = std::make_shared<LengthNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Normalize Node", NULL, false)) {
+            std::shared_ptr<NormalizeNode> newNode = std::make_shared<NormalizeNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Tangent Node", NULL, false)) {
             std::shared_ptr<TangentNode> newNode = std::make_shared<TangentNode>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -609,6 +633,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
 
         if (ImGui::MenuItem("World Normal Node", NULL, false)) {
             std::shared_ptr<WorldNormalNode> newNode = std::make_shared<WorldNormalNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("World Position Node", NULL, false)) {
+            std::shared_ptr<WorldPositionNode> newNode = std::make_shared<WorldPositionNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }

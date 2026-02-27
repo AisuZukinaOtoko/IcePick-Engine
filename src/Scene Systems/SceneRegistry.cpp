@@ -95,5 +95,5 @@ entt::registry& IcePick::GetActiveSceneRegistry() {
 }
 
 void IcePick::DeleteEntity(entt::entity entity) {
-
+    IP_SceneRegistry.destroy(entity);
 }

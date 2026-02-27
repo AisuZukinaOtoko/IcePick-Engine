@@ -16,19 +16,7 @@ in vec3 v_Normal;
 
 uniform vec3 u_CameraPosition;
 
-uniform int MaterialSampleFlags;
 uniform sampler2D  u_AlbedoTexUnit;
-uniform sampler2D  u_NormalTexUnit;
-uniform sampler2D  u_RoughnessTexUnit;
-uniform sampler2D  u_MetallicUnit;
-uniform sampler2D  u_EmissiveUnit;
-
-uniform vec3 u_AmbientColour;
-uniform vec4 u_AlbedoColour;
-uniform vec3 u_SpecularColour;
-uniform float u_RoughnessValue;
-uniform float u_MetalValue;
-uniform float u_EmissiveValue;
 
 const vec3 tempLightPosition = vec3(2.0f, 3.0f, 4.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
@@ -56,9 +44,6 @@ void main() {
         OutputColour += vec4((diffuseColour.rgb * dot(normalize(v_Normal), L)) * (tempLightColour * tempLightIntensity), diffuseColour.a); // diffuse
         OutputColour += vec4(diffuseColour.rgb * tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 1.0f);
     }
-
-    vec3 tmp = L * v_Normal;
-    vec3 result = pow(tmp, vec3(1.4f)); // Should compile
 
     //OutColour = vec4(vec3(1.0f) * noise3(v_TexCoord.x), 1.0f);
     OutColour = vec4(PBRNeutralToneMapper(OutputColour.rgb), OutputColour.a);

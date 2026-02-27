@@ -258,6 +258,21 @@
     <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Inputs\WorldPositionNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\LengthNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\DotProductNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\CrossProductNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Material Editor\Nodes\Functions\NormalizeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -2192,6 +2207,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Inputs\WorldPositionNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\LengthNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\DotProductNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\CrossProductNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Material Editor\Nodes\Functions\NormalizeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

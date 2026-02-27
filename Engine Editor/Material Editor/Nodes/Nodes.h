@@ -3,11 +3,16 @@
 
 #include "Functions/SineNode.h"
 #include "Functions/CosineNode.h"
+#include "Functions/CrossProductNode.h"
+#include "Functions/DotProductNode.h"
+#include "Functions/LengthNode.h"
+#include "Functions/NormalizeNode.h"
 #include "Functions/TangentNode.h"
 #include "Functions/PowerNode.h"
 
 #include "Inputs/UVNode.h"
 #include "Inputs/WorldNormalNode.h"
+#include "Inputs/WorldPositionNode.h"
 #include "Inputs/FragmentCoordinateNode.h"
 
 #include "Math/AddNode.h"

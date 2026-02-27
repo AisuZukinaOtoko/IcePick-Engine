@@ -104,6 +104,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "worldNormal") {
 		return std::make_shared<WorldNormalNode>();
 	}
+	else if (nodeType == "worldPosition") {
+		return std::make_shared<WorldPositionNode>();
+	}
 	else if (nodeType == "fragmentCoordinate") {
 		return std::make_shared<FragmentCoordinateNode>();
 	}
@@ -113,6 +116,18 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	}
 	else if (nodeType == "cosine") {
 		return std::make_shared<CosineNode>();
+	}
+	else if (nodeType == "crossProduct") {
+		return std::make_shared<CrossProductNode>();
+	}
+	else if (nodeType == "dotProduct") {
+		return std::make_shared<DotProductNode>();
+	}
+	else if (nodeType == "length") {
+		return std::make_shared<LengthNode>();
+	}
+	else if (nodeType == "normalize") {
+		return std::make_shared<NormalizeNode>();
 	}
 	else if (nodeType == "tangent") {
 		return std::make_shared<TangentNode>();
