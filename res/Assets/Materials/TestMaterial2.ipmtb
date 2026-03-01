@@ -1,6 +1,12 @@
 {
     "Id": 9780421564651688606,
-    "floatParameters": [],
+    "floatParameters": [
+        {
+            "Id": 5619400984623448423,
+            "displayName": "Threshhold",
+            "shaderIdentifier": "node_5619400984623448423"
+        }
+    ],
     "graphId": 0,
     "shaderGraph": [
         {
@@ -236,7 +242,7 @@
                             "pinIndex": 1
                         },
                         {
-                            "nodeId": 6939154612577639760,
+                            "nodeId": 10036601645133503733,
                             "pinIndex": 0
                         }
                     ]
@@ -331,7 +337,7 @@
             "Id": 6939154612577639760,
             "inputPins": [
                 {
-                    "connectedNodeId": 9034260354519565204,
+                    "connectedNodeId": 595924793896261673,
                     "connectedPinIndex": 0,
                     "connectedPinType": "vec3"
                 }
@@ -617,8 +623,8 @@
             "isParameter": false,
             "nodeName": "Cross Product",
             "nodePosition": {
-                "x": 573.0,
-                "y": 794.0
+                "x": 446.0,
+                "y": 950.0
             },
             "outputPins": [
                 {
@@ -644,8 +650,8 @@
             "isParameter": false,
             "nodeName": "Dot Product",
             "nodePosition": {
-                "x": 571.0,
-                "y": 949.0
+                "x": 448.0,
+                "y": 1082.0
             },
             "outputPins": [
                 {
@@ -666,8 +672,8 @@
             "isParameter": false,
             "nodeName": "Length",
             "nodePosition": {
-                "x": 834.0,
-                "y": 836.0
+                "x": 657.0,
+                "y": 989.0
             },
             "outputPins": [
                 {
@@ -680,20 +686,25 @@
             "Id": 10036601645133503733,
             "inputPins": [
                 {
-                    "connectedNodeId": 0,
+                    "connectedNodeId": 9034260354519565204,
                     "connectedPinIndex": 0,
-                    "connectedPinType": "any"
+                    "connectedPinType": "vec3"
                 }
             ],
             "isParameter": false,
             "nodeName": "Normalize",
             "nodePosition": {
-                "x": 876.0,
-                "y": 975.0
+                "x": 465.0,
+                "y": 784.0
             },
             "outputPins": [
                 {
-                    "connectionData": []
+                    "connectionData": [
+                        {
+                            "nodeId": 595924793896261673,
+                            "pinIndex": 0
+                        }
+                    ]
                 }
             ],
             "type": "normalize"
@@ -704,8 +715,8 @@
             "isParameter": false,
             "nodeName": "World Position",
             "nodePosition": {
-                "x": 774.0,
-                "y": 1133.0
+                "x": 174.0,
+                "y": 1011.0
             },
             "outputPins": [
                 {
@@ -713,11 +724,64 @@
                 }
             ],
             "type": "worldPosition"
+        },
+        {
+            "Id": 595924793896261673,
+            "inputPins": [
+                {
+                    "connectedNodeId": 10036601645133503733,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec3"
+                },
+                {
+                    "connectedNodeId": 5619400984623448423,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Step",
+            "nodePosition": {
+                "x": 681.0,
+                "y": 783.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 6939154612577639760,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "step"
+        },
+        {
+            "Id": 5619400984623448423,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Threshhold",
+            "nodePosition": {
+                "x": 1115.0,
+                "y": 999.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 595924793896261673,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
         }
     ],
     "shaderId": 4096336346919824918,
     "shaderSource": {
-        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_10587926285894130387;\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nfloat node_12652796489598049478 = gl_FragCoord.x / 0.000000f;\nfloat node_6077282602068723190 = gl_FragCoord.y / 0.000000f;\nvec2 node_3367861217409717354 = vec2(node_12652796489598049478,node_6077282602068723190);\nvec4 node_10587926285894130387 = texture(sampler_10587926285894130387,node_3367861217409717354);\nvec3 node_6026361338106497835 = vec3(node_10587926285894130387.r,node_10587926285894130387.g,node_10587926285894130387.b);\nvec3 node_9034260354519565204 = node_6026361338106497835 * v_Normal;\nvec4 node_3495679182398768050 = vec4(node_9034260354519565204.x,node_9034260354519565204.y,node_9034260354519565204.z,0.000000f);\nOutColour = node_3495679182398768050;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_10587926285894130387;\nuniform float node_5619400984623448423;\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nfloat node_12652796489598049478 = gl_FragCoord.x / 0.000000f;\nfloat node_6077282602068723190 = gl_FragCoord.y / 0.000000f;\nvec2 node_3367861217409717354 = vec2(node_12652796489598049478,node_6077282602068723190);\nvec4 node_10587926285894130387 = texture(sampler_10587926285894130387,node_3367861217409717354);\nvec3 node_6026361338106497835 = vec3(node_10587926285894130387.r,node_10587926285894130387.g,node_10587926285894130387.b);\nvec3 node_9034260354519565204 = node_6026361338106497835 * v_Normal;\nvec3 node_10036601645133503733 = normalize(node_9034260354519565204);\nvec3 node_595924793896261673 = step(node_5619400984623448423, node_10036601645133503733);\nvec4 node_3495679182398768050 = vec4(node_595924793896261673.x,node_595924793896261673.y,node_595924793896261673.z,1.000000f);\nOutColour = node_3495679182398768050;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
         "vertex": "#version 450 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
     },
     "textureParameters": [

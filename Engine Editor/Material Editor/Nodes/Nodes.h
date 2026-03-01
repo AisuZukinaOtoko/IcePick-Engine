@@ -1,14 +1,17 @@
 #pragma once
 #include "NodeBase.h"
 
-#include "Functions/SineNode.h"
 #include "Functions/CosineNode.h"
 #include "Functions/CrossProductNode.h"
 #include "Functions/DotProductNode.h"
 #include "Functions/LengthNode.h"
+#include "Functions/LerpNode.h"
 #include "Functions/NormalizeNode.h"
-#include "Functions/TangentNode.h"
 #include "Functions/PowerNode.h"
+#include "Functions/SineNode.h"
+#include "Functions/SmoothstepNode.h"
+#include "Functions/StepNode.h"
+#include "Functions/TangentNode.h"
 
 #include "Inputs/UVNode.h"
 #include "Inputs/WorldNormalNode.h"
@@ -26,5 +29,6 @@
 #include "Math/Vector4Node.h"
 #include "Math/SplitVectorNode.h"
 
-#include "Rendering/TextureNode.h"
 #include "Rendering/BSDFNode.h"
+#include "Rendering/TextureNode.h"
+#include "Rendering/VoronoiNoiseNode.h"

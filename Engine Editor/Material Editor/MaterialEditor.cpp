@@ -51,10 +51,10 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
         m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
     }
 
-    CompileMaterial();
     m_MaterialEditorMaterialBase.ClearShaderInputs();
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
+    CompileMaterial();
 }
 
 void MaterialEditor::OnUpdate(DeltaTime dt) {
@@ -157,7 +157,7 @@ void MaterialEditor::PreviewMaterial() {
 void MaterialEditor::DrawCanvas() {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));      // Disable padding
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(50, 50, 50, 255));  // Set a background color
-	ImGui::BeginChild("canvas", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_NoMove);
+	ImGui::BeginChild("canvas", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
     ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();      // ImDrawList API uses screen coordinates!
     m_CanvasScreenPos = canvas_p0;
@@ -303,6 +303,10 @@ void MaterialEditor::DrawNodes() {
 
             ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
             draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            bool pinShouldBeFilled = (node->InputPins[j].ConnectedNodeId == IcePick::UUID::Unitialised()) && !(m_SourcePinIndex == j && m_SourcePinNodeId == node->Id && m_IsInputPin && m_PinActive);
+            if (pinShouldBeFilled)
+                draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius - 2.0f, m_RenderInfo.NodeBgColour, m_RenderInfo.PinSegments);
+
             ImVec2 cursorPos = ImVec2(pinPosition.x - m_RenderInfo.PinRadius, pinPosition.y - m_RenderInfo.PinRadius);
             ImGui::SetCursorScreenPos(cursorPos);
             ImGui::InvisibleButton("inputNodePin", ImVec2(labelPosition.x + labelSize.x - cursorPos.x, labelSize.y), ImGuiButtonFlags_MouseButtonLeft);
@@ -343,6 +347,10 @@ void MaterialEditor::DrawNodes() {
 
             ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
             draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
+            bool pinShouldBeFilled = (node->OutputPins[j].ConnectedNodeIds.size() == 0) && !(m_SourcePinIndex == j && m_SourcePinNodeId == node->Id && !m_IsInputPin && m_PinActive);
+            if (pinShouldBeFilled)
+                draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius - 2.0f, m_RenderInfo.NodeBgColour, m_RenderInfo.PinSegments);
+
             ImGui::SetCursorScreenPos(labelPosition);
             ImGui::InvisibleButton("outputNodePin", ImVec2(pinPosition.x + m_RenderInfo.PinRadius - labelPosition.x, labelSize.y), ImGuiButtonFlags_MouseButtonLeft);
             bool currentPinActive = ImGui::IsItemActive();
@@ -507,15 +515,16 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
+
+        if (ImGui::MenuItem("Voronoi Noise Node", NULL, false)) {
+            std::shared_ptr<VoronoiNoiseNode> newNode = std::make_shared<VoronoiNoiseNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
         ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Function Nodes")) {
-        if (ImGui::MenuItem("Sine Node", NULL, false)) {
-            std::shared_ptr<SineNode> newNode = std::make_shared<SineNode>();
-            newNode->CanvasPosition = mousePosInCanvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
 
         if (ImGui::MenuItem("Cosine Node", NULL, false)) {
             std::shared_ptr<CosineNode> newNode = std::make_shared<CosineNode>();
@@ -541,20 +550,44 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
+        if (ImGui::MenuItem("Linear Interpolate Node", NULL, false)) {
+            std::shared_ptr<LerpNode> newNode = std::make_shared<LerpNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Normalize Node", NULL, false)) {
             std::shared_ptr<NormalizeNode> newNode = std::make_shared<NormalizeNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Tangent Node", NULL, false)) {
-            std::shared_ptr<TangentNode> newNode = std::make_shared<TangentNode>();
+        if (ImGui::MenuItem("Power Node", NULL, false)) {
+            std::shared_ptr<PowerNode> newNode = std::make_shared<PowerNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Power Node", NULL, false)) {
-            std::shared_ptr<PowerNode> newNode = std::make_shared<PowerNode>();
+        if (ImGui::MenuItem("Sine Node", NULL, false)) {
+            std::shared_ptr<SineNode> newNode = std::make_shared<SineNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Smoothstep Node", NULL, false)) {
+            std::shared_ptr<SmoothstepNode> newNode = std::make_shared<SmoothstepNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Step Node", NULL, false)) {
+            std::shared_ptr<StepNode> newNode = std::make_shared<StepNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Tangent Node", NULL, false)) {
+            std::shared_ptr<TangentNode> newNode = std::make_shared<TangentNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
@@ -568,14 +601,8 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Subtract Node", NULL, false)) {
-            std::shared_ptr<SubtractNode> newNode = std::make_shared<SubtractNode>();
-            newNode->CanvasPosition = mousePosInCanvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
-
-        if (ImGui::MenuItem("Multiply Node", NULL, false)) {
-            std::shared_ptr<MultiplyNode> newNode = std::make_shared<MultiplyNode>();
+        if (ImGui::MenuItem("Decimal Node", NULL, false)) {
+            std::shared_ptr<DecimalNode> newNode = std::make_shared<DecimalNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
@@ -586,14 +613,26 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Decimal Node", NULL, false)) {
-            std::shared_ptr<DecimalNode> newNode = std::make_shared<DecimalNode>();
+        if (ImGui::MenuItem("Float Node", NULL, false)) {
+            std::shared_ptr<FloatNode> newNode = std::make_shared<FloatNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Float Node", NULL, false)) {
-            std::shared_ptr<FloatNode> newNode = std::make_shared<FloatNode>();
+        if (ImGui::MenuItem("Multiply Node", NULL, false)) {
+            std::shared_ptr<MultiplyNode> newNode = std::make_shared<MultiplyNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Split Vector Node", NULL, false)) {
+            std::shared_ptr<SplitVectorNode> newNode = std::make_shared<SplitVectorNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Subtract Node", NULL, false)) {
+            std::shared_ptr<SubtractNode> newNode = std::make_shared<SubtractNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
@@ -616,15 +655,16 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
-        if (ImGui::MenuItem("Split Vector Node", NULL, false)) {
-            std::shared_ptr<SplitVectorNode> newNode = std::make_shared<SplitVectorNode>();
-            newNode->CanvasPosition = mousePosInCanvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
         ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Input Nodes")) {
+        if (ImGui::MenuItem("Fragment Coordinate Node", NULL, false)) {
+            std::shared_ptr<FragmentCoordinateNode> newNode = std::make_shared<FragmentCoordinateNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("UV Node", NULL, false)) {
             std::shared_ptr<UVNode> newNode = std::make_shared<UVNode>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -641,13 +681,7 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             std::shared_ptr<WorldPositionNode> newNode = std::make_shared<WorldPositionNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
-        }
-
-        if (ImGui::MenuItem("Fragment Coordinate Node", NULL, false)) {
-            std::shared_ptr<FragmentCoordinateNode> newNode = std::make_shared<FragmentCoordinateNode>();
-            newNode->CanvasPosition = mousePosInCanvas;
-            m_EditMaterialNodeGraph.push_back(newNode);
-        }
+        }        
 
         ImGui::EndMenu();
     }

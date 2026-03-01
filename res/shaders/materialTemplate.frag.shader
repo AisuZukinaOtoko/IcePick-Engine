@@ -10,6 +10,8 @@ in vec3 v_Normal;
 uniform vec3 u_CameraPosition;
 
 #uniforms
+
+#include "noiseFunctions.shader"
 #include "picking.shader"
 
 void main() {

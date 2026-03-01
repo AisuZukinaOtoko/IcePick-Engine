@@ -49,8 +49,8 @@ struct NodeRenderInfo {
 	float NodeHeaderHeight = 30.0f;
 	float NodeCornerRounding = 5.0f;
 	float PinYSpacing = 30.0f;
-	float PinRadius = 6.0f;
-	int PinSegments = 10;
+	float PinRadius = 9.0f;
+	int PinSegments = 15;
 	float LineThickness = 3.0f;
 	unsigned int LineSegments = 40;
 	float LabelPadding = 5.0f;

@@ -1,0 +1,779 @@
+{
+    "Id": 9456976931777634169,
+    "floatParameters": [
+        {
+            "Id": 16721743378461818166,
+            "displayName": "Cutoff Height",
+            "shaderIdentifier": "node_7995390483886049775"
+        }
+    ],
+    "graphId": 0,
+    "shaderGraph": [
+        {
+            "Id": 5836639709973544338,
+            "inputPins": [
+                {
+                    "connectedNodeId": 5556919284345816730,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Output",
+            "nodePosition": {
+                "x": 945.0,
+                "y": 188.0
+            },
+            "outputPins": [],
+            "type": "bsdf"
+        },
+        {
+            "Id": 12977511702406650124,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Model UV",
+            "nodePosition": {
+                "x": -694.0,
+                "y": 164.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5738539261051448718,
+                            "pinIndex": 0
+                        },
+                        {
+                            "nodeId": 8051057688786551004,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "uv"
+        },
+        {
+            "Id": 15182045752092132663,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Alpha",
+            "nodePosition": {
+                "x": -190.0,
+                "y": 299.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5556919284345816730,
+                            "pinIndex": 3
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 5556919284345816730,
+            "inputPins": [
+                {
+                    "connectedNodeId": 13903553758900626899,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 13903553758900626899,
+                    "connectedPinIndex": 1,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 13903553758900626899,
+                    "connectedPinIndex": 2,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 15182045752092132663,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Vector4",
+            "nodePosition": {
+                "x": 693.0,
+                "y": 180.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5836639709973544338,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "vec4"
+        },
+        {
+            "Id": 5738539261051448718,
+            "inputPins": [
+                {
+                    "connectedNodeId": 12977511702406650124,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                }
+            ],
+            "isParameter": true,
+            "nodeName": "Texture",
+            "nodePosition": {
+                "x": -210.0,
+                "y": 49.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 12578330971741398449,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 8051057688786551004,
+            "inputPins": [
+                {
+                    "connectedNodeId": 12977511702406650124,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                },
+                {
+                    "connectedNodeId": 9504160040455163941,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Voronoi Noise",
+            "nodePosition": {
+                "x": -452.0,
+                "y": 292.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 2626729032516179855,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "voronoiNoise"
+        },
+        {
+            "Id": 9504160040455163941,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Scale",
+            "nodePosition": {
+                "x": -675.0,
+                "y": 313.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 8051057688786551004,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 12578330971741398449,
+            "inputPins": [
+                {
+                    "connectedNodeId": 5738539261051448718,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                },
+                {
+                    "connectedNodeId": 8336697338489882308,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Multiply",
+            "nodePosition": {
+                "x": 35.0,
+                "y": 147.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5592358490698291140,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "multiply"
+        },
+        {
+            "Id": 2626729032516179855,
+            "inputPins": [
+                {
+                    "connectedNodeId": 8051057688786551004,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 12112999456762847215,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 6845956270089331446,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Smoothstep",
+            "nodePosition": {
+                "x": -264.0,
+                "y": 442.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 6053022405498924924,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "smoothstep"
+        },
+        {
+            "Id": 6845956270089331446,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Noise Strength",
+            "nodePosition": {
+                "x": -466.0,
+                "y": 594.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 2626729032516179855,
+                            "pinIndex": 2
+                        },
+                        {
+                            "nodeId": 12112999456762847215,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 12112999456762847215,
+            "inputPins": [
+                {
+                    "connectedNodeId": 2122274092229023944,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 6845956270089331446,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Multiply",
+            "nodePosition": {
+                "x": -469.0,
+                "y": 453.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 2626729032516179855,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "multiply"
+        },
+        {
+            "Id": 2122274092229023944,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Float",
+            "nodePosition": {
+                "x": -668.0,
+                "y": 538.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 12112999456762847215,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 13903553758900626899,
+            "inputPins": [
+                {
+                    "connectedNodeId": 5592358490698291140,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Split Vector",
+            "nodePosition": {
+                "x": 476.0,
+                "y": 142.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5556919284345816730,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5556919284345816730,
+                            "pinIndex": 1
+                        }
+                    ]
+                },
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5556919284345816730,
+                            "pinIndex": 2
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "splitVector"
+        },
+        {
+            "Id": 16721743378461818166,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Cutoff Height",
+            "nodePosition": {
+                "x": -51.0,
+                "y": 593.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 6053022405498924924,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 11189814801770254583,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "World Position",
+            "nodePosition": {
+                "x": -51.0,
+                "y": 722.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 48218190017991596,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "worldPosition"
+        },
+        {
+            "Id": 6053022405498924924,
+            "inputPins": [
+                {
+                    "connectedNodeId": 2626729032516179855,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 16721743378461818166,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Add",
+            "nodePosition": {
+                "x": -60.0,
+                "y": 443.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 8336697338489882308,
+                            "pinIndex": 1
+                        },
+                        {
+                            "nodeId": 1125618642587351419,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "add"
+        },
+        {
+            "Id": 48218190017991596,
+            "inputPins": [
+                {
+                    "connectedNodeId": 11189814801770254583,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec3"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Split Vector",
+            "nodePosition": {
+                "x": 160.0,
+                "y": 636.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 8336697338489882308,
+                            "pinIndex": 0
+                        },
+                        {
+                            "nodeId": 14263021651791647697,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "splitVector"
+        },
+        {
+            "Id": 8336697338489882308,
+            "inputPins": [
+                {
+                    "connectedNodeId": 48218190017991596,
+                    "connectedPinIndex": 1,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 6053022405498924924,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Step",
+            "nodePosition": {
+                "x": 366.0,
+                "y": 522.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 12578330971741398449,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "step"
+        },
+        {
+            "Id": 14666585474991971250,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Edge Width",
+            "nodePosition": {
+                "x": 467.0,
+                "y": 776.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 14263021651791647697,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 1125618642587351419,
+            "inputPins": [
+                {
+                    "connectedNodeId": 6053022405498924924,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 14263021651791647697,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Step",
+            "nodePosition": {
+                "x": 603.0,
+                "y": 435.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 12187711002954094082,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "step"
+        },
+        {
+            "Id": 14263021651791647697,
+            "inputPins": [
+                {
+                    "connectedNodeId": 48218190017991596,
+                    "connectedPinIndex": 1,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 14666585474991971250,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Edge Offset",
+            "nodePosition": {
+                "x": 661.0,
+                "y": 670.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 1125618642587351419,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "add"
+        },
+        {
+            "Id": 2668076982281645902,
+            "inputPins": [
+                {
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "any"
+                },
+                {
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "any"
+                },
+                {
+                    "connectedNodeId": 16580004350883347390,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                },
+                {
+                    "connectedNodeId": 0,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "any"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Edge Colour",
+            "nodePosition": {
+                "x": 902.0,
+                "y": 586.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 12187711002954094082,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "vec4"
+        },
+        {
+            "Id": 16580004350883347390,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Float",
+            "nodePosition": {
+                "x": 902.0,
+                "y": 789.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 2668076982281645902,
+                            "pinIndex": 2
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 12187711002954094082,
+            "inputPins": [
+                {
+                    "connectedNodeId": 2668076982281645902,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                },
+                {
+                    "connectedNodeId": 1125618642587351419,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Multiply",
+            "nodePosition": {
+                "x": 891.0,
+                "y": 454.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5592358490698291140,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "multiply"
+        },
+        {
+            "Id": 5592358490698291140,
+            "inputPins": [
+                {
+                    "connectedNodeId": 12578330971741398449,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                },
+                {
+                    "connectedNodeId": 12187711002954094082,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Add",
+            "nodePosition": {
+                "x": 257.0,
+                "y": 152.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 13903553758900626899,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "add"
+        }
+    ],
+    "shaderId": 1826132241965376284,
+    "shaderSource": {
+        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_5738539261051448718;\nuniform float node_7995390483886049775;\n\n\n\nvec2 noiseVec2(vec2 UV) {\n    float x = dot(UV, vec2(123.4f, 234.5f));\n    float y = dot(UV, vec2(345.6f, 456.7f));\n    vec2 noise = vec2(sin(x), sin(y)) * 43758.5453;\n    return fract(noise);\n}\n\nfloat SimpleNoise(vec2 UV, float t) {\n    \n    return 0.68f;\n}\n\nfloat VoronoiNoise(vec2 UV, float t) {\n    // Grid setup\n    float gridSize = t;\n    UV = UV * gridSize;\n    vec2 gridId = floor(UV);\n    vec2 gridPosition = fract(UV) - vec2(0.5f);\n\n    // Calculate distance to closest grid center\n    float minDistanceToClosestGrid = 2000.0f;\n    for (float i = -1.0f; i <= 1.0f; i++) {\n        for (float j = -1.0f; j <= 1.0f; j++) {\n            vec2 checkGridCenter = vec2(i, j);\n            vec2 noise = noiseVec2(gridId + checkGridCenter);\n            vec2 gridCenter = checkGridCenter + sin(8.0f * noise) * 0.5;\n            float currentDistance = distance(gridPosition, gridCenter);\n            minDistanceToClosestGrid = min(currentDistance, minDistanceToClosestGrid);\n        }\n    }\n\n    return minDistanceToClosestGrid;\n}\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec4 node_5738539261051448718 = texture(sampler_5738539261051448718,v_TexCoord);\nfloat node_8051057688786551004 = VoronoiNoise(v_TexCoord, 20.000000f);\nfloat node_12112999456762847215 = 0.000000f * 1.500000f;\nfloat node_2626729032516179855 = smoothstep(node_12112999456762847215, 1.500000f, node_8051057688786551004);\nfloat node_6053022405498924924 = node_2626729032516179855 + node_7995390483886049775;\nfloat node_8336697338489882308 = step(node_6053022405498924924, v_Pos.y);\nvec4 node_12578330971741398449 = node_5738539261051448718.rgba * node_8336697338489882308;\nvec4 node_2668076982281645902 = vec4(0.0f,0.0f,1.000000f,0.0f);\nfloat node_14263021651791647697 = v_Pos.y + 0.150000f;\nfloat node_1125618642587351419 = step(node_14263021651791647697, node_6053022405498924924);\nvec4 node_12187711002954094082 = node_2668076982281645902 * node_1125618642587351419;\nvec4 node_5592358490698291140 = node_12578330971741398449 + node_12187711002954094082;\nvec4 node_5556919284345816730 = vec4(node_5592358490698291140.x,node_5592358490698291140.y,node_5592358490698291140.z,1.000000f);\nOutColour = node_5556919284345816730;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "vertex": "#version 450 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
+    },
+    "textureParameters": [
+        {
+            "Id": 5738539261051448718,
+            "displayName": "Texture",
+            "sampler": "sampler_5738539261051448718"
+        }
+    ],
+    "version": 1
+}

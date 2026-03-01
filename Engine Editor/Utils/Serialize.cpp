@@ -98,7 +98,10 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 }
 
 std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
-	if (nodeType == "uv") {
+	if (nodeType == "fragmentCoordinate") {
+		return std::make_shared<FragmentCoordinateNode>();
+	}
+	else if (nodeType == "uv") {
 		return std::make_shared<UVNode>();
 	}
 	else if (nodeType == "worldNormal") {
@@ -107,13 +110,8 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "worldPosition") {
 		return std::make_shared<WorldPositionNode>();
 	}
-	else if (nodeType == "fragmentCoordinate") {
-		return std::make_shared<FragmentCoordinateNode>();
-	}
+	
 
-	else if (nodeType == "sine") {
-		return std::make_shared<SineNode>();
-	}
 	else if (nodeType == "cosine") {
 		return std::make_shared<CosineNode>();
 	}
@@ -126,30 +124,48 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "length") {
 		return std::make_shared<LengthNode>();
 	}
+	else if (nodeType == "lerp") {
+		return std::make_shared<LerpNode>();
+	}
 	else if (nodeType == "normalize") {
 		return std::make_shared<NormalizeNode>();
-	}
-	else if (nodeType == "tangent") {
-		return std::make_shared<TangentNode>();
 	}
 	else if (nodeType == "power") {
 		return std::make_shared<PowerNode>();
 	}
+	else if (nodeType == "sine") {
+		return std::make_shared<SineNode>();
+	}
+	else if (nodeType == "smoothstep") {
+		return std::make_shared<SmoothstepNode>();
+	}
+	else if (nodeType == "step") {
+		return std::make_shared<StepNode>();
+	}
+	else if (nodeType == "tangent") {
+		return std::make_shared<TangentNode>();
+	}	
 
 	else if (nodeType == "add") {
 		return std::make_shared<AddNode>();
 	}
-	else if (nodeType == "subtract") {
-		return std::make_shared<SubtractNode>();
+	else if (nodeType == "decimal") {
+		return std::make_shared<DecimalNode>();
+	}
+	else if (nodeType == "divide") {
+		return std::make_shared<DivideNode>();
+	}	
+	else if (nodeType == "float") {
+		return std::make_shared<FloatNode>();
 	}
 	else if (nodeType == "multiply") {
 		return std::make_shared<MultiplyNode>();
 	}
-	else if (nodeType == "divide") {
-		return std::make_shared<DivideNode>();
+	else if (nodeType == "splitVector") {
+		return std::make_shared<SplitVectorNode>();
 	}
-	else if (nodeType == "decimal") {
-		return std::make_shared<DecimalNode>();
+	else if (nodeType == "subtract") {
+		return std::make_shared<SubtractNode>();
 	}
 	else if (nodeType == "vec2") {
 		return std::make_shared<Vector2Node>();
@@ -160,9 +176,6 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "vec4") {
 		return std::make_shared<Vector4Node>();
 	}
-	else if (nodeType == "splitVector") {
-		return std::make_shared<SplitVectorNode>();
-	}
 
 	else if (nodeType == "bsdf") {
 		return std::make_shared<BSDFNode>();
@@ -170,9 +183,10 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	else if (nodeType == "texture") {
 		return std::make_shared<TextureNode>(IcePick::UUID::Unitialised());
 	}
-	else if (nodeType == "float") {
-		return std::make_shared<FloatNode>();
+	else if (nodeType == "voronoiNoise") {
+		return std::make_shared<VoronoiNoiseNode>();
 	}
+	
 	else {
 		IP_ASSERT(false, "Node of that type cannot be created from save load.");
 	}
