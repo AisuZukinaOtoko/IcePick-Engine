@@ -1,7 +1,14 @@
 #pragma once
 #include "glm/glm.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/quaternion.hpp"
+
 #include "sol/sol.hpp"
 #include "entt/entt.h"
+#include <Jolt/Jolt.h>
+#include <Jolt/Physics/Body/BodyID.h>
+#include "../Physics Systems/ObjectAndBroadPhaseLayers.h"
+
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -50,12 +57,12 @@ namespace IcePick {
 			POINT_LIGHT,
 			DIRECTIONAL_LIGHT,
 			TERRAIN
-		} Type;
+		} Type = EntityType::ENTITY;
 	};
 	
 	struct TransformComponent {
 		glm::vec3 Position = glm::vec3(0.0f);
-		glm::vec3 Rotation = glm::vec3(0.0f);
+		glm::quat Rotation = glm::quat(glm::vec3(0.0f));
 		glm::vec3 Scale = glm::vec3(1.0f);
 	};
 
@@ -82,17 +89,45 @@ namespace IcePick {
 			FOLLOW,
 			THIRD_PERSON,
 			COUNT
-		} Mode;
+		} Mode = ControllerMode::NONE;
 
 		enum class Interpolation {
 			NONE = 0,
 			LINEAR,
 			COUNT
-		} EnterInterpolation; // when switching to this controller, how should the camera be interpolated
+		} EnterInterpolation = Interpolation::NONE; // when switching to this controller, how should the camera be interpolated
 
 		float InterpolationDuration = 1.0f;
 		float Pitch = 0.0f;
 		float Yaw = 0.0f;
 		float FOV = 45.0f;
+	};
+
+	struct ColliderShape {
+		UUID DataId = UUID::Unitialised();
+		enum class ColliderShapeType {
+			BOX_SHAPE = 0,
+			SPHERE_SHAPE,
+			CAPSULE_SHAPE,
+			STATIC_COMPOUND_SHAPE,
+			COLLIDER_SHAPE_COUNT
+		} ShapeType = ColliderShapeType::BOX_SHAPE;
+	};
+
+	struct RigidBodyComponent {
+		static constexpr unsigned int MaxColliderShapeCount = 5;
+		ColliderShape ColliderShapes[MaxColliderShapeCount];
+
+		JPH::ObjectLayer Layer = ObjectLayers::NON_MOVING;
+
+		enum class MotionTypes {
+			STATIC = 0,
+			DYNAMIC,
+			KINEMATIC,
+			MOTION_TYPE_COUNT
+		} MotionType = MotionTypes::STATIC;
+
+		JPH::BodyID RigidBodyId;
+		unsigned int ColliderShapeCount = 0;
 	};
 }

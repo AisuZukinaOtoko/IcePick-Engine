@@ -33,6 +33,19 @@ static const char* CameraControllerInterpolationToString(IcePick::CameraControll
     }
 }
 
+static const char* RigidBodyMotionTypeToString(IcePick::RigidBodyComponent::MotionTypes motionType) {
+    switch (motionType) {
+    case IcePick::RigidBodyComponent::MotionTypes::STATIC:
+        return "Static";
+    case IcePick::RigidBodyComponent::MotionTypes::DYNAMIC:
+        return "Dynamic";
+    case IcePick::RigidBodyComponent::MotionTypes::KINEMATIC:
+        return "Kinematic";
+    default:
+        return "Error";
+    }
+}
+
 static void CameraControllerDropTargetProperty(const char* label, IcePick::SceneCamera& sceneCamera, entt::entity droppedSceneObject, float columnWidth) {
     ImGui::PushID(label);
     ImGui::Columns(2);
@@ -129,6 +142,12 @@ void PropertiesPanel::Vec3Control(const char* label, glm::vec3& values, const fl
     ImGui::PopID();
 }
 
+void PropertiesPanel::QuaternionEulerControls(const char* label, glm::quat& value, const float dragSpeed) {
+    glm::vec3 eulerValues = glm::degrees(glm::eulerAngles(value));
+    Vec3Control(label, eulerValues, dragSpeed);
+    value = glm::quat(glm::radians(eulerValues));
+}
+
 void PropertiesPanel::SelectedProperties(const Styles& styles) {
     ImGui::Begin(m_ID, nullptr, ImGuiWindowFlags_NoCollapse);
     PanelSetup();
@@ -172,7 +191,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
             TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
             Vec3Control("Position", transform.Position, 0.05);
-            Vec3Control("Rotation", transform.Rotation, 0.5);
+            QuaternionEulerControls("Rotation", transform.Rotation, 0.5);
             Vec3Control("Scale", transform.Scale, 0.03);
         }
     }
@@ -190,6 +209,11 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     if (HasComponent<ScriptComponent>(m_SelectedEntity)) {
         ImGui::Spacing();
         ScriptComponentDetails(styles);
+    }
+
+    if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
+        ImGui::Spacing();
+        RigidBodyComponentDetails(styles);
     }
 
     if (HasComponent<CameraControllerComponent>(m_SelectedEntity)) {
@@ -524,6 +548,38 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         if (ImGui::Button(ICON_FA_PENCIL_SQUARE_O "Edit Script")) {
             OpenScriptEditor(scriptPath);
         }
+    }
+}
+
+void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
+    if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen)) {
+        IcePick::RigidBodyComponent& rigidBodyComponent = IcePick::GetComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
+
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, m_ColumnWidth);
+        ImGui::Text("Motion Type");
+        ImGui::NextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+        if (ImGui::BeginCombo("##MotionType", RigidBodyMotionTypeToString(rigidBodyComponent.MotionType))) {
+            for (int i = 0; i < (int)IcePick::RigidBodyComponent::MotionTypes::MOTION_TYPE_COUNT; ++i) {
+                IcePick::RigidBodyComponent::MotionTypes value = static_cast<IcePick::RigidBodyComponent::MotionTypes>(i);
+                bool selected = (rigidBodyComponent.MotionType == value);
+
+                if (ImGui::Selectable(RigidBodyMotionTypeToString(value), selected))
+                    rigidBodyComponent.MotionType = value;
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+
+            ImGui::EndCombo();
+        }
+
+        if (ImGui::Button("Add Box Collider")) {
+            if (rigidBodyComponent.ColliderShapeCount < rigidBodyComponent.MaxColliderShapeCount)
+                rigidBodyComponent.ColliderShapeCount++;
+        }
+
     }
 }
 

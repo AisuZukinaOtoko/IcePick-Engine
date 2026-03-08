@@ -111,6 +111,13 @@ void IcePick::EngineAPI::ReloadShaders() {
 
 void IcePick::EngineAPI::SetEngineRuntimeState(RuntimeState newRuntimeState) {
 	m_Engine->m_CurrentRuntimeState = newRuntimeState;
+	switch (newRuntimeState) {
+	case RuntimeState::STOPPED:
+		m_Engine->OnEndScene();
+		break;
+	case RuntimeState::RUNNING:
+		m_Engine->OnBeginScene();
+	}
 }
 
 IcePick::RuntimeState IcePick::EngineAPI::QueryEngineRuntimeState() {

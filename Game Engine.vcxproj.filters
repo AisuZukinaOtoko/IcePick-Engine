@@ -741,7 +741,16 @@
     <ClCompile Include="src\Vendor\Jolt\RegisterTypes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics Systems\PhysicsSystem.cpp">
+    <ClCompile Include="src\Physics Systems\PhysicsSystem3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics Systems\ObjectLayerPairFilterImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3836,7 +3845,19 @@
     <ClInclude Include="src\Vendor\Jolt\RegisterTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics Systems\PhysicsSystem.h">
+    <ClInclude Include="src\Physics Systems\PhysicsSystem3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\ObjectAndBroadPhaseLayers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\ObjectLayerPairFilterImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,184 @@
+{
+    "Id": 6087584274923246200,
+    "floatParameters": [
+        {
+            "Id": 7853925723412034981,
+            "displayName": "Tiling Factor",
+            "shaderIdentifier": "node_7853925723412034981"
+        }
+    ],
+    "graphId": 0,
+    "shaderGraph": [
+        {
+            "Id": 13814463800802055868,
+            "inputPins": [
+                {
+                    "connectedNodeId": 3127120025277942643,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec4"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Output",
+            "nodePosition": {
+                "x": 0.0,
+                "y": 0.0
+            },
+            "outputPins": [],
+            "type": "bsdf"
+        },
+        {
+            "Id": 3127120025277942643,
+            "inputPins": [
+                {
+                    "connectedNodeId": 264166964819119316,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                }
+            ],
+            "isParameter": true,
+            "nodeName": "Texture",
+            "nodePosition": {
+                "x": -609.0,
+                "y": -105.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 13814463800802055868,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 8585258541304726658,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Model UV",
+            "nodePosition": {
+                "x": -1262.0,
+                "y": -179.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 16896686768126767140,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "uv"
+        },
+        {
+            "Id": 16896686768126767140,
+            "inputPins": [
+                {
+                    "connectedNodeId": 8585258541304726658,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                },
+                {
+                    "connectedNodeId": 7853925723412034981,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "float"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Multiply",
+            "nodePosition": {
+                "x": -1036.0,
+                "y": -186.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 264166964819119316,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "multiply"
+        },
+        {
+            "Id": 7853925723412034981,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Tiling Factor",
+            "nodePosition": {
+                "x": -1267.0,
+                "y": -61.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 16896686768126767140,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 264166964819119316,
+            "inputPins": [
+                {
+                    "connectedNodeId": 16896686768126767140,
+                    "connectedPinIndex": 0,
+                    "connectedPinType": "vec2"
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "Decimal",
+            "nodePosition": {
+                "x": -820.0,
+                "y": -158.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 3127120025277942643,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "decimal"
+        }
+    ],
+    "shaderId": 16737860302538424664,
+    "shaderSource": {
+        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_3127120025277942643;\nuniform float node_7853925723412034981;\n\n\n\nvec2 noiseVec2(vec2 UV) {\n    float x = dot(UV, vec2(123.4f, 234.5f));\n    float y = dot(UV, vec2(345.6f, 456.7f));\n    vec2 noise = vec2(sin(x), sin(y)) * 43758.5453;\n    return fract(noise);\n}\n\nfloat SimpleNoise(vec2 UV, float t) {\n    \n    return 0.68f;\n}\n\nfloat VoronoiNoise(vec2 UV, float t) {\n    // Grid setup\n    float gridSize = t;\n    UV = UV * gridSize;\n    vec2 gridId = floor(UV);\n    vec2 gridPosition = fract(UV) - vec2(0.5f);\n\n    // Calculate distance to closest grid center\n    float minDistanceToClosestGrid = 2000.0f;\n    for (float i = -1.0f; i <= 1.0f; i++) {\n        for (float j = -1.0f; j <= 1.0f; j++) {\n            vec2 checkGridCenter = vec2(i, j);\n            vec2 noise = noiseVec2(gridId + checkGridCenter);\n            vec2 gridCenter = checkGridCenter + sin(8.0f * noise) * 0.5;\n            float currentDistance = distance(gridPosition, gridCenter);\n            minDistanceToClosestGrid = min(currentDistance, minDistanceToClosestGrid);\n        }\n    }\n\n    return minDistanceToClosestGrid;\n}\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec2 node_16896686768126767140 = v_TexCoord * node_7853925723412034981;\nvec2 node_264166964819119316 = fract(node_16896686768126767140);\nvec4 node_3127120025277942643 = texture(sampler_3127120025277942643,node_264166964819119316);\nOutColour = node_3127120025277942643.rgba;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "vertex": "#version 450 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
+    },
+    "textureParameters": [
+        {
+            "Id": 3127120025277942643,
+            "displayName": "Texture",
+            "sampler": "sampler_3127120025277942643"
+        }
+    ],
+    "version": 1
+}

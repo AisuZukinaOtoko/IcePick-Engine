@@ -9,6 +9,8 @@
 #include "../Scene Systems/ScriptRunner.h"
 #include "EngineRuntimeStates.h"
 
+#include "../Physics Systems/PhysicsSystem3D.h"
+
 
 namespace IcePick {
 	class EngineAPI;
@@ -18,6 +20,9 @@ namespace IcePick {
 		void OnAttach() override;
 		void OnUpdate(DeltaTime dt) override;
 		void OnDetach() override;
+
+		void OnBeginScene();
+		void OnEndScene();
 
 		static Input GameInput;
 		void OnEvent(Event& event) override;
@@ -35,11 +40,12 @@ namespace IcePick {
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		friend class EngineAPI;
-		RuntimeState m_CurrentRuntimeState = RuntimeState::RUNNING;
+		RuntimeState m_CurrentRuntimeState = RuntimeState::STOPPED;
 		FrameBuffer m_FrameBuffer;
 		FrameBuffer m_ThumbnailBuffer;
 		AssetLoader m_AssetLoader;
 		ScriptRunner m_ScriptRunner;
+		PhysicsSystem3D m_PhysicsSystem3D;
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 		Scene m_CurrentScene;

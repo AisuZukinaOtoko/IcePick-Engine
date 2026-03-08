@@ -16,12 +16,13 @@ void IcePick::EngineLayer::OnAttach() {
 	m_FrameBuffer.Init(windowSize.x, windowSize.y, FrameBuffer::DEFERRED);
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
+	m_PhysicsSystem3D.Init();
 	m_SceneCameraId = AddSceneCamera();
-	m_CurrentScene.OnBegin();
+	//m_CurrentScene.OnBegin();
 }
 
 void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
-	if (m_CurrentRuntimeState != RuntimeState::RUNNING) // Engine is either paused or stopped. Editor only
+	if (m_CurrentRuntimeState != RuntimeState::RUNNING)
 		return;
 
 	auto& ActiveSceneRegistry = GetActiveSceneRegistry();
@@ -46,7 +47,26 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 		}
 	}
 
-	m_CurrentScene.OnUpdate(dt);
+	//m_CurrentScene.OnUpdate(dt);
+	IP_CORE_PROFILE_BEGIN("Physics Update");
+	m_PhysicsSystem3D.Update();
+	IP_CORE_PROFILE_POP();
+
+	auto physicsEntitiesView = ActiveSceneRegistry.view<RigidBodyComponent>();
+
+	for (entt::entity entity : physicsEntitiesView) {
+		TransformComponent& transformComponent = ActiveSceneRegistry.get<TransformComponent>(entity);
+		RigidBodyComponent& rigidBodyComponent = ActiveSceneRegistry.get<RigidBodyComponent>(entity);
+		
+		if (rigidBodyComponent.RigidBodyId.IsInvalid()) {
+			//IP_LOG("Rigid body ID is invalid.", IP_WARN_LOG);
+			continue;
+		}
+
+		transformComponent.Position = m_PhysicsSystem3D.GetBodyPosition(rigidBodyComponent.RigidBodyId);
+		transformComponent.Rotation = m_PhysicsSystem3D.GetBodyRotation(rigidBodyComponent.RigidBodyId);
+	}
+
 	SceneCamera& sceneCamera = GetComponent<SceneCamera>(m_SceneCameraId);
 	sceneCamera.OnUpdate(GameInput, dt);
 	IcePickRenderer::SetRenderCameraWorldPosition(sceneCamera.cameraPosition);
@@ -124,8 +144,9 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);
-		glm::quat q = glm::quat(glm::radians(EntityTransformComponent.Rotation));
-		model *= glm::toMat4(q);
+		//glm::quat q = glm::quat(glm::radians(EntityTransformComponent.Rotation));
+		//model *= glm::toMat4(q);
+		model *= glm::toMat4(EntityTransformComponent.Rotation);
 		model = glm::scale(model, EntityTransformComponent.Scale);
 		normalMatrix = glm::mat3(1.0f);
 		normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
@@ -165,9 +186,26 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 	}
 }
 
+void IcePick::EngineLayer::OnBeginScene() {
+	auto& activeSceneRegistry = GetActiveSceneRegistry();
+	auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();
+	
+	for (entt::entity entity : rigidBodiesView) {
+		TransformComponent& entityTransform = GetComponent<TransformComponent>(entity);
+		RigidBodyComponent& entityRigidBody = GetComponent<RigidBodyComponent>(entity);
+		m_PhysicsSystem3D.MultiCreateAndAddBodyPrepare(entityTransform, entityRigidBody);
+	}
+	m_PhysicsSystem3D.MultiAddBodiesFinalize();
+}
+
+void IcePick::EngineLayer::OnEndScene() {
+
+}
+
 void IcePick::EngineLayer::OnDetach() {
 	m_AssetLoader.ShutDown();
 	m_ScriptRunner.ShutDown();
+	m_PhysicsSystem3D.Shutdown();
 	auto& SceneRegistry = GetActiveSceneRegistry();
 	SceneRegistry.clear();
 }

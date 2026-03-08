@@ -19,6 +19,7 @@ private:
 	void PanelSetup();
 	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
+	void QuaternionEulerControls(const char* label, glm::quat& value, const float dragSpeed);
 	void TextProperty(const char* label, const char* property);
 	void InputTextProperty(const char* label, std::string& text);
 	void FloatSlider(const char* label, float* value, float min, float max);
@@ -31,7 +32,9 @@ private:
 	void CameraDetails();
 	void MeshRendererDetails(const Styles& styles);
 	void ScriptComponentDetails(const Styles& styles);
+	void RigidBodyComponentDetails(const Styles& styles);
 	void CameraControllerDetails();
+
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;
 	float m_ValueColumnWidth = 100.0f;

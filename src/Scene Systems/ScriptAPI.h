@@ -5,7 +5,7 @@
 namespace ScriptAPI {
 	// Transforms
 	glm::vec3& GetWorldPosition(entt::entity entityId);
-	glm::vec3 GetWorldRotation(entt::entity entityId);
+	//glm::vec3 GetWorldRotation(entt::entity entityId);
 	glm::vec3 GetWorldScale(entt::entity entityId);
 
 	glm::vec3 GetSceneCameraFrontVector();
@@ -14,6 +14,6 @@ namespace ScriptAPI {
 	glm::vec2 GetWalkActionAxes();
 
 	void SetWorldPosition(entt::entity entityId, glm::vec3& position);
-	void SetWorldRotation(entt::entity entityId, glm::vec3 rotation);
+	//void SetWorldRotation(entt::entity entityId, glm::vec3 rotation);
 	void SetWorldScale(entt::entity entityId, glm::vec3 scale);
 }

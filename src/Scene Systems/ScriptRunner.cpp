@@ -11,11 +11,11 @@ namespace IcePick {
 		m_LuaState.set_function("Log", IP_LOG);
 
 		m_LuaState.set_function("GetWorldPosition", ScriptAPI::GetWorldPosition);
-		m_LuaState.set_function("GetWorldRotation", ScriptAPI::GetWorldRotation);
+		//m_LuaState.set_function("GetWorldRotation", ScriptAPI::GetWorldRotation);
 		m_LuaState.set_function("GetWorldScale", ScriptAPI::GetWorldScale);
 
 		m_LuaState.set_function("SetWorldPosition", ScriptAPI::SetWorldPosition);
-		m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
+		//m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
 		m_LuaState.set_function("SetWorldScale", ScriptAPI::SetWorldScale);
 
 		m_LuaState.set_function("GetSceneCameraFrontVector", ScriptAPI::GetSceneCameraFrontVector);

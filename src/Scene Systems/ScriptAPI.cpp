@@ -8,9 +8,9 @@ namespace ScriptAPI {
 		return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Position;
 	}
 
-	glm::vec3 GetWorldRotation(entt::entity entityId) {
-		return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Rotation;
-	}
+	//glm::vec3 GetWorldRotation(entt::entity entityId) {
+	//	return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Rotation;
+	//}
 
 	glm::vec3 GetWorldScale(entt::entity entityId) {
 		return IcePick::GetComponent<IcePick::TransformComponent>(entityId).Scale;
@@ -50,10 +50,10 @@ namespace ScriptAPI {
 		entityPosition = position;
 	}
 
-	void SetWorldRotation(entt::entity entityId, glm::vec3 rotation) {
-		glm::vec3& entityRotation = IcePick::GetComponent<IcePick::TransformComponent>(entityId).Rotation;
-		entityRotation = rotation;
-	}
+	//void SetWorldRotation(entt::entity entityId, glm::vec3 rotation) {
+	//	glm::vec3& entityRotation = IcePick::GetComponent<IcePick::TransformComponent>(entityId).Rotation;
+	//	entityRotation = rotation;
+	//}
 
 	void SetWorldScale(entt::entity entityId, glm::vec3 scale) {
 		glm::vec3& entityScale = IcePick::GetComponent<IcePick::TransformComponent>(entityId).Scale;

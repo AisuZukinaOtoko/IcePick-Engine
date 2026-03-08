@@ -2,9 +2,19 @@
     "Id": 9456976931777634169,
     "floatParameters": [
         {
+            "Id": 9504160040455163941,
+            "displayName": "Scale",
+            "shaderIdentifier": "node_6560066634873523277"
+        },
+        {
+            "Id": 6845956270089331446,
+            "displayName": "Noise Strength",
+            "shaderIdentifier": "node_15389052010412388095"
+        },
+        {
             "Id": 16721743378461818166,
             "displayName": "Cutoff Height",
-            "shaderIdentifier": "node_2265904201300241510"
+            "shaderIdentifier": "node_3430661487849071244"
         }
     ],
     "graphId": 0,
@@ -189,7 +199,7 @@
         {
             "Id": 9504160040455163941,
             "inputPins": [],
-            "isParameter": false,
+            "isParameter": true,
             "nodeName": "Scale",
             "nodePosition": {
                 "x": -675.0,
@@ -279,11 +289,11 @@
         {
             "Id": 6845956270089331446,
             "inputPins": [],
-            "isParameter": false,
+            "isParameter": true,
             "nodeName": "Noise Strength",
             "nodePosition": {
-                "x": -466.0,
-                "y": 594.0
+                "x": -487.0,
+                "y": 620.0
             },
             "outputPins": [
                 {
@@ -556,8 +566,8 @@
             "isParameter": false,
             "nodeName": "Edge Width",
             "nodePosition": {
-                "x": 467.0,
-                "y": 776.0
+                "x": 474.0,
+                "y": 852.0
             },
             "outputPins": [
                 {
@@ -620,8 +630,8 @@
             "isParameter": false,
             "nodeName": "Edge Offset",
             "nodePosition": {
-                "x": 661.0,
-                "y": 670.0
+                "x": 559.0,
+                "y": 711.0
             },
             "outputPins": [
                 {
@@ -662,8 +672,8 @@
             "isParameter": false,
             "nodeName": "Edge Colour",
             "nodePosition": {
-                "x": 902.0,
-                "y": 586.0
+                "x": 898.0,
+                "y": 594.0
             },
             "outputPins": [
                 {
@@ -769,7 +779,7 @@
     ],
     "shaderId": 1826132241965376284,
     "shaderSource": {
-        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_5738539261051448718;\nuniform float node_2265904201300241510;\n\n\n\nvec2 noiseVec2(vec2 UV) {\n    float x = dot(UV, vec2(123.4f, 234.5f));\n    float y = dot(UV, vec2(345.6f, 456.7f));\n    vec2 noise = vec2(sin(x), sin(y)) * 43758.5453;\n    return fract(noise);\n}\n\nfloat SimpleNoise(vec2 UV, float t) {\n    \n    return 0.68f;\n}\n\nfloat VoronoiNoise(vec2 UV, float t) {\n    // Grid setup\n    float gridSize = t;\n    UV = UV * gridSize;\n    vec2 gridId = floor(UV);\n    vec2 gridPosition = fract(UV) - vec2(0.5f);\n\n    // Calculate distance to closest grid center\n    float minDistanceToClosestGrid = 2000.0f;\n    for (float i = -1.0f; i <= 1.0f; i++) {\n        for (float j = -1.0f; j <= 1.0f; j++) {\n            vec2 checkGridCenter = vec2(i, j);\n            vec2 noise = noiseVec2(gridId + checkGridCenter);\n            vec2 gridCenter = checkGridCenter + sin(8.0f * noise) * 0.5;\n            float currentDistance = distance(gridPosition, gridCenter);\n            minDistanceToClosestGrid = min(currentDistance, minDistanceToClosestGrid);\n        }\n    }\n\n    return minDistanceToClosestGrid;\n}\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec4 node_5738539261051448718 = texture(sampler_5738539261051448718,v_TexCoord);\nfloat node_8051057688786551004 = VoronoiNoise(v_TexCoord, 0.000000f);\nfloat node_12112999456762847215 = 0.000000f * 0.000000f;\nfloat node_2626729032516179855 = smoothstep(node_12112999456762847215, 0.000000f, node_8051057688786551004);\nfloat node_6053022405498924924 = node_2626729032516179855 + node_2265904201300241510;\nfloat node_8336697338489882308 = step(node_6053022405498924924, v_Pos.y);\nvec4 node_12578330971741398449 = node_5738539261051448718.rgba * node_8336697338489882308;\nvec4 node_2668076982281645902 = vec4(0.0f,1.000000f,1.000000f,0.0f);\nfloat node_14263021651791647697 = v_Pos.y + 0.000000f;\nfloat node_1125618642587351419 = step(node_14263021651791647697, node_6053022405498924924);\nvec4 node_12187711002954094082 = node_2668076982281645902 * node_1125618642587351419;\nvec4 node_5592358490698291140 = node_12578330971741398449 + node_12187711002954094082;\nvec4 node_5556919284345816730 = vec4(node_5592358490698291140.x,node_5592358490698291140.y,node_5592358490698291140.z,1.000000f);\nOutColour = node_5556919284345816730;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "fragment": "#version 450 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_5738539261051448718;\nuniform float node_6560066634873523277;\nuniform float node_15389052010412388095;\nuniform float node_3430661487849071244;\n\n\n\nvec2 noiseVec2(vec2 UV) {\n    float x = dot(UV, vec2(123.4f, 234.5f));\n    float y = dot(UV, vec2(345.6f, 456.7f));\n    vec2 noise = vec2(sin(x), sin(y)) * 43758.5453;\n    return fract(noise);\n}\n\nfloat SimpleNoise(vec2 UV, float t) {\n    \n    return 0.68f;\n}\n\nfloat VoronoiNoise(vec2 UV, float t) {\n    // Grid setup\n    float gridSize = t;\n    UV = UV * gridSize;\n    vec2 gridId = floor(UV);\n    vec2 gridPosition = fract(UV) - vec2(0.5f);\n\n    // Calculate distance to closest grid center\n    float minDistanceToClosestGrid = 2000.0f;\n    for (float i = -1.0f; i <= 1.0f; i++) {\n        for (float j = -1.0f; j <= 1.0f; j++) {\n            vec2 checkGridCenter = vec2(i, j);\n            vec2 noise = noiseVec2(gridId + checkGridCenter);\n            vec2 gridCenter = checkGridCenter + sin(8.0f * noise) * 0.5;\n            float currentDistance = distance(gridPosition, gridCenter);\n            minDistanceToClosestGrid = min(currentDistance, minDistanceToClosestGrid);\n        }\n    }\n\n    return minDistanceToClosestGrid;\n}\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec4 node_5738539261051448718 = texture(sampler_5738539261051448718,v_TexCoord);\nfloat node_8051057688786551004 = VoronoiNoise(v_TexCoord, node_6560066634873523277);\nfloat node_12112999456762847215 = 0.000000f * node_15389052010412388095;\nfloat node_2626729032516179855 = smoothstep(node_12112999456762847215, node_15389052010412388095, node_8051057688786551004);\nfloat node_6053022405498924924 = node_2626729032516179855 + node_3430661487849071244;\nfloat node_8336697338489882308 = step(node_6053022405498924924, v_Pos.y);\nvec4 node_12578330971741398449 = node_5738539261051448718.rgba * node_8336697338489882308;\nvec4 node_2668076982281645902 = vec4(0.0f,0.420000f,0.420000f,0.0f);\nfloat node_14263021651791647697 = v_Pos.y + 0.100000f;\nfloat node_1125618642587351419 = step(node_14263021651791647697, node_6053022405498924924);\nvec4 node_12187711002954094082 = node_2668076982281645902 * node_1125618642587351419;\nvec4 node_5592358490698291140 = node_12578330971741398449 + node_12187711002954094082;\nvec4 node_5556919284345816730 = vec4(node_5592358490698291140.x,node_5592358490698291140.y,node_5592358490698291140.z,1.000000f);\nOutColour = node_5556919284345816730;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
         "vertex": "#version 450 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
     },
     "textureParameters": [

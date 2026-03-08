@@ -108,7 +108,7 @@ void ScenePanel::ShowSceneHierarchy() {
 			ImGui::EndDragDropSource();
 		}
 
-		if (ImGui::BeginPopup("Options"))
+		if ((entityTag.Type != IcePick::TagComponent::EntityType::CAMERA) && ImGui::BeginPopup("Options"))
 		{
 			if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginMenu("Add component"))
 			{
@@ -118,6 +118,10 @@ void ScenePanel::ShowSceneHierarchy() {
 
 				if (ImGui::MenuItem("Script component")) {
 					IcePick::AddComponent<IcePick::ScriptComponent>(m_SelectedEntity);
+				}
+
+				if (ImGui::MenuItem("Rigid body component")) {
+					IcePick::AddComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
 				}
 
 				ImGui::EndMenu();

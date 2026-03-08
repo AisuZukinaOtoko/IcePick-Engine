@@ -162,8 +162,9 @@ void Viewport::RenderEntityGizmos() {
 	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
 	glm::mat4 entityTransformMatrix = glm::mat4(1.0f);
 	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform.Position);
-	glm::quat q = glm::quat(glm::radians(entityTransform.Rotation));
-	entityTransformMatrix *= glm::toMat4(q);
+	//glm::quat q = glm::quat(glm::radians(entityTransform.Rotation));
+	//entityTransformMatrix *= glm::toMat4(q);
+	entityTransformMatrix *= glm::toMat4(entityTransform.Rotation);
 	entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransform.Scale);
 
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
@@ -188,8 +189,9 @@ void Viewport::RenderEntityGizmos() {
 
 		entityTransform.Position = translation;
 		entityTransform.Scale = scale;
-		glm::vec3 euler = glm::eulerAngles(rotation);
-		entityTransform.Rotation = glm::degrees(euler);;
+		//glm::vec3 euler = glm::eulerAngles(rotation);
+		//entityTransform.Rotation = glm::degrees(euler);
+		entityTransform.Rotation = rotation;
 	}
 
 }
