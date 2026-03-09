@@ -37,6 +37,7 @@ IcePick::AssetLoader::AssetLoader() {
 }
 
 void IcePick::AssetLoader::Init() {
+	m_ShaderLoader.Init();
 	ShaderSource shaderSource;
 	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
 	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
@@ -76,6 +77,10 @@ const Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 
 IcePick::ShaderProgram& IcePick::AssetLoader::GetShaderProgram(UUID Id) {
 	return m_ShaderLoader.GetShaderProgram(Id);;
+}
+
+IcePick::ShaderProgram& IcePick::AssetLoader::GetDefaultShaderProgram(ShaderLoader::DefaultShader shaderType) {
+	return m_ShaderLoader.GetDefaultShaderProgram(shaderType);
 }
 
 void IcePick::AssetLoader::ReloadShaderPrograms() {

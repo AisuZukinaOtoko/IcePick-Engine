@@ -9,8 +9,14 @@ namespace IcePick {
 	class ShaderLoader {
 	public:
 		ShaderLoader();
+		void Init();
 		void ShutDown();
 		~ShaderLoader();
+
+		enum DefaultShader {
+			LINE_SHADER = 0,
+			DEFAULT_SHADER_COUNT
+		};
 
 		void SetDefaultShaderProgram(ShaderProgram shaderProgram);
 
@@ -21,6 +27,7 @@ namespace IcePick {
 
 		void ReloadShaderProgram(UUID shaderId, ShaderSource& shaderSource);
 		ShaderProgram& GetShaderProgram(UUID shaderId);
+		ShaderProgram& GetDefaultShaderProgram(DefaultShader shaderType);
 
 	private:
 		ShaderProgram m_DefaultShaderProgram;
@@ -30,5 +37,7 @@ namespace IcePick {
 
 		std::unordered_map<UUID, ShaderProgram, UUIDHasher> m_LoadedShaders;
 		std::unordered_map<std::filesystem::path, UUID> m_LoadedShaderPaths;
+
+		UUID DefaultSahderIds[DEFAULT_SHADER_COUNT];
 	};
 }

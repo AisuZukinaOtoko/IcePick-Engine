@@ -56,49 +56,96 @@ namespace IcePick {
 		m_CachedUniformLocations.clear();
 	}
 
-	inline void ShaderProgram::SetShaderUniformUint32(int location, uint32_t value) {
+	int ShaderProgram::GetUniformLocation(const char* uniform) {
+		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
+		if (location < 0) {
+			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
+		}
+		return location;
+	}
+
+	inline void ShaderProgram::UploadShaderUniformUint32(int location, uint32_t value) {
 		glUniform1ui(location, value);
 	}
 
-	inline void ShaderProgram::SetShaderUniformInt32(int location, int32_t value) {
+	inline void ShaderProgram::UploadShaderUniformInt32(int location, int32_t value) {
 		glUniform1i(location, value);
 	}
 
-	inline void ShaderProgram::SetShaderUniformFloat(int location, float value) {
+	inline void ShaderProgram::UploadShaderUniformFloat(int location, float value) {
 		glUniform1f(location, value);
 	}
 
-	void ShaderProgram::RegisterSetUniformUint32(const char* uniform, uint32_t value) {
-		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
-		if (location < 0) {
-			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
-			return;
-		}
-
-		m_CachedUniformLocations.insert({ uniform, location });
-		SetShaderUniformUint32(location, value);
+	inline void ShaderProgram::UploadShaderUniformMat4(int location, glm::mat4& value) {
+		glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 	}
 
-	void ShaderProgram::RegisterSetUniformInt32(const char* uniform, int32_t value)	{
-		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
+	inline void ShaderProgram::UploadShaderUniformMat3(int location, glm::mat3& value) {
+		glUniformMatrix3fv(location, 1, GL_FALSE, &value[0][0]);
+	}
+
+	inline void ShaderProgram::UploadShaderUniformVec3(int location, glm::vec3& value) {
+		glUniform3fv(location, 1, &value[0]);
+	}
+
+	void ShaderProgram::RegisterSetUniformUint32(const char* uniform, uint32_t value) {
+		int location = GetUniformLocation(uniform);
 		if (location < 0) {
-			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
 			return;
 		}
 
 		m_CachedUniformLocations.insert({ uniform, location });
-		SetShaderUniformInt32(location, value);
+		UploadShaderUniformUint32(location, value);
+	}
+
+	void ShaderProgram::RegisterSetUniformInt32(const char* uniform, int32_t value) {
+		int location = GetUniformLocation(uniform);
+		if (location < 0) {
+			return;
+		}
+
+		m_CachedUniformLocations.insert({ uniform, location });
+		UploadShaderUniformInt32(location, value);
 	}
 
 	void ShaderProgram::RegisterSetUniformFloat(const char* uniform, float value) {
-		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
+		int location = GetUniformLocation(uniform);
 		if (location < 0) {
-			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
 			return;
 		}
 
 		m_CachedUniformLocations.insert({ uniform, location });
-		SetShaderUniformFloat(location, value);
+		UploadShaderUniformFloat(location, value);
+	}
+
+	void ShaderProgram::RegisterSetUniformMat4(const char* uniform, glm::mat4& value) {
+		int location = GetUniformLocation(uniform);
+		if (location < 0) {
+			return;
+		}
+
+		m_CachedUniformLocations.insert({ uniform, location });
+		UploadShaderUniformMat4(location, value);
+	}
+
+	void ShaderProgram::RegisterSetUniformMat3(const char* uniform, glm::mat3& value) {
+		int location = GetUniformLocation(uniform);
+		if (location < 0) {
+			return;
+		}
+
+		m_CachedUniformLocations.insert({ uniform, location });
+		UploadShaderUniformMat3(location, value);
+	}
+
+	void ShaderProgram::RegisterSetUniformVec3(const char* uniform, glm::vec3& value) {
+		int location = GetUniformLocation(uniform);
+		if (location < 0) {
+			return;
+		}
+
+		m_CachedUniformLocations.insert({ uniform, location });
+		UploadShaderUniformVec3(location, value);
 	}
 
 	void ShaderProgram::SetUniformUint32(const char* uniform, uint32_t value) {
@@ -107,7 +154,7 @@ namespace IcePick {
 
 		if (iterator != m_CachedUniformLocations.end()) {
 			int location = iterator->second;			
-			SetShaderUniformUint32(location, value);
+			UploadShaderUniformUint32(location, value);
 			return;
 		}
 
@@ -115,13 +162,13 @@ namespace IcePick {
 		UnBind();
 	}
 
-	void ShaderProgram::SetUniformInt32(const char* uniform, int32_t value)	{
+	void ShaderProgram::SetUniformInt32(const char* uniform, int32_t value) {
 		Use();
 		auto iterator = m_CachedUniformLocations.find(uniform);
 
 		if (iterator != m_CachedUniformLocations.end()) {
 			int location = iterator->second;
-			SetShaderUniformInt32(location, value);
+			UploadShaderUniformInt32(location, value);
 			return;
 		}
 
@@ -135,11 +182,53 @@ namespace IcePick {
 
 		if (iterator != m_CachedUniformLocations.end()) {
 			int location = iterator->second;
-			SetShaderUniformFloat(location, value);
+			UploadShaderUniformFloat(location, value);
 			return;
 		}
 
 		RegisterSetUniformFloat(uniform, value);
+		UnBind();
+	}
+
+	void ShaderProgram::SetUniformMat4(const char* uniform, glm::mat4& value) {
+		Use();
+		auto iterator = m_CachedUniformLocations.find(uniform);
+
+		if (iterator != m_CachedUniformLocations.end()) {
+			int location = iterator->second;
+			UploadShaderUniformMat4(location, value);
+			return;
+		}
+
+		RegisterSetUniformMat4(uniform, value);
+		UnBind();
+	}
+
+	void ShaderProgram::SetUniformMat3(const char* uniform, glm::mat3& value) {
+		Use();
+		auto iterator = m_CachedUniformLocations.find(uniform);
+
+		if (iterator != m_CachedUniformLocations.end()) {
+			int location = iterator->second;
+			UploadShaderUniformMat3(location, value);
+			return;
+		}
+
+		RegisterSetUniformMat3(uniform, value);
+		UnBind();
+	}
+
+	void ShaderProgram::SetUniformVec3(const char* uniform, glm::vec3& value) {
+		Use();
+		auto iterator = m_CachedUniformLocations.find(uniform);
+
+		if (iterator != m_CachedUniformLocations.end()) {
+			int location = iterator->second;
+			UploadShaderUniformVec3(location, value);
+			return;
+		}
+
+		RegisterSetUniformVec3(uniform, value);
 		UnBind();
 	}
 

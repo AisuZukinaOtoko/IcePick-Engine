@@ -401,6 +401,8 @@
     <None Include="res\Scripts\Script.lua" />
     <None Include="res\shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\shaders\depth.shader" />
+    <None Include="res\shaders\line.frag.shader" />
+    <None Include="res\shaders\line.vert.shader" />
     <None Include="res\shaders\materialTemplate.frag.shader" />
     <None Include="res\shaders\material.shader" />
     <None Include="res\shaders\noiseFunctions.shader" />

@@ -125,7 +125,7 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	m_CurrentScene.OnPreRender();
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
-	IcePickRenderer::FlushLineRenderBuffer();
+	IcePickRenderer::FlushLineRenderBuffer(m_AssetLoader.GetDefaultShaderProgram(ShaderLoader::LINE_SHADER));
 	IP_CORE_PROFILE_POP();
 }
 

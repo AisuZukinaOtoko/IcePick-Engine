@@ -1,5 +1,6 @@
 #include "ShaderLoader.h"
 #include "../LogSystem.h"
+#include "../Utilities/Assert.h"
 #include <fstream>
 #include <sstream>
 
@@ -7,6 +8,14 @@ namespace IcePick {
 
 	ShaderLoader::ShaderLoader() {
 	
+	}
+
+	void ShaderLoader::Init() {
+		ShaderSource lineShaderSource;
+		lineShaderSource.VertexShaderSource = LoadFile("res/shaders/line.vert.shader", 0);
+		lineShaderSource.FragmentShaderSource = LoadFile("res/shaders/line.frag.shader", 0);
+		UUID lineShaderId = CreateShaderProgram(lineShaderSource);
+		DefaultSahderIds[LINE_SHADER] = lineShaderId;
 	}
 
 	void ShaderLoader::SetDefaultShaderProgram(ShaderProgram shaderProgram)	{
@@ -127,6 +136,16 @@ namespace IcePick {
 		m_CachedShaderProgramId = shaderId;
 		m_CachedShaderProgram = iterator->second;
 		return iterator->second;
+	}
+
+	ShaderProgram& ShaderLoader::GetDefaultShaderProgram(DefaultShader shaderType) {
+		IP_ASSERT(shaderType < DEFAULT_SHADER_COUNT, "Invalid default shader type.");
+		IP_ASSERT(shaderType >= 0, "Invalid default shader type.");
+		
+		UUID shaderId = DefaultSahderIds[shaderType];
+		IP_ASSERT(shaderId != UUID::Unitialised(), "Error getting the default shader of that type.");
+
+		return GetShaderProgram(shaderId);
 	}
 
 	void ShaderLoader::ShutDown() {

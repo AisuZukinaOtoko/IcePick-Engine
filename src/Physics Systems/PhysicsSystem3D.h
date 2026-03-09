@@ -40,7 +40,7 @@ namespace IcePick {
 		ObjectBroadPhaseLayerImpl m_ObjectBroadPhaseLayer;
 		ObjectVsBroadPhaseLayerImpl m_ObjectVsBroadPhaseLayerFilter;
 
-		PysiscsDebugRenderer3D m_DebugRenderer;
+		PysiscsDebugRenderer3D* m_DebugRenderer = nullptr;
 
 		JPH::PhysicsSystem m_PhysicsSystem;
 		JPH::TempAllocatorImpl* m_TempAllocator = nullptr;

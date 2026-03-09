@@ -25,6 +25,7 @@ namespace IcePick {
 
 		const Texture& GetTexture(UUID Id);
 		ShaderProgram& GetShaderProgram(UUID Id);
+		ShaderProgram& GetDefaultShaderProgram(ShaderLoader::DefaultShader shaderType);
 		void ReloadShaderPrograms();
 		void ShutDown();
 	private:

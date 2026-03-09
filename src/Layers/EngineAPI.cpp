@@ -85,6 +85,14 @@ void IcePick::EngineAPI::RenderMesh(MeshRendererComponent& mesh, glm::mat4& mode
 	m_Engine->RenderMeshNode(mesh.RootMeshNode, modelMatrix, mesh.MaterialSlots, entityId);
 }
 
+void IcePick::EngineAPI::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, glm::vec4 colour) {
+	ShaderProgram& lineShaderProgram = m_Engine->m_AssetLoader.GetDefaultShaderProgram(IcePick::ShaderLoader::LINE_SHADER);
+
+	IcePickRenderer::LinePointVertex3D point1{ startPoint, colour };
+	IcePickRenderer::LinePointVertex3D point2{ endPoint, colour };
+	IcePickRenderer::DrawLine(point1, point2, lineShaderProgram);
+}
+
 IcePick::ScriptComponent IcePick::EngineAPI::LoadScript(std::filesystem::path scriptPath, entt::entity entityId) {
 	return m_Engine->m_ScriptRunner.CreateScriptComponentFromFile(scriptPath, entityId);
 }

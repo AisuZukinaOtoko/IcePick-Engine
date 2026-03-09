@@ -35,6 +35,7 @@ namespace IcePick {
 
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath);
 		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);
+		void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, glm::vec4 colour);
 
 		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
 		void ReloadScripts();

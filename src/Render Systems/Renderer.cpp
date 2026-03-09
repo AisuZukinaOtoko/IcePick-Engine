@@ -161,9 +161,9 @@ namespace IcePickRenderer {
 		return MouseDelta;
 	}
 
-	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2) {
+	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2, IcePick::ShaderProgram& shaderProgram) {
 		if (LineBuffer.NumPoints + 2 > LineBuffer.MaxLinePointCount) {
-			FlushLineRenderBuffer();
+			FlushLineRenderBuffer(shaderProgram);
 		}
 
 		LineBuffer.LinePoints[LineBuffer.NumPoints] = point1;
@@ -172,15 +172,19 @@ namespace IcePickRenderer {
 		LineBuffer.NumPoints++;
 	}
 
-	void FlushLineRenderBuffer() {
+	void FlushLineRenderBuffer(IcePick::ShaderProgram& shaderProgram) {
 		if (LineBuffer.NumPoints == 0)
 			return;
+
+		shaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
+		shaderProgram.Use();
 
 		glBindVertexArray(InternalLineVertexArrayId);
 		glBindBuffer(GL_ARRAY_BUFFER, InternalLineBufferId);
 		glBufferSubData(GL_ARRAY_BUFFER, 0,	LineBuffer.NumPoints * sizeof(LinePointVertex3D), LineBuffer.LinePoints);
-
 		glDrawArrays(GL_LINES, 0, LineBuffer.NumPoints);
+
+		shaderProgram.UnBind();
 		LineBuffer.NumPoints = 0;
 	}
 
@@ -199,20 +203,26 @@ namespace IcePickRenderer {
 	void DrawMesh(const MeshComponent& mesh, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram) {
 		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
 
-		unsigned int shaderId = shaderProgram.GetID();
-		int location = glGetUniformLocation(shaderId, "u_MVP"); // location negative if uniform not found
-		glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
-		location = glGetUniformLocation(shaderId, "u_Modelmatrix"); // location negative if uniform not found
-		glUniformMatrix4fv(location, 1, GL_FALSE, &modelTransformMatrix[0][0]);
-		location = glGetUniformLocation(shaderId, "u_NormalMatrix"); // location negative if uniform not found
-		glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
-		location = glGetUniformLocation(shaderId, "u_CameraPosition"); // location negative if uniform not found
-		glUniform3fv(location, 1, &CameraPosition[0]);
+		//unsigned int shaderId = shaderProgram.GetID();
+		//int location = glGetUniformLocation(shaderId, "u_MVP"); // location negative if uniform not found
+		//glUniformMatrix4fv(location, 1, GL_FALSE, &MVP[0][0]);
+		//location = glGetUniformLocation(shaderId, "u_Modelmatrix"); // location negative if uniform not found
+		//glUniformMatrix4fv(location, 1, GL_FALSE, &modelTransformMatrix[0][0]);
+		//location = glGetUniformLocation(shaderId, "u_NormalMatrix"); // location negative if uniform not found
+		//glUniformMatrix3fv(location, 1, GL_FALSE, &RenderWorldNormalMatrix[0][0]);
+		//location = glGetUniformLocation(shaderId, "u_CameraPosition"); // location negative if uniform not found
+		//glUniform3fv(location, 1, &CameraPosition[0]);
+		shaderProgram.SetUniformMat4("u_MVP", MVP);
+		shaderProgram.SetUniformMat4("u_Modelmatrix", modelTransformMatrix);
+		shaderProgram.SetUniformMat3("u_NormalMatrix", RenderWorldNormalMatrix);
+		shaderProgram.SetUniformVec3("u_CameraPosition", CameraPosition);
 
+		shaderProgram.Use();
 		VertexArray& meshVertexArray = VertexArrays[mesh.MeshVertexArrayRegistryIndex];
 		meshVertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, meshVertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);
 		meshVertexArray.Unbind();
+		shaderProgram.UnBind();
 	}
 
 	NewVertexArrayData AddVertexArray() {

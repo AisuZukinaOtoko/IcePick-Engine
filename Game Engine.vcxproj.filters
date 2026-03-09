@@ -1233,6 +1233,8 @@
     <None Include="src\Vendor\Jolt\Physics\Body\MotionProperties.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="res\shaders\line.vert.shader" />
+    <None Include="res\shaders\line.frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
