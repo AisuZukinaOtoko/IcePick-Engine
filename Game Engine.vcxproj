@@ -198,7 +198,9 @@
     <ClCompile Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.cpp" />
     <ClCompile Include="src\Physics Systems\ObjectLayerPairFilterImpl.cpp" />
     <ClCompile Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.cpp" />
+    <ClCompile Include="src\Physics Systems\PhysicsDebugRenderer.cpp" />
     <ClCompile Include="src\Physics Systems\PhysicsSystem3D.cpp" />
+    <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
@@ -621,7 +623,10 @@
     <ClInclude Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.h" />
     <ClInclude Include="src\Physics Systems\ObjectLayerPairFilterImpl.h" />
     <ClInclude Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.h" />
+    <ClInclude Include="src\Physics Systems\PhysicsDebugRenderer.h" />
     <ClInclude Include="src\Physics Systems\PhysicsSystem3D.h" />
+    <ClInclude Include="src\Physics Systems\PhysicsUtils.h" />
+    <ClInclude Include="src\Render Systems\RenderLineBuffer.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />

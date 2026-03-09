@@ -223,6 +223,7 @@ void Viewport::RenderViewportControls() {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 		if (ImGui::Button(ICON_FA_STOP, buttonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
+			IcePickRenderer::RequestCursorUnlock();
 			m_GameIsPlaying = false;
 		}
 		ImGui::PopStyleColor();

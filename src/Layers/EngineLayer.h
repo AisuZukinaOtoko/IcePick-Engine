@@ -27,6 +27,7 @@ namespace IcePick {
 		static Input GameInput;
 		void OnEvent(Event& event) override;
 		void OnNewFrame() override;
+		void OnPreRender() override;
 		void OnRender(RenderPayload& payload) override;
 
 		unsigned int CreateTexture(std::filesystem::path assetPath);

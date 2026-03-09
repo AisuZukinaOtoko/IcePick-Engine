@@ -1,6 +1,27 @@
 #include "Vertex.h"
 using namespace IcePickRenderer;
 
+LinePointVertex3D::LinePointVertex3D() {
+	Position = glm::vec3(0.0f);
+	Colour = glm::vec4(1.0f);
+}
+
+LinePointVertex3D::LinePointVertex3D(glm::vec3 position, glm::vec4 colour) : Position(position), Colour(colour)
+{
+
+}
+
+VertexLayout LinePointVertex3D::GetVertexLayout() {
+	VertexLayout layout(sizeof(LinePointVertex3D));
+
+	layout.Push<float>(4, offsetof(LinePointVertex3D, Colour));
+	layout.Push<float>(3, offsetof(LinePointVertex3D, Position));
+
+	return layout;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 StaticVertex3D::StaticVertex3D() {
 	Position = glm::vec3(0.0f);
 	Normal = glm::vec3(0.0f);
@@ -8,7 +29,8 @@ StaticVertex3D::StaticVertex3D() {
 }
 
 StaticVertex3D::StaticVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords)
-	: Position(position), Normal(normal), TextureCoords(textureCoords) {
+	: Position(position), Normal(normal), TextureCoords(textureCoords)
+{
 
 }
 

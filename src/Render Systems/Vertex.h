@@ -4,6 +4,18 @@
 
 namespace IcePickRenderer {
 
+	struct LinePointVertex3D {
+	public:
+		LinePointVertex3D();
+		LinePointVertex3D(glm::vec3 position, glm::vec4 colour);
+
+		static VertexLayout GetVertexLayout();
+
+		glm::vec4 Colour;
+		glm::vec3 Position;
+	private:
+	};
+
 	struct StaticVertex3D {
 	public:
 		StaticVertex3D();

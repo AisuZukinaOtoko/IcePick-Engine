@@ -82,6 +82,16 @@ void IcePick::EditorLayer::OnEvent(Event& event) {
     m_Viewport.OnViewportEvent(event);
 }
 
+void IcePick::EditorLayer::OnPreRender() {
+    // Scene space editor rendering
+    glm::vec3 point1 = glm::vec3(0.0f);
+    glm::vec3 point2 = glm::vec3(1.0f);
+    IcePickRenderer::LinePointVertex3D vertex1{ point1, glm::vec4(1.0f) };
+    IcePickRenderer::LinePointVertex3D vertex2{ point2, glm::vec4(1.0f) };
+
+    IcePickRenderer::DrawLine(vertex1, vertex2);
+}
+
 void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_EngineAPI.SetRenderTargetDefault();
     ImGui_ImplOpenGL3_NewFrame();

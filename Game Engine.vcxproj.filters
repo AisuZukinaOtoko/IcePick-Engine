@@ -753,6 +753,12 @@
     <ClCompile Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics Systems\PhysicsDebugRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -3858,6 +3864,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics Systems\ObjectVsBroadPhaseLayerImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\PhysicsDebugRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics Systems\PhysicsUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render Systems\RenderLineBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

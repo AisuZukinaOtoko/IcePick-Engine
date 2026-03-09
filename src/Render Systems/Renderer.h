@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Vertex.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "FrameBuffer.h"
@@ -32,6 +33,9 @@ namespace IcePickRenderer {
 	void RequestCursorUnlock();
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();
+
+	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2);
+	void FlushLineRenderBuffer();
 	
 	// Render camera settings
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);

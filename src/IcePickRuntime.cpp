@@ -68,6 +68,12 @@ void Engine::Run() {
 		}
 		IP_CORE_PROFILE_POP();
 
+		IP_CORE_PROFILE_BEGIN("Pre-Render Layers");
+		for (auto& layer : IP_LayerStack.m_Layers) {
+			layer->OnPreRender();
+		}
+		IP_CORE_PROFILE_POP();
+
 		auto layerIt = IP_LayerStack.m_Layers.rbegin();
 		RenderPayload payload;
 		for (; layerIt != IP_LayerStack.m_Layers.rend(); ++layerIt) {

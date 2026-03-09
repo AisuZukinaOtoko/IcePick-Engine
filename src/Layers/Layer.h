@@ -20,6 +20,7 @@ namespace IcePick {
 
 		virtual void OnEvent(Event& event) {};
 		virtual void OnNewFrame() {};
+		virtual void OnPreRender() {};
 		virtual void OnRender(RenderPayload& payload) {};
 		bool m_Active = true;
 	private:

@@ -1,4 +1,5 @@
 #include "PhysicsSystem3D.h"
+#include "PhysicsUtils.h"
 
 #include <Jolt/RegisterTypes.h>
 #include <Jolt/Core/Factory.h>
@@ -106,22 +107,6 @@ namespace IcePick {
 		}
 	}
 
-	JPH::RVec3 PhysicsSystem3D::Vec3ToPhysicsVec3(const glm::vec3& vec3) const {
-		return JPH::RVec3(vec3.x, vec3.y, vec3.z);
-	}
-
-	JPH::Quat PhysicsSystem3D::QuatToPhysicsQuat(const glm::quat& quat) const {
-		return JPH::Quat(quat.x, quat.y, quat.z, quat.w);
-	}
-
-	glm::vec3 PhysicsSystem3D::PhysicsVec3ToVec3(const JPH::RVec3& vec3) const {
-		return glm::vec3(vec3.GetX(), vec3.GetY(), vec3.GetZ());
-	}
-
-	glm::quat PhysicsSystem3D::PhysicsQuatToQuat(const JPH::Quat& quat) const {
-		return glm::quat(quat.GetW(), quat.GetX(), quat.GetY(), quat.GetZ());
-	}
-
 	glm::vec3 PhysicsSystem3D::GetBodyPosition(JPH::BodyID bodyId) const {
 		const JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 		JPH::RVec3 position = bodyInterface.GetPosition(bodyId);
@@ -211,10 +196,10 @@ namespace IcePick {
 		if (boxShapeResult.HasError()) {
 			IP_LOG("Physics system failed to create the box collider shape.", IP_ERROR_LOG);
 			IP_LOG(boxShapeResult.GetError().c_str(), IP_ERROR_LOG);
+			return nullptr;
 		}
 
 		JPH::ShapeRefC boxShape = boxShapeResult.Get();
-
 		JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
 		returnBody = bodyInterface.CreateBody(bodyCreationSettings);
 

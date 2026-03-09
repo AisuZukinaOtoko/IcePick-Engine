@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
+#include "RenderLineBuffer.h"
 #include "../Vendor/glm/glm.hpp"
 #include "../Vendor/glm/gtc/matrix_transform.hpp"
 #include "../../src/LogSystem.h"
@@ -32,6 +33,10 @@ namespace IcePickRenderer {
 	static glm::mat4 RenderViewProjectionMatrix;
 	static glm::mat3 RenderWorldNormalMatrix; // No translation
 	static std::vector<VertexArray> VertexArrays;
+
+	static unsigned int InternalLineVertexArrayId = 0;
+	static unsigned int InternalLineBufferId = 0;
+	static RenderLineBuffer LineBuffer;
 
 	static unsigned int BasicMaterialShaderID = 0;
 
@@ -76,6 +81,26 @@ namespace IcePickRenderer {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 
+		// Line Rendering Setup
+		glGenVertexArrays(1, &InternalLineVertexArrayId);
+		glBindVertexArray(InternalLineVertexArrayId);
+
+		glGenBuffers(1, &InternalLineBufferId);
+		glBindBuffer(GL_ARRAY_BUFFER, InternalLineBufferId);
+		glBufferData(GL_ARRAY_BUFFER, LineBuffer.MaxLinePointCount * sizeof(LinePointVertex3D), nullptr, GL_DYNAMIC_DRAW);
+
+		const VertexLayout& layout = LinePointVertex3D::GetVertexLayout();
+		const auto& elements = layout.GetElements();
+		for (unsigned int i = 0; i < elements.size(); i++) {
+			const IcePickRenderer::VertexBufferElement& element = elements[i];
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)element.offset);
+		}
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// OpenGL Debug Callbacks
 		glDebugMessageCallback(debugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
 		glDebugMessageControl(GL_DONT_CARE,	GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
@@ -136,6 +161,29 @@ namespace IcePickRenderer {
 		return MouseDelta;
 	}
 
+	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2) {
+		if (LineBuffer.NumPoints + 2 > LineBuffer.MaxLinePointCount) {
+			FlushLineRenderBuffer();
+		}
+
+		LineBuffer.LinePoints[LineBuffer.NumPoints] = point1;
+		LineBuffer.NumPoints++;
+		LineBuffer.LinePoints[LineBuffer.NumPoints] = point2;
+		LineBuffer.NumPoints++;
+	}
+
+	void FlushLineRenderBuffer() {
+		if (LineBuffer.NumPoints == 0)
+			return;
+
+		glBindVertexArray(InternalLineVertexArrayId);
+		glBindBuffer(GL_ARRAY_BUFFER, InternalLineBufferId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0,	LineBuffer.NumPoints * sizeof(LinePointVertex3D), LineBuffer.LinePoints);
+
+		glDrawArrays(GL_LINES, 0, LineBuffer.NumPoints);
+		LineBuffer.NumPoints = 0;
+	}
+
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {
 		CameraPosition = CameraWorldPosition;
 	}
@@ -176,5 +224,7 @@ namespace IcePickRenderer {
 		for (VertexArray va : VertexArrays) {
 			va.Destroy();
 		}
+
+		glDeleteBuffers(1, &InternalLineBufferId);
 	}
 }

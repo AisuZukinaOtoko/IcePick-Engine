@@ -20,6 +20,7 @@ namespace IcePick {
 		virtual void OnDetach() override;
 
 		virtual void OnEvent(Event& event) override;
+		virtual void OnPreRender() override;
 		virtual void OnRender(RenderPayload& payload) override;
 	private:
 		void OnChangeSelectedEntity(entt::entity selectedEntity);

@@ -8,6 +8,8 @@
 #include "ObjectBroadPhaseLayerImpl.h"
 #include "ObjectVsBroadPhaseLayerImpl.h"
 
+#include "PhysicsDebugRenderer.h"
+
 #include "../Scene Systems/Components.h"
 
 namespace IcePick {
@@ -19,12 +21,6 @@ namespace IcePick {
 
 		void MultiCreateAndAddBodyPrepare(const TransformComponent& bodyTransform, RigidBodyComponent& rigidBody);
 		void MultiAddBodiesFinalize();
-
-		JPH::RVec3 Vec3ToPhysicsVec3(const glm::vec3& vec3) const;
-		JPH::Quat QuatToPhysicsQuat(const glm::quat& quat) const;
-
-		glm::vec3 PhysicsVec3ToVec3(const JPH::RVec3& vec3) const;
-		glm::quat PhysicsQuatToQuat(const JPH::Quat& quat) const;
 
 		glm::vec3 GetBodyPosition(JPH::BodyID bodyId) const;
 		glm::quat GetBodyRotation(JPH::BodyID bodyId) const;
@@ -43,6 +39,8 @@ namespace IcePick {
 		ObjectLayerPairFilterImpl m_ObjectLayerPairFilter;
 		ObjectBroadPhaseLayerImpl m_ObjectBroadPhaseLayer;
 		ObjectVsBroadPhaseLayerImpl m_ObjectVsBroadPhaseLayerFilter;
+
+		PysiscsDebugRenderer3D m_DebugRenderer;
 
 		JPH::PhysicsSystem m_PhysicsSystem;
 		JPH::TempAllocatorImpl* m_TempAllocator = nullptr;

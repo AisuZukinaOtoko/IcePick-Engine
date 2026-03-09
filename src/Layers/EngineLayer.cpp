@@ -77,6 +77,10 @@ void IcePick::EngineLayer::OnNewFrame() {
 	m_FrameBuffer.Clear();
 }
 
+void IcePick::EngineLayer::OnPreRender() {
+
+}
+
 void IcePick::EngineLayer::OnEvent(Event& event) {
 
 	if ((event.action == IP_PRESS) && (event.code == IP_KEY_S) && (event.mods & GLFW_MOD_SHIFT)) {
@@ -121,6 +125,7 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	m_CurrentScene.OnPreRender();
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
+	IcePickRenderer::FlushLineRenderBuffer();
 	IP_CORE_PROFILE_POP();
 }
 
