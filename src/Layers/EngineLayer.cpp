@@ -122,10 +122,13 @@ void IcePick::EngineLayer::GetEntityMatPixelData(int x, int y, void* pixelData) 
 void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	IP_CORE_PROFILE_BEGIN("Engine layer render.");
 	SetRenderTargetFrameBuffer();
+	IcePickRenderer::SetDrawLineShader(m_AssetLoader.GetDefaultShaderProgram(ShaderLoader::LINE_SHADER));
+
 	m_CurrentScene.OnPreRender();
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
-	IcePickRenderer::FlushLineRenderBuffer(m_AssetLoader.GetDefaultShaderProgram(ShaderLoader::LINE_SHADER));
+
+	IcePickRenderer::FlushLineRenderBuffer();
 	IP_CORE_PROFILE_POP();
 }
 
@@ -149,8 +152,6 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, EntityTransformComponent.Position);
-		//glm::quat q = glm::quat(glm::radians(EntityTransformComponent.Rotation));
-		//model *= glm::toMat4(q);
 		model *= glm::toMat4(EntityTransformComponent.Rotation);
 		model = glm::scale(model, EntityTransformComponent.Scale);
 		normalMatrix = glm::mat3(1.0f);

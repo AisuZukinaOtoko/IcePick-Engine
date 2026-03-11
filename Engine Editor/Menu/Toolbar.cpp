@@ -25,7 +25,7 @@ void Toolbar::Render() {
         }
 
         if (ImGui::BeginMenu("Debug")) {
-            if (ImGui::MenuItem("Reload Shaders")) {
+            if (ImGui::MenuItem("Reload Default Shader")) {
                 m_EngineAPI.ReloadShaders();
             }
 

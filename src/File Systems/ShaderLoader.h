@@ -31,7 +31,7 @@ namespace IcePick {
 
 	private:
 		ShaderProgram m_DefaultShaderProgram;
-		ShaderProgram m_CachedShaderProgram;
+		ShaderProgram* m_CachedShaderProgram = nullptr;
 		UUID m_CachedShaderProgramId = UUID::Unitialised();
 		UUID RegisterShaderProgram(ShaderProgram shaderProgram);
 

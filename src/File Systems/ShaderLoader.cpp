@@ -20,7 +20,7 @@ namespace IcePick {
 
 	void ShaderLoader::SetDefaultShaderProgram(ShaderProgram shaderProgram)	{
 		m_DefaultShaderProgram = shaderProgram;
-		m_CachedShaderProgram = m_DefaultShaderProgram;
+		m_CachedShaderProgram = &m_DefaultShaderProgram;
 	}
 
 	UUID ShaderLoader::RegisterShaderProgram(ShaderProgram shaderProgram) {
@@ -118,15 +118,15 @@ namespace IcePick {
 		iterator->second = newShader;
 
 		if (m_CachedShaderProgramId == shaderId)
-			m_CachedShaderProgram = newShader;
+			m_CachedShaderProgram = &newShader;
 	}
 
 	ShaderProgram& ShaderLoader::GetShaderProgram(UUID shaderId) {
 		if (shaderId == UUID::Unitialised())
 			return m_DefaultShaderProgram;
 
-		if (shaderId == m_CachedShaderProgramId)
-			return m_CachedShaderProgram;
+		if ((shaderId == m_CachedShaderProgramId) && m_CachedShaderProgram)
+			return *m_CachedShaderProgram;
 
 		auto iterator = m_LoadedShaders.find(shaderId);
 
@@ -134,7 +134,7 @@ namespace IcePick {
 			return m_DefaultShaderProgram;
 
 		m_CachedShaderProgramId = shaderId;
-		m_CachedShaderProgram = iterator->second;
+		m_CachedShaderProgram = &iterator->second;
 		return iterator->second;
 	}
 

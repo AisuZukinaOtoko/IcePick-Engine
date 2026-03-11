@@ -37,6 +37,7 @@ namespace IcePickRenderer {
 	static unsigned int InternalLineVertexArrayId = 0;
 	static unsigned int InternalLineBufferId = 0;
 	static RenderLineBuffer LineBuffer;
+	static ShaderProgram LineShaderProgram;
 
 	static unsigned int BasicMaterialShaderID = 0;
 
@@ -161,9 +162,13 @@ namespace IcePickRenderer {
 		return MouseDelta;
 	}
 
-	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2, IcePick::ShaderProgram& shaderProgram) {
+	void SetDrawLineShader(const ShaderProgram& lineShaderProgram) {
+		LineShaderProgram = lineShaderProgram;
+	}
+
+	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2) {
 		if (LineBuffer.NumPoints + 2 > LineBuffer.MaxLinePointCount) {
-			FlushLineRenderBuffer(shaderProgram);
+			FlushLineRenderBuffer();
 		}
 
 		LineBuffer.LinePoints[LineBuffer.NumPoints] = point1;
@@ -172,19 +177,19 @@ namespace IcePickRenderer {
 		LineBuffer.NumPoints++;
 	}
 
-	void FlushLineRenderBuffer(IcePick::ShaderProgram& shaderProgram) {
+	void FlushLineRenderBuffer() {
 		if (LineBuffer.NumPoints == 0)
 			return;
 
-		shaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
-		shaderProgram.Use();
+		LineShaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
+		LineShaderProgram.Use();
 
 		glBindVertexArray(InternalLineVertexArrayId);
 		glBindBuffer(GL_ARRAY_BUFFER, InternalLineBufferId);
 		glBufferSubData(GL_ARRAY_BUFFER, 0,	LineBuffer.NumPoints * sizeof(LinePointVertex3D), LineBuffer.LinePoints);
 		glDrawArrays(GL_LINES, 0, LineBuffer.NumPoints);
 
-		shaderProgram.UnBind();
+		LineShaderProgram.UnBind();
 		LineBuffer.NumPoints = 0;
 	}
 

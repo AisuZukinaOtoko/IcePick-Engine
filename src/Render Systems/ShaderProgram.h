@@ -33,6 +33,8 @@ namespace IcePick {
 		unsigned int m_ShaderProgramID = 0;
 		bool m_ShaderProgramValid = false;
 
+		unsigned int m_UniformErrorCount = 0;
+
 		int GetUniformLocation(const char* uniform);
 
 		std::unordered_map<std::string, int> m_CachedUniformLocations;

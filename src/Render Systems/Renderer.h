@@ -34,8 +34,9 @@ namespace IcePickRenderer {
 	glm::vec2 GetMousePos();
 	glm::vec2 GetMouseDelta();
 
-	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2, IcePick::ShaderProgram& shaderProgram);
-	void FlushLineRenderBuffer(IcePick::ShaderProgram& shaderProgram);
+	void SetDrawLineShader(const IcePick::ShaderProgram& lineShaderProgram);
+	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2);
+	void FlushLineRenderBuffer();
 	
 	// Render camera settings
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);

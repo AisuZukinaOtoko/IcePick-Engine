@@ -13,6 +13,8 @@ namespace IcePick {
 		m_ShaderProgramValid = other.m_ShaderProgramValid;
 		m_CachedUniformLocations.clear();
 		m_CachedUniformLocations = other.m_CachedUniformLocations;
+
+		m_UniformErrorCount = other.m_UniformErrorCount;
 	}
 
 	unsigned int ShaderProgram::GetID() {
@@ -58,8 +60,9 @@ namespace IcePick {
 
 	int ShaderProgram::GetUniformLocation(const char* uniform) {
 		int location = glGetUniformLocation(m_ShaderProgramID, uniform);
-		if (location < 0) {
+		if ((location < 0) && (m_UniformErrorCount < 5)) { // arbitrary temp number to prevent the debug log from filling with uniform errors.
 			IP_LOG("Failed to get location for uniform: " + std::string(uniform), IP_ERROR_LOG);
+			m_UniformErrorCount++;
 		}
 		return location;
 	}
