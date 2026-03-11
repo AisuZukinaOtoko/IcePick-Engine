@@ -46,6 +46,8 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
+		bool& QueryEngineRenderDebugPhysics();
+
 		void SetEngineRuntimeState(RuntimeState newRuntimeState);
 		RuntimeState QueryEngineRuntimeState();
 

@@ -46,6 +46,19 @@ static const char* RigidBodyMotionTypeToString(IcePick::RigidBodyComponent::Moti
     }
 }
 
+static const char* RigidBodyColliderShapeTypeToString(IcePick::ColliderShape::ColliderShapeType colliderShapeType) {
+    switch (colliderShapeType) {
+        case IcePick::ColliderShape::ColliderShapeType::BOX_SHAPE:
+        return "Box Shape";
+        case IcePick::ColliderShape::ColliderShapeType::SPHERE_SHAPE:
+        return "Sphere Shape";
+        case IcePick::ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
+        return "Capsule Shape";
+    default:
+        return "Error";
+    }
+}
+
 static void CameraControllerDropTargetProperty(const char* label, IcePick::SceneCamera& sceneCamera, entt::entity droppedSceneObject, float columnWidth) {
     ImGui::PushID(label);
     ImGui::Columns(2);
@@ -574,11 +587,40 @@ void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
 
             ImGui::EndCombo();
         }
+        ImGui::Columns(1);
 
-        if (ImGui::Button("Add Box Collider")) {
-            if (rigidBodyComponent.ColliderShapeCount < rigidBodyComponent.MaxColliderShapeCount)
-                rigidBodyComponent.ColliderShapeCount++;
+        for (unsigned int i = 0; i < rigidBodyComponent.ColliderShapeCount; i++) {
+            IcePick::ColliderShape& collider = rigidBodyComponent.ColliderShapes[i];
+            ImGui::PushID(i);
+            ImGui::Columns(2);
+            ImGui::SetColumnWidth(0, m_ColumnWidth);
+            ImGui::Text("Collider Shape");
+            ImGui::NextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+            if (ImGui::BeginCombo("##ColliderShapeType", RigidBodyColliderShapeTypeToString(collider.ShapeType))) {
+                for (int i = 0; i < (int)IcePick::ColliderShape::ColliderShapeType::COLLIDER_SHAPE_COUNT; ++i) {
+                    IcePick::ColliderShape::ColliderShapeType value = static_cast<IcePick::ColliderShape::ColliderShapeType>(i);
+                    bool selected = (collider.ShapeType == value);
+
+                    if (ImGui::Selectable(RigidBodyColliderShapeTypeToString(value), selected))
+                        collider.ShapeType = value;
+
+                    if (selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
+            ImGui::Columns(1);
+            ImGui::PopID();
         }
+
+        bool canAddCollider = rigidBodyComponent.ColliderShapeCount < rigidBodyComponent.MaxColliderShapeCount;
+        ImGui::BeginDisabled(!canAddCollider);
+        if (ImGui::Button("Add Box Collider")) {
+            rigidBodyComponent.ColliderShapeCount++;
+        }
+        ImGui::EndDisabled();
 
     }
 }

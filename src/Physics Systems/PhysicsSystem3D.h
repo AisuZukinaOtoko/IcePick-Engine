@@ -27,6 +27,10 @@ namespace IcePick {
 
 		JPH::BodyID AddBoxBody();
 		JPH::BodyID AddSphereBody();
+
+#ifndef DIST
+		void DebugRender();
+#endif
 	private:
 		JPH::Body* PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 		JPH::Body* PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);

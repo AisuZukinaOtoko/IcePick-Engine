@@ -128,6 +128,12 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
 
+#ifndef DIST
+	if (m_RenderDebugPhysics) {
+		m_PhysicsSystem3D.DebugRender();
+	}
+#endif
+
 	IcePickRenderer::FlushLineRenderBuffer();
 	IP_CORE_PROFILE_POP();
 }
@@ -178,9 +184,10 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 
 
 		ShaderProgram& materialBaseShader = m_AssetLoader.GetShaderProgram(meshMaterialBase.ShaderId);
+#ifndef DIST // Editor uniforms
 		materialBaseShader.SetUniformUint32("u_EntityId", (uint32_t)entityId);
 		materialBaseShader.SetUniformUint32("u_MaterialSlotIndex", (uint32_t)materialSlotIndex);
-
+#endif
 		materialBaseShader.Use();
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);

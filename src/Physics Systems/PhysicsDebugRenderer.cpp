@@ -6,8 +6,8 @@ namespace IcePick {
 	void PysiscsDebugRenderer3D::DrawLine(JPH::RVec3Arg from, JPH::RVec3Arg to, JPH::ColorArg color) {
 		glm::vec3 point1 = PhysicsVec3ToVec3(from);
 		glm::vec3 point2 = PhysicsVec3ToVec3(to);
-		IcePickRenderer::LinePointVertex3D vertex1{ point1, glm::vec4(1.0f) };
-		IcePickRenderer::LinePointVertex3D vertex2{ point2, glm::vec4(1.0f) };
+		IcePickRenderer::LinePointVertex3D vertex1{ point1, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) };
+		IcePickRenderer::LinePointVertex3D vertex2{ point2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) };
 
 		IcePickRenderer::DrawLine(vertex1, vertex2);
 	}

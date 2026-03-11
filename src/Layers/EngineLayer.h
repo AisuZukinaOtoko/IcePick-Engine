@@ -49,6 +49,8 @@ namespace IcePick {
 		PhysicsSystem3D m_PhysicsSystem3D;
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
+
+		bool m_RenderDebugPhysics = false;
 		Scene m_CurrentScene;
 		entt::entity m_SceneCameraId = entt::null;
 	};

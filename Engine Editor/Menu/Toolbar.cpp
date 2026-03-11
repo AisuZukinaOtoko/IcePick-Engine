@@ -21,6 +21,8 @@ void Toolbar::Render() {
         }
 
         if (ImGui::BeginMenu("View")) {
+            bool& renderDebugPhysics = m_EngineAPI.QueryEngineRenderDebugPhysics();
+            ImGui::MenuItem("Show Debug Physics", nullptr, &renderDebugPhysics);
             ImGui::EndMenu();
         }
 

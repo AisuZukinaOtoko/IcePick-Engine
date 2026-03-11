@@ -87,6 +87,10 @@ namespace IcePick {
 		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
 		m_PhysicsSystem.OptimizeBroadPhase();
 		m_PhysicsSystem.SetGravity(JPH::Vec3(0.0f, -3.81f, 0.0f));
+
+#ifndef DIST
+		m_DebugRenderer = new PysiscsDebugRenderer3D();
+#endif
 	}
 
 	JPH::EActivation PhysicsSystem3D::GetObjectActivation(const RigidBodyComponent& rigidBody) const {
@@ -184,7 +188,6 @@ namespace IcePick {
 
 	JPH::Body* PhysicsSystem3D::PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
 		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
-		JPH::Body* returnBody = nullptr;
 
 		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
 		JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
@@ -201,9 +204,8 @@ namespace IcePick {
 
 		JPH::ShapeRefC boxShape = boxShapeResult.Get();
 		JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
-		returnBody = bodyInterface.CreateBody(bodyCreationSettings);
 
-		return returnBody;
+		return bodyInterface.CreateBody(bodyCreationSettings);
 	}
 
 	JPH::Body* PhysicsSystem3D::PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
@@ -211,7 +213,25 @@ namespace IcePick {
 	}
 
 	JPH::Body* PhysicsSystem3D::PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-		return nullptr;
+		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+
+		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
+		JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
+		JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
+		JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
+
+		JPH::CapsuleShapeSettings capsuleShapeSettings{};
+		JPH::ShapeSettings::ShapeResult capsuleShapeResult = capsuleShapeSettings.Create();
+		if (capsuleShapeResult.HasError()) {
+			IP_LOG("Physics system failed to create the capsule collider shape.", IP_ERROR_LOG);
+			IP_LOG(capsuleShapeResult.GetError().c_str(), IP_ERROR_LOG);
+			return nullptr;
+		}
+
+		JPH::ShapeRefC boxShape = capsuleShapeResult.Get();
+		JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
+
+		return bodyInterface.CreateBody(bodyCreationSettings);
 	}
 
 	JPH::Body* PhysicsSystem3D::PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
@@ -276,11 +296,29 @@ namespace IcePick {
 		m_PhysicsSystem.Update(timeStep, 1,	m_TempAllocator, m_JobSystem);
 	}
 
+#ifndef DIST
+	void PhysicsSystem3D::DebugRender() {
+		JPH::BodyManager::DrawSettings drawSettings;
+
+		drawSettings.mDrawShape = true;
+		drawSettings.mDrawBoundingBox = false;
+		drawSettings.mDrawCenterOfMassTransform = false;
+		drawSettings.mDrawVelocity = false;
+
+		m_PhysicsSystem.DrawBodies(drawSettings, m_DebugRenderer);
+	}
+#endif
+
 	void PhysicsSystem3D::Shutdown() {
 		JPH::UnregisterTypes();
 
 		// Destroy the factory
 		delete JPH::Factory::sInstance;
 		JPH::Factory::sInstance = nullptr;
+
+		if (m_DebugRenderer) {
+			delete m_DebugRenderer;
+			JPH::DebugRenderer::sInstance = nullptr;
+		}
 	}
 }

@@ -115,6 +115,10 @@ void IcePick::EngineAPI::ReloadShaders() {
 	m_Engine->ReloadShaders();
 }
 
+bool& IcePick::EngineAPI::QueryEngineRenderDebugPhysics() {
+	return m_Engine->m_RenderDebugPhysics;
+}
+
 void IcePick::EngineAPI::SetEngineRuntimeState(RuntimeState newRuntimeState) {
 	m_Engine->m_CurrentRuntimeState = newRuntimeState;
 	switch (newRuntimeState) {
