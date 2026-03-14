@@ -11,6 +11,7 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
@@ -186,7 +187,7 @@ namespace IcePick {
 		return JPH::BodyID();
 	}
 
-	JPH::Body* PhysicsSystem3D::PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
+	JPH::Body* PhysicsSystem3D::PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
 		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 
 		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
@@ -194,48 +195,119 @@ namespace IcePick {
 		JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
 		JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
 
-		JPH::BoxShapeSettings boxShapeSettings{ scale };
-		JPH::ShapeSettings::ShapeResult boxShapeResult = boxShapeSettings.Create();
-		if (boxShapeResult.HasError()) {
-			IP_LOG("Physics system failed to create the box collider shape.", IP_ERROR_LOG);
-			IP_LOG(boxShapeResult.GetError().c_str(), IP_ERROR_LOG);
+		JPH::ShapeSettings::ShapeResult simpleShapeResult = CreateShape(rigidBody.ColliderShapes[0]);
+		if (simpleShapeResult.HasError()) {
+			IP_LOG("Physics system failed to create the collider shape.", IP_ERROR_LOG);
+			IP_LOG(simpleShapeResult.GetError().c_str(), IP_ERROR_LOG);
 			return nullptr;
 		}
 
-		JPH::ShapeRefC boxShape = boxShapeResult.Get();
-		JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
+		JPH::ShapeRefC simpleShape = simpleShapeResult.Get();
+		JPH::ShapeRefC scaledShape = new JPH::ScaledShape(simpleShape, scale);
+		JPH::BodyCreationSettings bodyCreationSettings{ scaledShape, position, rotation, motionType, rigidBody.Layer };
 
 		return bodyInterface.CreateBody(bodyCreationSettings);
 	}
 
-	JPH::Body* PhysicsSystem3D::PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-		return nullptr;
-	}
+	//JPH::Body* PhysicsSystem3D::PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
+	//	JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 
-	JPH::Body* PhysicsSystem3D::PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+	//	JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
+	//	JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
+	//	JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
+	//	JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
 
-		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
-		JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
-		JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
-		JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
+	//	//JPH::BoxShapeSettings boxShapeSettings{ scale };
+	//	JPH::ShapeSettings::ShapeResult boxShapeResult = CreateShape(rigidBody.ColliderShapes[0]);
+	//	if (boxShapeResult.HasError()) {
+	//		IP_LOG("Physics system failed to create the box collider shape.", IP_ERROR_LOG);
+	//		IP_LOG(boxShapeResult.GetError().c_str(), IP_ERROR_LOG);
+	//		return nullptr;
+	//	}
 
-		JPH::CapsuleShapeSettings capsuleShapeSettings{};
-		JPH::ShapeSettings::ShapeResult capsuleShapeResult = capsuleShapeSettings.Create();
-		if (capsuleShapeResult.HasError()) {
-			IP_LOG("Physics system failed to create the capsule collider shape.", IP_ERROR_LOG);
-			IP_LOG(capsuleShapeResult.GetError().c_str(), IP_ERROR_LOG);
-			return nullptr;
-		}
+	//	JPH::ShapeRefC boxShape = boxShapeResult.Get();
+	//	JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
 
-		JPH::ShapeRefC boxShape = capsuleShapeResult.Get();
-		JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
+	//	return bodyInterface.CreateBody(bodyCreationSettings);
+	//}
 
-		return bodyInterface.CreateBody(bodyCreationSettings);
-	}
+	//JPH::Body* PhysicsSystem3D::PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
+	//	return nullptr;
+	//}
+
+	//JPH::Body* PhysicsSystem3D::PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
+	//	JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+
+	//	JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
+	//	JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
+	//	JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
+	//	JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
+
+	//	JPH::CapsuleShapeSettings capsuleShapeSettings{ 0.5f, 0.25f};
+	//	JPH::ShapeSettings::ShapeResult capsuleShapeResult = capsuleShapeSettings.Create();
+	//	if (capsuleShapeResult.HasError()) {
+	//		IP_LOG("Physics system failed to create the capsule collider shape.", IP_ERROR_LOG);
+	//		IP_LOG(capsuleShapeResult.GetError().c_str(), IP_ERROR_LOG);
+	//		return nullptr;
+	//	}
+
+	//	JPH::ShapeRefC boxShape = capsuleShapeResult.Get();
+	//	JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
+
+	//	return bodyInterface.CreateBody(bodyCreationSettings);
+	//}
 
 	JPH::Body* PhysicsSystem3D::PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-		return nullptr;
+		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+
+		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
+		JPH::Vec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
+		JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
+		JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
+		
+		JPH::StaticCompoundShapeSettings compoundShapeSettings;
+		for (int i = 0; i < rigidBody.ColliderShapeCount; i++) {
+			const ColliderShape& colliderShape = rigidBody.ColliderShapes[i];
+			JPH::ShapeSettings::ShapeResult shapeResult = CreateShape(colliderShape);
+
+			if (shapeResult.HasError())
+				continue;
+
+			JPH::ShapeRefC shape = shapeResult.Get();
+			JPH::ShapeRefC scaledShape = new JPH::ScaledShape(shape, scale);
+			compoundShapeSettings.AddShape(Vec3ToPhysicsVec3(colliderShape.ColliderOffset), JPH::Quat::sIdentity(), scaledShape);
+		}
+
+		JPH::ShapeSettings::ShapeResult compoundShapeResult = compoundShapeSettings.Create();
+		if (compoundShapeResult.HasError()) {
+			IP_LOG("Physics system failed to create the compound collider shape.", IP_ERROR_LOG);
+			IP_LOG(compoundShapeResult.GetError().c_str(), IP_ERROR_LOG);
+			return nullptr;
+		}
+
+		JPH::ShapeRefC compoundShape = compoundShapeResult.Get();
+		JPH::BodyCreationSettings bodyCreationSettings{ compoundShape, position, rotation, motionType, rigidBody.Layer };
+
+		return bodyInterface.CreateBody(bodyCreationSettings);
+	}
+
+	JPH::ShapeSettings::ShapeResult PhysicsSystem3D::CreateShape(const ColliderShape& colliderShape) {
+		switch (colliderShape.ShapeType) {
+		case ColliderShape::ColliderShapeType::BOX_SHAPE:
+		{
+			JPH::BoxShapeSettings boxShapeSettings{ Vec3ToPhysicsVec3(colliderShape.ColliderScale) };
+			return boxShapeSettings.Create();
+		}
+		case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
+		{
+			JPH::CapsuleShapeSettings capsuleShapeSettings{ colliderShape.ColliderScale.y, colliderShape.Radius };
+			return capsuleShapeSettings.Create();
+		}
+		default:
+			IP_ASSERT(false, "Invalid shape type.");
+			break;
+		}
+		return JPH::ShapeSettings::ShapeResult();
 	}
 
 	void PhysicsSystem3D::MultiCreateAndAddBodyPrepare(const TransformComponent& bodyTransform, RigidBodyComponent& rigidBody) {
@@ -252,23 +324,26 @@ namespace IcePick {
 		}
 		else { // 1 collider shape
 			const ColliderShape& colliderShape = rigidBody.ColliderShapes[0];
-			switch (colliderShape.ShapeType) {
-			case ColliderShape::ColliderShapeType::BOX_SHAPE:
-				body = PrepareBoxShapeBody(bodyTransform, rigidBody);
-				break;
-			case ColliderShape::ColliderShapeType::SPHERE_SHAPE:
-				body = PrepareSphereShapeBody(bodyTransform, rigidBody);
-				break;
-			case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
-				body = PrepareCapsuleShapeBody(bodyTransform, rigidBody);
-				break;
-			case ColliderShape::ColliderShapeType::STATIC_COMPOUND_SHAPE:
+			if (colliderShape.ColliderOffset != glm::vec3(0.0f)) { // if the collider has an offset from the rigid body, we use a compound collider for proper center of mass calculations
 				body = PrepareStaticCompoundShapeBody(bodyTransform, rigidBody);
-				break;
-			default:
-				IP_LOG("Invalid collider shape type.", IP_ERROR_LOG);
-				break;
 			}
+			else {
+				body = PrepareSimpleShapeBody(bodyTransform, rigidBody);
+				//switch (colliderShape.ShapeType) {
+				//case ColliderShape::ColliderShapeType::BOX_SHAPE:
+				//	body = PrepareBoxShapeBody(bodyTransform, rigidBody);
+				//	break;
+				//case ColliderShape::ColliderShapeType::SPHERE_SHAPE:
+				//	body = PrepareSphereShapeBody(bodyTransform, rigidBody);
+				//	break;
+				//case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
+				//	body = PrepareCapsuleShapeBody(bodyTransform, rigidBody);
+				//	break;
+				//default:
+				//	IP_LOG("Invalid collider shape type.", IP_ERROR_LOG);
+				//	break;
+				//}
+			}			
 		}
 
 		if (!body) {
@@ -302,7 +377,7 @@ namespace IcePick {
 
 		drawSettings.mDrawShape = true;
 		drawSettings.mDrawBoundingBox = false;
-		drawSettings.mDrawCenterOfMassTransform = false;
+		drawSettings.mDrawCenterOfMassTransform = true;
 		drawSettings.mDrawVelocity = false;
 
 		m_PhysicsSystem.DrawBodies(drawSettings, m_DebugRenderer);

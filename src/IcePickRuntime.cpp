@@ -30,10 +30,10 @@ bool Engine::Init() {
 
 	IP_CORE_PROFILE_BEGIN("Init Engine Layers.");
 	std::shared_ptr<EngineLayer> engineLayer = std::make_shared<EngineLayer>();
-#ifndef RELEASE
+#ifndef DIST
 	std::shared_ptr<EditorLayer> editorLayer = std::make_shared<EditorLayer>(engineLayer);
 	IP_LayerStack.addLayer(editorLayer);
-#endif // !RELEASE
+#endif // !DIST
 	IP_LayerStack.addLayer(engineLayer);
 	IP_CORE_PROFILE_POP(); // Engine Layers
 

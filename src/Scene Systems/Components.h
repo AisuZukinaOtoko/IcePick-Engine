@@ -104,7 +104,10 @@ namespace IcePick {
 	};
 
 	struct ColliderShape {
-		UUID DataId = UUID::Unitialised();
+		glm::vec3 ColliderOffset = glm::vec3(0.0f);
+		glm::vec3 ColliderScale = glm::vec3(1.0f);
+		float Radius = 0.5f;
+
 		enum class ColliderShapeType {
 			BOX_SHAPE = 0,
 			SPHERE_SHAPE,

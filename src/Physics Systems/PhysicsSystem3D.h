@@ -22,6 +22,9 @@ namespace IcePick {
 		void MultiCreateAndAddBodyPrepare(const TransformComponent& bodyTransform, RigidBodyComponent& rigidBody);
 		void MultiAddBodiesFinalize();
 
+		void MultiRemoveBodyPrepare(const RigidBodyComponent& rigidBody);
+		void MultiRemoveBodiesFinalize();
+
 		glm::vec3 GetBodyPosition(JPH::BodyID bodyId) const;
 		glm::quat GetBodyRotation(JPH::BodyID bodyId) const;
 
@@ -32,10 +35,13 @@ namespace IcePick {
 		void DebugRender();
 #endif
 	private:
-		JPH::Body* PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
-		JPH::Body* PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
-		JPH::Body* PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
+		JPH::Body* PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
+		//JPH::Body* PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
+		//JPH::Body* PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
+		//JPH::Body* PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 		JPH::Body* PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
+
+		JPH::ShapeSettings::ShapeResult CreateShape(const ColliderShape& colliderShape);
 
 		JPH::EActivation GetObjectActivation(const RigidBodyComponent& rigidBody) const;
 		JPH::EMotionType GetObjectMotionType(const RigidBodyComponent& rigidBody) const;

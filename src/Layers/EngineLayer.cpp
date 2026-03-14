@@ -129,9 +129,11 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	RenderEntityMeshes();
 
 #ifndef DIST
+	IP_CORE_PROFILE_BEGIN("Debug physics render.");
 	if (m_RenderDebugPhysics) {
 		m_PhysicsSystem3D.DebugRender();
 	}
+	IP_CORE_PROFILE_POP();
 #endif
 
 	IcePickRenderer::FlushLineRenderBuffer();
