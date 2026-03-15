@@ -18,7 +18,9 @@ namespace IcePick {
 
 	entt::entity FindEntityByTag(TagComponent&);
 	entt::registry& GetActiveSceneRegistry();
+	entt::registry& GetSceneRegistry(SceneRegistryTypes registryType);
 	void SetActiveSceneRegistry(SceneRegistryTypes registryType);
+	void DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry);
 
 	template<typename T>
 	bool HasComponent(entt::entity entity) {

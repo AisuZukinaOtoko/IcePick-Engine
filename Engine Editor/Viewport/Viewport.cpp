@@ -223,6 +223,12 @@ void Viewport::RenderViewportControls() {
 	case IcePick::RuntimeState::STOPPED:
 		if (ImGui::Button(ICON_FA_PLAY, buttonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::RUNNING);
+
+			entt::registry& editorRegistry = IcePick::GetSceneRegistry(IcePick::SceneRegistryTypes::DEFAULT);
+			entt::registry& runtimeRegistry = IcePick::GetSceneRegistry(IcePick::SceneRegistryTypes::TEMPORARY);
+			IcePick::DuplicateSceneRegistry(editorRegistry, runtimeRegistry);
+
+			IcePick::SetActiveSceneRegistry(IcePick::SceneRegistryTypes::TEMPORARY);
 			m_GameIsPlaying = true;
 		}
 		break;
@@ -234,6 +240,10 @@ void Viewport::RenderViewportControls() {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 		if (ImGui::Button(ICON_FA_STOP, buttonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
+			entt::registry& runtimeRegistry = IcePick::GetSceneRegistry(IcePick::SceneRegistryTypes::TEMPORARY);
+			runtimeRegistry.clear();
+
+			IcePick::SetActiveSceneRegistry(IcePick::SceneRegistryTypes::DEFAULT);
 			IcePickRenderer::RequestCursorUnlock();
 			m_GameIsPlaying = false;
 		}

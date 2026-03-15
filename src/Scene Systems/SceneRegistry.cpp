@@ -18,6 +18,24 @@ static IcePick::TagComponent GetDefaultTag() {
     return returnTag;
 }
 
+template<typename... Component>
+static void CopyComponentAcrossRegistries(entt::registry& srcRegistry, entt::entity srcEntity, entt::registry& destRegistry, entt::entity destEntity) {
+    if (!srcRegistry.valid(srcEntity) || !destRegistry.valid(destEntity)) {
+        IP_ASSERT(false, "Invalid entity.");
+        return;
+    }
+
+    (
+        [&] {
+            if (srcRegistry.all_of<Component>(srcEntity)) {
+                destRegistry.emplace<Component>(destEntity, srcRegistry.get<Component>(srcEntity));
+            }
+        }
+        (), ...
+    );
+}
+
+
 entt::entity IcePick::NewEntity() {
     entt::registry& activeRegistry = GetActiveSceneRegistry();
     entt::entity newEntity = activeRegistry.create();
@@ -88,17 +106,6 @@ entt::entity IcePick::AddSceneCamera() {
     return newEntity;
 }
 
-//entt::entity IcePick::DuplicateEntity(entt::entity sourceEntity) {
-//    entt::registry& activeRegistry = GetActiveSceneRegistry();
-//    if (!activeRegistry.valid(sourceEntity))
-//        return entt::null;
-//
-//    entt::entity duplicatedEntity = activeRegistry.create();
-//
-//
-//    return entt::entity();
-//}
-
 entt::entity IcePick::FindEntityByTag(TagComponent& tag) {
     entt::registry& activeRegistry = GetActiveSceneRegistry();
     auto taggedEntities = activeRegistry.view<TransformComponent>();
@@ -114,8 +121,12 @@ entt::entity IcePick::FindEntityByTag(TagComponent& tag) {
 }
 
 entt::registry& IcePick::GetActiveSceneRegistry() {
+    return GetSceneRegistry(CurrentRegistryType);
+}
+
+entt::registry& IcePick::GetSceneRegistry(SceneRegistryTypes registryType) {
 #ifndef DIST
-    if (CurrentRegistryType == SceneRegistryTypes::DEFAULT)
+    if (registryType == SceneRegistryTypes::DEFAULT)
         return IP_SceneRegistry;
 
     return IP_TemporaryRegistry;
@@ -126,6 +137,28 @@ entt::registry& IcePick::GetActiveSceneRegistry() {
 
 void IcePick::SetActiveSceneRegistry(SceneRegistryTypes registryType) {
     CurrentRegistryType = registryType;
+}
+
+void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry) {
+    targetRegistry.clear();    
+
+    for (auto sourceEntity : sourceRegistry.storage<entt::entity>()) {
+        entt::entity targetEntity = targetRegistry.create(sourceEntity);
+        IP_ASSERT(sourceEntity == targetEntity, "Entity IDs do not match.");
+
+        CopyComponentAcrossRegistries<
+            TagComponent,
+            MeshRendererComponent,
+            ScriptComponent,
+            TransformComponent,
+            PointLightComponent,
+            DirectionalLightComponent,
+            CameraControllerComponent,
+            RigidBodyComponent,
+            SceneCamera
+        >(sourceRegistry, sourceEntity, targetRegistry, targetEntity);
+        
+    }
 }
 
 void IcePick::DeleteEntity(entt::entity entity) {

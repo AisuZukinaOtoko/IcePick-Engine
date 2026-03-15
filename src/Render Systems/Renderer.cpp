@@ -71,8 +71,8 @@ namespace IcePickRenderer {
 			return false;
 		}
 		
-		std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
-		std::cout << "OpenGL shading language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
+		std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
+		std::cout << "OpenGL shading language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << '\n';
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
