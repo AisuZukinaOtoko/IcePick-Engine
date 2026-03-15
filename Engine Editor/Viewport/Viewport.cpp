@@ -22,6 +22,7 @@ Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI)
 {
 	m_ViewportSize = ImVec2(1920, 180);
+	m_UsingGizmo = false;
 }
 
 void Viewport::SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback) {
@@ -159,13 +160,11 @@ void Viewport::RenderEntityGizmos() {
 	
 	ImGuizmo::SetRect(m_WindowPosition.x, m_WindowPosition.y, m_ViewportSize.x, m_ViewportSize.y);
 
-	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
+	IcePick::TransformComponent* entityTransform = &IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
 	glm::mat4 entityTransformMatrix = glm::mat4(1.0f);
-	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform.Position);
-	//glm::quat q = glm::quat(glm::radians(entityTransform.Rotation));
-	//entityTransformMatrix *= glm::toMat4(q);
-	entityTransformMatrix *= glm::toMat4(entityTransform.Rotation);
-	entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransform.Scale);
+	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform->Position);
+	entityTransformMatrix *= glm::toMat4(entityTransform->Rotation);
+	entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransform->Scale);
 
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
 	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
@@ -178,8 +177,19 @@ void Viewport::RenderEntityGizmos() {
 		glm::value_ptr(entityTransformMatrix)
 	);
 
-	m_UsingGizmo = false;
 	if (ImGuizmo::IsUsing()) {
+		using namespace IcePick;
+		if ((keyState.IsKeyHeld(IP_KEY_LEFT_SHIFT) || keyState.IsKeyHeld(IP_KEY_RIGHT_SHIFT)) && !m_UsingGizmo) { // first frame using the gizmo when holding Shift
+			m_SelectedEntity = DuplicateEntity<
+				TagComponent,
+				TransformComponent,
+				MeshRendererComponent,
+				ScriptComponent,
+				RigidBodyComponent>(m_SelectedEntity);
+			m_EntitySelected = true;
+			entityTransform = &GetComponent<TransformComponent>(m_SelectedEntity);
+		}
+
 		m_UsingGizmo = true;
 		glm::vec3 translation, scale, skew;
 		glm::vec4 perspective;
@@ -187,11 +197,12 @@ void Viewport::RenderEntityGizmos() {
 
 		glm::decompose(entityTransformMatrix, scale, rotation, translation, skew, perspective);
 
-		entityTransform.Position = translation;
-		entityTransform.Scale = scale;
-		//glm::vec3 euler = glm::eulerAngles(rotation);
-		//entityTransform.Rotation = glm::degrees(euler);
-		entityTransform.Rotation = rotation;
+		entityTransform->Position = translation;
+		entityTransform->Scale = scale;
+		entityTransform->Rotation = rotation;
+	}
+	else {
+		m_UsingGizmo = false;
 	}
 
 }

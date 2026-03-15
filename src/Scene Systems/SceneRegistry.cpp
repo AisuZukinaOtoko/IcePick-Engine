@@ -4,6 +4,11 @@
 #include <string>
 
 static entt::registry IP_SceneRegistry;
+#ifndef DIST
+static entt::registry IP_TemporaryRegistry; // Can be swapped to by editor for temporary simulation
+#endif
+
+static IcePick::SceneRegistryTypes CurrentRegistryType = IcePick::SceneRegistryTypes::DEFAULT;
 static int DefaultTagCount = 0;
 
 static IcePick::TagComponent GetDefaultTag() {
@@ -14,7 +19,8 @@ static IcePick::TagComponent GetDefaultTag() {
 }
 
 entt::entity IcePick::NewEntity() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
 
     AddComponent<TagComponent>(newEntity, GetDefaultTag());
     AddComponent<TransformComponent>(newEntity);    
@@ -22,7 +28,8 @@ entt::entity IcePick::NewEntity() {
 }
 
 entt::entity IcePick::NewCameraController() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
 
     TagComponent tag = GetDefaultTag();
     tag.Type = TagComponent::EntityType::CAMERA_CONTROLLER;
@@ -33,7 +40,8 @@ entt::entity IcePick::NewCameraController() {
 }
 
 entt::entity IcePick::NewPointLight() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
 
     TagComponent tag = GetDefaultTag();
     tag.Type = TagComponent::EntityType::POINT_LIGHT;
@@ -45,7 +53,8 @@ entt::entity IcePick::NewPointLight() {
 }
 
 entt::entity IcePick::NewDirectionalLight() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
     
     TagComponent tag = GetDefaultTag();
     tag.Type = TagComponent::EntityType::DIRECTIONAL_LIGHT;
@@ -56,7 +65,8 @@ entt::entity IcePick::NewDirectionalLight() {
 }
 
 entt::entity IcePick::NewTerrain() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
 
     TagComponent tag = GetDefaultTag();
     tag.Type = TagComponent::EntityType::TERRAIN;
@@ -66,7 +76,8 @@ entt::entity IcePick::NewTerrain() {
 }
 
 entt::entity IcePick::AddSceneCamera() {
-    entt::entity newEntity = IP_SceneRegistry.create();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    entt::entity newEntity = activeRegistry.create();
 
     TagComponent tag;
     tag.value = "Scene Camera";
@@ -77,11 +88,23 @@ entt::entity IcePick::AddSceneCamera() {
     return newEntity;
 }
 
+//entt::entity IcePick::DuplicateEntity(entt::entity sourceEntity) {
+//    entt::registry& activeRegistry = GetActiveSceneRegistry();
+//    if (!activeRegistry.valid(sourceEntity))
+//        return entt::null;
+//
+//    entt::entity duplicatedEntity = activeRegistry.create();
+//
+//
+//    return entt::entity();
+//}
+
 entt::entity IcePick::FindEntityByTag(TagComponent& tag) {
-    auto taggedEntities = IP_SceneRegistry.view<TransformComponent>();
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    auto taggedEntities = activeRegistry.view<TransformComponent>();
 
     for (auto entity : taggedEntities) {
-        TagComponent& entityTag = IP_SceneRegistry.get<TagComponent>(entity);
+        TagComponent& entityTag = activeRegistry.get<TagComponent>(entity);
         if (entityTag.value == tag.value)
             return entity;
     }
@@ -91,9 +114,21 @@ entt::entity IcePick::FindEntityByTag(TagComponent& tag) {
 }
 
 entt::registry& IcePick::GetActiveSceneRegistry() {
+#ifndef DIST
+    if (CurrentRegistryType == SceneRegistryTypes::DEFAULT)
+        return IP_SceneRegistry;
+
+    return IP_TemporaryRegistry;
+#else
     return IP_SceneRegistry;
+#endif
+}
+
+void IcePick::SetActiveSceneRegistry(SceneRegistryTypes registryType) {
+    CurrentRegistryType = registryType;
 }
 
 void IcePick::DeleteEntity(entt::entity entity) {
-    IP_SceneRegistry.destroy(entity);
+    entt::registry& activeRegistry = GetActiveSceneRegistry();
+    activeRegistry.destroy(entity);
 }

@@ -4,6 +4,10 @@
 #include "../Utilities/Assert.h"
 
 namespace IcePick {
+	enum class SceneRegistryTypes {
+		DEFAULT = 0,
+		TEMPORARY
+	};
 	entt::entity NewEntity();
 	entt::entity NewCameraController();
 	entt::entity NewPointLight();
@@ -14,6 +18,7 @@ namespace IcePick {
 
 	entt::entity FindEntityByTag(TagComponent&);
 	entt::registry& GetActiveSceneRegistry();
+	void SetActiveSceneRegistry(SceneRegistryTypes registryType);
 
 	template<typename T>
 	bool HasComponent(entt::entity entity) {
@@ -33,6 +38,24 @@ namespace IcePick {
 		entt::registry& registry = GetActiveSceneRegistry();
 		IP_ASSERT(HasComponent<T>(entity), "No component to get.");
 		return registry.get<T>(entity);
+	}
+
+	template <typename... Component>
+	entt::entity DuplicateEntity(entt::entity sourceEntity) {
+		entt::registry& activeRegistry = GetActiveSceneRegistry();
+		if (!activeRegistry.valid(sourceEntity))
+			return entt::null;
+
+		entt::entity duplicatedEntity = activeRegistry.create();
+		(
+			[&] {
+				if (HasComponent<Component>(sourceEntity)) {
+					AddComponent<Component>(duplicatedEntity, GetComponent<Component>(sourceEntity));
+				}
+			}
+		(), ...);
+
+		return duplicatedEntity;
 	}
 
 	template<typename T>

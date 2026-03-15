@@ -18,7 +18,6 @@ void IcePick::EngineLayer::OnAttach() {
 	m_AssetLoader.Init();
 	m_PhysicsSystem3D.Init();
 	m_SceneCameraId = AddSceneCamera();
-	//m_CurrentScene.OnBegin();
 }
 
 void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
