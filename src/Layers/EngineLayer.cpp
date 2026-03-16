@@ -46,7 +46,6 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 		}
 	}
 
-	//m_CurrentScene.OnUpdate(dt);
 	IP_CORE_PROFILE_BEGIN("Physics Update");
 	m_PhysicsSystem3D.Update();
 	IP_CORE_PROFILE_POP();
@@ -58,7 +57,6 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 		RigidBodyComponent& rigidBodyComponent = ActiveSceneRegistry.get<RigidBodyComponent>(entity);
 		
 		if (rigidBodyComponent.RigidBodyId.IsInvalid()) {
-			//IP_LOG("Rigid body ID is invalid.", IP_WARN_LOG);
 			continue;
 		}
 
@@ -83,7 +81,7 @@ void IcePick::EngineLayer::OnPreRender() {
 void IcePick::EngineLayer::OnEvent(Event& event) {
 
 	if ((event.action == IP_PRESS) && (event.code == IP_KEY_S) && (event.mods & GLFW_MOD_SHIFT)) {
-		IP_LOG("Shift-S pressed. Does nothing tho :)");
+		IP_LOG("Shift-S pressed. Does nothing tho :3");
 		event.flags |= IP_EVENT_HANDLED;
 	}
 
@@ -213,7 +211,14 @@ void IcePick::EngineLayer::OnBeginScene() {
 }
 
 void IcePick::EngineLayer::OnEndScene() {
+	auto& activeSceneRegistry = GetActiveSceneRegistry();
+	auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();
 
+	for (entt::entity entity : rigidBodiesView) {
+		RigidBodyComponent& entityRigidBody = GetComponent<RigidBodyComponent>(entity);
+		m_PhysicsSystem3D.MultiRemoveBodyPrepare(entityRigidBody);
+	}
+	m_PhysicsSystem3D.MultiRemoveBodiesFinalize();
 }
 
 void IcePick::EngineLayer::OnDetach() {

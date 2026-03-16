@@ -209,54 +209,6 @@ namespace IcePick {
 		return bodyInterface.CreateBody(bodyCreationSettings);
 	}
 
-	//JPH::Body* PhysicsSystem3D::PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-	//	JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
-
-	//	JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
-	//	JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
-	//	JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
-	//	JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
-
-	//	//JPH::BoxShapeSettings boxShapeSettings{ scale };
-	//	JPH::ShapeSettings::ShapeResult boxShapeResult = CreateShape(rigidBody.ColliderShapes[0]);
-	//	if (boxShapeResult.HasError()) {
-	//		IP_LOG("Physics system failed to create the box collider shape.", IP_ERROR_LOG);
-	//		IP_LOG(boxShapeResult.GetError().c_str(), IP_ERROR_LOG);
-	//		return nullptr;
-	//	}
-
-	//	JPH::ShapeRefC boxShape = boxShapeResult.Get();
-	//	JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
-
-	//	return bodyInterface.CreateBody(bodyCreationSettings);
-	//}
-
-	//JPH::Body* PhysicsSystem3D::PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-	//	return nullptr;
-	//}
-
-	//JPH::Body* PhysicsSystem3D::PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
-	//	JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
-
-	//	JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position);
-	//	JPH::RVec3 scale = Vec3ToPhysicsVec3(bodyTransform.Scale);
-	//	JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
-	//	JPH::EMotionType motionType = GetObjectMotionType(rigidBody);
-
-	//	JPH::CapsuleShapeSettings capsuleShapeSettings{ 0.5f, 0.25f};
-	//	JPH::ShapeSettings::ShapeResult capsuleShapeResult = capsuleShapeSettings.Create();
-	//	if (capsuleShapeResult.HasError()) {
-	//		IP_LOG("Physics system failed to create the capsule collider shape.", IP_ERROR_LOG);
-	//		IP_LOG(capsuleShapeResult.GetError().c_str(), IP_ERROR_LOG);
-	//		return nullptr;
-	//	}
-
-	//	JPH::ShapeRefC boxShape = capsuleShapeResult.Get();
-	//	JPH::BodyCreationSettings bodyCreationSettings{ boxShape, position, rotation, motionType, rigidBody.Layer };
-
-	//	return bodyInterface.CreateBody(bodyCreationSettings);
-	//}
-
 	JPH::Body* PhysicsSystem3D::PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
 		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 
@@ -310,9 +262,7 @@ namespace IcePick {
 		return JPH::ShapeSettings::ShapeResult();
 	}
 
-	void PhysicsSystem3D::MultiCreateAndAddBodyPrepare(const TransformComponent& bodyTransform, RigidBodyComponent& rigidBody) {
-		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
-		
+	void PhysicsSystem3D::MultiCreateAndAddBodyPrepare(const TransformComponent& bodyTransform, RigidBodyComponent& rigidBody) {		
 		if (rigidBody.ColliderShapeCount == 0) {
 			IP_LOG("A rigid body without a collider shape will be ignored by the physics system.", IP_WARN_LOG);
 			return;
@@ -329,20 +279,6 @@ namespace IcePick {
 			}
 			else {
 				body = PrepareSimpleShapeBody(bodyTransform, rigidBody);
-				//switch (colliderShape.ShapeType) {
-				//case ColliderShape::ColliderShapeType::BOX_SHAPE:
-				//	body = PrepareBoxShapeBody(bodyTransform, rigidBody);
-				//	break;
-				//case ColliderShape::ColliderShapeType::SPHERE_SHAPE:
-				//	body = PrepareSphereShapeBody(bodyTransform, rigidBody);
-				//	break;
-				//case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
-				//	body = PrepareCapsuleShapeBody(bodyTransform, rigidBody);
-				//	break;
-				//default:
-				//	IP_LOG("Invalid collider shape type.", IP_ERROR_LOG);
-				//	break;
-				//}
 			}			
 		}
 
@@ -360,10 +296,27 @@ namespace IcePick {
 	}
 
 	void PhysicsSystem3D::MultiAddBodiesFinalize() {
+		if (m_MultiAddBodyBuffer.size() == 0)
+			return;
+
 		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 		JPH::BodyInterface::AddState addStateHandle = bodyInterface.AddBodiesPrepare(m_MultiAddBodyBuffer.data(), m_MultiAddBodyBuffer.size());
 		bodyInterface.AddBodiesFinalize(m_MultiAddBodyBuffer.data(), m_MultiAddBodyBuffer.size(), addStateHandle, JPH::EActivation::Activate);
 		m_MultiAddBodyBuffer.clear();
+	}
+
+	void PhysicsSystem3D::MultiRemoveBodyPrepare(const RigidBodyComponent& rigidBody) {
+		m_MultiRemoveBodyBuffer.push_back(rigidBody.RigidBodyId);
+	}
+
+	void PhysicsSystem3D::MultiRemoveBodiesFinalize() {
+		if (m_MultiRemoveBodyBuffer.size() == 0)
+			return;
+
+		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+		bodyInterface.RemoveBodies(m_MultiRemoveBodyBuffer.data(), m_MultiRemoveBodyBuffer.size());
+		bodyInterface.DestroyBodies(m_MultiRemoveBodyBuffer.data(), m_MultiRemoveBodyBuffer.size());
+		m_MultiRemoveBodyBuffer.clear();
 	}
 
 	void PhysicsSystem3D::Update() {

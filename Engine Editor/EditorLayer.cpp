@@ -36,7 +36,6 @@ void IcePick::EditorLayer::OnAttach() {
     ImGui::StyleColorsDark();
     m_Styles.Init(m_EngineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
-    m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
 
     std::filesystem::path fontPath = "res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
     std::filesystem::path iconFontPath = "res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";

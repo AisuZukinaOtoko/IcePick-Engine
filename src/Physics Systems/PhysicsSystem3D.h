@@ -36,9 +36,6 @@ namespace IcePick {
 #endif
 	private:
 		JPH::Body* PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
-		//JPH::Body* PrepareBoxShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
-		//JPH::Body* PrepareSphereShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
-		//JPH::Body* PrepareCapsuleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 		JPH::Body* PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 
 		JPH::ShapeSettings::ShapeResult CreateShape(const ColliderShape& colliderShape);
@@ -57,5 +54,6 @@ namespace IcePick {
 		JPH::JobSystemThreadPool* m_JobSystem = nullptr;
 
 		std::vector<JPH::BodyID> m_MultiAddBodyBuffer;
+		std::vector<JPH::BodyID> m_MultiRemoveBodyBuffer;
 	};
 }
