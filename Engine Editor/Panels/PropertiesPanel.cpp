@@ -9,56 +9,6 @@
 
 static char InputTextBuffer[30];
 
-static const char* CameraControllerModeToString(IcePick::CameraControllerComponent::ControllerMode mode) {
-    switch (mode) {
-    case IcePick::CameraControllerComponent::ControllerMode::NONE:
-        return "None";
-    case IcePick::CameraControllerComponent::ControllerMode::FOLLOW:
-        return "Follow (Not implemented)";
-    case IcePick::CameraControllerComponent::ControllerMode::THIRD_PERSON:
-        return "Third Person Camera";
-    default:
-        return "Error";
-    }
-}
-
-static const char* CameraControllerInterpolationToString(IcePick::CameraControllerComponent::Interpolation interpolation) {
-    switch (interpolation) {
-    case IcePick::CameraControllerComponent::Interpolation::NONE:
-        return "None";
-    case IcePick::CameraControllerComponent::Interpolation::LINEAR:
-        return "Linear";
-    default:
-        return "Error";
-    }
-}
-
-static const char* RigidBodyMotionTypeToString(IcePick::RigidBodyComponent::MotionTypes motionType) {
-    switch (motionType) {
-    case IcePick::RigidBodyComponent::MotionTypes::STATIC:
-        return "Static";
-    case IcePick::RigidBodyComponent::MotionTypes::DYNAMIC:
-        return "Dynamic";
-    case IcePick::RigidBodyComponent::MotionTypes::KINEMATIC:
-        return "Kinematic";
-    default:
-        return "Error";
-    }
-}
-
-static const char* RigidBodyColliderShapeTypeToString(IcePick::ColliderShape::ColliderShapeType colliderShapeType) {
-    switch (colliderShapeType) {
-        case IcePick::ColliderShape::ColliderShapeType::BOX_SHAPE:
-        return "Box Shape";
-        case IcePick::ColliderShape::ColliderShapeType::SPHERE_SHAPE:
-        return "Sphere Shape";
-        case IcePick::ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
-        return "Capsule Shape";
-    default:
-        return "Error";
-    }
-}
-
 static void CameraControllerDropTargetProperty(const char* label, IcePick::SceneCamera& sceneCamera, entt::entity droppedSceneObject, float columnWidth) {
     ImGui::PushID(label);
     ImGui::Columns(2);
@@ -300,7 +250,7 @@ void PropertiesPanel::FloatSlider(const char* label, float* value, float min, fl
     ImGui::Text(label);
     ImGui::NextColumn();
     ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-    ImGui::SliderFloat("##slider", value, min, max, "%.1f");
+    ImGui::SliderFloat("##slider", value, min, max, "%.2f");
 
     ImGui::Columns(1);
     ImGui::PopID();
@@ -479,7 +429,7 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
 
     if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
-        flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
+        flags |= ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
         if (ImGui::BeginTable("table_nested1", 1, flags)) {
 
             for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
@@ -562,130 +512,4 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
             OpenScriptEditor(scriptPath);
         }
     }
-}
-
-void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
-    if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen)) {
-        IcePick::RigidBodyComponent& rigidBodyComponent = IcePick::GetComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
-
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, m_ColumnWidth);
-        ImGui::Text("Motion Type");
-        ImGui::NextColumn();
-        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-        if (ImGui::BeginCombo("##MotionType", RigidBodyMotionTypeToString(rigidBodyComponent.MotionType))) {
-            for (int i = 0; i < (int)IcePick::RigidBodyComponent::MotionTypes::MOTION_TYPE_COUNT; ++i) {
-                IcePick::RigidBodyComponent::MotionTypes value = static_cast<IcePick::RigidBodyComponent::MotionTypes>(i);
-                bool selected = (rigidBodyComponent.MotionType == value);
-
-                if (ImGui::Selectable(RigidBodyMotionTypeToString(value), selected))
-                    rigidBodyComponent.MotionType = value;
-
-                if (selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-
-            ImGui::EndCombo();
-        }
-        ImGui::Columns(1);
-
-        for (unsigned int i = 0; i < rigidBodyComponent.ColliderShapeCount; i++) {
-            IcePick::ColliderShape& collider = rigidBodyComponent.ColliderShapes[i];
-            ImGui::PushID(i);
-            ImGui::Columns(2);
-            ImGui::SetColumnWidth(0, m_ColumnWidth);
-            ImGui::Text("Collider Shape");
-            ImGui::NextColumn();
-            ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-            if (ImGui::BeginCombo("##ColliderShapeType", RigidBodyColliderShapeTypeToString(collider.ShapeType))) {
-                for (int i = 0; i < (int)IcePick::ColliderShape::ColliderShapeType::COLLIDER_SHAPE_COUNT; ++i) {
-                    IcePick::ColliderShape::ColliderShapeType value = static_cast<IcePick::ColliderShape::ColliderShapeType>(i);
-                    bool selected = (collider.ShapeType == value);
-
-                    if (ImGui::Selectable(RigidBodyColliderShapeTypeToString(value), selected))
-                        collider.ShapeType = value;
-
-                    if (selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-
-                ImGui::EndCombo();
-            }
-            ImGui::Columns(1);
-            ImGui::PopID();
-        }
-
-        bool canAddCollider = rigidBodyComponent.ColliderShapeCount < rigidBodyComponent.MaxColliderShapeCount;
-        ImGui::BeginDisabled(!canAddCollider);
-        if (ImGui::Button("Add Box Collider")) {
-            rigidBodyComponent.ColliderShapeCount++;
-        }
-        ImGui::EndDisabled();
-
-    }
-}
-
-void PropertiesPanel::CameraControllerDetails() {
-    using namespace IcePick;
-    CameraControllerComponent& cameraController = IcePick::GetComponent<CameraControllerComponent>(m_SelectedEntity);
-
-    Vec3Control("Position", cameraController.Position, 0.2f);
-
-    ImGui::Spacing();
-    ImGui::Columns(2);
-    ImGui::SetColumnWidth(0, m_ColumnWidth);
-    ImGui::Text("Mode");
-    ImGui::NextColumn();
-    ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-    if (ImGui::BeginCombo("##ControllerMode", CameraControllerModeToString(cameraController.Mode))) {
-        for (int i = 0; i < (int)CameraControllerComponent::ControllerMode::COUNT; ++i) {
-            CameraControllerComponent::ControllerMode value = static_cast<CameraControllerComponent::ControllerMode>(i);
-            bool selected = (cameraController.Mode == value);
-
-            if (ImGui::Selectable(CameraControllerModeToString(value), selected))
-                cameraController.Mode = value;
-
-            if (selected)
-                ImGui::SetItemDefaultFocus();
-        }
-
-        ImGui::EndCombo();
-    }
-    ImGui::Columns(1);
-
-    //ImGui::Spacing();
-    //EntityDropTargetProperty("Follow Target", cameraController.FollowTarget);
-
-    ImGui::Spacing();
-    EntityDropTargetProperty("Look At Target", cameraController.LookAtTarget);
-    
-    //ImGui::SeparatorText("Interpolation");
-
-    //ImGui::Columns(2);
-    //ImGui::SetColumnWidth(0, m_ColumnWidth);
-    //ImGui::Text("Interpolation Style");
-    //ImGui::NextColumn();
-    //ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-    //if (ImGui::BeginCombo("##InterpolationMode", CameraControllerInterpolationToString(cameraController.EnterInterpolation))) {
-    //    for (int i = 0; i < (int)CameraControllerComponent::Interpolation::COUNT; ++i) {
-    //        CameraControllerComponent::Interpolation value = static_cast<CameraControllerComponent::Interpolation>(i);
-    //        bool selected = (cameraController.EnterInterpolation == value);
-
-    //        if (ImGui::Selectable(CameraControllerInterpolationToString(value), selected))
-    //            cameraController.EnterInterpolation = value;
-
-    //        if (selected)
-    //            ImGui::SetItemDefaultFocus();
-    //    }
-
-    //    ImGui::EndCombo();
-    //}
-    //ImGui::Columns(1);
-
-    //ImGui::Spacing();
-    //FloatSlider("Duration", &cameraController.InterpolationDuration, 0.0f, 10.0f);
-
-
-    //ImGui::SeparatorText("View Settings");
-    //FloatSlider("FOV", &cameraController.FOV, 1.0f, 179.0f);
 }

@@ -759,6 +759,12 @@
     <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Panels\CameraControllerComponentDetails.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine Editor\Panels\RigidBodyComponentDetails.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
