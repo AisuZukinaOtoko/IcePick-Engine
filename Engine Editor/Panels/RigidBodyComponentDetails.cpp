@@ -86,7 +86,7 @@ void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
                 }
                 ImGui::Columns(1);
 
-                ImGui::Spacing();
+                //ImGui::Spacing();
                 Vec3Control("Collider Offset", collider.ColliderOffset, 0.1f);
 
                 switch (collider.ShapeType) {
@@ -101,7 +101,6 @@ void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
                 case IcePick::ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
                     ImGui::Spacing();
                     FloatSlider("Capsule Height", &collider.ColliderScale.y, 0.1f, 15.0f);
-                    ImGui::Spacing();
                     FloatSlider("Capsule Radius", &collider.Radius, 0.1f, 15.0f);
                     break;
                 }                

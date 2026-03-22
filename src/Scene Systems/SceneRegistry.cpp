@@ -1,9 +1,11 @@
 #include "SceneRegistry.h"
 #include "SceneCamera.h"
 #include "../Utilities/Assert.h"
+#include "../LogSystem.h"
 #include <string>
 
 static entt::registry IP_SceneRegistry;
+static entt::registry IP_PrefabRegistry;
 #ifndef DIST
 static entt::registry IP_TemporaryRegistry; // Can be swapped to by editor for temporary simulation
 #endif
@@ -137,6 +139,31 @@ entt::registry& IcePick::GetSceneRegistry(SceneRegistryTypes registryType) {
 
 void IcePick::SetActiveSceneRegistry(SceneRegistryTypes registryType) {
     CurrentRegistryType = registryType;
+}
+
+entt::registry& IcePick::GetActivePrefabRegistry() {
+    return IP_PrefabRegistry;
+}
+
+entt::entity IcePick::InstantiatePrefab(entt::entity prefabId) {
+    entt::registry& sceneRegistry = GetActiveSceneRegistry();
+    entt::registry& prefabRegistry = GetActivePrefabRegistry();
+
+    if (!prefabRegistry.valid(prefabId)) {
+        IP_LOG("Cannot instantiate invalid prefab.", IP_ERROR_LOG);
+        return entt::null;
+    }
+
+    entt::entity prefabInstance = sceneRegistry.create();
+    CopyComponentAcrossRegistries<
+        TagComponent,
+        TransformComponent,
+        MeshRendererComponent,
+        ScriptComponent,
+        RigidBodyComponent
+    >(prefabRegistry, prefabId, sceneRegistry, prefabInstance);
+
+    return entt::entity();
 }
 
 void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry) {

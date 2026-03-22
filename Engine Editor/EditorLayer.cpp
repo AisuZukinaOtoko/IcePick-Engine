@@ -11,6 +11,7 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_Viewport(engineAPI),
     m_AssetBrowser(engineAPI),
     m_MaterialEditor(engineAPI),
+    m_PrefabEditor(engineAPI),
     m_PropertiesPanel(engineAPI)
 {
     auto entityChangeCallback = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
@@ -112,9 +113,11 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
     m_MaterialEditor.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
+    m_PrefabEditor.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
 
     m_PropertiesPanel.SelectedProperties(m_Styles);
     m_MaterialEditor.Render();
+    m_PrefabEditor.Render(m_Styles);
     m_Viewport.Render(payload.FrameBufferID);
     IP_CORE_PROFILE_POP();
     m_StatisticsPanel.ShowStats();

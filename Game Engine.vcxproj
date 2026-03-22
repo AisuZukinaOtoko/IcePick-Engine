@@ -179,6 +179,7 @@
     <ClCompile Include="Engine Editor\Panels\AssetBrowser.cpp" />
     <ClCompile Include="Engine Editor\Panels\CameraControllerComponentDetails.cpp" />
     <ClCompile Include="Engine Editor\Panels\LogPanel.cpp" />
+    <ClCompile Include="Engine Editor\Panels\PrefabEditor.cpp" />
     <ClCompile Include="Engine Editor\Panels\PropertiesPanel.cpp" />
     <ClCompile Include="Engine Editor\Panels\RigidBodyComponentDetails.cpp" />
     <ClCompile Include="Engine Editor\Panels\ScenePanel.cpp" />
@@ -604,6 +605,7 @@
     <ClInclude Include="Engine Editor\Panels\AssetBrowser.h" />
     <ClInclude Include="Engine Editor\Panels\LogPanel.h" />
     <ClInclude Include="Engine Editor\Panels\PanelCommon.h" />
+    <ClInclude Include="Engine Editor\Panels\PrefabEditor.h" />
     <ClInclude Include="Engine Editor\Panels\PropertiesPanel.h" />
     <ClInclude Include="Engine Editor\Panels\ScenePanel.h" />
     <ClInclude Include="Engine Editor\Panels\StatisticsPanel.h" />

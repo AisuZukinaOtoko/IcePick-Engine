@@ -270,7 +270,7 @@ namespace IcePick {
 
 		JPH::Body* body = nullptr;
 		if (rigidBody.ColliderShapeCount > 1) {
-			PrepareStaticCompoundShapeBody(bodyTransform, rigidBody);
+			body = PrepareStaticCompoundShapeBody(bodyTransform, rigidBody);
 		}
 		else { // 1 collider shape
 			const ColliderShape& colliderShape = rigidBody.ColliderShapes[0];

@@ -20,6 +20,10 @@ namespace IcePick {
 	entt::registry& GetActiveSceneRegistry();
 	entt::registry& GetSceneRegistry(SceneRegistryTypes registryType);
 	void SetActiveSceneRegistry(SceneRegistryTypes registryType);
+
+	entt::registry& GetActivePrefabRegistry();
+	entt::entity InstantiatePrefab(entt::entity prefabId);
+
 	void DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry);
 
 	template<typename T>
@@ -67,6 +71,33 @@ namespace IcePick {
 		registry.erase<T>(entity);
 	}
 
-
 	void DeleteEntity(entt::entity entity);
+
+
+	template<typename T>
+	bool HasPrefabComponent(entt::entity prefabId) {
+		entt::registry& registry = GetActivePrefabRegistry();
+		return registry.all_of<T>(prefabId);
+	}
+
+	template<typename T>
+	void AddPrefabComponent(entt::entity prefabId, T component = T{}) {
+		entt::registry& registry = GetActivePrefabRegistry();
+		IP_ASSERT(!HasPrefabComponent<T>(prefabId), "Attempted to add an existing component.");
+		registry.emplace<T>(prefabId, component);
+	}
+
+	template<typename T>
+	T& GetPrefabComponent(entt::entity prefabId) {
+		entt::registry& registry = GetActivePrefabRegistry();
+		IP_ASSERT(HasPrefabComponent<T>(prefabId), "No component to get.");
+		return registry.get<T>(prefabId);
+	}
+
+	template<typename T>
+	void RemovePrefabComponent(entt::entity prefabId) {
+		entt::registry& registry = GetActivePrefabRegistry();
+		IP_ASSERT(HasPrefabComponent<T>(prefabId), "No component to remove.");
+		registry.erase<T>(prefabId);
+	}
 }

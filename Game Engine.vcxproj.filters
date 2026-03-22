@@ -765,6 +765,9 @@
     <ClCompile Include="Engine Editor\Panels\RigidBodyComponentDetails.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine Editor\Panels\PrefabEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\depth.shader" />
@@ -3881,6 +3884,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine Editor\Panels\PrefabEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
