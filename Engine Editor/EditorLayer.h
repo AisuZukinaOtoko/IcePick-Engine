@@ -6,7 +6,6 @@
 #include "Panels/ScenePanel.h"
 #include "Panels/AssetBrowser.h"
 #include "Panels/StatisticsPanel.h"
-#include "Panels/PrefabEditor.h"
 #include "Menu/Toolbar.h"
 #include "Styles/Styles.h"
 #include "../src/Layers/EngineAPI.h"
@@ -36,7 +35,6 @@ namespace IcePick {
 		Toolbar m_Toolbar;
 		StatisticsPanel m_StatisticsPanel;
 		MaterialEditor m_MaterialEditor;
-		PrefabEditor m_PrefabEditor;
 
 		ImFont* m_EditorFont = nullptr;
 	};

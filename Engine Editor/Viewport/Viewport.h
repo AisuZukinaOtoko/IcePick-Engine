@@ -47,6 +47,7 @@ private:
 	entt::entity m_SelectedEntity = entt::null;
 	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	void RenderEntityGizmos();
+	void RenderRigidBodyDebugColliders();
 	void RenderViewportControls();
 	void GetViewportDebugData(uint32_t* debugData);
 	void DropMaterialIntoViewport();

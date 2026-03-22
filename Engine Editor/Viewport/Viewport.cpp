@@ -18,6 +18,43 @@
 
 static IcePick::Input keyState;
 
+static void DrawDebugBox(glm::vec3 center, glm::quat rotation, glm::vec3 halfExtents) {
+	IcePickRenderer::LinePointVertex3D corners[8];
+	glm::vec4 colour = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+	float hx = halfExtents.x;
+	float hy = halfExtents.y;
+	float hz = halfExtents.z;
+
+	corners[0] = { { -hx, -hy, -hz }, colour };
+	corners[1] = { { hx, -hy, -hz }, colour };
+	corners[2] = { { hx,  hy, -hz }, colour };
+	corners[3] = { { -hx,  hy, -hz }, colour };
+
+	corners[4] = { { -hx, -hy,  hz }, colour };
+	corners[5] = { { hx, -hy,  hz }, colour };
+	corners[6] = { { hx,  hy,  hz }, colour };
+	corners[7] = { { -hx,  hy,  hz }, colour };
+
+	for (int i = 0; i < 8; i++)
+		corners[i].Position = rotation * (corners[i].Position) + center;
+
+	DrawLine(corners[0], corners[1]);
+	DrawLine(corners[1], corners[2]);
+	DrawLine(corners[2], corners[3]);
+	DrawLine(corners[3], corners[0]);
+
+	DrawLine(corners[4], corners[5]);
+	DrawLine(corners[5], corners[6]);
+	DrawLine(corners[6], corners[7]);
+	DrawLine(corners[7], corners[4]);
+
+	DrawLine(corners[0], corners[4]);
+	DrawLine(corners[1], corners[5]);
+	DrawLine(corners[2], corners[6]);
+	DrawLine(corners[3], corners[7]);
+}
+
 Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI)
 {
@@ -117,13 +154,13 @@ void Viewport::Render(unsigned int renderTexture) {
 
 	if ((m_SelectedEntity != entt::null) && !m_GameIsPlaying) {
 		RenderEntityGizmos();
+		RenderRigidBodyDebugColliders();
 	}
 
 	if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowHovered()) {
 		if (m_GameIsPlaying && !m_GameIsFocused) {
 			IcePickRenderer::RequestCursorLock();
 			m_GameIsFocused = true;
-			IP_LOG("Press Esc to unlock the cursor.");
 		}
 
 		if (!m_GameIsPlaying && !m_UsingGizmo) {
@@ -205,6 +242,35 @@ void Viewport::RenderEntityGizmos() {
 		m_UsingGizmo = false;
 	}
 
+}
+
+void Viewport::RenderRigidBodyDebugColliders() {
+	bool drawDebugColliders = m_EngineAPI.QueryEngineRenderDebugPhysics();
+	if (!drawDebugColliders)
+		return;
+
+	if (!IcePick::HasComponent<IcePick::RigidBodyComponent>(m_SelectedEntity))
+		return;
+
+	IcePick::RigidBodyComponent& rigidBody = IcePick::GetComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
+	if (rigidBody.ColliderShapeCount == 0)
+		return;
+
+	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
+	for (unsigned int i = 0; i < rigidBody.ColliderShapeCount; i++) {
+		IcePick::ColliderShape& collider = rigidBody.ColliderShapes[i];
+		glm::vec3 colliderCenter = entityTransform.Position + entityTransform.Rotation * collider.ColliderOffset;
+
+		switch (collider.ShapeType) {
+		case IcePick::ColliderShape::ColliderShapeType::BOX_SHAPE:
+		{
+			DrawDebugBox(colliderCenter, entityTransform.Rotation, collider.ColliderScale * entityTransform.Scale);
+			break;
+		}
+		default:
+			break;
+		}
+	}
 }
 
 void Viewport::RenderViewportControls() {

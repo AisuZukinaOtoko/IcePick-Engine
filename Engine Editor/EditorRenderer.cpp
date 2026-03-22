@@ -26,6 +26,14 @@ void EditorRenderer::Clear() {
 	m_FrameBuffer.Clear();
 }
 
+void EditorRenderer::Use() {
+	m_FrameBuffer.Bind();
+}
+
+void EditorRenderer::UnBind() {
+	m_FrameBuffer.UnBind();
+}
+
 unsigned int EditorRenderer::GetRenderTexture() {
 	return m_FrameBuffer.GetColourTextureID();
 }

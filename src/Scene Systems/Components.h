@@ -52,6 +52,7 @@ namespace IcePick {
 		std::string value;
 		enum class EntityType {
 			ENTITY = 0,
+			PREFAB,
 			CAMERA,
 			CAMERA_CONTROLLER,
 			POINT_LIGHT,

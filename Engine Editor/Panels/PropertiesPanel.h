@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include "PanelCommon.h"
+#include "../EditorRenderer.h"
 #include "../../src/Vendor/glm/glm.hpp"
 #include "../../src/Vendor/entt/entt.h"
 
@@ -17,6 +18,7 @@ public:
 	void SetDropAssetPath(std::string filePath);
 private:
 	void PanelSetup();
+	void PreviewRender();
 	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
 	void QuaternionEulerControls(const char* label, glm::quat& value, const float dragSpeed);
@@ -43,4 +45,5 @@ private:
 	entt::entity m_SelectedEntity = entt::null;
 	std::string m_DropAssetPath;
 	IcePick::EngineAPI m_EngineAPI;
+	EditorRenderer m_PreviewRenderer;
 };

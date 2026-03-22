@@ -39,9 +39,13 @@ static void CameraControllerDropTargetProperty(const char* label, IcePick::Scene
 }
 
 PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
-    m_EngineAPI(engineAPI)
+    m_EngineAPI(engineAPI),
+    m_PreviewRenderer(engineAPI)
 {
     m_ID = "Properties";
+    constexpr unsigned int previewRenderTargetSize = 600;
+    m_PreviewRenderer.Init(previewRenderTargetSize, previewRenderTargetSize);
+    m_PreviewRenderer.editorCamera.aspectRatio = 1.0f;
 }
 
 void PropertiesPanel::PanelSetup() {
@@ -206,6 +210,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         }
     }
 
+    PreviewRender();
 }
 
 void PropertiesPanel::TextProperty(const char* label, const char* property) {

@@ -765,7 +765,7 @@
     <ClCompile Include="Engine Editor\Panels\RigidBodyComponentDetails.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine Editor\Panels\PrefabEditor.cpp">
+    <ClCompile Include="Engine Editor\Panels\PropertiesPanelPreviewRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3884,9 +3884,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine Editor\Panels\PrefabEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

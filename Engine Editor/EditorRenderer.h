@@ -9,6 +9,9 @@ public:
 	void Init(unsigned int width, unsigned int height);
 	void RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix);
 	void Clear();
+
+	void Use();
+	void UnBind();
 	unsigned int GetRenderTexture();
 	void Destroy();
 	~EditorRenderer();
