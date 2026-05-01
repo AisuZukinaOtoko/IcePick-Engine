@@ -163,7 +163,7 @@ entt::entity IcePick::InstantiatePrefab(entt::entity prefabId) {
         RigidBodyComponent
     >(prefabRegistry, prefabId, sceneRegistry, prefabInstance);
 
-    return entt::entity();
+    return prefabInstance;
 }
 
 void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry) {

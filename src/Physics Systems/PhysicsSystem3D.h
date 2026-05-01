@@ -38,6 +38,7 @@ namespace IcePick {
 		JPH::Body* PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 		JPH::Body* PrepareStaticCompoundShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody);
 
+		JPH::Vec3 GetAllowedColliderShapeScale(const JPH::Vec3& bodyTransform, const ColliderShape::ColliderShapeType shapeType);
 		JPH::ShapeSettings::ShapeResult CreateShape(const ColliderShape& colliderShape);
 
 		JPH::EActivation GetObjectActivation(const RigidBodyComponent& rigidBody) const;

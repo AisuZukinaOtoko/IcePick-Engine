@@ -203,7 +203,8 @@ namespace IcePick {
 		}
 
 		JPH::ShapeRefC simpleShape = simpleShapeResult.Get();
-		JPH::ShapeRefC scaledShape = new JPH::ScaledShape(simpleShape, scale);
+		JPH::Vec3 sanitizedScale = GetAllowedColliderShapeScale(scale, rigidBody.ColliderShapes[0].ShapeType);
+		JPH::ShapeRefC scaledShape = new JPH::ScaledShape(simpleShape, sanitizedScale);
 		JPH::BodyCreationSettings bodyCreationSettings{ scaledShape, position, rotation, motionType, rigidBody.Layer };
 
 		return bodyInterface.CreateBody(bodyCreationSettings);
@@ -226,7 +227,8 @@ namespace IcePick {
 				continue;
 
 			JPH::ShapeRefC shape = shapeResult.Get();
-			JPH::ShapeRefC scaledShape = new JPH::ScaledShape(shape, scale);
+			JPH::Vec3 sanitizedScale = GetAllowedColliderShapeScale(scale, colliderShape.ShapeType);
+			JPH::ShapeRefC scaledShape = new JPH::ScaledShape(shape, sanitizedScale);
 			compoundShapeSettings.AddShape(Vec3ToPhysicsVec3(colliderShape.ColliderOffset), JPH::Quat::sIdentity(), scaledShape);
 		}
 
@@ -243,12 +245,33 @@ namespace IcePick {
 		return bodyInterface.CreateBody(bodyCreationSettings);
 	}
 
+	JPH::Vec3 PhysicsSystem3D::GetAllowedColliderShapeScale(const JPH::Vec3& colliderScale, const ColliderShape::ColliderShapeType shapeType) {
+		switch (shapeType) {
+		case ColliderShape::ColliderShapeType::BOX_SHAPE:
+			return colliderScale;
+		case ColliderShape::ColliderShapeType::SPHERE_SHAPE:
+		case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
+		{ // These shapes require uniform scale
+			float maxComponent = std::max({ colliderScale.GetX(), colliderScale.GetY(), colliderScale.GetZ() });
+			return JPH::Vec3(maxComponent, maxComponent, maxComponent);
+		}
+		default:
+			break;
+		}
+		return JPH::Vec3(1.0f, 1.0f, 1.0f);
+	}
+
 	JPH::ShapeSettings::ShapeResult PhysicsSystem3D::CreateShape(const ColliderShape& colliderShape) {
 		switch (colliderShape.ShapeType) {
 		case ColliderShape::ColliderShapeType::BOX_SHAPE:
 		{
 			JPH::BoxShapeSettings boxShapeSettings{ Vec3ToPhysicsVec3(colliderShape.ColliderScale) };
 			return boxShapeSettings.Create();
+		}
+		case ColliderShape::ColliderShapeType::SPHERE_SHAPE:
+		{
+			JPH::SphereShapeSettings sphereShapeSettings{ colliderShape.Radius };
+			return sphereShapeSettings.Create();
 		}
 		case ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
 		{

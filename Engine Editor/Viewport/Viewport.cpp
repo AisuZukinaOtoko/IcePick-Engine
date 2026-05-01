@@ -55,6 +55,61 @@ static void DrawDebugBox(glm::vec3 center, glm::quat rotation, glm::vec3 halfExt
 	DrawLine(corners[3], corners[7]);
 }
 
+static void DrawDebugCircle(glm::vec3 center, glm::vec3 up,  glm::vec3 right, float radius) {
+	glm::vec4 colour = { 0.0f, 0.0f, 1.0f, 1.0f };
+	glm::vec3 forward = glm::cross(up, right);
+
+	const int segments = 32;
+
+	glm::vec3 prev =
+		center +
+		right * radius;
+
+	for (int i = 1; i <= segments; i++)
+	{
+		float angle = (2.0f * 3.141593658f * i) / segments;
+
+		glm::vec3 next = center + right * cos(angle) * radius +	forward * sin(angle) * radius;
+		IcePickRenderer::LinePointVertex3D previousPoint = { prev, colour };
+		IcePickRenderer::LinePointVertex3D nextPoint = { next, colour };
+		DrawLine(previousPoint, nextPoint);
+		prev = next;
+	}
+}
+
+static void DrawDebugSphere(glm::vec3 center, float radius,	glm::vec3 cameraFront, glm::vec3 cameraUp, glm::vec3 cameraRight) {
+	DrawDebugCircle(center, cameraUp, cameraRight, radius);
+	DrawDebugCircle(center, cameraRight, cameraFront, radius);
+	DrawDebugCircle(center, cameraFront, cameraUp, radius);
+}
+
+static void DrawDebugCapsule(glm::vec3 center, glm::quat rotation, float halfHeight, float radius, glm::vec3 cameraFront, glm::vec3 cameraUp, glm::vec3 cameraRight) {
+	glm::vec4 colour = { 0.0f, 0.0f, 1.0f, 1.0f };
+	glm::vec3 up = rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 right = rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 forward = rotation * glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 top = center + up * halfHeight;
+	glm::vec3 bottom = center - up * halfHeight;
+
+	IcePickRenderer::LinePointVertex3D points[8];
+	points[0] = { top + right * radius, colour };
+	points[1] = { bottom + right * radius, colour };
+	points[2] = { top - right * radius, colour };
+	points[3] = { bottom - right * radius, colour };
+
+	points[4] = { top + forward * radius, colour };
+	points[5] = { bottom + forward * radius, colour };
+	points[6] = { top - forward * radius, colour };
+	points[7] = { bottom - forward * radius, colour };
+
+	DrawLine(points[0], points[1]);
+	DrawLine(points[2], points[3]);
+	DrawLine(points[4], points[5]);
+	DrawLine(points[6], points[7]);
+	DrawDebugSphere(top, radius, cameraFront, cameraUp, cameraRight);
+	DrawDebugSphere(bottom, radius, cameraFront, cameraUp, cameraRight);
+}
+
 Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI)
 {
@@ -256,6 +311,11 @@ void Viewport::RenderRigidBodyDebugColliders() {
 	if (rigidBody.ColliderShapeCount == 0)
 		return;
 
+	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cameraFront = glm::normalize(m_EditorCamera.cameraFront);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
+	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+
 	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
 	for (unsigned int i = 0; i < rigidBody.ColliderShapeCount; i++) {
 		IcePick::ColliderShape& collider = rigidBody.ColliderShapes[i];
@@ -265,6 +325,18 @@ void Viewport::RenderRigidBodyDebugColliders() {
 		case IcePick::ColliderShape::ColliderShapeType::BOX_SHAPE:
 		{
 			DrawDebugBox(colliderCenter, entityTransform.Rotation, collider.ColliderScale * entityTransform.Scale);
+			break;
+		}
+		case IcePick::ColliderShape::ColliderShapeType::SPHERE_SHAPE:
+		{
+			float maxComponent = std::max({ entityTransform.Scale.x, entityTransform.Scale.y, entityTransform.Scale.z });
+			DrawDebugSphere(colliderCenter, collider.Radius * maxComponent, cameraFront, cameraUp, cameraRight);
+			break;
+		}
+		case IcePick::ColliderShape::ColliderShapeType::CAPSULE_SHAPE:
+		{
+			float maxComponent = std::max({ entityTransform.Scale.x, entityTransform.Scale.y, entityTransform.Scale.z });
+			DrawDebugCapsule(colliderCenter, entityTransform.Rotation, collider.ColliderScale.y * maxComponent, collider.Radius * maxComponent, cameraFront, cameraUp, cameraRight);
 			break;
 		}
 		default:
@@ -312,6 +384,12 @@ void Viewport::RenderViewportControls() {
 			IcePick::SetActiveSceneRegistry(IcePick::SceneRegistryTypes::DEFAULT);
 			IcePickRenderer::RequestCursorUnlock();
 			m_GameIsPlaying = false;
+
+			entt::registry& activeRegistry = IcePick::GetActiveSceneRegistry();
+			if (!activeRegistry.valid(m_SelectedEntity)) {
+				m_SelectedEntity = entt::null;
+				m_EntitySelected = true;
+			}
 		}
 		ImGui::PopStyleColor();
 		break;
