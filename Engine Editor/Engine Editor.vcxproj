@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{b02943b8-6a18-4b88-91e7-711f991554f3}</ProjectGuid>
+    <RootNamespace>EngineEditor</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ASSIMP_STATIC;GLEW_STATIC;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED=0;JPH_DEBUG_RENDERER;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\LUA\include;$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Vendor\Jolt Physics;$(SolutionDir)Game Engine\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)x64\Debug;$(SolutionDir)Dependencies\LUA;$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3_mt.lib;glew32s.lib;assimp-vc143-mt.lib;lua54.lib;Game Engine.lib;ImGui.lib;STB.lib;Jolt Physics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Dependencies\ASSIMP\bin\assimp-vc143-mt.dll" "$(OutDir)"</Command>
+      <Message>Copy required DLLs to the exe directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ASSIMP_STATIC;GLEW_STATIC;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED=0;JPH_DEBUG_RENDERER;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\LUA\include;$(SolutionDir)Dependencies\ASSIMP\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Vendor;$(SolutionDir)Vendor\ImGui;$(SolutionDir)Vendor\Jolt Physics;$(SolutionDir)Game Engine\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)x64\Release;$(SolutionDir)Dependencies\LUA;$(SolutionDir)Dependencies\ASSIMP\lib;$(SolutionDir)Dependencies\GLEW\lib\Release\x64;$(SolutionDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3_mt.lib;glew32s.lib;assimp-vc143-mt.lib;lua54.lib;Game Engine.lib;ImGui.lib;STB.lib;Jolt Physics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)Dependencies\ASSIMP\bin\assimp-vc143-mt.dll" "$(OutDir)"</Command>
+      <Message>Copy required DLLs to the exe directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ApplicationImpl.cpp" />
+    <ClCompile Include="src\EditorLayer.cpp" />
+    <ClCompile Include="src\EditorRenderer.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Material Editor\MaterialEditor.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\CosineNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\CrossProductNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\DotProductNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\LengthNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\LerpNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\NormalizeNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\PowerNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\SineNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\Smoothstep.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\StepNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\TangentNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\UVNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\WorldNormalNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\WorldPositionNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\AddNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\DecimalNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\DivideNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\FloatNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\MultiplyNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\SplitVectorNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\SubtractNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\Vector2Node.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\Vector3Node.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\Vector4Node.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\NodeBase.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Rendering\TextureNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Utils.cpp" />
+    <ClCompile Include="src\Menu\Toolbar.cpp" />
+    <ClCompile Include="src\Panels\AssetBrowser.cpp" />
+    <ClCompile Include="src\Panels\CameraControllerComponentDetails.cpp" />
+    <ClCompile Include="src\Panels\LogPanel.cpp" />
+    <ClCompile Include="src\Panels\PropertiesPanel.cpp" />
+    <ClCompile Include="src\Panels\PropertiesPanelPreviewRender.cpp" />
+    <ClCompile Include="src\Panels\RigidBodyComponentDetails.cpp" />
+    <ClCompile Include="src\Panels\ScenePanel.cpp" />
+    <ClCompile Include="src\Panels\StatisticsPanel.cpp" />
+    <ClCompile Include="src\Styles\Styles.cpp" />
+    <ClCompile Include="src\Styles\ThumbnailManager.cpp" />
+    <ClCompile Include="src\Utils\Serialize.cpp" />
+    <ClCompile Include="src\Viewport\EditorCamera.cpp" />
+    <ClCompile Include="src\Viewport\Viewport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ApplicationImpl.h" />
+    <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\EditorRenderer.h" />
+    <ClInclude Include="src\Material Editor\MaterialEditor.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\CosineNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\CrossProductNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\DotProductNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\LengthNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\LerpNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\NormalizeNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\PowerNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\SineNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\SmoothstepNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\StepNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\TangentNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\UVNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\WorldNormalNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\WorldPositionNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\AddNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\DecimalNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\DivideNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\FloatNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\MultiplyNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\SplitVectorNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\SubtractNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\Vector2Node.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\Vector3Node.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\Vector4Node.h" />
+    <ClInclude Include="src\Material Editor\Nodes\NodeBase.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Nodes.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Rendering\BSDFNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Rendering\TextureNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Utils.h" />
+    <ClInclude Include="src\Menu\Toolbar.h" />
+    <ClInclude Include="src\Panels\AssetBrowser.h" />
+    <ClInclude Include="src\Panels\LogPanel.h" />
+    <ClInclude Include="src\Panels\PanelCommon.h" />
+    <ClInclude Include="src\Panels\PropertiesPanel.h" />
+    <ClInclude Include="src\Panels\ScenePanel.h" />
+    <ClInclude Include="src\Panels\StatisticsPanel.h" />
+    <ClInclude Include="src\Styles\Styles.h" />
+    <ClInclude Include="src\Styles\ThumbnailManager.h" />
+    <ClInclude Include="src\Utils\Serialize.h" />
+    <ClInclude Include="src\Viewport\EditorCamera.h" />
+    <ClInclude Include="src\Viewport\Viewport.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Game Engine\Game Engine.vcxproj">
+      <Project>{318f50be-c129-49ca-9c0d-9aed969d53fb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Vendor\ImGui\ImGui.vcxproj">
+      <Project>{d2987f88-e294-4de2-b810-1d1d70ac0f8b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

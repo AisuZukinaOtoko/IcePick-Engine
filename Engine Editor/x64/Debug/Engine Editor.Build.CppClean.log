@@ -1,0 +1,77 @@
+c:\dev\icepick-engine\engine editor\x64\debug\vc145.pdb
+c:\dev\icepick-engine\engine editor\x64\debug\vc145.idb
+c:\dev\icepick-engine\engine editor\x64\debug\worldpositionnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\worldnormalnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\uvnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\fragmentcoordinatenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\tangentnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\stepnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\smoothstep.obj
+c:\dev\icepick-engine\engine editor\x64\debug\sinenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\powernode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\normalizenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\lerpnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\lengthnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\dotproductnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\crossproductnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\cosinenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\materialeditor.obj
+c:\dev\icepick-engine\engine editor\x64\debug\main.obj
+c:\dev\icepick-engine\engine editor\x64\debug\editorrenderer.obj
+c:\dev\icepick-engine\engine editor\x64\debug\editorlayer.obj
+c:\dev\icepick-engine\engine editor\x64\debug\applicationimpl.obj
+c:\dev\icepick-engine\engine editor\x64\debug\propertiespanel.obj
+c:\dev\icepick-engine\engine editor\x64\debug\logpanel.obj
+c:\dev\icepick-engine\engine editor\x64\debug\cameracontrollercomponentdetails.obj
+c:\dev\icepick-engine\engine editor\x64\debug\assetbrowser.obj
+c:\dev\icepick-engine\engine editor\x64\debug\utils.obj
+c:\dev\icepick-engine\engine editor\x64\debug\voronoinoisenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\texturenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\bsdfnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\nodebase.obj
+c:\dev\icepick-engine\engine editor\x64\debug\vector4node.obj
+c:\dev\icepick-engine\engine editor\x64\debug\vector3node.obj
+c:\dev\icepick-engine\engine editor\x64\debug\vector2node.obj
+c:\dev\icepick-engine\engine editor\x64\debug\subtractnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\splitvectornode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\multiplynode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\floatnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\dividenode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\decimalnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\addnode.obj
+c:\dev\icepick-engine\engine editor\x64\debug\viewport.obj
+c:\dev\icepick-engine\engine editor\x64\debug\editorcamera.obj
+c:\dev\icepick-engine\engine editor\x64\debug\serialize.obj
+c:\dev\icepick-engine\engine editor\x64\debug\thumbnailmanager.obj
+c:\dev\icepick-engine\engine editor\x64\debug\styles.obj
+c:\dev\icepick-engine\engine editor\x64\debug\statisticspanel.obj
+c:\dev\icepick-engine\engine editor\x64\debug\scenepanel.obj
+c:\dev\icepick-engine\engine editor\x64\debug\rigidbodycomponentdetails.obj
+c:\dev\icepick-engine\engine editor\x64\debug\propertiespanelpreviewrender.obj
+c:\dev\icepick-engine\engine editor\x64\debug\toolbar.obj
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.ilk
+c:\dev\icepick-engine\x64\debug\engine editor.pdb
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\cl.command.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\cl.items.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\cl.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\cl.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link-cvtres.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link-cvtres.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link-rc.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link-rc.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304-cvtres.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304-cvtres.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304-rc.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304-rc.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304.read.2.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304.read.3.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304.read.4.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.25304.write.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.command.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.read.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.read.2.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.read.3.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.read.4.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.secondary.1.tlog
+c:\dev\icepick-engine\engine editor\x64\debug\engine editor.tlog\link.write.1.tlog
