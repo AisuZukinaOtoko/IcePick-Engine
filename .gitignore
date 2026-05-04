@@ -1,6 +1,4 @@
 /Release/
 /Debug/
-/x64/
+x64/
 /.vs/
-/Engine Editor/x64/
-/Game Engine/x64/
