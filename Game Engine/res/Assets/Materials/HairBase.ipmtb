@@ -1,0 +1,208 @@
+{
+    "Id": 12443204398828557369,
+    "floatParameters": [
+        {
+            "Id": 628444254334036825,
+            "displayName": "Green Channel",
+            "shaderIdentifier": "node_628444254334036825"
+        },
+        {
+            "Id": 7365237859538483697,
+            "displayName": "Blue Channel",
+            "shaderIdentifier": "node_7365237859538483697"
+        }
+    ],
+    "graphId": 0,
+    "shaderGraph": [
+        {
+            "Id": 5408118776564656983,
+            "inputPins": [
+                {
+                    "connectedNodeId": 5281669887944841987,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "",
+            "nodePosition": {
+                "x": 596.0,
+                "y": 279.0
+            },
+            "outputPins": [],
+            "type": "bsdf"
+        },
+        {
+            "Id": 5281669887944841987,
+            "inputPins": [
+                {
+                    "connectedNodeId": 9905629281535318878,
+                    "connectedPinIndex": 1
+                },
+                {
+                    "connectedNodeId": 628444254334036825,
+                    "connectedPinIndex": 0
+                },
+                {
+                    "connectedNodeId": 7365237859538483697,
+                    "connectedPinIndex": 0
+                },
+                {
+                    "connectedNodeId": 5815581349754827214,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": false,
+            "nodeName": "",
+            "nodePosition": {
+                "x": 377.0,
+                "y": 279.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5408118776564656983,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "vec4"
+        },
+        {
+            "Id": 5815581349754827214,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "Float",
+            "nodePosition": {
+                "x": 143.0,
+                "y": 560.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5281669887944841987,
+                            "pinIndex": 3
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 9905629281535318878,
+            "inputPins": [
+                {
+                    "connectedNodeId": 15669791513381789234,
+                    "connectedPinIndex": 0
+                }
+            ],
+            "isParameter": true,
+            "nodeName": "Texture",
+            "nodePosition": {
+                "x": 129.0,
+                "y": 117.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5281669887944841987,
+                            "pinIndex": 0
+                        }
+                    ]
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                },
+                {
+                    "connectionData": []
+                }
+            ],
+            "type": "texture"
+        },
+        {
+            "Id": 15669791513381789234,
+            "inputPins": [],
+            "isParameter": false,
+            "nodeName": "",
+            "nodePosition": {
+                "x": -105.0,
+                "y": 334.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 9905629281535318878,
+                            "pinIndex": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "uv"
+        },
+        {
+            "Id": 628444254334036825,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Green Channel",
+            "nodePosition": {
+                "x": 127.0,
+                "y": 342.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5281669887944841987,
+                            "pinIndex": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        },
+        {
+            "Id": 7365237859538483697,
+            "inputPins": [],
+            "isParameter": true,
+            "nodeName": "Blue Channel",
+            "nodePosition": {
+                "x": 116.0,
+                "y": 443.0
+            },
+            "outputPins": [
+                {
+                    "connectionData": [
+                        {
+                            "nodeId": 5281669887944841987,
+                            "pinIndex": 2
+                        }
+                    ]
+                }
+            ],
+            "type": "float"
+        }
+    ],
+    "shaderId": 9218396849731300590,
+    "shaderSource": {
+        "fragment": "#version 330 core\nlayout(location = 0) out vec4 OutColour;\nlayout(location = 1) out vec4 OutNormal;\nlayout(location = 2) out uvec4 OutEntityMat;\n\nin vec3 v_Pos;\nin vec2 v_TexCoord;\nin vec3 v_Normal;\n\nuniform vec3 u_CameraPosition;\n\nuniform sampler2D sampler_9905629281535318878;\nuniform float node_628444254334036825;\nuniform float node_7365237859538483697;\n\n#define VIEW_PICKING\n\nuniform uint u_EntityId;\nuniform uint u_MaterialSlotIndex;\n\nuvec4 GetEntityMatSlot() {\n\treturn uvec4(u_EntityId, u_MaterialSlotIndex, 0, 0);\n}\n\n\nvoid main() {\nvec4 node_9905629281535318878 = texture(sampler_9905629281535318878,v_TexCoord);\nvec4 node_5281669887944841987 = vec4(node_9905629281535318878.r,node_628444254334036825,node_7365237859538483697,1.000000);\nOutColour = node_5281669887944841987;\n\n#ifdef VIEW_PICKING\n    OutEntityMat = GetEntityMatSlot();\n#endif\n};\n",
+        "vertex": "#version 330 core\nlayout(location = 0) in vec3 position;\nlayout(location = 1) in vec3 normal;\nlayout(location = 2) in vec2 texCoord;\n\nout vec3 v_Pos;\nout vec2 v_TexCoord;\nout vec3 v_Normal;\n\nuniform mat4 u_MVP;\nuniform mat4 u_Modelmatrix;\nuniform mat3 u_NormalMatrix;\n\n\nvoid main() {\n    gl_Position = u_MVP * vec4(position, 1.0f);\n    v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;\n    v_Normal = normalize(u_NormalMatrix * normal);\n    v_TexCoord = texCoord;\n};\n"
+    },
+    "textureParameters": [
+        {
+            "Id": 9905629281535318878,
+            "displayName": "Texture",
+            "sampler": "sampler_9905629281535318878"
+        }
+    ],
+    "version": 1
+}
