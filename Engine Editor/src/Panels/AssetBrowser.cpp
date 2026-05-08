@@ -16,7 +16,7 @@ AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
     ClearTextInputBuffer();
-    m_CurrentBrowsingPath = std::filesystem::canonical("res/Assets");
+    m_CurrentBrowsingPath = std::filesystem::canonical("Game Engine/res/Assets");
 }
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {

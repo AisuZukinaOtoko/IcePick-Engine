@@ -28,7 +28,7 @@ namespace IcePick {
 		UUID m_CachedTextureId = UUID::Unitialised();
 		UUID m_DefaultTextureId = UUID::Unitialised();
 		Texture m_CachedTexture;
-		const char* m_DefaultTextureRelativePath = "res/textures/DefaultTexture.png";
+		const char* m_DefaultTextureRelativePath = "Game Engine/res/Textures/DefaultTexture.png";
 		std::filesystem::path m_DefaultTexturePath;
 		std::filesystem::path m_BaseFilePath;
 		Texture m_DefaultTexture;

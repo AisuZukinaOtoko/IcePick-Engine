@@ -188,20 +188,20 @@
     <None Include="res\assets\rect.fbx" />
     <None Include="res\Scripts\Core.lua" />
     <None Include="res\Scripts\Script.lua" />
-    <None Include="res\shaders\defaultMaterialBase.frag.shader" />
-    <None Include="res\shaders\depth.shader" />
-    <None Include="res\shaders\line.frag.shader" />
-    <None Include="res\shaders\line.vert.shader" />
-    <None Include="res\shaders\materialTemplate.frag.shader" />
-    <None Include="res\shaders\material.shader" />
-    <None Include="res\shaders\noiseFunctions.shader" />
-    <None Include="res\shaders\normal.shader" />
-    <None Include="res\shaders\pbr.frag.shader" />
-    <None Include="res\shaders\pbr.vert.shader" />
-    <None Include="res\shaders\picking.shader" />
-    <None Include="res\shaders\toneMapper.shader" />
-    <None Include="res\textures\black_fabric_diffuse.iptex" />
-    <None Include="res\textures\black_fabric_rough.iptex" />
+    <None Include="res\Shaders\defaultMaterialBase.frag.shader" />
+    <None Include="res\Shaders\depth.shader" />
+    <None Include="res\Shaders\line.frag.shader" />
+    <None Include="res\Shaders\line.vert.shader" />
+    <None Include="res\Shaders\materialTemplate.frag.shader" />
+    <None Include="res\Shaders\material.shader" />
+    <None Include="res\Shaders\noiseFunctions.shader" />
+    <None Include="res\Shaders\normal.shader" />
+    <None Include="res\Shaders\pbr.frag.shader" />
+    <None Include="res\Shaders\pbr.vert.shader" />
+    <None Include="res\Shaders\picking.shader" />
+    <None Include="res\Shaders\toneMapper.shader" />
+    <None Include="res\Textures\black_fabric_diffuse.iptex" />
+    <None Include="res\Textures\black_fabric_rough.iptex" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Event Systems\Event.h" />
@@ -254,8 +254,8 @@
     <ClInclude Include="src\Render Systems\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\textures\CatWithHat.png" />
-    <Image Include="res\textures\Sword.png" />
+    <Image Include="res\Textures\CatWithHat.png" />
+    <Image Include="res\Textures\Sword.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\data\gamecontrollerdb.txt" />

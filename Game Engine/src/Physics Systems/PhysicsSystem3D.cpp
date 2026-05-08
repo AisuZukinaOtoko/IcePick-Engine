@@ -369,6 +369,7 @@ namespace IcePick {
 
 		if (m_DebugRenderer) {
 			delete m_DebugRenderer;
+			m_DebugRenderer = nullptr;
 			JPH::DebugRenderer::sInstance = nullptr;
 		}
 	}

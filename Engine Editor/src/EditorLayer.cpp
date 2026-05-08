@@ -37,8 +37,8 @@ void IcePick::EditorLayer::OnAttach() {
     m_Styles.Init(m_EngineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
 
-    std::filesystem::path fontPath = "res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
-    std::filesystem::path iconFontPath = "res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";
+    std::filesystem::path fontPath = "Engine Editor/res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
+    std::filesystem::path iconFontPath = "Engine Editor/res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";
     m_EditorFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18.0f);
 
     static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };

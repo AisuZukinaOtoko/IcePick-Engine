@@ -31,8 +31,8 @@ namespace IcePick {
 	private:
 		friend class EngineAPI;
 		UUID m_PBRShaderProgramId = UUID::Unitialised();
-		const char* m_PBRVertShader = "res/shaders/pbr.vert.shader";
-		const char* m_PBRFragShader = "res/shaders/pbr.frag.shader";
+		const char* m_PBRVertShader = "Game Engine/res/shaders/pbr.vert.shader";
+		const char* m_PBRFragShader = "Game Engine/res/shaders/pbr.frag.shader";
 
 		enum IndexType {
 			MESH_INDEX = 0,

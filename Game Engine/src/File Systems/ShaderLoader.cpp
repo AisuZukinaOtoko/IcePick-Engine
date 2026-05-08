@@ -12,8 +12,8 @@ namespace IcePick {
 
 	void ShaderLoader::Init() {
 		ShaderSource lineShaderSource;
-		lineShaderSource.VertexShaderSource = LoadFile("res/shaders/line.vert.shader", 0);
-		lineShaderSource.FragmentShaderSource = LoadFile("res/shaders/line.frag.shader", 0);
+		lineShaderSource.VertexShaderSource = LoadFile("Game Engine/res/Shaders/line.vert.shader", 0);
+		lineShaderSource.FragmentShaderSource = LoadFile("Game Engine/res/Shaders/line.frag.shader", 0);
 		UUID lineShaderId = CreateShaderProgram(lineShaderSource);
 		DefaultSahderIds[LINE_SHADER] = lineShaderId;
 	}

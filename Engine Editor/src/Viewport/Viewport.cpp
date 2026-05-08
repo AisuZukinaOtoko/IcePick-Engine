@@ -384,6 +384,7 @@ void Viewport::RenderViewportControls() {
 			IcePick::SetActiveSceneRegistry(IcePick::SceneRegistryTypes::DEFAULT);
 			IcePickRenderer::RequestCursorUnlock();
 			m_GameIsPlaying = false;
+			m_GameIsFocused = false;
 
 			entt::registry& activeRegistry = IcePick::GetActiveSceneRegistry();
 			if (!activeRegistry.valid(m_SelectedEntity)) {

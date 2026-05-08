@@ -15,7 +15,7 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_CanvasScrolling = ImVec2(0.0f, 0.0f);
     m_Renderer.editorCamera.aspectRatio = 1.0f;
     m_Renderer.Init(previewImageSize, previewImageSize);
-    previewMesh = m_EngineAPI.LoadMesh("res/Assets/sphere.glb");
+    previewMesh = m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb");
 
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
 
@@ -23,8 +23,8 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialEditorMaterialInstance.MaterialBaseId = m_MaterialEditorMaterialBaseId;
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
-    m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/pbr.vert.shader");
-    m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("res/shaders/materialTemplate.frag.shader");
+    m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/pbr.vert.shader");
+    m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/materialTemplate.frag.shader");
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
     m_MaterialEditorShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);

@@ -47,7 +47,7 @@ bool IcePick::EventHandler::Init(){
 }
 
 bool IcePick::EventHandler::InitForController() {
-	std::ifstream file("res/data/gamecontrollerdb.txt");
+	std::ifstream file("Game Engine/res/data/gamecontrollerdb.txt");
 	if (!file.is_open()) {
 		IP_LOG("Failed to load controller database.", IP_WARN_LOG);
 		IP_LOG("Controller mappings may be incorrect.", IP_WARN_LOG);
