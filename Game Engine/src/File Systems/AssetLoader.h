@@ -2,13 +2,14 @@
 #include "TextureLoader.h"
 #include "MaterialLoader.h"
 #include "ShaderLoader.h"
-#include "../Scene Systems/Components.h"
 #include <filesystem>
 #include <unordered_map>
 #include <unordered_set>
-#include "assimp/scene.h"
+#include <assimp/scene.h>
 
 namespace IcePick {
+	struct MeshRendererComponent;
+	struct MeshNode;
 
 	class AssetLoader {
 	public:

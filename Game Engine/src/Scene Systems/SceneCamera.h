@@ -1,11 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <entt/entt.h>
-#include "Components.h"
-#include "../Event Systems/Input.h"
 #include "../Utilities/Clock.h"
 
 namespace IcePick {
+	class Input;
+	struct CameraControllerComponent;
 
 	class SceneCamera {
 	public:

@@ -6,7 +6,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include "../Utilities/DebugStatistics.h"
+#include "../Scene Systems/Components.h"
 #include "../Scene Systems/SceneCamera.h"
+#include "../Event Systems/EventHandler.h"
 
 
 IcePick::Input IcePick::EngineLayer::GameInput;
@@ -225,6 +227,5 @@ void IcePick::EngineLayer::OnDetach() {
 	m_AssetLoader.ShutDown();
 	m_ScriptRunner.ShutDown();
 	m_PhysicsSystem3D.Shutdown();
-	auto& SceneRegistry = GetActiveSceneRegistry();
-	SceneRegistry.clear();
+	DestroyRegistries();
 }

@@ -1,4 +1,5 @@
 #include "PropertiesPanel.h"
+#include "Scene Systems/Components.h"
 
 static const char* CameraControllerModeToString(IcePick::CameraControllerComponent::ControllerMode mode) {
     switch (mode) {

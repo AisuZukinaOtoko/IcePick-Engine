@@ -1,4 +1,7 @@
 #include "MaterialLoader.h"
+#include "TextureLoader.h"
+#include "ShaderLoader.h"
+
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
 #include "../Utilities/JsonUtils.h"

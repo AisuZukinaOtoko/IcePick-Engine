@@ -1,5 +1,7 @@
-#include "../Render Systems/Renderer.h"
 #include "EngineAPI.h"
+#include "../Render Systems/Renderer.h"
+#include "../Render Systems/Vertex.h"
+#include "../Scene Systems/Components.h"
 
 IcePick::EngineAPI::EngineAPI(std::shared_ptr<EngineLayer> engine) {
 	m_Engine = engine;

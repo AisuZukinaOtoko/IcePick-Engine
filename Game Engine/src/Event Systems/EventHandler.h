@@ -1,8 +1,10 @@
 #pragma once
 #include "Event.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <vector>
 
 constexpr auto IP_PRESS = GLFW_PRESS;
 constexpr auto IP_RELEASE = GLFW_RELEASE;

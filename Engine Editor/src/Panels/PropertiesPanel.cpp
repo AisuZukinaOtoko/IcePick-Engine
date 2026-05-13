@@ -2,6 +2,7 @@
 #include "PanelCommon.h"
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
+#include "Scene Systems/Components.h"
 #include <IconsFontAwesome4.h>
 #include "../Utils/Serialize.h"
 #include <iostream>
@@ -209,8 +210,6 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             FloatSlider("Elevation", &directionalLightComponent.Elevation, -180.0f, 180.0f);
         }
     }
-
-    PreviewRender();
 }
 
 void PropertiesPanel::TextProperty(const char* label, const char* property) {

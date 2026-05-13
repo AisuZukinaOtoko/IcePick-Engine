@@ -8,11 +8,14 @@
 #include "ObjectBroadPhaseLayerImpl.h"
 #include "ObjectVsBroadPhaseLayerImpl.h"
 
+#include "ColliderShapes.h"
+
 #include "PhysicsDebugRenderer.h"
 
-#include "../Scene Systems/Components.h"
-
 namespace IcePick {
+	struct TransformComponent;
+	struct RigidBodyComponent;
+
 	class PhysicsSystem3D {
 	public:
 		void Init();

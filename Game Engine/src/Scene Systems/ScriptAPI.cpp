@@ -1,7 +1,8 @@
-#include "../Public/EngineLayer.h"
 #include "ScriptAPI.h"
+#include "Components.h"
 #include "SceneRegistry.h"
 #include "SceneCamera.h"
+#include "../Public/EngineLayer.h"
 
 namespace ScriptAPI {
 	glm::vec3& GetWorldPosition(entt::entity entityId) {

@@ -1,6 +1,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "../Render Systems/Renderer.h"
 #include "SceneCamera.h"
+#include "Components.h"
+#include "../Event Systems/Input.h"
 #include "SceneRegistry.h"
 
 namespace IcePick {

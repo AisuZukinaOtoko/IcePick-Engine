@@ -2,21 +2,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <string>
-#include <vector>
-#include <iostream>
-#include "Vertex.h"
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "FrameBuffer.h"
-#include "ShaderProgram.h"
 
+struct NewVertexArrayData;
 
 namespace  IcePick {
 	struct MeshComponent;
+	class ShaderProgram;
 };
 
 namespace IcePickRenderer {
+	struct LinePointVertex3D;
+
 	bool InitRenderer();
 	void TerminateRenderer();
 	void NewFrame();

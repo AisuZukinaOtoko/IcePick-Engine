@@ -3,10 +3,12 @@
 #include <filesystem>
 #include <sol/sol.hpp>
 #include <entt/entt.h>
-#include "Components.h"
 #include "Script.h"
+#include "UUID.h"
 
 namespace IcePick {
+	struct ScriptComponent;
+
 	class ScriptRunner {
 	public:
 		void Init();

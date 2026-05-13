@@ -1,4 +1,4 @@
-#include "ApplicationImpl.h"
+#include "EditorApplicationImpl.h"
 
 int main(int argc, char** argv) {
 	EditorApplication application;

@@ -1,6 +1,6 @@
 #include "Toolbar.h"
-#include "IcePickCoreMinimal.h"
-#include "imgui-docking/imgui.h"
+#include <imgui-docking/imgui.h>
+#include "LogSystem.h"
 
 
 Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :

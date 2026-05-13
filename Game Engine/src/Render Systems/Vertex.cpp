@@ -1,4 +1,6 @@
 #include "Vertex.h"
+#include "VertexLayout.h"
+
 using namespace IcePickRenderer;
 
 LinePointVertex3D::LinePointVertex3D() {

@@ -1,4 +1,5 @@
 #include "PropertiesPanel.h"
+#include "Scene Systems/Components.h"
 
 static const char* RigidBodyMotionTypeToString(IcePick::RigidBodyComponent::MotionTypes motionType) {
     switch (motionType) {

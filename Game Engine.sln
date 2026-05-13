@@ -23,6 +23,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Vendor\ImGui\ImGui
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STB", "Vendor\STB\STB.vcxproj", "{0BF149C4-6DEF-4C5E-A516-C790A1268474}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine Runtime", "Engine Runtime\Engine Runtime.vcxproj", "{AE392ABA-3EE3-4878-B830-861FFD4D0143}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0BF149C4-6DEF-4C5E-A516-C790A1268474} = {0BF149C4-6DEF-4C5E-A516-C790A1268474}
+		{318F50BE-C129-49CA-9C0D-9AED969D53FB} = {318F50BE-C129-49CA-9C0D-9AED969D53FB}
+		{A36B0CE9-39E2-4789-9A51-1181615B3DED} = {A36B0CE9-39E2-4789-9A51-1181615B3DED}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +78,14 @@ Global
 		{0BF149C4-6DEF-4C5E-A516-C790A1268474}.Release|x64.Build.0 = Release|x64
 		{0BF149C4-6DEF-4C5E-A516-C790A1268474}.Release|x86.ActiveCfg = Release|Win32
 		{0BF149C4-6DEF-4C5E-A516-C790A1268474}.Release|x86.Build.0 = Release|Win32
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Debug|x64.ActiveCfg = Debug|x64
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Debug|x64.Build.0 = Debug|x64
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Debug|x86.ActiveCfg = Debug|Win32
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Debug|x86.Build.0 = Debug|Win32
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Release|x64.ActiveCfg = Release|x64
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Release|x64.Build.0 = Release|x64
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Release|x86.ActiveCfg = Release|Win32
+		{AE392ABA-3EE3-4878-B830-861FFD4D0143}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

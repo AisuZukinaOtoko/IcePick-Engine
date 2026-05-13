@@ -1,4 +1,5 @@
 #include "SceneRegistry.h"
+#include "Components.h"
 #include "SceneCamera.h"
 #include "../Utilities/Assert.h"
 #include "../LogSystem.h"
@@ -191,4 +192,12 @@ void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::regis
 void IcePick::DeleteEntity(entt::entity entity) {
     entt::registry& activeRegistry = GetActiveSceneRegistry();
     activeRegistry.destroy(entity);
+}
+
+void IcePick::DestroyRegistries() {
+    IP_PrefabRegistry.clear();
+    IP_SceneRegistry.clear();
+#ifndef DIST
+    IP_TemporaryRegistry.clear();
+#endif
 }

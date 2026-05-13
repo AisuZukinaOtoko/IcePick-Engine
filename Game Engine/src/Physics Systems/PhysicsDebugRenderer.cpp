@@ -1,4 +1,5 @@
 #include "../Render Systems/Renderer.h"
+#include "../Render Systems/Vertex.h"
 #include "PhysicsDebugRenderer.h"
 #include "PhysicsUtils.h"
 

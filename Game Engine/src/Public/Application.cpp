@@ -1,3 +1,4 @@
+#include "../Render Systems/Renderer.h"
 #include "Application.h"
 #include "../Utilities/DebugStatistics.h"
 
@@ -31,26 +32,25 @@ namespace IcePick {
 			m_EventHandler.NewFrame();
 			m_EventHandler.HandleEvents(m_LayerStack);
 
-			for (auto& layer : m_LayerStack) {
-				layer->OnNewFrame();
+			for (auto layerIt = m_LayerStack.rbegin(); layerIt != m_LayerStack.rend(); ++layerIt) {
+				(*layerIt)->OnNewFrame();
 			}
 
 			IP_CORE_PROFILE_BEGIN("Update Layers");
-			for (auto& layer : m_LayerStack) {
-				layer->OnUpdate(deltaTime);
+			for (auto layerIt = m_LayerStack.rbegin(); layerIt != m_LayerStack.rend(); ++layerIt) {
+				(*layerIt)->OnUpdate(deltaTime);;
 			}
 			IP_CORE_PROFILE_POP();
 
 			IP_CORE_PROFILE_BEGIN("Pre-Render Layers");
-			for (auto& layer : m_LayerStack) {
-				layer->OnPreRender();
+			for (auto layerIt = m_LayerStack.rbegin(); layerIt != m_LayerStack.rend(); ++layerIt) {
+				(*layerIt)->OnPreRender();
 			}
 			IP_CORE_PROFILE_POP();
 
-			auto layerIt = m_LayerStack.rbegin();
 			RenderPayload payload;
-			for (; layerIt != m_LayerStack.rend(); ++layerIt) {
-				(*layerIt)->OnRender(payload);
+			for (auto& layer : m_LayerStack) {
+				layer->OnRender(payload);
 			}
 
 			IP_CORE_PROFILE_BEGIN("Swap Buffers");
@@ -67,6 +67,7 @@ namespace IcePick {
 		for (auto layerIt = m_LayerStack.rbegin(); layerIt != m_LayerStack.rend(); ++layerIt) {
 			(*layerIt)->OnDetach();
 		}
+		m_LayerStack.clear();
 		IcePickRenderer::TerminateRenderer();
 	}
 }

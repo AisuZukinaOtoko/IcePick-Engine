@@ -1,8 +1,8 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "VertexLayout.h"
 
 namespace IcePickRenderer {
+	class VertexLayout;
 
 	struct LinePointVertex3D {
 	public:

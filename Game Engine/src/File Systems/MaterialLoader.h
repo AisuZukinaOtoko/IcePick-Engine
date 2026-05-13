@@ -1,13 +1,14 @@
 #pragma once
-#include "TextureLoader.h"
-#include "ShaderLoader.h"
-#include "MaterialAsset.h"
 #include "MaterialBase.h"
 #include <unordered_map>
 #include <string>
-#include "assimp/scene.h"
+#include <filesystem>
+#include <assimp/scene.h>
 
 namespace IcePick {
+	class TextureLoader;
+	class ShaderLoader;
+
 	class MaterialLoader {
 	public:
 		MaterialLoader();

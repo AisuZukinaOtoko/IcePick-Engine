@@ -3,6 +3,11 @@
 #include "EngineLayer.h"
 
 namespace IcePick {
+	class ShaderProgram;
+	struct ShaderSource;
+	struct MeshRendererComponent;
+	struct ScriptComponent;
+
 	class EngineAPI {
 	public:
 		EngineAPI() = delete;

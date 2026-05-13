@@ -1,9 +1,10 @@
 #pragma once
 #include <entt/entt.h>
-#include "Components.h"
 #include "../Utilities/Assert.h"
 
 namespace IcePick {
+	struct TagComponent;
+
 	enum class SceneRegistryTypes {
 		DEFAULT = 0,
 		TEMPORARY
@@ -100,4 +101,6 @@ namespace IcePick {
 		IP_ASSERT(HasPrefabComponent<T>(prefabId), "No component to remove.");
 		registry.erase<T>(prefabId);
 	}
+
+	void DestroyRegistries();
 }

@@ -141,7 +141,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\ApplicationImpl.cpp" />
+    <ClCompile Include="src\EditorApplicationImpl.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\EditorRenderer.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -181,7 +181,6 @@
     <ClCompile Include="src\Panels\CameraControllerComponentDetails.cpp" />
     <ClCompile Include="src\Panels\LogPanel.cpp" />
     <ClCompile Include="src\Panels\PropertiesPanel.cpp" />
-    <ClCompile Include="src\Panels\PropertiesPanelPreviewRender.cpp" />
     <ClCompile Include="src\Panels\RigidBodyComponentDetails.cpp" />
     <ClCompile Include="src\Panels\ScenePanel.cpp" />
     <ClCompile Include="src\Panels\StatisticsPanel.cpp" />
@@ -192,7 +191,7 @@
     <ClCompile Include="src\Viewport\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ApplicationImpl.h" />
+    <ClInclude Include="src\EditorApplicationImpl.h" />
     <ClInclude Include="src\EditorLayer.h" />
     <ClInclude Include="src\EditorRenderer.h" />
     <ClInclude Include="src\Material Editor\MaterialEditor.h" />

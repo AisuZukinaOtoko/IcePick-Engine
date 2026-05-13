@@ -1,6 +1,9 @@
 #pragma once
-#include "VertexLayout.h"
 class VertexBuffer;
+
+namespace IcePickRenderer {
+	class VertexLayout;
+}
 
 class VertexArray {
 public:

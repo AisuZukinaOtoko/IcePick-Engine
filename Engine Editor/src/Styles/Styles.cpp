@@ -1,6 +1,6 @@
 #include "Utilities/Assert.h"
 #include "Styles.h"
-#include "imgui-docking/imgui.h"
+#include <imgui-docking/imgui.h>
 
 void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_GENERIC_FILE] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/file_icon.png");

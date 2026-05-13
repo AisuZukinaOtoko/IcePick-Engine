@@ -1,4 +1,5 @@
 #include "ScriptRunner.h"
+#include "Components.h"
 #include "ScriptAPI.h"
 #include "../LogSystem.h"
 #include <glm/glm.hpp>

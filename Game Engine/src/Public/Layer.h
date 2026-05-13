@@ -1,6 +1,6 @@
 #pragma once
+#include "../Event Systems/Event.h"
 #include "../Utilities/Clock.h"
-#include "../Event Systems/EventHandler.h"
 #include <vector>
 #include <memory>
 
@@ -24,14 +24,6 @@ namespace IcePick {
 		virtual void OnRender(RenderPayload& payload) {};
 		bool m_Active = true;
 	private:
-		//void BindScene(Scene& scene);
 	};
 
-	//class LayerManager {
-	//public:
-	//	void addLayer(std::shared_ptr<Layer> newLayer);
-	//	std::vector<std::shared_ptr<Layer>> m_Layers;
-	//private:
-	//};
-	//inline LayerManager IP_LayerStack;
 }

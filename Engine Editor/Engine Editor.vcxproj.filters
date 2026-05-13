@@ -126,9 +126,6 @@
     <ClCompile Include="src\Panels\PropertiesPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Panels\PropertiesPanelPreviewRender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Panels\RigidBodyComponentDetails.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,7 +156,7 @@
     <ClCompile Include="src\EditorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ApplicationImpl.cpp">
+    <ClCompile Include="src\EditorApplicationImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -302,7 +299,7 @@
     <ClInclude Include="src\EditorRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ApplicationImpl.h">
+    <ClInclude Include="src\EditorApplicationImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -18,7 +18,6 @@ public:
 	void SetDropAssetPath(std::string filePath);
 private:
 	void PanelSetup();
-	void PreviewRender();
 	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
 	void QuaternionEulerControls(const char* label, glm::quat& value, const float dragSpeed);

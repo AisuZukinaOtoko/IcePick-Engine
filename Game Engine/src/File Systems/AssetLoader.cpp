@@ -1,13 +1,16 @@
 #include "AssetLoader.h"
-#include "../IcePickCoreMinimal.h"
+#include "../LogSystem.h"
+#include "../Scene Systems/Components.h"
 #include "../Render Systems/Vertex.h"
 #include "../Render Systems/VertexBuffer.h"
-#include "../Render Systems/IndexBuffer.h"
 #include "../Render Systems/VertexArray.h"
+#include "../Render Systems/VertexLayout.h"
+#include "../Render Systems/IndexBuffer.h"
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 static int debugInt = 0;
 static void DebugLogNodeTree(IcePick::MeshNode& node, int depth) {

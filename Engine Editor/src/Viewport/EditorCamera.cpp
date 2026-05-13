@@ -1,7 +1,8 @@
 #include "EditorCamera.h"
-#include "IcePickCoreMinimal.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Utilities/DebugStatistics.h"
+#include "Event Systems/Input.h"
+#include "Event Systems/EventHandler.h"
 
 EditorCamera::EditorCamera() {
     cameraPosition = glm::vec3(1.5f, 2.25f, 1.5f);

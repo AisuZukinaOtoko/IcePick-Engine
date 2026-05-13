@@ -1,11 +1,14 @@
 #include "Viewport.h"
 #include "Render Systems/Renderer.h"
+#include "Render Systems/Vertex.h"
 #include "Event Systems/Input.h"
 #include <imgui-docking/imgui.h>
 #include <imgui-docking/imgui_impl_glfw.h>
 #include <imgui-docking/imgui_impl_opengl3.h>
+#include "Scene Systems/Components.h"
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
+#include "Physics Systems/ColliderShapes.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>

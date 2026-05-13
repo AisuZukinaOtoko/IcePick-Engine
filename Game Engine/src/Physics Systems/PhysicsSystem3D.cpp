@@ -16,6 +16,7 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 
+#include "../Scene Systems/Components.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
 

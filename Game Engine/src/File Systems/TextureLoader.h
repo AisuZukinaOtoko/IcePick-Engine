@@ -3,7 +3,7 @@
 #include "../Scene Systems/UUID.h"
 #include <filesystem>
 #include <unordered_map>
-#include "assimp/scene.h"
+#include <assimp/scene.h>
 
 namespace IcePick {
 	class TextureLoader {

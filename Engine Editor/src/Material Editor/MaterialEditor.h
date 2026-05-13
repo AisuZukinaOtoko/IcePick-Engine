@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <filesystem>
+#include "Scene Systems/Components.h"
 
 class MaterialEditor {
 public:

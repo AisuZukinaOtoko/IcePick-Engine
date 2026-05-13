@@ -161,12 +161,8 @@
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
     <ClCompile Include="src\File Systems\TextureLoader.cpp" />
     <ClCompile Include="src\Public\EngineAPI.cpp" />
-    <ClCompile Include="src\Public\Layer.cpp" />
     <ClCompile Include="src\Public\EngineLayer.cpp" />
     <ClCompile Include="src\LogSystem.cpp" />
-    <ClCompile Include="src\IcePickCoreMinimal.cpp" />
-    <ClCompile Include="src\IcePickRuntime.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Render Systems\FrameBuffer.cpp" />
     <ClCompile Include="src\Render Systems\IndexBuffer.cpp" />
     <ClCompile Include="src\Render Systems\Renderer.cpp" />
@@ -207,7 +203,6 @@
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
-    <ClInclude Include="src\File Systems\MaterialAsset.h" />
     <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
@@ -220,6 +215,7 @@
     <ClInclude Include="src\Physics Systems\PhysicsDebugRenderer.h" />
     <ClInclude Include="src\Physics Systems\PhysicsSystem3D.h" />
     <ClInclude Include="src\Physics Systems\PhysicsUtils.h" />
+    <ClInclude Include="src\Physics Systems\ColliderShapes.h" />
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
@@ -238,8 +234,6 @@
     <ClInclude Include="src\Event Systems\EventHandler.h" />
     <ClInclude Include="src\Public\Layer.h" />
     <ClInclude Include="src\LogSystem.h" />
-    <ClInclude Include="src\IcePickCoreMinimal.h" />
-    <ClInclude Include="src\IcePickRuntime.h" />
     <ClInclude Include="src\Render Systems\FrameBuffer.h" />
     <ClInclude Include="src\Render Systems\IndexBuffer.h" />
     <ClInclude Include="src\Render Systems\Renderer.h" />

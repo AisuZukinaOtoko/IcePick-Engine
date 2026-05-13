@@ -4,7 +4,11 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
+#include "VertexLayout.h"
 #include "RenderLineBuffer.h"
+#include "ShaderProgram.h"
+#include "Vertex.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "../../src/LogSystem.h"

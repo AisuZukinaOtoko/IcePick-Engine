@@ -1,4 +1,5 @@
 #include "ScenePanel.h"
+#include "Scene Systems/Components.h"
 #include <IconsFontAwesome4.h>
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {

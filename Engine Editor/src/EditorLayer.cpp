@@ -1,7 +1,7 @@
-#include "IcePickCoreMinimal.h"
 #include "EditorLayer.h"
 #include "Event Systems/Input.h"
 #include "Utilities/DebugStatistics.h"
+#include "LogSystem.h"
 #include <imgui-docking/ImGuizmo.h>
 #include <IconsFontAwesome4.h>
 

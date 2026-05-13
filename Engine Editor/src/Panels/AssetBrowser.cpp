@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "../Utils/Serialize.h"
 #include "Utilities/DebugStatistics.h"
+#include "LogSystem.h"
 
 static const unsigned int bufferSize = 255;
 static char TextInputBuffer[bufferSize];

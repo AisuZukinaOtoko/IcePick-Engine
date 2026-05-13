@@ -1,6 +1,6 @@
 #include <iostream>
-#include "Texture.h"
 #include <STB/stb_image.h>
+#include "Texture.h"
 #include "../LogSystem.h"
 
 void Texture::CreateTextureContext() {

@@ -7,6 +7,7 @@
 #include <entt/entt.h>
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/BodyID.h>
+#include "../Physics Systems/ColliderShapes.h"
 #include "../Physics Systems/ObjectAndBroadPhaseLayers.h"
 
 #include <string>
@@ -102,20 +103,6 @@ namespace IcePick {
 		float Pitch = 0.0f;
 		float Yaw = 0.0f;
 		float FOV = 45.0f;
-	};
-
-	struct ColliderShape {
-		glm::vec3 ColliderOffset = glm::vec3(0.0f);
-		glm::vec3 ColliderScale = glm::vec3(1.0f);
-		float Radius = 0.5f;
-
-		enum class ColliderShapeType {
-			BOX_SHAPE = 0,
-			SPHERE_SHAPE,
-			CAPSULE_SHAPE,
-			STATIC_COMPOUND_SHAPE,
-			COLLIDER_SHAPE_COUNT
-		} ShapeType = ColliderShapeType::BOX_SHAPE;
 	};
 
 	struct RigidBodyComponent {

@@ -1,4 +1,4 @@
-#include "ApplicationImpl.h"
+#include "EditorApplicationImpl.h"
 #include "Public/EngineLayer.h"
 #include "EditorLayer.h"
 #include "Utilities/DebugStatistics.h"
@@ -17,7 +17,7 @@ void EditorApplication::Init() {
 	std::shared_ptr<IcePick::EngineLayer> engineLayer = std::make_shared<IcePick::EngineLayer>();
 	std::shared_ptr<IcePick::EditorLayer> editorLayer = std::make_shared<IcePick::EditorLayer>(engineLayer);
 
-	AddLayer(editorLayer);
 	AddLayer(engineLayer);
+	AddLayer(editorLayer);
 	m_ApplicationRunning = true;
 }
