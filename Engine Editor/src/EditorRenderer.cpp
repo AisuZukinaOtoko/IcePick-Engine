@@ -7,7 +7,7 @@ EditorRenderer::EditorRenderer(IcePick::EngineAPI engineAPI) :
 }
 
 void EditorRenderer::Init(unsigned int width, unsigned int height) {
-	m_FrameBuffer.Init(width, height, FrameBuffer::FORWARD);
+	m_FrameBuffer.Init(width, height, IcePickRenderer::FrameBuffer::FORWARD);
 }
 
 void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix) {

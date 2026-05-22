@@ -23,7 +23,7 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialEditorMaterialInstance.MaterialBaseId = m_MaterialEditorMaterialBaseId;
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
-    m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/pbr.vert.shader");
+    m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.vert.shader");
     m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/materialTemplate.frag.shader");
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();

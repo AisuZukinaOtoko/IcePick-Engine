@@ -18,5 +18,5 @@ public:
 	EditorCamera editorCamera;
 private:
 	IcePick::EngineAPI m_EngineAPI;
-	FrameBuffer m_FrameBuffer;
+	IcePickRenderer::FrameBuffer m_FrameBuffer;
 };

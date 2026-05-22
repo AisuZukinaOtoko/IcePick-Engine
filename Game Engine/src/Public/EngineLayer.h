@@ -36,21 +36,29 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
+		void FullScreenPass(MaterialInstance& materialInstance);
+
 		//void InitThumbnailBuffer
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		friend class EngineAPI;
 		RuntimeState m_CurrentRuntimeState = RuntimeState::STOPPED;
-		FrameBuffer m_FrameBuffer;
-		FrameBuffer m_ThumbnailBuffer;
+		enum class FrameBufferEnum {
+			ONE = 0, TWO
+		} m_CurrentFrameBuffer = FrameBufferEnum::ONE;
+		IcePickRenderer::FrameBuffer m_FrameBufferOne;
+		IcePickRenderer::FrameBuffer m_FrameBufferTwo;
 		AssetLoader m_AssetLoader;
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
+		IcePickRenderer::FrameBuffer& GetFrameBuffer(FrameBufferEnum frameBuffer);
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 
 		bool m_RenderDebugPhysics = false;
 		Scene m_CurrentScene;
 		entt::entity m_SceneCameraId = entt::null;
+
+		std::vector<IcePickRenderer::Texture> m_RenderTextureStorage;
 	};
 }

@@ -122,24 +122,24 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Shaders\depth.shader" />
+    <None Include="res\Shaders\depth.frag.shader" />
     <None Include="res\assets\cube.fbx" />
     <None Include="res\assets\rect.fbx" />
-    <None Include="res\Shaders\normal.shader" />
-    <None Include="res\Shaders\material.shader" />
-    <None Include="res\Shaders\pbr.vert.shader" />
-    <None Include="res\Shaders\pbr.frag.shader" />
-    <None Include="res\Shaders\picking.shader" />
+    <None Include="res\Shaders\default.vert.shader" />
+    <None Include="res\Shaders\default.frag.shader" />
+    <None Include="res\Shaders\picking.util.shader" />
     <None Include="res\Textures\black_fabric_diffuse.iptex" />
     <None Include="res\Textures\black_fabric_rough.iptex" />
     <None Include="res\Shaders\materialTemplate.frag.shader" />
     <None Include="res\Shaders\defaultMaterialBase.frag.shader" />
-    <None Include="res\Shaders\toneMapper.shader" />
+    <None Include="res\Shaders\toneMapper.util.shader" />
     <None Include="res\Scripts\Core.lua" />
     <None Include="res\Scripts\Script.lua" />
-    <None Include="res\Shaders\noiseFunctions.shader" />
+    <None Include="res\Shaders\noiseFunctions.util.shader" />
     <None Include="res\Shaders\line.vert.shader" />
     <None Include="res\Shaders\line.frag.shader" />
+    <None Include="res\Shaders\fullScreenPass.vert.shader" />
+    <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">

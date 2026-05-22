@@ -13,7 +13,7 @@ namespace IcePick {
 		m_DefaultTextureId = UUID();
 	}
 
-	UUID TextureLoader::RegisterTexture(const Texture& texture)	{
+	UUID TextureLoader::RegisterTexture(const IcePickRenderer::Texture& texture)	{
 		if (!texture.IsValid()) {
 			return m_DefaultTextureId;
 		}
@@ -40,7 +40,7 @@ namespace IcePick {
 			return iterator->second;
 		}
 
-		Texture newTexture(texturePath.string());
+		IcePickRenderer::Texture newTexture(texturePath.string());
 		UUID newTextureId = RegisterTexture(newTexture);
 		m_CachedTexturePaths.insert({ texturePath, newTextureId });
 		return newTextureId;
@@ -72,12 +72,12 @@ namespace IcePick {
 		const aiTexture* tex = scene->mTextures[texIndex];
 		UUID newTextureId;
 		if (tex->mHeight == 0) { // Compressed embedded texture
-			Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth);
+			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth);
 			newTextureId = RegisterTexture(newTexture);
 		}
 		else { // Raw uncompressed embedded texture
 			const int numTextureChannels = 4;
-			Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth, tex->mHeight, numTextureChannels);
+			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth, tex->mHeight, numTextureChannels);
 			newTextureId = RegisterTexture(newTexture);
 		}
 
@@ -110,7 +110,7 @@ namespace IcePick {
 		return UUID{ textureId };
 	}
 
-	const Texture& TextureLoader::GetTexture(UUID id) {
+	const IcePickRenderer::Texture& TextureLoader::GetTexture(UUID id) {
 		if (id == UUID::Unitialised() || id == m_DefaultTextureId)
 			return m_DefaultTexture;
 
@@ -128,7 +128,7 @@ namespace IcePick {
 		return iterator->second;
 	}
 
-	const Texture& TextureLoader::GetDefaultTexture() {
+	const IcePickRenderer::Texture& TextureLoader::GetDefaultTexture() {
 		return m_DefaultTexture;
 	}
 
@@ -140,7 +140,7 @@ namespace IcePick {
 		m_BaseFilePath = filePath;
 	}
 
-	void TextureLoader::UpdateTexture(UUID id, const Texture& other) {
+	void TextureLoader::UpdateTexture(UUID id, const IcePickRenderer::Texture& other) {
 
 	}	
 
@@ -174,7 +174,7 @@ namespace IcePick {
 			return false;
 		}
 
-		Texture newTexture(texturePath.string());
+		IcePickRenderer::Texture newTexture(texturePath.string());
 		if (!newTexture.IsValid())
 			return false;
 

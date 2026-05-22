@@ -23,7 +23,7 @@ void IcePick::MaterialBase::BindMaterialInstanceParameters(EngineAPI engineAPI, 
         std::string& textureSampler = MaterialTextures[i].SamplerIdentifier;
         IcePick::UUID textureId = materialInstance.GetMaterialInstanceTextureId(MaterialTextures[i].Id);
 
-        const Texture& materialTexture = engineAPI.GetTexture(textureId);
+        const IcePickRenderer::Texture& materialTexture = engineAPI.GetTexture(textureId);
         materialTexture.Bind(i);
         materialShader.SetUniformInt32(textureSampler.c_str(), i);
     }

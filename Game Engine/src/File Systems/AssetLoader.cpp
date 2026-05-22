@@ -12,17 +12,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
-static int debugInt = 0;
+static const char* m_PBRVertShader = "Game Engine/res/shaders/default.vert.shader";
+static const char* m_PBRFragShader = "Game Engine/res/shaders/default.frag.shader";
+
 static void DebugLogNodeTree(IcePick::MeshNode& node, int depth) {
 	std::cout << std::left << std::setw(depth * 3) << "";
 	if (node.Children.size() == 0) {
-		debugInt++;
 		std::cout << "Depth: " << depth << ". ";
 		for (auto id : node.VertexArrayIDs) {
 			std::cout << id << " ";
 		}
 		std::cout << std::endl;
-		//std::cout << "Mesh: " << node.VertexArrayIDs << ", Depth: " << depth << std::endl;
 	}
 	else {
 		std::cout << "Node" << ", Depth: " << depth << std::endl;
@@ -47,6 +47,9 @@ void IcePick::AssetLoader::Init() {
 	m_PBRShaderProgramId = m_ShaderLoader.CreateShaderProgram(shaderSource);
 	ShaderProgram& PBRShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
 	m_ShaderLoader.SetDefaultShaderProgram(PBRShader);
+
+	//ShaderSource toneMapperSource;
+	//toneMapperSource.VertexShaderSource = m_ShaderLoader.LoadFile("", 0);
 }
 
 unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
@@ -74,7 +77,7 @@ IcePick::MaterialInstance& IcePick::AssetLoader::GetMaterialInstance(IcePick::UU
 	return m_MaterialLoader.GetMaterialInstance(Id);
 }
 
-const Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
+const IcePickRenderer::Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 	return m_TextureLoader.GetTexture(Id);
 }
 
@@ -236,7 +239,6 @@ IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::p
 	UpdateIndices(scene);
 	CleanUpAfterLoad();
 
-	debugInt = 0;
 	returnMeshRendererComponent.MeshCount = scene->mNumMeshes;
 	returnMeshRendererComponent.MeshLoaded = true;
 

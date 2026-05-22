@@ -2,37 +2,56 @@
 #include "Renderer.h"
 #include <string>
 
-class Texture{
-public:
-	// Raw texture data
-	Texture(unsigned char* data, int m_width, int m_height, int m_BPP);
+namespace IcePickRenderer {
+	struct TextureSettings {
+		unsigned int Width = 0;
+		unsigned int Height = 0;
+		enum class TextureFormat {
+			RGBA8 = 0, RGBA16, RG32UI, 
+			DEPTH_TEXTURE, DEPTH_STENCIL_TEXTURE
+		} Format = TextureFormat::RGBA8;
+	};
 
-	// External texture
-	Texture(const std::string& path);
+	class Texture {
+	public:
+		// Raw texture data
+		Texture(unsigned char* data, int m_width, int m_height, int m_BPP);
 
-	// Compressed texture data
-	Texture(unsigned char* data, int width);
-	~Texture();
+		// External texture
+		Texture(const std::string& path);
 
-	void Bind(unsigned int slot /*= 0*/) const;
-	void Unbind();
-	bool IsValid() const;
-	void Destroy();
+		// Compressed texture data
+		Texture(unsigned char* data, int width);
 
-	// ID of the opengl texture
-	unsigned int GetID() const;
-	
-private:
-	void CreateTextureContext();
-	void SetTextureFormats();
-	void UploadTextureData();
-	unsigned int m_ID = 0;
-	std::string m_FilePath;
-	unsigned char* m_LocalBuffer = nullptr; // points to invalid memory after texture is created
-	int m_Width = 0;
-	int m_Height = 0;
-	int m_NumChannels = 0; // bytes per pixel
-	GLuint m_InternalFormat = GL_RGBA8;
-	GLuint m_LocalFormat = GL_RGBA;
-	bool m_TextureValid = false;
-};
+		// Empty textures. Mainly as render targets
+		Texture(const TextureSettings& settings);
+
+		Texture(const Texture& other) = default;
+		~Texture();
+
+		void Bind(unsigned int slot /*= 0*/) const;
+		void Unbind();
+		bool IsValid() const;
+		void Destroy();
+
+		// ID of the opengl texture
+		unsigned int GetID() const;
+
+		void GetTextureSize(unsigned int* width, unsigned int* height);
+
+	private:
+		void CreateTextureContext();
+		void SetTextureFormats();
+		void UploadTextureData();
+		unsigned int m_ID = 0;
+		std::string m_FilePath;
+		unsigned char* m_LocalBuffer = nullptr; // points to invalid memory after texture is created
+		int m_Width = 0;
+		int m_Height = 0;
+		int m_NumChannels = 0; // bytes per pixel
+		GLuint m_InternalFormat = GL_RGBA8;
+		GLenum m_LocalFormat = GL_RGBA;
+		GLenum m_LocalDataType = GL_UNSIGNED_BYTE;
+		bool m_TextureValid = false;
+	};
+}

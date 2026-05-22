@@ -5,8 +5,6 @@
 #define IP_STANDARD_LOG 0
 #define IP_WARN_LOG 1
 #define IP_ERROR_LOG 2
-//#define IP_LOG(log, type = IP_ERROR_LOG) IcePick::Logger::GetInstance().Log(x, type)
-
 
 namespace IcePick {
 	struct Log {
@@ -27,7 +25,7 @@ namespace IcePick {
 }
 
 inline void IP_LOG(std::string log, int type = IP_STANDARD_LOG) {
-#ifndef RELEASE
+#ifndef DIST
 	IcePick::Logger::GetInstance().Log(log.c_str(), type);
 #endif
 }

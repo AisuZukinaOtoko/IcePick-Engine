@@ -1,13 +1,6 @@
 #version 450 core
 layout(location = 0) out vec4 OutColour;
-layout(location = 1) out vec4 OutNormal;
-layout(location = 2) out uvec4 OutEntityMat;
-
-const int SAMPLE_ALBEDO = 1 << 0;
-const int SAMPLE_NORMAL = 1 << 1;
-const int SAMPLE_ROUGHNESS = 1 << 2;
-const int SAMPLE_METALLIC = 1 << 3;
-const int SAMPLE_EMMISIVE = 1 << 4;
+layout(location = 1) out uvec4 OutEntityMat;
 
 
 in vec3 v_Pos;
@@ -23,14 +16,13 @@ const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const float tempLightIntensity = 0.68f;
 const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f);
 
-#include "picking.shader"
-#include "toneMapper.shader"
+#include "picking.util.shader"
+#include "toneMapper.util.shader"
 
 void main() {
     vec4 OutputColour = vec4(0.0f);
 
     vec3 L = normalize(tempLightPosition - vec3(0.0f));
-    //vec3 L = normalize(tempLightPosition - v_Pos);
     vec3 R = normalize(reflect(-L, normalize(v_Normal)));
     vec3 V = normalize(u_CameraPosition - v_Pos);
 
@@ -45,9 +37,7 @@ void main() {
         OutputColour += vec4(diffuseColour.rgb * tempLightColour * pow(max(dot(V, R), 0.0), 32.0f), 1.0f);
     }
 
-    //OutColour = vec4(vec3(1.0f) * noise3(v_TexCoord.x), 1.0f);
     OutColour = vec4(PBRNeutralToneMapper(OutputColour.rgb), OutputColour.a);
-    OutNormal = vec4(v_Normal, 1.0f);
 #ifdef VIEW_PICKING
     OutEntityMat = GetEntityMatSlot();
 #endif

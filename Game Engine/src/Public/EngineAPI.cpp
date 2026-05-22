@@ -59,7 +59,7 @@ std::string IcePick::EngineAPI::LoadShaderSourceFile(std::filesystem::path filep
 	return m_Engine->m_AssetLoader.m_ShaderLoader.LoadFile(filepath, 0);
 }
 
-const Texture& IcePick::EngineAPI::GetTexture(UUID textureId) {
+const IcePickRenderer::Texture& IcePick::EngineAPI::GetTexture(UUID textureId) {
 	return m_Engine->m_AssetLoader.m_TextureLoader.GetTexture(textureId);
 }
 

@@ -24,7 +24,7 @@ namespace IcePick {
 		MaterialBase& GetMaterialBase(UUID Id);
 		MaterialInstance& GetMaterialInstance(UUID Id);
 
-		const Texture& GetTexture(UUID Id);
+		const IcePickRenderer::Texture& GetTexture(UUID Id);
 		ShaderProgram& GetShaderProgram(UUID Id);
 		ShaderProgram& GetDefaultShaderProgram(ShaderLoader::DefaultShader shaderType);
 		void ReloadShaderPrograms();
@@ -32,8 +32,6 @@ namespace IcePick {
 	private:
 		friend class EngineAPI;
 		UUID m_PBRShaderProgramId = UUID::Unitialised();
-		const char* m_PBRVertShader = "Game Engine/res/shaders/pbr.vert.shader";
-		const char* m_PBRFragShader = "Game Engine/res/shaders/pbr.frag.shader";
 
 		enum IndexType {
 			MESH_INDEX = 0,

@@ -27,7 +27,7 @@ namespace IcePick {
 		void UpdateShaderWithSource(UUID shaderId, ShaderSource& source);
 		std::string LoadShaderSourceFile(std::filesystem::path filepath);
 
-		const Texture& GetTexture(UUID textureId);
+		const IcePickRenderer::Texture& GetTexture(UUID textureId);
 
 		UUID LoadMaterialBaseFromAsset(std::filesystem::path assetPath);
 		UUID LoadMaterialInstanceFromAsset(std::filesystem::path assetPath);

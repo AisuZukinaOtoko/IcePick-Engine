@@ -16,24 +16,24 @@ namespace IcePick {
 		UUID NewTextureFromMemory(unsigned char* data);
 		UUID NewTextureFromScene(std::string texturePath, const aiScene* scene);
 		UUID NewTextureFromAsset(std::filesystem::path& assetPath);
-		const Texture& GetTexture(UUID id);
-		const Texture& GetDefaultTexture();
+		const IcePickRenderer::Texture& GetTexture(UUID id);
+		const IcePickRenderer::Texture& GetDefaultTexture();
 		const UUID GetDefaultTextureID();
 		void SetLoaderBasePath(std::filesystem::path filePath);
-		void UpdateTexture(UUID id, const Texture& other);
+		void UpdateTexture(UUID id, const IcePickRenderer::Texture& other);
 		void CleanUpAfterLoad();
 	private:
 		bool NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId);
 
 		UUID m_CachedTextureId = UUID::Unitialised();
 		UUID m_DefaultTextureId = UUID::Unitialised();
-		Texture m_CachedTexture;
+		IcePickRenderer::Texture m_CachedTexture;
 		const char* m_DefaultTextureRelativePath = "Game Engine/res/Textures/DefaultTexture.png";
 		std::filesystem::path m_DefaultTexturePath;
 		std::filesystem::path m_BaseFilePath;
-		Texture m_DefaultTexture;
-		UUID RegisterTexture(const Texture& texture);
-		std::unordered_map<UUID, Texture, UUIDHasher> m_LoadedTextures;
+		IcePickRenderer::Texture m_DefaultTexture;
+		UUID RegisterTexture(const IcePickRenderer::Texture& texture);
+		std::unordered_map<UUID, IcePickRenderer::Texture, UUIDHasher> m_LoadedTextures;
 		std::unordered_map<std::filesystem::path, UUID> m_CachedTexturePaths;
 		std::unordered_map<std::filesystem::path, UUID> m_CachedTextureAssetPaths;
 

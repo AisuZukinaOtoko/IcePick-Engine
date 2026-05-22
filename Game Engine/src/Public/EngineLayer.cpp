@@ -15,7 +15,27 @@ IcePick::Input IcePick::EngineLayer::GameInput;
 
 void IcePick::EngineLayer::OnAttach() {
 	glm::ivec2 windowSize = IcePickRenderer::GetRendererWindowSize();
-	m_FrameBuffer.Init(windowSize.x, windowSize.y, FrameBuffer::DEFERRED);
+	IcePickRenderer::TextureSettings colourTextureSettings{ windowSize.x, windowSize.y, IcePickRenderer::TextureSettings::TextureFormat::RGBA16 };
+	IcePickRenderer::TextureSettings debugTextureSettings{ windowSize.x, windowSize.y, IcePickRenderer::TextureSettings::TextureFormat::RG32UI };
+	IcePickRenderer::TextureSettings depthStencilTextureSettings{ windowSize.x, windowSize.y, IcePickRenderer::TextureSettings::TextureFormat::DEPTH_STENCIL_TEXTURE };
+	
+	IcePickRenderer::Texture colourTextureOne{ colourTextureSettings };
+	IcePickRenderer::Texture colourTextureTwo{ colourTextureSettings };
+	IcePickRenderer::Texture debugTexture{ debugTextureSettings };
+	IcePickRenderer::Texture depthStencilTexture{ depthStencilTextureSettings };
+
+	m_RenderTextureStorage.push_back(colourTextureOne);
+	m_RenderTextureStorage.push_back(colourTextureTwo);
+	m_RenderTextureStorage.push_back(debugTexture);
+	m_RenderTextureStorage.push_back(depthStencilTexture);
+
+	const unsigned int numTexturesPerFrameBuffer = 2;
+	IcePickRenderer::Texture frameBufferOneTextures[numTexturesPerFrameBuffer] = { colourTextureOne, debugTexture };
+	IcePickRenderer::Texture frameBufferTwoTextures[numTexturesPerFrameBuffer] = { colourTextureTwo, debugTexture };
+
+	m_FrameBufferOne.Init(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture);
+	m_FrameBufferTwo.Init(frameBufferTwoTextures, numTexturesPerFrameBuffer, depthStencilTexture);
+
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
 	m_PhysicsSystem3D.Init();
@@ -73,7 +93,8 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 }
 
 void IcePick::EngineLayer::OnNewFrame() {
-	m_FrameBuffer.Clear();
+	m_FrameBufferOne.Clear();
+	m_FrameBufferTwo.Clear();
 }
 
 void IcePick::EngineLayer::OnPreRender() {
@@ -103,11 +124,13 @@ IcePick::UUID IcePick::EngineLayer::LoadTextureFromAsset(std::filesystem::path a
 }
 
 void IcePick::EngineLayer::SetRenderTargetDefault() {
-	m_FrameBuffer.UnBind();
+	IcePickRenderer::FrameBuffer& currentFrameBuffer = GetFrameBuffer(m_CurrentFrameBuffer);
+	currentFrameBuffer.UnBind();
 }
 
 void IcePick::EngineLayer::SetRenderTargetFrameBuffer() {
-	m_FrameBuffer.Bind();
+	IcePickRenderer::FrameBuffer& currentFrameBuffer = GetFrameBuffer(m_CurrentFrameBuffer);
+	currentFrameBuffer.Bind();
 }
 
 void IcePick::EngineLayer::ReloadShaders() {
@@ -115,7 +138,8 @@ void IcePick::EngineLayer::ReloadShaders() {
 }
 
 void IcePick::EngineLayer::GetEntityMatPixelData(int x, int y, void* pixelData) {
-	m_FrameBuffer.GetEntMatPixelData(x, y, pixelData);
+	IcePickRenderer::FrameBuffer& currentFrameBuffer = GetFrameBuffer(m_CurrentFrameBuffer);
+	currentFrameBuffer.GetEntMatPixelData(x, y, pixelData);
 }
 
 void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
@@ -124,7 +148,8 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 	IcePickRenderer::SetDrawLineShader(m_AssetLoader.GetDefaultShaderProgram(ShaderLoader::LINE_SHADER));
 
 	m_CurrentScene.OnPreRender();
-	payload.FrameBufferID = m_FrameBuffer.GetColourTextureID();
+	IcePickRenderer::FrameBuffer& currentFrameBuffer = GetFrameBuffer(m_CurrentFrameBuffer);
+	payload.FrameBufferID = currentFrameBuffer.GetColourTextureID();
 	RenderEntityMeshes();
 
 #ifndef DIST
@@ -170,6 +195,15 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 
 }
 
+IcePickRenderer::FrameBuffer& IcePick::EngineLayer::GetFrameBuffer(IcePick::EngineLayer::FrameBufferEnum frameBufferEnum) {
+	if (frameBufferEnum == FrameBufferEnum::ONE) {
+		return m_FrameBufferOne;
+	}
+	else {
+		return m_FrameBufferTwo;
+	}
+}
+
 void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId) {
 	glm::mat4 meshWorldTransform = parentTransform * parent.NodeTransform;
 	for (unsigned int i = 0; i < parent.VertexArrayIDs.size(); i++) {
@@ -200,6 +234,10 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 	}
 }
 
+void IcePick::EngineLayer::FullScreenPass(IcePick::MaterialInstance& materialInstance) {
+
+}
+
 void IcePick::EngineLayer::OnBeginScene() {
 	auto& activeSceneRegistry = GetActiveSceneRegistry();
 	auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();
@@ -228,4 +266,9 @@ void IcePick::EngineLayer::OnDetach() {
 	m_ScriptRunner.ShutDown();
 	m_PhysicsSystem3D.Shutdown();
 	DestroyRegistries();
+
+	for (auto& renderTexture : m_RenderTextureStorage) {
+		renderTexture.Destroy();
+	}
+	m_RenderTextureStorage.clear();
 }
