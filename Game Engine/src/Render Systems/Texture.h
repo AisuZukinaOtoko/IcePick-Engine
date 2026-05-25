@@ -14,6 +14,7 @@ namespace IcePickRenderer {
 
 	class Texture {
 	public:
+		Texture() : m_TextureValid(false) { }
 		// Raw texture data
 		Texture(unsigned char* data, int m_width, int m_height, int m_BPP);
 

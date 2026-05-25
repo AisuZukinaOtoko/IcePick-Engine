@@ -48,10 +48,11 @@ namespace IcePick {
 		} m_CurrentFrameBuffer = FrameBufferEnum::ONE;
 		IcePickRenderer::FrameBuffer m_FrameBufferOne;
 		IcePickRenderer::FrameBuffer m_FrameBufferTwo;
+		IcePickRenderer::FrameBuffer& GetFrameBuffer(FrameBufferEnum frameBuffer);
+
 		AssetLoader m_AssetLoader;
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
-		IcePickRenderer::FrameBuffer& GetFrameBuffer(FrameBufferEnum frameBuffer);
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 

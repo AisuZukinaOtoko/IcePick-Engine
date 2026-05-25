@@ -243,6 +243,7 @@ namespace IcePickRenderer {
 		for (VertexArray va : VertexArrays) {
 			va.Destroy();
 		}
+		VertexArrays.clear();
 
 		glDeleteBuffers(1, &InternalLineBufferId);
 	}

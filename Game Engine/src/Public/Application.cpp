@@ -24,9 +24,9 @@ namespace IcePick {
 			deltaTime.NewFrame();
 
 			if (IcePickRenderer::WindowShouldClose()) {
-				Terminate();
 				break;
 			}
+
 			glfwPollEvents();
 			IcePickRenderer::NewFrame();
 			m_EventHandler.NewFrame();

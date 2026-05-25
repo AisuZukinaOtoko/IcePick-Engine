@@ -33,8 +33,9 @@ void IcePick::EngineLayer::OnAttach() {
 	IcePickRenderer::Texture frameBufferOneTextures[numTexturesPerFrameBuffer] = { colourTextureOne, debugTexture };
 	IcePickRenderer::Texture frameBufferTwoTextures[numTexturesPerFrameBuffer] = { colourTextureTwo, debugTexture };
 
-	m_FrameBufferOne.Init(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture);
-	m_FrameBufferTwo.Init(frameBufferTwoTextures, numTexturesPerFrameBuffer, depthStencilTexture);
+	bool transferTextureOwnership = false;
+	m_FrameBufferOne.InitWithTargets(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
+	m_FrameBufferTwo.InitWithTargets(frameBufferTwoTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
@@ -93,8 +94,16 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 }
 
 void IcePick::EngineLayer::OnNewFrame() {
-	m_FrameBufferOne.Clear();
-	m_FrameBufferTwo.Clear();
+	m_FrameBufferOne.Bind();
+	m_FrameBufferOne.ClearColourTarget();
+	m_FrameBufferOne.ClearDebugTarget();
+	m_FrameBufferOne.ClearDepthTarget();
+
+	m_FrameBufferTwo.Bind();
+	m_FrameBufferTwo.ClearColourTarget();
+
+	//m_FrameBufferOne.Clear();
+	//m_FrameBufferTwo.Clear();
 }
 
 void IcePick::EngineLayer::OnPreRender() {
@@ -149,7 +158,7 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 
 	m_CurrentScene.OnPreRender();
 	IcePickRenderer::FrameBuffer& currentFrameBuffer = GetFrameBuffer(m_CurrentFrameBuffer);
-	payload.FrameBufferID = currentFrameBuffer.GetColourTextureID();
+	payload.FrameBufferID = currentFrameBuffer.GetAttachmentID(IcePickRenderer::FrameBuffer::COLOUR_TEXTURE);
 	RenderEntityMeshes();
 
 #ifndef DIST

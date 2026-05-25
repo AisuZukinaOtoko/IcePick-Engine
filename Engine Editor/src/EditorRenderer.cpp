@@ -7,7 +7,17 @@ EditorRenderer::EditorRenderer(IcePick::EngineAPI engineAPI) :
 }
 
 void EditorRenderer::Init(unsigned int width, unsigned int height) {
-	m_FrameBuffer.Init(width, height, IcePickRenderer::FrameBuffer::FORWARD);
+	IcePickRenderer::TextureSettings colourTextureSettings{ width, height, IcePickRenderer::TextureSettings::TextureFormat::RGBA16 };
+	IcePickRenderer::TextureSettings depthStencilTextureSettings{ width, height, IcePickRenderer::TextureSettings::TextureFormat::DEPTH_STENCIL_TEXTURE };
+
+	IcePickRenderer::Texture colourTextureOne{ colourTextureSettings };
+	IcePickRenderer::Texture depthStencilTexture{ depthStencilTextureSettings };
+
+	const unsigned int numTexturesPerFrameBuffer = 1;
+	IcePickRenderer::Texture frameBufferOneTextures[numTexturesPerFrameBuffer] = { colourTextureOne };
+
+	bool transferTextureOwnership = true;
+	m_FrameBuffer.InitWithTargets(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 }
 
 void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix) {
@@ -23,7 +33,9 @@ void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4&
 }
 
 void EditorRenderer::Clear() {
-	m_FrameBuffer.Clear();
+	m_FrameBuffer.Bind();
+	m_FrameBuffer.ClearColourTarget();
+	m_FrameBuffer.ClearDepthTarget();
 }
 
 void EditorRenderer::Use() {
@@ -35,7 +47,7 @@ void EditorRenderer::UnBind() {
 }
 
 unsigned int EditorRenderer::GetRenderTexture() {
-	return m_FrameBuffer.GetColourTextureID();
+	return m_FrameBuffer.GetAttachmentID(IcePickRenderer::FrameBuffer::COLOUR_TEXTURE);
 }
 
 void EditorRenderer::Destroy() {
