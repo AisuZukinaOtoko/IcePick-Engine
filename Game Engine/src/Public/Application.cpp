@@ -9,6 +9,8 @@ namespace IcePick {
 	}
 
 	void Application::PopLayer() {
+		m_LayerStack.back()->OnDetach();
+
 		if (m_LayerStack.empty())
 			return;
 
@@ -64,10 +66,9 @@ namespace IcePick {
 
 	void Application::Terminate() {
 		m_ApplicationRunning = false;
-		for (auto layerIt = m_LayerStack.rbegin(); layerIt != m_LayerStack.rend(); ++layerIt) {
-			(*layerIt)->OnDetach();
+		while (!m_LayerStack.empty()) {
+			PopLayer();
 		}
-		m_LayerStack.clear();
 		IcePickRenderer::TerminateRenderer();
 	}
 }

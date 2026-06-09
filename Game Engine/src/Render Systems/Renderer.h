@@ -32,6 +32,14 @@ namespace IcePickRenderer {
 	void SetDrawLineShader(const IcePick::ShaderProgram& lineShaderProgram);
 	void DrawLine(const LinePointVertex3D& point1, const LinePointVertex3D& point2);
 	void FlushLineRenderBuffer();
+
+	void EnableDepthTesting();
+	void DisableDepthTesting();
+	void EnableDepthWrites();
+	void DisableDepthWrites();
+	void EnableBackFaceCulling();
+	void DisableBackFaceCulling();
+	void FullScreenPass();
 	
 	// Render camera settings
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);

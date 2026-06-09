@@ -38,6 +38,7 @@ namespace IcePickRenderer {
 	static glm::mat3 RenderWorldNormalMatrix; // No translation
 	static std::vector<VertexArray> VertexArrays;
 
+	static unsigned int InternalEmptyVertexArrayId = 0;
 	static unsigned int InternalLineVertexArrayId = 0;
 	static unsigned int InternalLineBufferId = 0;
 	static RenderLineBuffer LineBuffer;
@@ -101,6 +102,9 @@ namespace IcePickRenderer {
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)element.offset);
 		}
+
+		// Full Screen Pass setup
+		glGenVertexArrays(1, &InternalEmptyVertexArrayId);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -197,6 +201,35 @@ namespace IcePickRenderer {
 		LineBuffer.NumPoints = 0;
 	}
 
+	void EnableDepthTesting() {
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void DisableDepthTesting() {
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	void EnableDepthWrites() {
+		glDepthMask(GL_TRUE);
+	}
+
+	void DisableDepthWrites() {
+		glDepthMask(GL_FALSE);
+	}
+
+	void EnableBackFaceCulling() {
+		glEnable(GL_CULL_FACE);
+	}
+
+	void DisableBackFaceCulling() {
+		glDisable(GL_CULL_FACE);
+	}
+
+	void FullScreenPass() {
+		glBindVertexArray(InternalEmptyVertexArrayId);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {
 		CameraPosition = CameraWorldPosition;
 	}
@@ -246,5 +279,7 @@ namespace IcePickRenderer {
 		VertexArrays.clear();
 
 		glDeleteBuffers(1, &InternalLineBufferId);
+		glDeleteVertexArrays(1, &InternalLineVertexArrayId);
+		glDeleteVertexArrays(1, &InternalEmptyVertexArrayId);
 	}
 }

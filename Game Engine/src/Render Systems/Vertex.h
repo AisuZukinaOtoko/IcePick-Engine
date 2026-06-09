@@ -16,6 +16,17 @@ namespace IcePickRenderer {
 	private:
 	};
 
+	struct FullScreenPassVertex {
+	public:
+		FullScreenPassVertex();
+		FullScreenPassVertex(glm::vec2 screenSpaceUV);
+
+		static VertexLayout GetVertexLayout();
+
+		glm::vec2 ScreenSpaceUV;
+	private:
+	};
+
 	struct StaticVertex3D {
 	public:
 		StaticVertex3D();
@@ -31,10 +42,10 @@ namespace IcePickRenderer {
 
 	};
 
-	struct AnimatedVertex3D {
+	struct SkeletalVertex3D {
 	public:
-		AnimatedVertex3D();
-		AnimatedVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords);
+		SkeletalVertex3D();
+		SkeletalVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords);
 
 		static VertexLayout GetVertexLayout();
 		static const unsigned int MaxEffectiveBoneCount = 4; // number of bones that can affect a single vertex

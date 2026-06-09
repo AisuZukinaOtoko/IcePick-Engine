@@ -184,6 +184,7 @@
     <None Include="res\assets\rect.fbx" />
     <None Include="res\Scripts\Core.lua" />
     <None Include="res\Scripts\Script.lua" />
+    <None Include="res\Shaders\copyFrameTexture.frag.shader" />
     <None Include="res\Shaders\defaultMaterialBase.frag.shader" />
     <None Include="res\Shaders\depth.frag.shader" />
     <None Include="res\Shaders\fullScreenPass.vert.shader" />
@@ -195,6 +196,7 @@
     <None Include="res\Shaders\default.vert.shader" />
     <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
     <None Include="res\Shaders\picking.util.shader" />
+    <None Include="res\Shaders\toneMapper.frag.shader" />
     <None Include="res\Shaders\toneMapper.util.shader" />
     <None Include="res\Textures\black_fabric_diffuse.iptex" />
     <None Include="res\Textures\black_fabric_rough.iptex" />

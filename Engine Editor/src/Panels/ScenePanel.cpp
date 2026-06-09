@@ -51,6 +51,8 @@ void ScenePanel::ShowSceneHierarchy() {
 			IcePick::NewCameraController();
 		}
 
+		ImGui::BeginDisabled(true);
+
 		if (ImGui::MenuItem(ICON_FA_LIGHTBULB_O " Point light")) {
 			IcePick::NewPointLight();
 		}
@@ -62,6 +64,8 @@ void ScenePanel::ShowSceneHierarchy() {
 		if (ImGui::MenuItem(ICON_FA_MAP " Terrain")) {
 			IcePick::NewTerrain();
 		}
+		ImGui::EndDisabled();
+
 		ImGui::EndMenu();
 	}
 

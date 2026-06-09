@@ -121,6 +121,9 @@ namespace IcePickRenderer {
 		case TextureSettings::TextureFormat::RGBA16:
 			m_InternalFormat = GL_RGBA16;
 			break;
+		case TextureSettings::TextureFormat::RGBA16F:
+			m_InternalFormat = GL_RGBA16F;
+			break;
 		case TextureSettings::TextureFormat::RG32UI:
 			m_InternalFormat = GL_RG32UI;
 			m_LocalFormat = GL_RG_INTEGER;
@@ -147,6 +150,10 @@ namespace IcePickRenderer {
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 
+	void Texture::Bind(unsigned int textureId, unsigned int textureSlot) {
+		glActiveTexture(GL_TEXTURE0 + textureSlot);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+	}
 
 	void Texture::Unbind() {
 		glBindTexture(GL_TEXTURE_2D, 0);

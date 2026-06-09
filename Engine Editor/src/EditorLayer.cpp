@@ -83,10 +83,10 @@ void IcePick::EditorLayer::OnEvent(Event& event) {
 
 void IcePick::EditorLayer::OnPreRender() {
     // Scene space editor rendering
-    glm::vec3 point1 = glm::vec3(0.0f);
-    glm::vec3 point2 = glm::vec3(4.0f);
+    //glm::vec3 point1 = glm::vec3(0.0f);
+    //glm::vec3 point2 = glm::vec3(4.0f);
 
-    m_EngineAPI.RenderLine(point1, point2, glm::vec4(2.0f));
+    //m_EngineAPI.RenderLine(point1, point2, glm::vec4(2.0f));
 }
 
 void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
@@ -103,7 +103,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::DockSpaceOverViewport(dockspace_id, mainViewPort, ImGuiDockNodeFlags_PassthruCentralNode);
 
     m_Toolbar.Render();
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();

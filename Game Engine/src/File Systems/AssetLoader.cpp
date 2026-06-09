@@ -10,6 +10,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include <string>
 
 static const char* m_PBRVertShader = "Game Engine/res/shaders/default.vert.shader";
@@ -79,6 +80,10 @@ IcePick::MaterialInstance& IcePick::AssetLoader::GetMaterialInstance(IcePick::UU
 
 const IcePickRenderer::Texture& IcePick::AssetLoader::GetTexture(UUID Id) {
 	return m_TextureLoader.GetTexture(Id);
+}
+
+std::string IcePick::AssetLoader::LoadShaderSourceFromFile(std::filesystem::path filepath) {
+	return m_ShaderLoader.LoadFile(filepath, 0);
 }
 
 IcePick::ShaderProgram& IcePick::AssetLoader::GetShaderProgram(UUID Id) {
@@ -185,6 +190,10 @@ void IcePick::AssetLoader::LoadModelMeshData(const aiScene* scene, std::vector<u
 			for (unsigned int j = 0; j < face.mNumIndices; j++) {
 				indices.push_back(face.mIndices[j]);
 			}
+		}
+
+		if (mesh->HasBones()) { // Animated skeletal Mesh
+
 		}
 		NewVertexArrayData VAdata = IcePickRenderer::AddVertexArray();
 		sceneVertexArrays.push_back(VAdata.VA.GetID());

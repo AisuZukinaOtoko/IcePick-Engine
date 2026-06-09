@@ -56,7 +56,7 @@ void IcePick::EngineAPI::UpdateShaderWithSource(UUID shaderId, ShaderSource& sou
 }
 
 std::string IcePick::EngineAPI::LoadShaderSourceFile(std::filesystem::path filepath) {
-	return m_Engine->m_AssetLoader.m_ShaderLoader.LoadFile(filepath, 0);
+	return m_Engine->m_AssetLoader.LoadShaderSourceFromFile(filepath);
 }
 
 const IcePickRenderer::Texture& IcePick::EngineAPI::GetTexture(UUID textureId) {
@@ -111,6 +111,10 @@ void IcePick::EngineAPI::SetRenderTargetDefault() {
 
 void IcePick::EngineAPI::SetRenderTargetFrameBuffer() {
 	m_Engine->SetRenderTargetFrameBuffer();
+}
+
+void IcePick::EngineAPI::CopyFrameBufferResultToDefaultBuffer() {
+	m_Engine->CopyActiveFrameBufferToDefaultFrameBuffer();
 }
 
 void IcePick::EngineAPI::ReloadShaders() {

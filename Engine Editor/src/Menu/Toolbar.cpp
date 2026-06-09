@@ -12,12 +12,14 @@ Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :
 void Toolbar::Render() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
+            ImGui::BeginDisabled(true);
             if (ImGui::MenuItem("Open")) { 
                 
             }
             if (ImGui::MenuItem("Save")) {
                 
             }
+            ImGui::EndDisabled();
             ImGui::EndMenu();
         }
 

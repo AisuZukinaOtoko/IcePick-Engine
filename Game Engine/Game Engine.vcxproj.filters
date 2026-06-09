@@ -140,6 +140,8 @@
     <None Include="res\Shaders\line.frag.shader" />
     <None Include="res\Shaders\fullScreenPass.vert.shader" />
     <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
+    <None Include="res\Shaders\toneMapper.frag.shader" />
+    <None Include="res\Shaders\copyFrameTexture.frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">

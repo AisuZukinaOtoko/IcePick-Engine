@@ -7,7 +7,7 @@ namespace IcePickRenderer {
 		unsigned int Width = 0;
 		unsigned int Height = 0;
 		enum class TextureFormat {
-			RGBA8 = 0, RGBA16, RG32UI, 
+			RGBA8 = 0, RGBA16, RGBA16F, RG32UI, 
 			DEPTH_TEXTURE, DEPTH_STENCIL_TEXTURE
 		} Format = TextureFormat::RGBA8;
 	};
@@ -31,6 +31,7 @@ namespace IcePickRenderer {
 		~Texture();
 
 		void Bind(unsigned int slot /*= 0*/) const;
+		static void Bind(unsigned int textureId, unsigned int textureSlot);
 		void Unbind();
 		bool IsValid() const;
 		void Destroy();

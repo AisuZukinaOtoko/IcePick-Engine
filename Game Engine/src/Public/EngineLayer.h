@@ -36,9 +36,9 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void ReloadShaders();
 
-		void FullScreenPass(MaterialInstance& materialInstance);
+		void FullScreenPass(UUID materialInstanceId);
+		void CopyActiveFrameBufferToDefaultFrameBuffer();
 
-		//void InitThumbnailBuffer
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
 	private:
 		friend class EngineAPI;
@@ -55,6 +55,8 @@ namespace IcePick {
 		PhysicsSystem3D m_PhysicsSystem3D;
 		void RenderEntityMeshes();
 		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
+		void ProcessMaterialsAndPipeline(MaterialBase& materialBase, MaterialInstance& materialInstance);
+		void PostProcessPass();
 
 		bool m_RenderDebugPhysics = false;
 		Scene m_CurrentScene;

@@ -25,6 +25,7 @@ namespace IcePick {
 		MaterialInstance& GetMaterialInstance(UUID Id);
 
 		const IcePickRenderer::Texture& GetTexture(UUID Id);
+		std::string LoadShaderSourceFromFile(std::filesystem::path filepath);
 		ShaderProgram& GetShaderProgram(UUID Id);
 		ShaderProgram& GetDefaultShaderProgram(ShaderLoader::DefaultShader shaderType);
 		void ReloadShaderPrograms();

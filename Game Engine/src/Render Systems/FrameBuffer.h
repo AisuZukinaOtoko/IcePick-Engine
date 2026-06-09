@@ -15,6 +15,7 @@ namespace IcePickRenderer {
 		};
 
 		FrameBuffer();
+		FrameBuffer(const FrameBuffer& other) = delete;
 		~FrameBuffer();
 		bool InitWithTargets(Texture colourAttachments[], unsigned int attachmentCount, const Texture& depthAttachment, bool transferOwnership);
 		void Bind();
@@ -27,6 +28,7 @@ namespace IcePickRenderer {
 
 		unsigned int GetID() const;
 		
+		void EnableRenderAttachments(unsigned int attachmentCount);
 		unsigned int GetAttachmentID(ATTACHMENT attachment) const;
 		unsigned int GetDepthTextureID() const;
 
@@ -37,9 +39,10 @@ namespace IcePickRenderer {
 		bool m_Initialised = false;
 
 		// True when the FrameBuffer object has ownership of the texture targets.
-		// This object will be responsible for freein the texture resources.
-		unsigned int m_ColourAttachmentCount = 0;
+		// This object will be responsible for freeing the texture resources.
 		bool m_TextureOwnership = false;
+		unsigned int m_ColourAttachmentCount = 0;
+		unsigned int m_ColourAttachmentEnums[FrameBufferMaxColourAttachmentsCount];
 		Texture m_ColourTextureAttachments[FrameBufferMaxColourAttachmentsCount];
 		Texture m_DepthTextureAttachment;
 	};

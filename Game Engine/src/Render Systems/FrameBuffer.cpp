@@ -18,9 +18,6 @@ namespace IcePickRenderer {
 
 		IP_ASSERT(attachmentCount <= IcePickRenderer::FrameBufferMaxColourAttachmentsCount, "Passed in too many colour attachments for frame buffer.");
 
-		std::vector<GLenum> colourAttachmentEnums;
-		colourAttachmentEnums.reserve(attachmentCount);
-
 		glGenFramebuffers(1, &m_ID);
    		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 
@@ -29,15 +26,16 @@ namespace IcePickRenderer {
 			unsigned int textureId = texture.GetID();
 			texture.GetTextureSize(&m_Width, &m_Height);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureId, 0);
-			colourAttachmentEnums.push_back(GL_COLOR_ATTACHMENT0 + i);
+			m_ColourAttachmentEnums[i] = GL_COLOR_ATTACHMENT0 + i;
 			m_ColourTextureAttachments[i] = texture;
 		}
 
+		m_ColourAttachmentCount = attachmentCount;
 		m_DepthTextureAttachment = depthAttachment;
 		unsigned int depthTextureId = m_DepthTextureAttachment.GetID();
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,	GL_TEXTURE_2D, depthTextureId, 0); // TODO: attachment type can be depth or depth_stencil
 
-		glDrawBuffers(attachmentCount, colourAttachmentEnums.data());
+		glDrawBuffers(attachmentCount, m_ColourAttachmentEnums);
 		m_Initialised = true;
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -55,6 +53,11 @@ namespace IcePickRenderer {
 
 	void FrameBuffer::UnBind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void FrameBuffer::EnableRenderAttachments(unsigned int attachmentCount) {
+		IP_ASSERT(attachmentCount <= m_ColourAttachmentCount, "Invalid attachment count.");
+		glDrawBuffers(attachmentCount, m_ColourAttachmentEnums);
 	}
 
 	void FrameBuffer::ClearColourTarget() {
@@ -76,7 +79,7 @@ namespace IcePickRenderer {
 	}
 
 	unsigned int FrameBuffer::GetAttachmentID(ATTACHMENT attachment) const {
-		IP_ASSERT(attachment >= m_ColourAttachmentCount, "Invalid attachment.");
+		IP_ASSERT(attachment <= m_ColourAttachmentCount, "Invalid attachment.");
 
 		if (attachment >= ATTACHMENT::COLOUR_ATTACHMENT_COUNT)
 			return 0;

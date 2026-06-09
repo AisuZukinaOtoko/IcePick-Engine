@@ -49,6 +49,7 @@ namespace IcePick {
 		// Engine functions
 		void SetRenderTargetDefault();
 		void SetRenderTargetFrameBuffer();
+		void CopyFrameBufferResultToDefaultBuffer();
 		void ReloadShaders();
 
 		bool& QueryEngineRenderDebugPhysics();

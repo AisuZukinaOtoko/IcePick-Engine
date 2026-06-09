@@ -58,6 +58,14 @@ namespace IcePick {
 		UUID Id;
 	};
 
+	struct MaterialBaseReadRenderTexture {
+		enum class RenderTextureType {
+			COLOUR = 0,
+			ACTIVE_COLOUR,
+			DEPTH_STENCIL
+		} TextureType{ RenderTextureType::COLOUR };
+	};
+
 	class MaterialBase {
 	public:
 		enum ShaderInput {
@@ -70,6 +78,9 @@ namespace IcePick {
 		std::vector<MaterialBaseTextureData> MaterialTextures;
 		//std::vector<MaterialBaseVec4Parameter> MaterialVec4Parameters;
 		std::vector<MaterialBaseFloatParameter> MaterialFloatParameters;
+		std::vector<MaterialBaseReadRenderTexture> MaterialReadRenderTextures;
+
+		bool WriteDepthTexture = true;
 
 		void ClearShaderInputs();
 		void AddShaderInput(ShaderInput inputType);

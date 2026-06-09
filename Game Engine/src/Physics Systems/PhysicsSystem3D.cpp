@@ -330,6 +330,8 @@ namespace IcePick {
 	}
 
 	void PhysicsSystem3D::MultiRemoveBodyPrepare(const RigidBodyComponent& rigidBody) {
+		if (rigidBody.RigidBodyId.IsInvalid())
+			return;
 		m_MultiRemoveBodyBuffer.push_back(rigidBody.RigidBodyId);
 	}
 
