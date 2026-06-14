@@ -17,6 +17,7 @@ namespace IcePickRenderer {
 
 	class VertexLayout {
 	public:
+		VertexLayout() = default;
 		VertexLayout(unsigned int stride)
 			: m_Stride(stride) {
 		};

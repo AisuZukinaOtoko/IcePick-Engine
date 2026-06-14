@@ -79,12 +79,13 @@ void IcePick::EngineAPI::UpdateMaterialInstance(UUID Id, const MaterialInstance&
 	m_Engine->m_AssetLoader.m_MaterialLoader.UpdateMaterialInstance(Id, materialInstance);
 }
 
-IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::path assetPath) {
-	return m_Engine->m_AssetLoader.LoadMesh(assetPath);
+IcePick::MeshRendererComponent IcePick::EngineAPI::LoadMesh(std::filesystem::path assetPath, IcePick::ImportSettings importSettings) {
+	return m_Engine->m_AssetLoader.LoadMesh(assetPath, importSettings);
 }
 
 void IcePick::EngineAPI::RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId) {
-	m_Engine->RenderMeshNode(mesh.RootMeshNode, modelMatrix, mesh.MaterialSlots, entityId);
+	IcePickRenderer::MeshNode& meshData = m_Engine->m_AssetLoader.GetMeshData(mesh);
+	m_Engine->RenderMeshNode(meshData, modelMatrix, mesh.MaterialSlots, entityId);
 }
 
 void IcePick::EngineAPI::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, glm::vec4 colour) {

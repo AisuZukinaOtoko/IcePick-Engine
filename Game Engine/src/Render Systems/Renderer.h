@@ -12,12 +12,13 @@ namespace  IcePick {
 
 namespace IcePickRenderer {
 	struct LinePointVertex3D;
+	class VertexArray;
 
 	bool InitRenderer();
 	void TerminateRenderer();
 	void NewFrame();
 	void EndFrame();
-	void DrawMesh(const IcePick::MeshComponent& mesh, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
+	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
 	bool WindowShouldClose();
@@ -45,6 +46,6 @@ namespace IcePickRenderer {
 	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);
 	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
 	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
-	NewVertexArrayData AddVertexArray();
+	//NewVertexArrayData AddVertexArray();
 }
 

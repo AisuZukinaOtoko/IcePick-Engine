@@ -185,8 +185,6 @@ namespace IcePickRenderer {
 	}
 
 	Texture::~Texture() {
-		if (m_TextureValid) {
-			IP_LOG("Texture object destroyed without cleaning up resources.", IP_WARN_LOG);
-		}
+		
 	}
 }

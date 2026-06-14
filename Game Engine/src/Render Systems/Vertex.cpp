@@ -69,14 +69,14 @@ VertexLayout StaticVertex3D::GetVertexLayout() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SkeletalVertex3D::InitBoneWeights() {
+void SkinnedVertex3D::InitBoneWeights() {
 	for (int i = 0; i < MaxEffectiveBoneCount; i++) {
 		BoneIDs[i] = 0;
 		BoneWeights[i] = 0.0f;
 	}
 }
 
-SkeletalVertex3D::SkeletalVertex3D() {
+SkinnedVertex3D::SkinnedVertex3D() {
 	Position = glm::vec3(0.0f);
 	Normal = glm::vec3(0.0f);
 	TextureCoords = glm::vec2(0.0f);
@@ -84,19 +84,19 @@ SkeletalVertex3D::SkeletalVertex3D() {
 	InitBoneWeights();
 }
 
-SkeletalVertex3D::SkeletalVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords)
+SkinnedVertex3D::SkinnedVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords)
 	: Position(position), Normal(normal), TextureCoords(textureCoords) {
 	InitBoneWeights();
 }
 
-VertexLayout SkeletalVertex3D::GetVertexLayout() {
-	VertexLayout layout{ sizeof(SkeletalVertex3D) };
+VertexLayout SkinnedVertex3D::GetVertexLayout() {
+	VertexLayout layout{ sizeof(SkinnedVertex3D) };
 
-	layout.Push<float>(3, offsetof(SkeletalVertex3D, Position));
-	layout.Push<float>(3, offsetof(SkeletalVertex3D, Normal));
-	layout.Push<float>(2, offsetof(SkeletalVertex3D, TextureCoords));
-	layout.Push<unsigned int>(4, offsetof(SkeletalVertex3D, BoneIDs));
-	layout.Push<float>(4, offsetof(SkeletalVertex3D, BoneWeights));
+	layout.Push<float>(3, offsetof(SkinnedVertex3D, Position));
+	layout.Push<float>(3, offsetof(SkinnedVertex3D, Normal));
+	layout.Push<float>(2, offsetof(SkinnedVertex3D, TextureCoords));
+	layout.Push<unsigned int>(4, offsetof(SkinnedVertex3D, BoneIDs));
+	layout.Push<float>(4, offsetof(SkinnedVertex3D, BoneWeights));
 
 	return layout;
 }

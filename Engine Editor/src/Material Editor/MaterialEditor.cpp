@@ -15,7 +15,7 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_CanvasScrolling = ImVec2(0.0f, 0.0f);
     m_Renderer.editorCamera.aspectRatio = 1.0f;
     m_Renderer.Init(previewImageSize, previewImageSize);
-    previewMesh = m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb");
+    previewMesh = m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb", IcePick::ImportSettings{});
 
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
 

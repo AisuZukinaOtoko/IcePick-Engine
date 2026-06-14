@@ -42,10 +42,10 @@ namespace IcePickRenderer {
 
 	};
 
-	struct SkeletalVertex3D {
+	struct SkinnedVertex3D {
 	public:
-		SkeletalVertex3D();
-		SkeletalVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords);
+		SkinnedVertex3D();
+		SkinnedVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2 textureCoords);
 
 		static VertexLayout GetVertexLayout();
 		static const unsigned int MaxEffectiveBoneCount = 4; // number of bones that can affect a single vertex

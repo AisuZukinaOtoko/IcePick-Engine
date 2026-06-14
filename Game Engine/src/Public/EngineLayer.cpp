@@ -256,7 +256,7 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 			continue;
 
 		if (!EntityMeshRendererComponent.MeshLoaded && !EntityMeshRendererComponent.MeshFilePath.empty()) {
-			EntityMeshRendererComponent = m_AssetLoader.LoadMesh(EntityMeshRendererComponent.MeshFilePath);
+			EntityMeshRendererComponent = m_AssetLoader.LoadMesh(EntityMeshRendererComponent.MeshFilePath, IcePick::ImportSettings{});
 		}
 
 		model = glm::mat4(1.0f);
@@ -267,7 +267,8 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 		normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
 
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
-		RenderMeshNode(EntityMeshRendererComponent.RootMeshNode, model, EntityMeshRendererComponent.MaterialSlots, entity);
+		IcePickRenderer::MeshNode& meshData = m_AssetLoader.GetMeshData(EntityMeshRendererComponent);
+		RenderMeshNode(meshData, model, EntityMeshRendererComponent.MaterialSlots, entity);
 	}
 
 }
@@ -281,12 +282,13 @@ IcePickRenderer::FrameBuffer& IcePick::EngineLayer::GetFrameBuffer(IcePick::Engi
 	}
 }
 
-void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId) {
+void IcePick::EngineLayer::RenderMeshNode(const IcePickRenderer::MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId) {
 	glm::mat4 meshWorldTransform = parentTransform * parent.NodeTransform;
-	for (unsigned int i = 0; i < parent.VertexArrayIDs.size(); i++) {
-		unsigned int vertexArrayID = parent.VertexArrayIDs[i];
+
+	for (unsigned int i = 0; i < parent.VertexArrayIds.size(); i++) {
+		IcePickRenderer::VertexArray vertexArray = m_AssetLoader.GetMeshVertexArray(parent.VertexArrayIds[i]);
 		unsigned int materialSlotIndex = parent.MaterialSlotIndices[i];
-		MeshComponent mesh = { vertexArrayID, -1, MeshComponent::STATIC };
+		//MeshComponent mesh = { vertexArrayID, -1, MeshComponent::STATIC };
 
 		UUID meshMaterialInstanceId = (materialSlotIndex != -1) ? materialSlots[materialSlotIndex] : UUID::Unitialised();
 		const MaterialInstance& meshMaterialInstance = m_AssetLoader.GetMaterialInstance(meshMaterialInstanceId);
@@ -303,10 +305,10 @@ void IcePick::EngineLayer::RenderMeshNode(const MeshNode& parent, glm::mat4 pare
 		materialBaseShader.Use();
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(meshWorldTransform)));
 		IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
-		IcePickRenderer::DrawMesh(mesh, meshWorldTransform, materialBaseShader);
+		IcePickRenderer::DrawMesh(vertexArray, meshWorldTransform, materialBaseShader);
 	}
 
-	for (const MeshNode& meshNode : parent.Children) {
+	for (const IcePickRenderer::MeshNode& meshNode : parent.ChildNodes) {
 		RenderMeshNode(meshNode, meshWorldTransform, materialSlots, entityId);
 	}
 }

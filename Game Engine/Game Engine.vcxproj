@@ -148,6 +148,7 @@
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
     <ClCompile Include="src\File Systems\MaterialBase.cpp" />
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
+    <ClCompile Include="src\File Systems\MeshLoader.cpp" />
     <ClCompile Include="src\File Systems\SceneLoader.cpp" />
     <ClCompile Include="src\Public\Application.cpp" />
     <ClCompile Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.cpp" />
@@ -202,11 +203,14 @@
     <None Include="res\Textures\black_fabric_rough.iptex" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Animation Systems\Skeleton.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
+    <ClInclude Include="src\File Systems\ImportSettings.h" />
     <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
+    <ClInclude Include="src\File Systems\MeshLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
     <ClInclude Include="src\Public\Application.h" />
     <ClInclude Include="src\Public\EngineRuntimeStates.h" />
@@ -218,6 +222,7 @@
     <ClInclude Include="src\Physics Systems\PhysicsSystem3D.h" />
     <ClInclude Include="src\Physics Systems\PhysicsUtils.h" />
     <ClInclude Include="src\Physics Systems\ColliderShapes.h" />
+    <ClInclude Include="src\Render Systems\Mesh.h" />
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />

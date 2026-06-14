@@ -120,6 +120,9 @@
     <ClCompile Include="src\Public\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\File Systems\MeshLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\depth.frag.shader" />
@@ -280,6 +283,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics Systems\ColliderShapes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation Systems\Skeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File Systems\MeshLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render Systems\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File Systems\ImportSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

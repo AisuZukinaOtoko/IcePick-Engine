@@ -2,6 +2,7 @@
 #include "TextureLoader.h"
 #include "MaterialLoader.h"
 #include "ShaderLoader.h"
+#include "MeshLoader.h"
 #include <filesystem>
 #include <unordered_map>
 #include <unordered_set>
@@ -15,20 +16,25 @@ namespace IcePick {
 	public:
 		AssetLoader();
 		void Init();
-		MeshRendererComponent LoadMesh(std::filesystem::path filePath);
+		MeshRendererComponent LoadMesh(std::filesystem::path filePath, IcePick::ImportSettings importSettings);
+		IcePickRenderer::MeshNode& GetMeshData(const MeshRendererComponent& meshRenderer);
+		IcePickRenderer::VertexArray& GetMeshVertexArray(UUID vertexArrayId);
+
 		unsigned int LoadTexture(std::filesystem::path texturePath);
-		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path& assetPath);
-		UUID CreateShaderFromSource(ShaderSource& source);
+		unsigned int GetTextureRenderId(UUID textureId);
+		const IcePickRenderer::Texture& GetTexture(UUID Id);
 
 		MaterialBase& GetMaterialBase(UUID Id);
 		MaterialInstance& GetMaterialInstance(UUID Id);
 
-		const IcePickRenderer::Texture& GetTexture(UUID Id);
+
+		UUID CreateShaderFromSource(ShaderSource& source);
 		std::string LoadShaderSourceFromFile(std::filesystem::path filepath);
 		ShaderProgram& GetShaderProgram(UUID Id);
 		ShaderProgram& GetDefaultShaderProgram(ShaderLoader::DefaultShader shaderType);
 		void ReloadShaderPrograms();
+
 		void ShutDown();
 	private:
 		friend class EngineAPI;
@@ -48,6 +54,7 @@ namespace IcePick {
 		TextureLoader m_TextureLoader;
 		MaterialLoader m_MaterialLoader;
 		ShaderLoader m_ShaderLoader;
+		MeshLoader m_MeshLoader;
 		std::unordered_set<unsigned int> m_LoadedMaterialIndices;
 
 		unsigned int m_RunningIndices[INDEX_COUNT];

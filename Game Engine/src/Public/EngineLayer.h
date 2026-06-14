@@ -54,7 +54,7 @@ namespace IcePick {
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
 		void RenderEntityMeshes();
-		void RenderMeshNode(const MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
+		void RenderMeshNode(const IcePickRenderer::MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 		void ProcessMaterialsAndPipeline(MaterialBase& materialBase, MaterialInstance& materialInstance);
 		void PostProcessPass();
 

@@ -9,6 +9,7 @@
 #include <Jolt/Physics/Body/BodyID.h>
 #include "../Physics Systems/ColliderShapes.h"
 #include "../Physics Systems/ObjectAndBroadPhaseLayers.h"
+#include "../File Systems/ImportSettings.h"
 
 #include <string>
 #include <filesystem>
@@ -31,7 +32,9 @@ namespace IcePick {
 	};
 
 	struct MeshRendererComponent {
-		MeshNode RootMeshNode;
+		UUID meshDataId = UUID::Unitialised();
+		IcePick::ImportSettings::MeshType MeshType{ IcePick::ImportSettings::MeshType::STATIC_MESH };
+		//MeshNode RootMeshNode;
 		int MeshCount = 0;
 
 		std::filesystem::path MeshFilePath = "";
