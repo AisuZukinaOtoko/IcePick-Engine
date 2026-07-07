@@ -16,11 +16,12 @@ namespace IcePick {
 		lineShaderSource.FragmentShaderSource = LoadFile("Game Engine/res/Shaders/line.frag.shader", 0);
 		UUID lineShaderId = CreateShaderProgram(lineShaderSource);
 		DefaultSahderIds[LINE_SHADER] = lineShaderId;
-	}
 
-	void ShaderLoader::SetDefaultShaderProgram(ShaderProgram shaderProgram)	{
-		m_DefaultShaderProgram = shaderProgram;
-		m_CachedShaderProgram = &m_DefaultShaderProgram;
+		ShaderSource staticMeshShaderSource;
+		staticMeshShaderSource.VertexShaderSource = LoadFile("Game Engine/res/shaders/default.vert.shader", 0);
+		staticMeshShaderSource.FragmentShaderSource = LoadFile("Game Engine/res/shaders/default.frag.shader", 0);
+		UUID staticMeshShaderId = CreateShaderProgram(staticMeshShaderSource);
+		DefaultSahderIds[STATIC_MESH] = staticMeshShaderId;
 	}
 
 	UUID ShaderLoader::RegisterShaderProgram(ShaderProgram shaderProgram) {
@@ -123,7 +124,7 @@ namespace IcePick {
 
 	ShaderProgram& ShaderLoader::GetShaderProgram(UUID shaderId) {
 		if (shaderId == UUID::Unitialised())
-			return m_DefaultShaderProgram;
+			return m_LoadedShaders[DefaultSahderIds[STATIC_MESH]];
 
 		if ((shaderId == m_CachedShaderProgramId) && m_CachedShaderProgram)
 			return *m_CachedShaderProgram;
@@ -131,7 +132,7 @@ namespace IcePick {
 		auto iterator = m_LoadedShaders.find(shaderId);
 
 		if (iterator == m_LoadedShaders.end())
-			return m_DefaultShaderProgram;
+			return m_LoadedShaders[DefaultSahderIds[STATIC_MESH]];
 
 		m_CachedShaderProgramId = shaderId;
 		m_CachedShaderProgram = &iterator->second;

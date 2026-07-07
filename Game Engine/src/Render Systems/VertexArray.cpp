@@ -39,7 +39,12 @@ namespace IcePickRenderer {
 		for (unsigned int i = 0; i < elements.size(); i++) {
 			const IcePickRenderer::VertexBufferElement& element = elements[i];
 			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)element.offset);
+			if (element.type == GL_UNSIGNED_INT) { // Integer attributes
+				glVertexAttribIPointer(i, element.count, element.type, layout.GetStride(), (const void*)element.offset);
+			}
+			else {
+				glVertexAttribPointer(i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)element.offset);
+			}
 		}
 	}
 

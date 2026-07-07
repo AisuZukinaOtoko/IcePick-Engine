@@ -10,6 +10,8 @@
 
 #include "../Physics Systems/PhysicsSystem3D.h"
 
+#include "../Animation Systems/Animator.h"
+
 
 namespace IcePick {
 	class EngineAPI;
@@ -53,6 +55,8 @@ namespace IcePick {
 		AssetLoader m_AssetLoader;
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
+		Animator m_Animator;
+
 		void RenderEntityMeshes();
 		void RenderMeshNode(const IcePickRenderer::MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);
 		void ProcessMaterialsAndPipeline(MaterialBase& materialBase, MaterialInstance& materialInstance);

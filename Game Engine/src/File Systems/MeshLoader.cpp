@@ -6,6 +6,7 @@
 
 #include "../File Systems/TextureLoader.h"
 #include "../File Systems/MaterialLoader.h"
+#include "../File Systems/ShaderLoader.h"
 #include "MeshLoader.h"
 #include "../Scene Systems/Components.h"
 #include <assimp/Importer.hpp>
@@ -13,13 +14,28 @@
 #include <assimp/postprocess.h>
 #include "../LogSystem.h"
 
+static glm::mat4 AssimpMatrixToGlmMatrix(const aiMatrix4x4& matrix) {
+	glm::mat4 glmMatrix = {
+		matrix.a1, matrix.b1, matrix.c1, matrix.d1,
+		matrix.a2, matrix.b2, matrix.c2, matrix.d2,
+		matrix.a3, matrix.b3, matrix.c3, matrix.d3,
+		matrix.a4, matrix.b4, matrix.c4, matrix.d4,
+	};
+	return glmMatrix;
+}
+
 namespace IcePick {
 	MeshLoader::MeshLoader() {
 
 	}
 
-	void MeshLoader::Init() {
+	void MeshLoader::Init(ShaderLoader& shaderLoader) {
+		//ShaderSource defaultSkinnedShaderSource;
+		//defaultSkinnedShaderSource.VertexShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/skinning.vert.shader", 0);
+		//defaultSkinnedShaderSource.FragmentShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/default.frag.shader", 0);
 
+		//m_DefaultSkinnedMeshShaderProgramId = shaderLoader.CreateShaderProgram(defaultSkinnedShaderSource);
+		//IP_LOG(std::to_string(m_DefaultSkinnedMeshShaderProgramId));
 	}
 
 	UUID MeshLoader::RegisterVertexArray(const IcePickRenderer::VertexArray& vertexArray) {
@@ -38,6 +54,12 @@ namespace IcePick {
 		UUID newSkinnedMeshId;
 		m_LoadedSkinnedMeshes.insert({ newSkinnedMeshId, skinnedMesh });
 		return newSkinnedMeshId;
+	}
+
+	UUID MeshLoader::RegisterMeshSkeleton(const Skeleton& skeleton) {
+		UUID newSkeletonId;
+		m_LoadedSkeletons.insert({ newSkeletonId, skeleton });
+		return newSkeletonId;
 	}
 
 	IcePickRenderer::StaticMeshData& MeshLoader::GetStaticMeshById(UUID staticMeshId) {
@@ -64,6 +86,14 @@ namespace IcePick {
 		return m_DefaultInvalidVertexArray;
 	}
 
+	Skeleton& MeshLoader::GetSkeletonById(UUID skeletonId) {
+		if (m_LoadedSkeletons.find(skeletonId) != m_LoadedSkeletons.end()) {
+			return m_LoadedSkeletons[skeletonId];
+		}
+
+		return m_DefaultEmptySkeleton;
+	}
+
 	MeshRendererComponent MeshLoader::ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, const ImportSettings& importSettings) {
 		MeshRendererComponent returnMeshRendererComponent;
 
@@ -76,7 +106,8 @@ namespace IcePick {
 			aiProcess_FixInfacingNormals |
 			aiProcess_CalcTangentSpace |
 			aiProcess_GenUVCoords |
-			aiProcess_OptimizeMeshes
+			aiProcess_OptimizeMeshes |
+			aiProcess_PopulateArmatureData
 		);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -88,9 +119,15 @@ namespace IcePick {
 		textureLoader.SetLoaderBasePath(filePath.parent_path());
 
 		std::vector<UUID> sceneVertexArrays;
-		ParseImportMeshData(scene, sceneVertexArrays, importSettings);
+		Skeleton sceneSkeleton;
+		ParseImportMeshData(scene, sceneVertexArrays, sceneSkeleton, importSettings);
 		IcePickRenderer::MeshNode sceneRootNode;
-		ParseImportNodeTree(scene->mRootNode, sceneRootNode, returnMeshRendererComponent.MaterialSlots, scene, sceneVertexArrays, materialLoader, textureLoader);
+		ParseImportNodeTree(scene->mRootNode, sceneRootNode, returnMeshRendererComponent.MaterialSlots, scene, sceneVertexArrays, materialLoader, textureLoader, importSettings);
+
+		if (importSettings.LoadSkeleton) {
+			ParseImportSkeletonHierarchy(scene->mRootNode, sceneSkeleton.RootBone, sceneSkeleton);
+			sceneSkeleton.InverseGlobalRootTransform = glm::inverse(AssimpMatrixToGlmMatrix(scene->mRootNode->mTransformation));
+		}
 
 		switch (importSettings.LoadMeshAs) {
 		case ImportSettings::MeshType::STATIC_MESH:
@@ -103,44 +140,47 @@ namespace IcePick {
 		case ImportSettings::MeshType::SKELETAL_MESH:
 		{
 			IcePickRenderer::SkinnedMeshData skinnedMesh;
+			sceneSkeleton.Bake();
+
 			skinnedMesh.RootNode = sceneRootNode;
+			skinnedMesh.SkeletonId = RegisterMeshSkeleton(sceneSkeleton);
 			returnMeshRendererComponent.meshDataId = RegisterSkinnedMesh(skinnedMesh);
 			break;
 		}
 		}
+		returnMeshRendererComponent.MeshType = importSettings.LoadMeshAs;
+		returnMeshRendererComponent.MeshCount = scene->mNumMeshes;
 
 		materialLoader.CleanUpAfterLoad();
 		textureLoader.CleanUpAfterLoad();
 
+		m_LoadedPathToMeshRenderer.insert({ filePath, returnMeshRendererComponent });
 		return returnMeshRendererComponent;
 	}
 
-	void MeshLoader::ParseImportMeshData(const aiScene* scene, std::vector<UUID>& loadVertexArrays, const ImportSettings& importSettings) {
+	void MeshLoader::ParseImportMeshData(const aiScene* scene, std::vector<UUID>& loadVertexArrays, Skeleton& loadSkeleton, const ImportSettings& importSettings) {
 		aiMesh** meshList = scene->mMeshes;
-		for (int i = 0; i < scene->mNumMeshes; i++) { // upload each mesh as a vertex array to the GPU
 
-			aiMesh* mesh = meshList[i];
+		for (int m = 0; m < scene->mNumMeshes; m++) { // upload each mesh as a vertex array to the GPU
+
+			aiMesh* mesh = meshList[m];
 			std::vector<unsigned int> indices;
 			std::vector<IcePickRenderer::StaticVertex3D> staticMeshVertices;
 			std::vector<IcePickRenderer::SkinnedVertex3D> skinnedMeshVertices;
 
-			for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-				aiVector3D pos = mesh->mVertices[i];
+			for (unsigned int v = 0; v < mesh->mNumVertices; v++) {
+				aiVector3D pos = mesh->mVertices[v];
 				aiVector3D uv = aiVector3D(0.0f);
 				aiVector3D norm = aiVector3D(0.0f);
 				float skinnedMeshBoneIds[IcePickRenderer::SkinnedVertex3D::MaxEffectiveBoneCount]{ 0.0f, 0.0f, 0.0f, 0.0f};
 				float skinnedMeshBoneWeights[IcePickRenderer::SkinnedVertex3D::MaxEffectiveBoneCount]{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 				if (mesh->HasTextureCoords(0)) {
-					uv = mesh->mTextureCoords[0][i];
+					uv = mesh->mTextureCoords[0][v];
 				}
 
 				if (mesh->HasNormals()) {
-					norm = mesh->mNormals[i];
-				}
-
-				if (mesh->HasBones()) {
-					IP_LOG("Mesh has bones.");
+					norm = mesh->mNormals[v];
 				}
 
 				glm::vec3 position = glm::vec3(pos.x, pos.y, pos.z);
@@ -155,11 +195,28 @@ namespace IcePick {
 				}
 			}
 
-			for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
-				const aiFace& face = mesh->mFaces[i];
+			for (unsigned int f = 0; f < mesh->mNumFaces; f++) {
+				const aiFace& face = mesh->mFaces[f];
 				for (unsigned int j = 0; j < face.mNumIndices; j++) {
 					indices.push_back(face.mIndices[j]);
 				}
+			}
+
+			if (importSettings.LoadSkeleton) {
+				for (unsigned int b = 0; b < mesh->mNumBones; b++) {
+					aiBone* bone = mesh->mBones[b];
+					unsigned int boneId = loadSkeleton.AddOrGetBoneId(bone->mName.C_Str());
+					Bone& skeletonBone = loadSkeleton.GetBone(boneId);
+
+					skeletonBone.OffsetMatrix = AssimpMatrixToGlmMatrix(bone->mOffsetMatrix);
+
+					if (importSettings.LoadMeshAs == ImportSettings::MeshType::SKELETAL_MESH) {
+						for (unsigned int w = 0; w < bone->mNumWeights; w++) {
+							aiVertexWeight weight =	bone->mWeights[w];
+							skinnedMeshVertices[weight.mVertexId].AddBone(boneId, weight.mWeight);
+						}
+					}
+				}				
 			}
 
 			IcePickRenderer::VertexArray meshVertexArray;
@@ -214,13 +271,13 @@ namespace IcePick {
 		return (unsigned int)materialSlots.size() - 1;
 	}
 
-	void MeshLoader::ParseImportNodeTree(const aiNode* sceneNode, IcePickRenderer::MeshNode& parent, std::vector<UUID>& materialSlots, const aiScene* scene, std::vector<UUID>& sceneVertexArrayIds, MaterialLoader& materialLoader, TextureLoader& textureLoader) {
+	void MeshLoader::ParseImportNodeTree(const aiNode* sceneNode, IcePickRenderer::MeshNode& parent, std::vector<UUID>& materialSlots, const aiScene* scene, std::vector<UUID>& sceneVertexArrayIds, MaterialLoader& materialLoader, TextureLoader& textureLoader, const ImportSettings& importSettings) {
 		IcePickRenderer::MeshNode currentNode;
 		if (sceneNode->mNumMeshes > 0) {
 			currentNode.VertexArrayIds.reserve(sceneNode->mNumMeshes);
 			for (int i = 0; i < sceneNode->mNumMeshes; i++) {
 				const unsigned int meshIndex = sceneNode->mMeshes[i];
-				UUID nodeMaterialInsatnceId = materialLoader.NewMaterialInstanceFromScene(scene, scene->mMeshes[meshIndex]->mMaterialIndex, textureLoader);
+				UUID nodeMaterialInsatnceId = materialLoader.NewMaterialInstanceFromScene(scene, scene->mMeshes[meshIndex]->mMaterialIndex, textureLoader, importSettings);
 				unsigned int materialSlotIndex = GetMeshMaterialSlot(materialSlots, nodeMaterialInsatnceId);
 				currentNode.VertexArrayIds.push_back(sceneVertexArrayIds[meshIndex]);
 				currentNode.MaterialSlotIndices.push_back(materialSlotIndex);
@@ -228,12 +285,7 @@ namespace IcePick {
 		}
 
 		const aiMatrix4x4& t = sceneNode->mTransformation;
-		glm::mat4 nodeTransform = {
-			t.a1, t.b1, t.c1, t.d1,
-			t.a2, t.b2, t.c2, t.d2,
-			t.a3, t.b3, t.c3, t.d3,
-			t.a4, t.b4, t.c4, t.d4,
-		};
+		glm::mat4 nodeTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
 
 		currentNode.NodeTransform = nodeTransform;
 		parent.ChildNodes.push_back(currentNode);
@@ -242,7 +294,27 @@ namespace IcePick {
 			return;
 
 		for (int i = 0; i < sceneNode->mNumChildren; i++) {
-			ParseImportNodeTree(sceneNode->mChildren[i], parent.ChildNodes.back(), materialSlots, scene, sceneVertexArrayIds, materialLoader, textureLoader);
+			ParseImportNodeTree(sceneNode->mChildren[i], parent.ChildNodes.back(), materialSlots, scene, sceneVertexArrayIds, materialLoader, textureLoader, importSettings);
+		}
+	}
+
+	void MeshLoader::ParseImportSkeletonHierarchy(const aiNode* sceneNode, SkeletonNodeHierarchy& skeletonNodeHierarchy, Skeleton& skeleton) {
+		bool nodeIsBone = skeleton.BoneExists(sceneNode->mName.C_Str());
+		if (nodeIsBone) {
+			const aiMatrix4x4& t = sceneNode->mTransformation;
+			glm::mat4 boneLocalTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
+
+			unsigned int boneIndex = skeleton.AddOrGetBoneId(sceneNode->mName.C_Str());
+			SkeletonNodeHierarchy newSkeletonNode;
+			newSkeletonNode.BoneIndex = boneIndex;
+			newSkeletonNode.BoneLocalTransform = boneLocalTransform;
+
+			skeletonNodeHierarchy.Children.push_back(newSkeletonNode);
+		}
+
+		SkeletonNodeHierarchy& recurseBoneNode = (nodeIsBone) ? skeletonNodeHierarchy.Children.back() : skeletonNodeHierarchy;
+		for (int i = 0; i < sceneNode->mNumChildren; i++) {
+			ParseImportSkeletonHierarchy(sceneNode->mChildren[i], recurseBoneNode, skeleton);
 		}
 	}
 

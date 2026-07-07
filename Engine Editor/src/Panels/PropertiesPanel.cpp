@@ -125,6 +125,7 @@ void PropertiesPanel::SelectedProperties(const Styles& styles) {
         return;
     }
 
+    m_MeshImportPopup.Render();
     EntityProperties(styles);
 
     ImGui::End();
@@ -413,6 +414,15 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
     IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
 
     if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
+        switch (meshRenderer.MeshType) {
+        case IcePick::ImportSettings::MeshType::STATIC_MESH:
+            TextProperty("Mesh type", "Static Mesh");
+            break;
+        case IcePick::ImportSettings::MeshType::SKELETAL_MESH:
+            TextProperty("Mesh type", "Skeletal Mesh");
+            break;
+        }
+
         TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
         CheckBox("Visible", &meshRenderer.MeshVisible);
         CheckBox("Cast shadows", &meshRenderer.CastShadows);
@@ -424,10 +434,15 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
         if (ImGui::BeginDragDropTarget()) {
             ImGui::Text("Dropping something");
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
-                meshRenderer.MeshFilePath = m_DropAssetPath;
-                meshRenderer.MeshLoaded = false;
+                //meshRenderer.MeshFilePath = m_DropAssetPath;
+                //meshRenderer.MeshLoaded = false;
+                m_MeshImportPopup.OpenPopup();
             }
             ImGui::EndDragDropTarget();
+        }
+        if (m_MeshImportPopup.ImportSubmitted()) {
+            meshRenderer = m_EngineAPI.LoadMesh(m_DropAssetPath, m_MeshImportPopup.GetImportSettings());
+            m_MeshImportPopup.HandleSubmit();
         }
     }
 

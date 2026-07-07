@@ -1,12 +1,14 @@
 #include "MaterialLoader.h"
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
+#include "ImportSettings.h"
 
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
 #include "../Utilities/JsonUtils.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
+
 
 namespace IcePick {
 	MaterialLoader::MaterialLoader() {
@@ -16,6 +18,18 @@ namespace IcePick {
 		UUID baseTextureDataId{};
 		m_DefaultMaterialBase.MaterialTextures.push_back({ "Diffuse Texture", m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE], baseTextureDataId });
 		m_DefaultMaterialInstance.MaterialBaseId = m_DefaultMaterialBase.Id;
+	}
+
+	void MaterialLoader::Init(ShaderLoader& shaderLoader) {
+		MaterialBase defaultSkinnedMeshMaterialBase;
+		UUID baseTextureDataId{};
+		defaultSkinnedMeshMaterialBase.MaterialTextures.push_back({ "Diffuse Texture", m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE], baseTextureDataId });
+
+		ShaderSource defaultSkinnedShaderSource;
+		defaultSkinnedShaderSource.VertexShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/skinning.vert.shader", 0);
+		defaultSkinnedShaderSource.FragmentShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/default.frag.shader", 0);
+		defaultSkinnedMeshMaterialBase.ShaderId = shaderLoader.CreateShaderProgram(defaultSkinnedShaderSource);
+		m_LoadSkinnedMeshMaterialBaseId = RegisterMaterialBase(defaultSkinnedMeshMaterialBase);
 	}
 
 	void MaterialLoader::InvalidateCache() {
@@ -166,14 +180,26 @@ namespace IcePick {
 		materialInstance.InstanceTextureData.emplace_back(materialBaseTextureDataId, materialInstanceTextureId);
 	}
 
-	UUID MaterialLoader::NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader) {
+	UUID MaterialLoader::NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader, const ImportSettings& importSettings) {
 		// Check if scene material has been loaded before.
 		auto iterator = m_CachedSceneMaterialInstances.find(materialIndex);
 		if (iterator != m_CachedSceneMaterialInstances.end())
 			return iterator->second;
 		
 		MaterialInstance newMaterialInstance;
-		newMaterialInstance.MaterialBaseId = m_DefaultMaterialInstance.MaterialBaseId;
+		switch (importSettings.LoadMeshAs) {
+		case ImportSettings::MeshType::STATIC_MESH:
+		{
+			newMaterialInstance.MaterialBaseId = m_DefaultMaterialInstance.MaterialBaseId;
+			break;
+		}
+		case ImportSettings::MeshType::SKELETAL_MESH:
+		{
+			newMaterialInstance.MaterialBaseId = m_LoadSkinnedMeshMaterialBaseId;
+			break;
+		}
+		}
+
 		SetMaterialInstanceBaseTextureDataFromScene(newMaterialInstance, MaterialTextureTypes::DIFFUSE_TEXTURE, scene, materialIndex, textureLoader);
 
 		UUID newMaterialInstanceId = RegisterMaterialInstance(newMaterialInstance);

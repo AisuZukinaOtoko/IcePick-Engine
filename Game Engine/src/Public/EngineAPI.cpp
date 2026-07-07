@@ -1,4 +1,5 @@
 #include "EngineAPI.h"
+#include "../Animation Systems/Skeleton.h"
 #include "../Render Systems/Renderer.h"
 #include "../Render Systems/Vertex.h"
 #include "../Scene Systems/Components.h"
@@ -92,6 +93,18 @@ void IcePick::EngineAPI::RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, gl
 	IcePickRenderer::LinePointVertex3D point1{ startPoint, colour };
 	IcePickRenderer::LinePointVertex3D point2{ endPoint, colour };
 	IcePickRenderer::DrawLine(point1, point2);
+}
+
+IcePick::Skeleton& IcePick::EngineAPI::GetSkeletonById(IcePick::UUID skeletonId) {
+	return m_Engine->m_AssetLoader.GetSkeletonById(skeletonId);
+}
+
+IcePickRenderer::StaticMeshData& IcePick::EngineAPI::GetStaticMeshDataById(IcePick::UUID meshDataId) {
+	return m_Engine->m_AssetLoader.m_MeshLoader.GetStaticMeshById(meshDataId);
+}
+
+IcePickRenderer::SkinnedMeshData& IcePick::EngineAPI::GetSkinnedMeshDataById(IcePick::UUID meshDataId) {
+	return m_Engine->m_AssetLoader.m_MeshLoader.GetSkinnedMeshById(meshDataId);
 }
 
 IcePick::ScriptComponent IcePick::EngineAPI::LoadScript(std::filesystem::path scriptPath, entt::entity entityId) {

@@ -9,6 +9,7 @@
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
 #include "Physics Systems/ColliderShapes.h"
+#include "Animation Systems/Skeleton.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -263,6 +264,30 @@ void Viewport::RenderEntityGizmos() {
 
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
 	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
+
+	//if (IcePick::HasComponent<IcePick::MeshRendererComponent>(m_SelectedEntity)) {
+	//	IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+	//	if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+	//		IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
+	//		IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
+
+	//		unsigned int randomTestBoneIndex = 40;
+	//		IcePick::Bone& randomBone = skeleton.GetBone(randomTestBoneIndex);
+	//		entityTransformMatrix = randomBone.FinalTransform;
+
+	//		ImGuizmo::Manipulate(
+	//			glm::value_ptr(cameraViewMatrix),
+	//			glm::value_ptr(cameraProjectionMatrix),
+	//			m_GizmoOperation,
+	//			ImGuizmo::LOCAL,
+	//			glm::value_ptr(entityTransformMatrix)
+	//		);
+
+	//		//randomBone
+	//	}
+	//}
+
+	//return; // temporary
 
 	ImGuizmo::Manipulate(
 		glm::value_ptr(cameraViewMatrix),

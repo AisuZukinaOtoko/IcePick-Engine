@@ -54,7 +54,9 @@ namespace IcePickRenderer {
 		glm::vec3 Normal;
 		glm::vec2 TextureCoords;
 
-		int BoneIDs[MaxEffectiveBoneCount];
+		void AddBone(unsigned int boneId, float boneWeight);
+
+		unsigned int BoneIDs[MaxEffectiveBoneCount];
 		float BoneWeights[MaxEffectiveBoneCount];
 
 	private:

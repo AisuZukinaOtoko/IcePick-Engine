@@ -123,6 +123,15 @@
     <ClCompile Include="src\File Systems\MeshLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Animation Systems\Skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render Systems\SSBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Animation Systems\Animator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\depth.frag.shader" />
@@ -145,6 +154,7 @@
     <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
     <None Include="res\Shaders\toneMapper.frag.shader" />
     <None Include="res\Shaders\copyFrameTexture.frag.shader" />
+    <None Include="res\Shaders\skinning.vert.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -295,6 +305,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\File Systems\ImportSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation Systems\Bone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render Systems\SSBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation Systems\Animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation Systems\Timeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

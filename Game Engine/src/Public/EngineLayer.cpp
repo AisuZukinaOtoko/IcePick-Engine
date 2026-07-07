@@ -255,8 +255,11 @@ void IcePick::EngineLayer::RenderEntityMeshes() {
 		if (!EntityMeshRendererComponent.MeshVisible)
 			continue;
 
-		if (!EntityMeshRendererComponent.MeshLoaded && !EntityMeshRendererComponent.MeshFilePath.empty()) {
-			EntityMeshRendererComponent = m_AssetLoader.LoadMesh(EntityMeshRendererComponent.MeshFilePath, IcePick::ImportSettings{});
+		if (EntityMeshRendererComponent.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+			IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(EntityMeshRendererComponent);
+			Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
+			m_Animator.CalculateSkeletonTransforms(meshSkeleton);
+			meshSkeleton.Use();
 		}
 
 		model = glm::mat4(1.0f);
@@ -288,7 +291,6 @@ void IcePick::EngineLayer::RenderMeshNode(const IcePickRenderer::MeshNode& paren
 	for (unsigned int i = 0; i < parent.VertexArrayIds.size(); i++) {
 		IcePickRenderer::VertexArray vertexArray = m_AssetLoader.GetMeshVertexArray(parent.VertexArrayIds[i]);
 		unsigned int materialSlotIndex = parent.MaterialSlotIndices[i];
-		//MeshComponent mesh = { vertexArrayID, -1, MeshComponent::STATIC };
 
 		UUID meshMaterialInstanceId = (materialSlotIndex != -1) ? materialSlots[materialSlotIndex] : UUID::Unitialised();
 		const MaterialInstance& meshMaterialInstance = m_AssetLoader.GetMaterialInstance(meshMaterialInstanceId);

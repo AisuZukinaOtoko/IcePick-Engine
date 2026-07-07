@@ -15,10 +15,9 @@ namespace IcePick {
 
 		enum DefaultShader {
 			LINE_SHADER = 0,
+			STATIC_MESH,
 			DEFAULT_SHADER_COUNT
 		};
-
-		void SetDefaultShaderProgram(ShaderProgram shaderProgram);
 
 		// Returns the shader source file with preprocessing
 		std::string LoadFile(std::filesystem::path filePath, unsigned int includeDepth);
@@ -30,7 +29,6 @@ namespace IcePick {
 		ShaderProgram& GetDefaultShaderProgram(DefaultShader shaderType);
 
 	private:
-		ShaderProgram m_DefaultShaderProgram;
 		ShaderProgram* m_CachedShaderProgram = nullptr;
 		UUID m_CachedShaderProgramId = UUID::Unitialised();
 		UUID RegisterShaderProgram(ShaderProgram shaderProgram);

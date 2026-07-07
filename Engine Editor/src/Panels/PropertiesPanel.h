@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include "PanelCommon.h"
+#include "Popups/MeshImportPopup.h"
 #include "../EditorRenderer.h"
 #include <glm/glm.hpp>
 #include <entt/entt.h>
@@ -44,5 +45,6 @@ private:
 	entt::entity m_SelectedEntity = entt::null;
 	std::string m_DropAssetPath;
 	IcePick::EngineAPI m_EngineAPI;
+	MeshImportPopup m_MeshImportPopup;
 	EditorRenderer m_PreviewRenderer;
 };

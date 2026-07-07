@@ -16,9 +16,13 @@ namespace IcePick {
 	public:
 		AssetLoader();
 		void Init();
+
 		MeshRendererComponent LoadMesh(std::filesystem::path filePath, IcePick::ImportSettings importSettings);
 		IcePickRenderer::MeshNode& GetMeshData(const MeshRendererComponent& meshRenderer);
 		IcePickRenderer::VertexArray& GetMeshVertexArray(UUID vertexArrayId);
+		IcePickRenderer::StaticMeshData& GetStaticMeshData(const MeshRendererComponent& meshRenderer);
+		IcePickRenderer::SkinnedMeshData& GetSkinnedMeshData(const MeshRendererComponent& meshRenderer);
+		Skeleton& GetSkeletonById(UUID skeletonId);
 
 		unsigned int LoadTexture(std::filesystem::path texturePath);
 		UUID LoadTextureFromAsset(std::filesystem::path& assetPath);

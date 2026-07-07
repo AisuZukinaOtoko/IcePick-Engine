@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Animation Systems\Animator.cpp" />
+    <ClCompile Include="src\Animation Systems\Skeleton.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
@@ -157,6 +159,7 @@
     <ClCompile Include="src\Physics Systems\PhysicsDebugRenderer.cpp" />
     <ClCompile Include="src\Physics Systems\PhysicsSystem3D.cpp" />
     <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp" />
+    <ClCompile Include="src\Render Systems\SSBO.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
@@ -197,13 +200,17 @@
     <None Include="res\Shaders\default.vert.shader" />
     <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
     <None Include="res\Shaders\picking.util.shader" />
+    <None Include="res\Shaders\skinning.vert.shader" />
     <None Include="res\Shaders\toneMapper.frag.shader" />
     <None Include="res\Shaders\toneMapper.util.shader" />
     <None Include="res\Textures\black_fabric_diffuse.iptex" />
     <None Include="res\Textures\black_fabric_rough.iptex" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Animation Systems\Animator.h" />
+    <ClInclude Include="src\Animation Systems\Bone.h" />
     <ClInclude Include="src\Animation Systems\Skeleton.h" />
+    <ClInclude Include="src\Animation Systems\Timeline.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
@@ -224,6 +231,7 @@
     <ClInclude Include="src\Physics Systems\ColliderShapes.h" />
     <ClInclude Include="src\Render Systems\Mesh.h" />
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h" />
+    <ClInclude Include="src\Render Systems\SSBO.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />

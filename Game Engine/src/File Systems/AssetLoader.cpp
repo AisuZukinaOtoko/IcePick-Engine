@@ -13,27 +13,6 @@
 #include <iostream>
 #include <string>
 
-static const char* m_PBRVertShader = "Game Engine/res/shaders/default.vert.shader";
-static const char* m_PBRFragShader = "Game Engine/res/shaders/default.frag.shader";
-
-static void DebugLogNodeTree(IcePick::MeshNode& node, int depth) {
-	std::cout << std::left << std::setw(depth * 3) << "";
-	if (node.Children.size() == 0) {
-		std::cout << "Depth: " << depth << ". ";
-		for (auto id : node.VertexArrayIDs) {
-			std::cout << id << " ";
-		}
-		std::cout << std::endl;
-	}
-	else {
-		std::cout << "Node" << ", Depth: " << depth << std::endl;
-	}
-
-	for (IcePick::MeshNode& meshNode : node.Children) {
-		DebugLogNodeTree(meshNode, depth + 1);
-	}
-}
-
 IcePick::AssetLoader::AssetLoader() {
 	for (int i = 0; i < INDEX_COUNT; i++) {
 		m_RunningIndices[i] = 0;
@@ -42,12 +21,8 @@ IcePick::AssetLoader::AssetLoader() {
 
 void IcePick::AssetLoader::Init() {
 	m_ShaderLoader.Init();
-	ShaderSource shaderSource;
-	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
-	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
-	m_PBRShaderProgramId = m_ShaderLoader.CreateShaderProgram(shaderSource);
-	ShaderProgram& PBRShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
-	m_ShaderLoader.SetDefaultShaderProgram(PBRShader);
+	m_MaterialLoader.Init(m_ShaderLoader);
+	m_MeshLoader.Init(m_ShaderLoader);
 }
 
 unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
@@ -92,13 +67,7 @@ IcePick::ShaderProgram& IcePick::AssetLoader::GetDefaultShaderProgram(ShaderLoad
 }
 
 void IcePick::AssetLoader::ReloadShaderPrograms() {
-	ShaderSource shaderSource;
-	shaderSource.VertexShaderSource = m_ShaderLoader.LoadFile(m_PBRVertShader, 0);
-	shaderSource.FragmentShaderSource = m_ShaderLoader.LoadFile(m_PBRFragShader, 0);
-	m_ShaderLoader.ReloadShaderProgram(m_PBRShaderProgramId, shaderSource);
-
-	ShaderProgram reloadedDefaultShader = m_ShaderLoader.GetShaderProgram(m_PBRShaderProgramId);
-	m_ShaderLoader.SetDefaultShaderProgram(reloadedDefaultShader);
+	IP_LOG("Reloading shaders has been disabled.", IP_WARN_LOG);
 }
 
 inline unsigned int IcePick::AssetLoader::GetIndex(IndexType indexType, unsigned int index) {
@@ -110,7 +79,7 @@ void IcePick::AssetLoader::UpdateIndices(const aiScene* scene) {
 }
 
 IcePick::UUID IcePick::AssetLoader::LoadSceneMaterial(const aiScene* scene, unsigned int materialIndex) {
-	return m_MaterialLoader.NewMaterialInstanceFromScene(scene, materialIndex, m_TextureLoader);
+	return m_MaterialLoader.NewMaterialInstanceFromScene(scene, materialIndex, m_TextureLoader, ImportSettings{});
 }
 
 unsigned int IcePick::AssetLoader::GetMeshMaterialSlot(std::vector<UUID>& materialSlots, UUID meshMaterial) {
@@ -266,6 +235,18 @@ IcePickRenderer::MeshNode& IcePick::AssetLoader::GetMeshData(const MeshRendererC
 
 IcePickRenderer::VertexArray& IcePick::AssetLoader::GetMeshVertexArray(IcePick::UUID vertexArrayId) {
 	return m_MeshLoader.GetMeshNodeVertexArray(vertexArrayId);
+}
+
+IcePickRenderer::StaticMeshData& IcePick::AssetLoader::GetStaticMeshData(const MeshRendererComponent& meshRendererComponent) {
+	return m_MeshLoader.GetStaticMeshById(meshRendererComponent.meshDataId);
+}
+
+IcePickRenderer::SkinnedMeshData& IcePick::AssetLoader::GetSkinnedMeshData(const MeshRendererComponent& meshRendererComponent) {
+	return m_MeshLoader.GetSkinnedMeshById(meshRendererComponent.meshDataId);
+}
+
+IcePick::Skeleton& IcePick::AssetLoader::GetSkeletonById(IcePick::UUID skeletonId) {
+	return m_MeshLoader.GetSkeletonById(skeletonId);
 }
 
 void IcePick::AssetLoader::CleanUpAfterLoad() {

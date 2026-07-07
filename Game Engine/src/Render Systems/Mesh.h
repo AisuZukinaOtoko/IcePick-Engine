@@ -17,5 +17,6 @@ namespace IcePickRenderer {
 
 	struct SkinnedMeshData {
 		MeshNode RootNode;
+		IcePick::UUID SkeletonId = IcePick::UUID::Unitialised();
 	};
 }

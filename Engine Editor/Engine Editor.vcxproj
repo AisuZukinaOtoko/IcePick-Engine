@@ -179,7 +179,9 @@
     <ClCompile Include="src\Menu\Toolbar.cpp" />
     <ClCompile Include="src\Panels\AssetBrowser.cpp" />
     <ClCompile Include="src\Panels\CameraControllerComponentDetails.cpp" />
+    <ClCompile Include="src\Panels\DopeSheet.cpp" />
     <ClCompile Include="src\Panels\LogPanel.cpp" />
+    <ClCompile Include="src\Panels\Popups\MeshImportPopup.cpp" />
     <ClCompile Include="src\Panels\PropertiesPanel.cpp" />
     <ClCompile Include="src\Panels\RigidBodyComponentDetails.cpp" />
     <ClCompile Include="src\Panels\ScenePanel.cpp" />
@@ -228,8 +230,10 @@
     <ClInclude Include="src\Material Editor\Nodes\Utils.h" />
     <ClInclude Include="src\Menu\Toolbar.h" />
     <ClInclude Include="src\Panels\AssetBrowser.h" />
+    <ClInclude Include="src\Panels\DopeSheet.h" />
     <ClInclude Include="src\Panels\LogPanel.h" />
     <ClInclude Include="src\Panels\PanelCommon.h" />
+    <ClInclude Include="src\Panels\Popups\MeshImportPopup.h" />
     <ClInclude Include="src\Panels\PropertiesPanel.h" />
     <ClInclude Include="src\Panels\ScenePanel.h" />
     <ClInclude Include="src\Panels\StatisticsPanel.h" />

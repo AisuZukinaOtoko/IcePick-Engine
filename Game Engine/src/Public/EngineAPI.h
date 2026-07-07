@@ -4,6 +4,7 @@
 
 namespace IcePick {
 	class ShaderProgram;
+	class Skeleton;
 	struct ShaderSource;
 	struct MeshRendererComponent;
 	struct ScriptComponent;
@@ -43,6 +44,10 @@ namespace IcePick {
 		MeshRendererComponent LoadMesh(std::filesystem::path assetPath, IcePick::ImportSettings importSettings);
 		void RenderMesh(MeshRendererComponent& mesh, glm::mat4& modelMatrix, const entt::entity entityId);
 		void RenderLine(glm::vec3 startPoint, glm::vec3 endPoint, glm::vec4 colour);
+
+		Skeleton& GetSkeletonById(UUID skeletonId);
+		IcePickRenderer::StaticMeshData& GetStaticMeshDataById(UUID meshDataId);
+		IcePickRenderer::SkinnedMeshData& GetSkinnedMeshDataById(UUID meshDataId);
 
 		// Scripts
 		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);

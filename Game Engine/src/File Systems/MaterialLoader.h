@@ -8,15 +8,17 @@
 namespace IcePick {
 	class TextureLoader;
 	class ShaderLoader;
+	class ImportSettings;
 
 	class MaterialLoader {
 	public:
 		MaterialLoader();
 		~MaterialLoader();
+		void Init(ShaderLoader& shaderLoader);
 
 		UUID NewMaterialBaseFromCopy(const MaterialBase& newMaterialBase);
 		UUID NewMaterialInstanceFromCopy(const MaterialInstance& newMaterialInstance);
-		UUID NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
+		UUID NewMaterialInstanceFromScene(const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader, const ImportSettings& importSettings);
 		UUID NewMaterialBaseFromAsset(std::filesystem::path& assetPath, ShaderLoader& shaderLoader);
 		UUID NewMaterialInstanceFromAsset(std::filesystem::path& assetPath);
 		void SaveMaterialBase(std::filesystem::path assetPath, const MaterialBase& materialBase);
@@ -42,6 +44,7 @@ namespace IcePick {
 
 		UUID m_CachedMaterialBaseId = UUID::Unitialised();
 		UUID m_CachedMaterialInstanceId = UUID::Unitialised();
+		UUID m_LoadSkinnedMeshMaterialBaseId = UUID::Unitialised();
 
 		// Shader ID applied to materials loaded from external files
 		UUID m_LoadMaterialShaderId = UUID::Unitialised();

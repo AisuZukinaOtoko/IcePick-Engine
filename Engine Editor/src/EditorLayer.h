@@ -7,6 +7,7 @@
 #include "Panels/ScenePanel.h"
 #include "Panels/AssetBrowser.h"
 #include "Panels/StatisticsPanel.h"
+#include "Panels/DopeSheet.h"
 #include "Menu/Toolbar.h"
 #include "Styles/Styles.h"
 #include "Material Editor/MaterialEditor.h"
@@ -35,6 +36,7 @@ namespace IcePick {
 		Toolbar m_Toolbar;
 		StatisticsPanel m_StatisticsPanel;
 		MaterialEditor m_MaterialEditor;
+		DopeSheet m_DopeSheet;
 
 		ImFont* m_EditorFont = nullptr;
 	};

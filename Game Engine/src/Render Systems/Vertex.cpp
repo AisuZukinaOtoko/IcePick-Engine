@@ -89,14 +89,24 @@ SkinnedVertex3D::SkinnedVertex3D(glm::vec3 position, glm::vec3 normal, glm::vec2
 	InitBoneWeights();
 }
 
+void SkinnedVertex3D::AddBone(unsigned int boneId, float boneWeight) {
+	for (int i = 0; i < MaxEffectiveBoneCount; i++) {
+		if (BoneWeights[i] == 0.0f) {
+			BoneIDs[i] = boneId;
+			BoneWeights[i] = boneWeight;
+			return;
+		}
+	}
+}
+
 VertexLayout SkinnedVertex3D::GetVertexLayout() {
 	VertexLayout layout{ sizeof(SkinnedVertex3D) };
 
 	layout.Push<float>(3, offsetof(SkinnedVertex3D, Position));
 	layout.Push<float>(3, offsetof(SkinnedVertex3D, Normal));
 	layout.Push<float>(2, offsetof(SkinnedVertex3D, TextureCoords));
-	layout.Push<unsigned int>(4, offsetof(SkinnedVertex3D, BoneIDs));
-	layout.Push<float>(4, offsetof(SkinnedVertex3D, BoneWeights));
+	layout.Push<unsigned int>(MaxEffectiveBoneCount, offsetof(SkinnedVertex3D, BoneIDs));
+	layout.Push<float>(MaxEffectiveBoneCount, offsetof(SkinnedVertex3D, BoneWeights));
 
 	return layout;
 }

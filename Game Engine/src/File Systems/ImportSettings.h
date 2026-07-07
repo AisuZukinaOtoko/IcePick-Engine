@@ -8,6 +8,7 @@ namespace IcePick {
 		} LoadMeshAs{ MeshType::STATIC_MESH };
 		bool LoadMesh = true;
 		bool LoadMaterials = true;
-		bool LoadAnimations = true;
+		bool LoadSkeleton = false;
+		bool LoadAnimations = false;
 	};
 }

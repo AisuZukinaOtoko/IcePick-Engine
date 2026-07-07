@@ -4,7 +4,7 @@
 #include "Utilities/DebugStatistics.h"
 #include "LogSystem.h"
 
-static const unsigned int bufferSize = 255;
+static constexpr unsigned int bufferSize = 255;
 static char TextInputBuffer[bufferSize];
 
 static void ClearTextInputBuffer() {

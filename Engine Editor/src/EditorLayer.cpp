@@ -69,6 +69,7 @@ void IcePick::EditorLayer::OnChangeEditMaterial(std::filesystem::path editMateri
 
 void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {
     m_Viewport.OnUpdate(dt);
+    m_DopeSheet.OnUpdate(dt);
     m_ScenePanel.OnUpdate(dt);
     m_MaterialEditor.OnUpdate(dt);
 }
@@ -103,10 +104,11 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::DockSpaceOverViewport(dockspace_id, mainViewPort, ImGuiDockNodeFlags_PassthruCentralNode);
 
     m_Toolbar.Render();
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
     m_ScenePanel.ShowSceneHierarchy();
     m_AssetBrowser.Render();
+    m_DopeSheet.Render();
 
     m_PropertiesPanel.SetDropEntity(m_ScenePanel.GetDraggedEntity());
     m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
