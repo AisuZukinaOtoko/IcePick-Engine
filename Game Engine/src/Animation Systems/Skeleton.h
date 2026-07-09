@@ -7,8 +7,9 @@
 
 namespace IcePick {
 	struct SkeletonNodeHierarchy {
-		unsigned int BoneIndex = 0;
-		glm::mat4 BoneLocalTransform{ 1.0f };
+		int BoneIndex = -1;
+		unsigned int BoneLocalTransformIndex = 0;
+		//glm::mat4 BoneLocalTransform{ 1.0f };
 		std::vector<SkeletonNodeHierarchy> Children;
 	};
 
@@ -22,6 +23,8 @@ namespace IcePick {
 		void UploadBoneData();
 		SkeletonNodeHierarchy RootBone;
 		glm::mat4 InverseGlobalRootTransform{ 1.0f };
+		std::vector<glm::mat4> BoneLocalTransforms;
+		std::vector<glm::mat4> BoneParentTransforms;
 
 	private:
 		bool m_DataBaked = false;

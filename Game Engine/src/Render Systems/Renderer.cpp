@@ -75,8 +75,10 @@ namespace IcePickRenderer {
 			fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 			return false;
 		}
-		
-		std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
+
+		std::cout << "Vendor:   " << glGetString(GL_VENDOR) << '\n';
+		std::cout << "Renderer: " << glGetString(GL_RENDERER) << '\n';
+		std::cout << "Version:  " << glGetString(GL_VERSION) << '\n';
 		std::cout << "OpenGL shading language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << '\n';
 
 		IP_ASSERT(GL_ARB_buffer_storage, "Buffer storage not supported.");

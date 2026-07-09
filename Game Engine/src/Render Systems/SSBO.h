@@ -19,6 +19,7 @@ namespace IcePickRenderer {
 
 	private:
 		unsigned int m_ID = 0;
+		size_t m_MaxBufferSize = 0;
 		void UploadDataInternal(void* data, size_t dataSize);
 	};
 }

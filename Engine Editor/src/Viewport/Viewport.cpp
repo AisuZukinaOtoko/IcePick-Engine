@@ -265,29 +265,44 @@ void Viewport::RenderEntityGizmos() {
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
 	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
 
-	//if (IcePick::HasComponent<IcePick::MeshRendererComponent>(m_SelectedEntity)) {
-	//	IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
-	//	if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
-	//		IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
-	//		IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
+	if (IcePick::HasComponent<IcePick::MeshRendererComponent>(m_SelectedEntity)) {
+		IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+		if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+			IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
+			IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
 
-	//		unsigned int randomTestBoneIndex = 40;
-	//		IcePick::Bone& randomBone = skeleton.GetBone(randomTestBoneIndex);
-	//		entityTransformMatrix = randomBone.FinalTransform;
+			unsigned int randomTestBoneIndex = 10;
+			IcePick::Bone& randomBone = skeleton.GetBone(randomTestBoneIndex);
 
-	//		ImGuizmo::Manipulate(
-	//			glm::value_ptr(cameraViewMatrix),
-	//			glm::value_ptr(cameraProjectionMatrix),
-	//			m_GizmoOperation,
-	//			ImGuizmo::LOCAL,
-	//			glm::value_ptr(entityTransformMatrix)
-	//		);
+			glm::mat4& boneLocalTransform = skeleton.BoneLocalTransforms[randomTestBoneIndex];
+			glm::mat4& boneParentMatrix = skeleton.BoneParentTransforms[randomTestBoneIndex];
+			glm::mat4 inverseParentMatrix = glm::inverse(boneParentMatrix);
+			glm::mat4 inverseEntityTransform = glm::inverse(entityTransformMatrix);
 
-	//		//randomBone
-	//	}
-	//}
+			glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * boneParentMatrix * boneLocalTransform;
 
-	//return; // temporary
+			ImGuizmo::Manipulate(
+				glm::value_ptr(cameraViewMatrix),
+				glm::value_ptr(cameraProjectionMatrix),
+				m_GizmoOperation,
+				ImGuizmo::LOCAL,
+				glm::value_ptr(gizmoMatrix)
+			);
+
+			if (ImGuizmo::IsUsing()) {
+				m_UsingGizmo = true;
+			}
+			else {
+				m_UsingGizmo = false;
+			}
+
+			//boneLocalTransform = inverseParentMatrix * inverseEntityTransform * gizmoMatrix;
+			glm::mat4 globalRootTransform = glm::inverse(skeleton.InverseGlobalRootTransform);
+			boneLocalTransform = inverseParentMatrix * globalRootTransform * inverseEntityTransform	* gizmoMatrix;
+		}
+	}
+
+	return; // temporary
 
 	ImGuizmo::Manipulate(
 		glm::value_ptr(cameraViewMatrix),

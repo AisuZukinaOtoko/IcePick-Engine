@@ -9,12 +9,17 @@ namespace IcePick {
 	}
 
 	void Animator::CalculateBoneTransformRecursive(SkeletonNodeHierarchy& skeletonNode, Skeleton& skeleton, const glm::mat4& parentBoneTransform) {
-		Bone& bone = skeleton.GetBone(skeletonNode.BoneIndex);
-		glm::mat4 boneWorldTransform = parentBoneTransform * skeletonNode.BoneLocalTransform;
-		bone.FinalTransform = boneWorldTransform * bone.OffsetMatrix;
+        glm::mat4& localTransform = skeleton.BoneLocalTransforms[skeletonNode.BoneLocalTransformIndex];
+        glm::mat4 boneWorldTransform = parentBoneTransform * localTransform;
+        skeleton.BoneParentTransforms[skeletonNode.BoneLocalTransformIndex] = parentBoneTransform;
 
-		for (size_t i = 0; i < skeletonNode.Children.size(); i++) {
-			CalculateBoneTransformRecursive(skeletonNode.Children[i], skeleton, boneWorldTransform);
-		}
+        if (skeletonNode.BoneIndex != -1) {
+            Bone& bone = skeleton.GetBone(skeletonNode.BoneIndex);
+            bone.FinalTransform = skeleton.InverseGlobalRootTransform * boneWorldTransform * bone.OffsetMatrix;
+        }
+
+        for (size_t i = 0; i < skeletonNode.Children.size(); i++) {
+            CalculateBoneTransformRecursive(skeletonNode.Children[i], skeleton, boneWorldTransform);
+        }
 	}
 }

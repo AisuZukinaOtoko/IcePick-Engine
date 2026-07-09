@@ -299,22 +299,25 @@ namespace IcePick {
 	}
 
 	void MeshLoader::ParseImportSkeletonHierarchy(const aiNode* sceneNode, SkeletonNodeHierarchy& skeletonNodeHierarchy, Skeleton& skeleton) {
+		SkeletonNodeHierarchy currentNode;
+
 		bool nodeIsBone = skeleton.BoneExists(sceneNode->mName.C_Str());
 		if (nodeIsBone) {
-			const aiMatrix4x4& t = sceneNode->mTransformation;
-			glm::mat4 boneLocalTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
-
-			unsigned int boneIndex = skeleton.AddOrGetBoneId(sceneNode->mName.C_Str());
-			SkeletonNodeHierarchy newSkeletonNode;
-			newSkeletonNode.BoneIndex = boneIndex;
-			newSkeletonNode.BoneLocalTransform = boneLocalTransform;
-
-			skeletonNodeHierarchy.Children.push_back(newSkeletonNode);
+			currentNode.BoneIndex = skeleton.AddOrGetBoneId(sceneNode->mName.C_Str());
+			currentNode.BoneLocalTransformIndex = skeleton.BoneLocalTransforms.size();
+			skeleton.BoneLocalTransforms.push_back(AssimpMatrixToGlmMatrix(sceneNode->mTransformation));
+		}
+		else {
+			// still store the transform so the chain is intact
+			currentNode.BoneLocalTransformIndex = skeleton.BoneLocalTransforms.size();
+			skeleton.BoneLocalTransforms.push_back(AssimpMatrixToGlmMatrix(sceneNode->mTransformation));
 		}
 
-		SkeletonNodeHierarchy& recurseBoneNode = (nodeIsBone) ? skeletonNodeHierarchy.Children.back() : skeletonNodeHierarchy;
-		for (int i = 0; i < sceneNode->mNumChildren; i++) {
-			ParseImportSkeletonHierarchy(sceneNode->mChildren[i], recurseBoneNode, skeleton);
+		skeletonNodeHierarchy.Children.push_back(currentNode);
+		skeleton.BoneParentTransforms.emplace_back(1.0f);
+
+		for (unsigned int i = 0; i < sceneNode->mNumChildren; i++) {
+			ParseImportSkeletonHierarchy(sceneNode->mChildren[i], skeletonNodeHierarchy.Children.back(), skeleton);
 		}
 	}
 

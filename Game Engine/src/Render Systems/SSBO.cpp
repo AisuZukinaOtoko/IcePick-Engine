@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "SSBO.h"
+#include "../Utilities/Assert.h"
 
 namespace IcePickRenderer {
 	SSBO::SSBO() {
@@ -9,9 +10,11 @@ namespace IcePickRenderer {
 	void SSBO::Init(size_t bufferSize) {
 		glCreateBuffers(1, &m_ID);
 		glNamedBufferStorage(m_ID, bufferSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+		m_MaxBufferSize = bufferSize;
 	}
 	
 	void SSBO::UploadDataInternal(void* data, size_t dataSize) {
+		IP_ASSERT(m_MaxBufferSize >= dataSize, "Data size excedes allocated size of SSBO.");
 		glNamedBufferSubData(m_ID, 0, dataSize,	data);
 	}
 
