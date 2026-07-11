@@ -3,7 +3,7 @@
 #include "Utilities/DebugStatistics.h"
 #include "LogSystem.h"
 #include <imgui-docking/ImGuizmo.h>
-#include <IconsFontAwesome4.h>
+#include <IconsFontAwesome7.h>
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
@@ -13,10 +13,10 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_MaterialEditor(engineAPI),
     m_PropertiesPanel(engineAPI)
 {
-    auto entityChangeCallback = std::bind(&EditorLayer::OnChangeSelectedEntity, this, std::placeholders::_1);
+    auto selectionContextChangeCallback = std::bind(&EditorLayer::OnChangeSelectionContext, this, std::placeholders::_1);
     auto editMaterialCallback = std::bind(&EditorLayer::OnChangeEditMaterial, this, std::placeholders::_1);
-    m_Viewport.SetSelectedEntityChangeCallback(entityChangeCallback);
-    m_ScenePanel.SetSelectedEntityChangeCallback(entityChangeCallback);
+    m_Viewport.SetSelectionContextChangeCallback(selectionContextChangeCallback);
+    m_ScenePanel.SetSelectionContextChangeCallback(selectionContextChangeCallback);
     m_AssetBrowser.SetEditMaterialCallback(editMaterialCallback);
 }
 
@@ -57,10 +57,10 @@ void IcePick::EditorLayer::OnAttach() {
     ImGui_ImplOpenGL3_Init();
 }
 
-void IcePick::EditorLayer::OnChangeSelectedEntity(entt::entity selectedEntity) {
-    m_Viewport.SetSelectedEntity(selectedEntity);
-    m_ScenePanel.SetSelectedEntity(selectedEntity);
-    m_PropertiesPanel.SetSelectedEntity(selectedEntity);
+void IcePick::EditorLayer::OnChangeSelectionContext(SelectionContext selectionContext) {
+    m_Viewport.SetSelectionContext(selectionContext);
+    m_ScenePanel.SetSelectionContext(selectionContext);
+    m_PropertiesPanel.SetSelectionContext(selectionContext);
 }
 
 void IcePick::EditorLayer::OnChangeEditMaterial(std::filesystem::path editMaterialPath) {
@@ -106,7 +106,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_Toolbar.Render();
     ImGui::ShowDemoWindow();
     m_LogPanel.RenderLogs();
-    m_ScenePanel.ShowSceneHierarchy();
+    m_ScenePanel.ShowSceneHierarchy(m_EngineAPI);
     m_AssetBrowser.Render();
     m_DopeSheet.Render();
 

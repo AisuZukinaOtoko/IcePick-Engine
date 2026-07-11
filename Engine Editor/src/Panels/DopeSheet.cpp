@@ -1,6 +1,6 @@
 #include "DopeSheet.h"
 #include <imgui-docking/imgui.h>
-#include <IconsFontAwesome4.h>
+#include <IconsFontAwesome7.h>
 
 DopeSheet::DopeSheet() {
 	m_Open = true;
@@ -14,7 +14,7 @@ void DopeSheet::Render() {
 	if (!m_Open)
 		return;
 
-	ImGui::Begin(ICON_FA_CLOCK_O " Timeline", &m_Open, ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin(ICON_FA_FILM " Timeline", &m_Open, ImGuiWindowFlags_NoCollapse);
 
 	ImGui::End();
 }

@@ -25,4 +25,9 @@ namespace IcePickRenderer {
 	void SSBO::UnBind() {
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
+
+	void SSBO::Destroy() {
+		glDeleteBuffers(1, &m_ID);
+		m_ID = m_MaxBufferSize = 0;
+	}
 }

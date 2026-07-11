@@ -17,6 +17,8 @@ namespace IcePickRenderer {
 
 		void UnBind();
 
+		void Destroy();
+
 	private:
 		unsigned int m_ID = 0;
 		size_t m_MaxBufferSize = 0;

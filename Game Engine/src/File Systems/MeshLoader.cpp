@@ -125,6 +125,7 @@ namespace IcePick {
 		ParseImportNodeTree(scene->mRootNode, sceneRootNode, returnMeshRendererComponent.MaterialSlots, scene, sceneVertexArrays, materialLoader, textureLoader, importSettings);
 
 		if (importSettings.LoadSkeleton) {
+			sceneSkeleton.RootBone.NodeName = "Skeleton";
 			ParseImportSkeletonHierarchy(scene->mRootNode, sceneSkeleton.RootBone, sceneSkeleton);
 			sceneSkeleton.InverseGlobalRootTransform = glm::inverse(AssimpMatrixToGlmMatrix(scene->mRootNode->mTransformation));
 		}
@@ -313,6 +314,7 @@ namespace IcePick {
 			skeleton.BoneLocalTransforms.push_back(AssimpMatrixToGlmMatrix(sceneNode->mTransformation));
 		}
 
+		currentNode.NodeName = sceneNode->mName.C_Str();
 		skeletonNodeHierarchy.Children.push_back(currentNode);
 		skeleton.BoneParentTransforms.emplace_back(1.0f);
 
@@ -326,7 +328,18 @@ namespace IcePick {
 	}
 
 	void MeshLoader::Destroy() {
+		for (auto iterator = m_LoadedSkeletons.begin(); iterator != m_LoadedSkeletons.end(); ++iterator) {
+			iterator->second.Destroy();
+		}
 
+		for (auto iterator = m_LoadedVertexArrays.begin(); iterator != m_LoadedVertexArrays.end(); ++iterator) {
+			iterator->second.Destroy();
+		}
+
+		m_LoadedPathToMeshRenderer.clear();
+		m_LoadedStaticMeshes.clear();
+		m_LoadedSkinnedMeshes.clear();
+		m_DefaultEmptySkeleton.Destroy();
 	}
 
 	MeshLoader::~MeshLoader() {

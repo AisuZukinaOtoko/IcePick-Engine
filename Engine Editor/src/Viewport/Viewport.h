@@ -3,6 +3,7 @@
 #include <imgui-docking/ImGuizmo.h>
 #include <entt/entt.h>
 #include "EditorCamera.h"
+#include "SelectionContext.h"
 #include "Event Systems/Event.h"
 #include "Public/EngineAPI.h"
 #include <functional>
@@ -14,8 +15,9 @@ public:
 	Viewport(IcePick::EngineAPI engineAPI);
 	~Viewport();
 
-	void SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback);
-	void SetSelectedEntity(entt::entity entity);
+	void SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback);
+	void SetSelectionContext(SelectionContext selectionContext);
+
 	void SetDropAssetPath(std::string filePath);
 	void OnUpdate(DeltaTime dt);
 	void OnViewportEvent(IcePick::Event& event);
@@ -41,12 +43,15 @@ private:
 	IcePick::EngineAPI m_EngineAPI;
 
 	std::filesystem::path m_DropAssetPath;
-	std::function<void(entt::entity)> SelectedEntityChangeCallback;
+	std::function<void(SelectionContext)> SelectionContextChangeCallback;
 	bool m_UsingGizmo = false;
-	bool m_EntitySelected = false;
-	entt::entity m_SelectedEntity = entt::null;
+
+	bool m_SelectionContextChanged = false;
+	SelectionContext m_SelectionContext;
+
 	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	void RenderEntityGizmos();
+	void RenderSkeletonGizmos();
 	void RenderRigidBodyDebugColliders();
 	void RenderViewportControls();
 	void GetViewportDebugData(uint32_t* debugData);

@@ -314,5 +314,8 @@
     <ClInclude Include="src\Panels\DopeSheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Viewport\SelectionContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

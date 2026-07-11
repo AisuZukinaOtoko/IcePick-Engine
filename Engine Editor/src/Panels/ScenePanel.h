@@ -1,25 +1,32 @@
 #pragma once
 #include "PanelCommon.h"
+#include "../Viewport/SelectionContext.h"
 #include <entt/entt.h>
 #include <functional>
+
+namespace IcePick {
+	struct SkeletonNodeHierarchy;
+	class EngineAPI;
+}
 
 class ScenePanel {
 public:
 	ScenePanel();
 	~ScenePanel();
-	void SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback);
-	void SetSelectedEntity(entt::entity entity);
+	void SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback);
+	void SetSelectionContext(SelectionContext selectionContext);
 	void OnUpdate(DeltaTime dt);
-	void ShowSceneHierarchy();
-	bool EntitySelected();
+	void ShowSceneHierarchy(IcePick::EngineAPI& engineAPI);
 
 	entt::entity GetDraggedEntity();
-	entt::entity GetSelectedEntity();
 private:
-	std::function<void(entt::entity)> SelectedEntityChangeCallback;
+	void RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHierarchy& parentNode, IcePick::Skeleton& skeleton, entt::entity entityId);
+	std::function<void(SelectionContext)> SelectionContextChangeCallback;
 	const char* m_Title;
-	entt::entity m_DraggedEntity = entt::null;
-	entt::entity m_SelectedEntity = entt::null;
-	bool m_EntitySelected = false;
 	bool m_IsDraggingItem = false;
+
+	entt::entity m_DraggedEntity = entt::null;
+
+	bool m_SelectionContextChanged = false;
+	SelectionContext m_SelectionContext;
 };

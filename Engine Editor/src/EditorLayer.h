@@ -24,7 +24,7 @@ namespace IcePick {
 		virtual void OnPreRender() override;
 		virtual void OnRender(RenderPayload& payload) override;
 	private:
-		void OnChangeSelectedEntity(entt::entity selectedEntity);
+		void OnChangeSelectionContext(SelectionContext selectionContext);
 		void OnChangeEditMaterial(std::filesystem::path editMaterialPath);
 		Styles m_Styles;
 		EngineAPI m_EngineAPI;

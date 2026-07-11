@@ -4,6 +4,7 @@
 #include "PanelCommon.h"
 #include "Popups/MeshImportPopup.h"
 #include "../EditorRenderer.h"
+#include "../Viewport/SelectionContext.h"
 #include <glm/glm.hpp>
 #include <entt/entt.h>
 
@@ -13,7 +14,7 @@ public:
 	~PropertiesPanel() = default;
 	void SelectedProperties(const Styles& styles);
 	void SetColumnWidth(float newWidth);
-	void SetSelectedEntity(entt::entity entity);
+	void SetSelectionContext(SelectionContext selectionContext);
 
 	void SetDropEntity(entt::entity entity);
 	void SetDropAssetPath(std::string filePath);
@@ -42,7 +43,8 @@ private:
 	float m_ValueColumnWidth = 100.0f;
 
 	entt::entity m_DroppedEntity = entt::null;
-	entt::entity m_SelectedEntity = entt::null;
+	SelectionContext m_SelectionContext;
+
 	std::string m_DropAssetPath;
 	IcePick::EngineAPI m_EngineAPI;
 	MeshImportPopup m_MeshImportPopup;

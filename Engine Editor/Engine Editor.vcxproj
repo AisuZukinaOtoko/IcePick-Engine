@@ -241,6 +241,7 @@
     <ClInclude Include="src\Styles\ThumbnailManager.h" />
     <ClInclude Include="src\Utils\Serialize.h" />
     <ClInclude Include="src\Viewport\EditorCamera.h" />
+    <ClInclude Include="src\Viewport\SelectionContext.h" />
     <ClInclude Include="src\Viewport\Viewport.h" />
   </ItemGroup>
   <ItemGroup>

@@ -27,7 +27,8 @@ static const char* CameraControllerInterpolationToString(IcePick::CameraControll
 
 void PropertiesPanel::CameraControllerDetails() {
     using namespace IcePick;
-    CameraControllerComponent& cameraController = IcePick::GetComponent<CameraControllerComponent>(m_SelectedEntity);
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    CameraControllerComponent& cameraController = IcePick::GetComponent<CameraControllerComponent>(selectedEntity);
 
     Vec3Control("Position", cameraController.Position, 0.2f);
 

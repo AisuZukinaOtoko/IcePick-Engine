@@ -29,7 +29,8 @@ static const char* RigidBodyColliderShapeTypeToString(IcePick::ColliderShape::Co
 
 void PropertiesPanel::RigidBodyComponentDetails(const Styles& styles) {
     if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen)) {
-        IcePick::RigidBodyComponent& rigidBodyComponent = IcePick::GetComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
+        entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+        IcePick::RigidBodyComponent& rigidBodyComponent = IcePick::GetComponent<IcePick::RigidBodyComponent>(selectedEntity);
 
         TextProperty("Collider Count", std::to_string(rigidBodyComponent.ColliderShapeCount).c_str());
 

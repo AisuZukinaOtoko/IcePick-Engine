@@ -253,6 +253,7 @@ void IcePick::AssetLoader::CleanUpAfterLoad() {
 	m_LoadedMaterialIndices.clear();
 	m_MaterialLoader.CleanUpAfterLoad();
 	m_TextureLoader.CleanUpAfterLoad();
+	m_MeshLoader.Destroy();
 }
 
 void IcePick::AssetLoader::ShutDown() {

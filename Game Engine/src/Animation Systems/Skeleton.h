@@ -4,12 +4,13 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "../Render Systems/SSBO.h"
+#include <string>
 
 namespace IcePick {
 	struct SkeletonNodeHierarchy {
 		int BoneIndex = -1;
 		unsigned int BoneLocalTransformIndex = 0;
-		//glm::mat4 BoneLocalTransform{ 1.0f };
+		std::string NodeName;
 		std::vector<SkeletonNodeHierarchy> Children;
 	};
 
@@ -21,6 +22,7 @@ namespace IcePick {
 		void Bake();
 		void Use();
 		void UploadBoneData();
+		void Destroy();
 		SkeletonNodeHierarchy RootBone;
 		glm::mat4 InverseGlobalRootTransform{ 1.0f };
 		std::vector<glm::mat4> BoneLocalTransforms;

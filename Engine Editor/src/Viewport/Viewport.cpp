@@ -15,7 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <IconsFontAwesome4.h>
+#include <IconsFontAwesome7.h>
 #include "LogSystem.h"
 #include "Utilities/DebugStatistics.h"
 #include <math.h>
@@ -65,9 +65,7 @@ static void DrawDebugCircle(glm::vec3 center, glm::vec3 up,  glm::vec3 right, fl
 
 	const int segments = 32;
 
-	glm::vec3 prev =
-		center +
-		right * radius;
+	glm::vec3 prev = center + right * radius;
 
 	for (int i = 1; i <= segments; i++)
 	{
@@ -119,14 +117,15 @@ Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 {
 	m_ViewportSize = ImVec2(1920, 180);
 	m_UsingGizmo = false;
+	m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
 }
 
-void Viewport::SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback) {
-	SelectedEntityChangeCallback = callback;
+void Viewport::SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback) {
+	SelectionContextChangeCallback = callback;
 }
 
-void Viewport::SetSelectedEntity(entt::entity entity) {
-	m_SelectedEntity = entity;
+void Viewport::SetSelectionContext(SelectionContext selectionContext) {
+	m_SelectionContext = selectionContext;
 }
 
 void Viewport::SetDropAssetPath(std::string filePath) {
@@ -134,9 +133,9 @@ void Viewport::SetDropAssetPath(std::string filePath) {
 }
 
 void Viewport::OnUpdate(DeltaTime dt) {
-	if (m_EntitySelected) {
-		SelectedEntityChangeCallback(m_SelectedEntity);
-		m_EntitySelected = false;
+	if (m_SelectionContextChanged) {
+		SelectionContextChangeCallback(m_SelectionContext);
+		m_SelectionContextChanged = false;
 	}
 
 	glm::vec2 mouseDelta = (m_ViewportRightClicked) ? m_EngineAPI.GetMouseDelta() : glm::vec2(0.0f, 0.0f);
@@ -170,7 +169,7 @@ void Viewport::OnViewportEvent(IcePick::Event& event) {
 		m_GameIsFocused = false;
 	}
 
-	if (m_SelectedEntity != entt::null) {
+	if (static_cast<entt::entity>(m_SelectionContext.SelectionId) != entt::null) {
 		if (keyState.IsKeyPressed(IcePick::IP_KEY_1))
 			m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 		else if (keyState.IsKeyPressed(IcePick::IP_KEY_2))
@@ -211,8 +210,17 @@ void Viewport::Render(unsigned int renderTexture) {
 
 	RenderViewportControls();
 
-	if ((m_SelectedEntity != entt::null) && !m_GameIsPlaying) {
-		RenderEntityGizmos();
+	if (!m_GameIsPlaying) {
+		switch (m_SelectionContext.SelectionType) {
+		case SelectionContext::Type::ENTITY:
+			RenderEntityGizmos();			
+			break;
+		case SelectionContext::Type::BONE:
+			RenderSkeletonGizmos();
+			break;
+		default:
+			break;
+		}
 		RenderRigidBodyDebugColliders();
 	}
 
@@ -225,8 +233,9 @@ void Viewport::Render(unsigned int renderTexture) {
 		if (!m_GameIsPlaying && !m_UsingGizmo) {
 			uint32_t pixelData[2] = { 0, 0 };
 			GetViewportDebugData(pixelData);
-			m_EntitySelected = true;
-			m_SelectedEntity = (entt::entity)pixelData[0];
+			m_SelectionContextChanged = true;
+			m_SelectionContext.SelectionId = pixelData[0];
+			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
 		}
 	}
 
@@ -248,15 +257,21 @@ void Viewport::Render(unsigned int renderTexture) {
 }
 
 void Viewport::RenderEntityGizmos() {
-	if (!IcePick::HasComponent<IcePick::TransformComponent>(m_SelectedEntity))
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+
+	if (selectedEntity == entt::null)
 		return;
+
+	if (!IcePick::HasComponent<IcePick::TransformComponent>(selectedEntity))
+		return;
+
 
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 	
 	ImGuizmo::SetRect(m_WindowPosition.x, m_WindowPosition.y, m_ViewportSize.x, m_ViewportSize.y);
 
-	IcePick::TransformComponent* entityTransform = &IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
+	IcePick::TransformComponent* entityTransform = &IcePick::GetComponent<IcePick::TransformComponent>(selectedEntity);
 	glm::mat4 entityTransformMatrix = glm::mat4(1.0f);
 	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform->Position);
 	entityTransformMatrix *= glm::toMat4(entityTransform->Rotation);
@@ -264,45 +279,6 @@ void Viewport::RenderEntityGizmos() {
 
 	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
 	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
-
-	if (IcePick::HasComponent<IcePick::MeshRendererComponent>(m_SelectedEntity)) {
-		IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
-		if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
-			IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
-			IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
-
-			unsigned int randomTestBoneIndex = 10;
-			IcePick::Bone& randomBone = skeleton.GetBone(randomTestBoneIndex);
-
-			glm::mat4& boneLocalTransform = skeleton.BoneLocalTransforms[randomTestBoneIndex];
-			glm::mat4& boneParentMatrix = skeleton.BoneParentTransforms[randomTestBoneIndex];
-			glm::mat4 inverseParentMatrix = glm::inverse(boneParentMatrix);
-			glm::mat4 inverseEntityTransform = glm::inverse(entityTransformMatrix);
-
-			glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * boneParentMatrix * boneLocalTransform;
-
-			ImGuizmo::Manipulate(
-				glm::value_ptr(cameraViewMatrix),
-				glm::value_ptr(cameraProjectionMatrix),
-				m_GizmoOperation,
-				ImGuizmo::LOCAL,
-				glm::value_ptr(gizmoMatrix)
-			);
-
-			if (ImGuizmo::IsUsing()) {
-				m_UsingGizmo = true;
-			}
-			else {
-				m_UsingGizmo = false;
-			}
-
-			//boneLocalTransform = inverseParentMatrix * inverseEntityTransform * gizmoMatrix;
-			glm::mat4 globalRootTransform = glm::inverse(skeleton.InverseGlobalRootTransform);
-			boneLocalTransform = inverseParentMatrix * globalRootTransform * inverseEntityTransform	* gizmoMatrix;
-		}
-	}
-
-	return; // temporary
 
 	ImGuizmo::Manipulate(
 		glm::value_ptr(cameraViewMatrix),
@@ -315,14 +291,14 @@ void Viewport::RenderEntityGizmos() {
 	if (ImGuizmo::IsUsing()) {
 		using namespace IcePick;
 		if ((keyState.IsKeyHeld(IP_KEY_LEFT_SHIFT) || keyState.IsKeyHeld(IP_KEY_RIGHT_SHIFT)) && !m_UsingGizmo) { // first frame using the gizmo when holding Shift
-			m_SelectedEntity = DuplicateEntity<
+			m_SelectionContext.SelectionId = (uint32_t)DuplicateEntity<
 				TagComponent,
 				TransformComponent,
 				MeshRendererComponent,
 				ScriptComponent,
-				RigidBodyComponent>(m_SelectedEntity);
-			m_EntitySelected = true;
-			entityTransform = &GetComponent<TransformComponent>(m_SelectedEntity);
+				RigidBodyComponent>(selectedEntity);
+			m_SelectionContextChanged = true;
+			entityTransform = &GetComponent<TransformComponent>(selectedEntity);
 		}
 
 		m_UsingGizmo = true;
@@ -342,15 +318,73 @@ void Viewport::RenderEntityGizmos() {
 
 }
 
+void Viewport::RenderSkeletonGizmos() {
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+
+	if (!IcePick::HasComponent<IcePick::TransformComponent>(selectedEntity))
+		return;
+
+	if (!IcePick::HasComponent<IcePick::MeshRendererComponent>(selectedEntity))
+		return;
+
+	IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(selectedEntity);
+	if (meshRenderer.MeshType != IcePick::ImportSettings::MeshType::SKELETAL_MESH)
+		return;
+	
+	IcePick::TransformComponent* entityTransform = &IcePick::GetComponent<IcePick::TransformComponent>(selectedEntity);
+	glm::mat4 entityTransformMatrix = glm::mat4(1.0f);
+	entityTransformMatrix = glm::translate(entityTransformMatrix, entityTransform->Position);
+	entityTransformMatrix *= glm::toMat4(entityTransform->Rotation);
+	entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransform->Scale);
+	glm::mat4 cameraViewMatrix = m_EditorCamera.GetViewMatrix();
+	glm::mat4 cameraProjectionMatrix = m_EditorCamera.GetProjectionMatrix();
+
+	IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
+	IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
+
+	unsigned int boneIndex = static_cast<unsigned int>(m_SelectionContext.SelectionData);
+
+	glm::mat4& boneLocalTransform = skeleton.BoneLocalTransforms[boneIndex];
+	glm::mat4& boneParentMatrix = skeleton.BoneParentTransforms[boneIndex];
+	glm::mat4 inverseParentMatrix = glm::inverse(boneParentMatrix);
+	glm::mat4 inverseEntityTransform = glm::inverse(entityTransformMatrix);
+	glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * boneParentMatrix * boneLocalTransform;
+
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::SetDrawlist();
+
+	ImGuizmo::SetRect(m_WindowPosition.x, m_WindowPosition.y, m_ViewportSize.x, m_ViewportSize.y);
+
+	ImGuizmo::Manipulate(
+		glm::value_ptr(cameraViewMatrix),
+		glm::value_ptr(cameraProjectionMatrix),
+		m_GizmoOperation,
+		ImGuizmo::LOCAL,
+		glm::value_ptr(gizmoMatrix)
+	);
+
+	if (ImGuizmo::IsUsing()) {
+		m_UsingGizmo = true;
+	}
+	else {
+		m_UsingGizmo = false;
+	}
+
+	glm::mat4 globalRootTransform = glm::inverse(skeleton.InverseGlobalRootTransform);
+	boneLocalTransform = inverseParentMatrix * globalRootTransform * inverseEntityTransform * gizmoMatrix;
+}
+
 void Viewport::RenderRigidBodyDebugColliders() {
 	bool drawDebugColliders = m_EngineAPI.QueryEngineRenderDebugPhysics();
 	if (!drawDebugColliders)
 		return;
 
-	if (!IcePick::HasComponent<IcePick::RigidBodyComponent>(m_SelectedEntity))
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+
+	if (!IcePick::HasComponent<IcePick::RigidBodyComponent>(selectedEntity))
 		return;
 
-	IcePick::RigidBodyComponent& rigidBody = IcePick::GetComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
+	IcePick::RigidBodyComponent& rigidBody = IcePick::GetComponent<IcePick::RigidBodyComponent>(selectedEntity);
 	if (rigidBody.ColliderShapeCount == 0)
 		return;
 
@@ -359,7 +393,7 @@ void Viewport::RenderRigidBodyDebugColliders() {
 	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
 	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
 
-	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(m_SelectedEntity);
+	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(selectedEntity);
 	for (unsigned int i = 0; i < rigidBody.ColliderShapeCount; i++) {
 		IcePick::ColliderShape& collider = rigidBody.ColliderShapes[i];
 		glm::vec3 colliderCenter = entityTransform.Position + entityTransform.Rotation * collider.ColliderOffset;
@@ -391,6 +425,8 @@ void Viewport::RenderRigidBodyDebugColliders() {
 void Viewport::RenderViewportControls() {
 	ImVec2 buttonSize{ 40, 40 };
 	ImVec2 viewportControlPosition{ (m_ViewportSize.x / 2) - (buttonSize.x / 2), 26};
+
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 
 	ImGui::SetCursorPos(viewportControlPosition);
 
@@ -430,9 +466,9 @@ void Viewport::RenderViewportControls() {
 			m_GameIsFocused = false;
 
 			entt::registry& activeRegistry = IcePick::GetActiveSceneRegistry();
-			if (!activeRegistry.valid(m_SelectedEntity)) {
-				m_SelectedEntity = entt::null;
-				m_EntitySelected = true;
+			if (!activeRegistry.valid(selectedEntity)) {
+				m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
+				m_SelectionContextChanged = true;
 			}
 		}
 		ImGui::PopStyleColor();

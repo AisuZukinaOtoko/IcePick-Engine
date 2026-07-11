@@ -3,7 +3,7 @@
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
 #include "Scene Systems/Components.h"
-#include <IconsFontAwesome4.h>
+#include <IconsFontAwesome7.h>
 #include "../Utils/Serialize.h"
 #include <iostream>
 #include <filesystem>
@@ -25,7 +25,7 @@ static void CameraControllerDropTargetProperty(const char* label, IcePick::Scene
         cameraControllerName = tag.value;
     }
 
-    std::string buttonText = std::string(ICON_FA_VIDEO_CAMERA) + " " + cameraControllerName;
+    std::string buttonText = std::string(ICON_FA_VIDEO) + " " + cameraControllerName;
     ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
     if (ImGui::BeginDragDropTarget()) {
@@ -47,6 +47,7 @@ PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
     constexpr unsigned int previewRenderTargetSize = 600;
     m_PreviewRenderer.Init(previewRenderTargetSize, previewRenderTargetSize);
     m_PreviewRenderer.editorCamera.aspectRatio = 1.0f;
+    m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
 }
 
 void PropertiesPanel::PanelSetup() {
@@ -119,8 +120,9 @@ void PropertiesPanel::QuaternionEulerControls(const char* label, glm::quat& valu
 void PropertiesPanel::SelectedProperties(const Styles& styles) {
     ImGui::Begin(m_ID, nullptr, ImGuiWindowFlags_NoCollapse);
     PanelSetup();
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 
-    if (m_SelectedEntity == entt::null) {
+    if (selectedEntity == entt::null) {
         ImGui::End();
         return;
     }
@@ -135,8 +137,8 @@ void PropertiesPanel::SetColumnWidth(float newWidth) {
     m_ColumnWidth = newWidth;
 }
 
-void PropertiesPanel::SetSelectedEntity(entt::entity entity) {
-    m_SelectedEntity = entity;
+void PropertiesPanel::SetSelectionContext(SelectionContext selectionContext) {
+    m_SelectionContext = selectionContext;
 }
 
 void PropertiesPanel::SetDropEntity(entt::entity entity) {
@@ -150,61 +152,63 @@ void PropertiesPanel::SetDropAssetPath(std::string filePath) {
 void PropertiesPanel::EntityProperties(const Styles& styles) {
     using namespace IcePick;
 
-    if (HasComponent<TagComponent>(m_SelectedEntity)) {
-        TagComponent& tag = GetComponent<TagComponent>(m_SelectedEntity);
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+
+    if (HasComponent<TagComponent>(selectedEntity)) {
+        TagComponent& tag = GetComponent<TagComponent>(selectedEntity);
         InputTextProperty("Name", tag.value);
     }
 
-    if (HasComponent<TransformComponent>(m_SelectedEntity)) {
+    if (HasComponent<TransformComponent>(selectedEntity)) {
         ImGui::Spacing();
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-            TransformComponent& transform = GetComponent<TransformComponent>(m_SelectedEntity);
+            TransformComponent& transform = GetComponent<TransformComponent>(selectedEntity);
             Vec3Control("Position", transform.Position, 0.05);
             QuaternionEulerControls("Rotation", transform.Rotation, 0.5);
             Vec3Control("Scale", transform.Scale, 0.03);
         }
     }
 
-    if (HasComponent<SceneCamera>(m_SelectedEntity)) {
+    if (HasComponent<SceneCamera>(selectedEntity)) {
         ImGui::Spacing();
         CameraDetails();
     }
 
-    if (HasComponent<MeshRendererComponent>(m_SelectedEntity)) {
+    if (HasComponent<MeshRendererComponent>(selectedEntity)) {
         ImGui::Spacing();
         MeshRendererDetails(styles);
     }
 
-    if (HasComponent<ScriptComponent>(m_SelectedEntity)) {
+    if (HasComponent<ScriptComponent>(selectedEntity)) {
         ImGui::Spacing();
         ScriptComponentDetails(styles);
     }
 
-    if (HasComponent<RigidBodyComponent>(m_SelectedEntity)) {
+    if (HasComponent<RigidBodyComponent>(selectedEntity)) {
         ImGui::Spacing();
         RigidBodyComponentDetails(styles);
     }
 
-    if (HasComponent<CameraControllerComponent>(m_SelectedEntity)) {
+    if (HasComponent<CameraControllerComponent>(selectedEntity)) {
         ImGui::Spacing();
         if (ImGui::CollapsingHeader("Camera Controller", ImGuiTreeNodeFlags_DefaultOpen)) {
             CameraControllerDetails();
         }
     }
 
-    if (HasComponent<PointLightComponent>(m_SelectedEntity)) {
+    if (HasComponent<PointLightComponent>(selectedEntity)) {
         ImGui::Spacing();
         if (ImGui::CollapsingHeader("Point Light", ImGuiTreeNodeFlags_DefaultOpen)) {
-            PointLightComponent& pointLightComponent = GetComponent<PointLightComponent>(m_SelectedEntity);
+            PointLightComponent& pointLightComponent = GetComponent<PointLightComponent>(selectedEntity);
             ColourPicker("Colour", pointLightComponent.Colour);
             FloatSlider("Intensity", &pointLightComponent.Intensity, 0.0f, 10.0f);
         }
     }
 
-    if (HasComponent<DirectionalLightComponent>(m_SelectedEntity)) {
+    if (HasComponent<DirectionalLightComponent>(selectedEntity)) {
         ImGui::Spacing();
         if (ImGui::CollapsingHeader("Directional Light", ImGuiTreeNodeFlags_DefaultOpen)) {
-            DirectionalLightComponent& directionalLightComponent = GetComponent<DirectionalLightComponent>(m_SelectedEntity);
+            DirectionalLightComponent& directionalLightComponent = GetComponent<DirectionalLightComponent>(selectedEntity);
             ColourPicker("Colour", directionalLightComponent.Colour);
             FloatSlider("Intensity", &directionalLightComponent.Intensity, 0.0f, 10.0f);
             FloatSlider("Azimuth", &directionalLightComponent.Azimuth, 0.0f, 360.0f);
@@ -406,12 +410,14 @@ void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& 
 }
 
 void PropertiesPanel::CameraDetails() {
-    IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(m_SelectedEntity);
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(selectedEntity);
     CameraControllerDropTargetProperty("Default camera controller", sceneCamera, m_DroppedEntity, m_ColumnWidth);
 }
 
 void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
-    IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(selectedEntity);
 
     if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen)) {
         switch (meshRenderer.MeshType) {
@@ -494,8 +500,9 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
 }
 
 void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
     if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
-        IcePick::ScriptComponent& scriptComponent = IcePick::GetComponent<IcePick::ScriptComponent>(m_SelectedEntity);
+        IcePick::ScriptComponent& scriptComponent = IcePick::GetComponent<IcePick::ScriptComponent>(selectedEntity);
 
         ImGui::Columns(2);
         ImGui::SetColumnWidth(0, m_ColumnWidth);
@@ -513,12 +520,12 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         if (scriptPath.empty())
             buttonText = std::string(ICON_FA_EXCLAMATION) + " None";
         else
-            buttonText = std::string(ICON_FA_FILE_TEXT) + " " + scriptPath.stem().string();
+            buttonText = std::string(ICON_FA_FILE) + " " + scriptPath.stem().string();
         ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
         if (ImGui::BeginDragDropTarget()) {
             if (ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
-                scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, m_SelectedEntity);
+                scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, selectedEntity);
             }
             ImGui::EndDragDropTarget();
         }
@@ -527,7 +534,7 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
 
         CheckBox("Script active", &scriptComponent.Active);
         
-        if (ImGui::Button(ICON_FA_PENCIL_SQUARE_O "Edit Script")) {
+        if (ImGui::Button(ICON_FA_PEN_TO_SQUARE "Edit Script")) {
             OpenScriptEditor(scriptPath);
         }
     }

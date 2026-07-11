@@ -46,4 +46,14 @@ namespace IcePick {
 		Use();
 		m_InternalBonesBuffer.UploadData<glm::mat4>(m_BoneTransforms);
 	}
+
+	void Skeleton::Destroy() {
+		m_Bones.clear();
+		m_BoneTransforms.clear();
+		m_BoneNameToIdMap.clear();
+		m_InternalBonesBuffer.Destroy();
+
+		BoneLocalTransforms.clear();
+		BoneParentTransforms.clear();
+	}
 }

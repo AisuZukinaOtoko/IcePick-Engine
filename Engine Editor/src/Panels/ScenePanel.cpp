@@ -1,17 +1,18 @@
 #include "ScenePanel.h"
+#include "Render Systems/Mesh.h"
 #include "Scene Systems/Components.h"
-#include <IconsFontAwesome4.h>
+#include <IconsFontAwesome7.h>
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
 	switch (tag.Type) {
 	case IcePick::TagComponent::EntityType::CAMERA:
 		return ICON_FA_CAMERA;
 	case IcePick::TagComponent::EntityType::CAMERA_CONTROLLER:
-		return ICON_FA_VIDEO_CAMERA;
+		return ICON_FA_VIDEO;
 	case IcePick::TagComponent::EntityType::POINT_LIGHT:
-		return ICON_FA_LIGHTBULB_O;
+		return ICON_FA_LIGHTBULB;
 	case IcePick::TagComponent::EntityType::DIRECTIONAL_LIGHT:
-		return ICON_FA_SUN_O;
+		return ICON_FA_SUN;
 	case IcePick::TagComponent::EntityType::TERRAIN:
 		return ICON_FA_MAP;
 	default:
@@ -23,41 +24,42 @@ ScenePanel::ScenePanel() {
 	m_Title = "Scene Hierarchy";
 }
 
-void ScenePanel::SetSelectedEntityChangeCallback(std::function<void(entt::entity)> callback) {
-	SelectedEntityChangeCallback = callback;
+void ScenePanel::SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback) {
+	SelectionContextChangeCallback = callback;
 }
 
-void ScenePanel::SetSelectedEntity(entt::entity entity) {
-	m_SelectedEntity = entity;
+void ScenePanel::SetSelectionContext(SelectionContext selectionContext) {
+	m_SelectionContext = selectionContext;
 }
 
 void ScenePanel::OnUpdate(DeltaTime dt) {
-	if (m_EntitySelected) {
-		SelectedEntityChangeCallback(m_SelectedEntity);
-		m_EntitySelected = false;
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+	if (m_SelectionContextChanged) {
+		SelectionContextChangeCallback(m_SelectionContext);
+		m_SelectionContextChanged = false;
 	}
 }
 
 
-void ScenePanel::ShowSceneHierarchy() {
+void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 	ImGui::Begin(m_Title);
 
-	if (ImGui::BeginMenu(ICON_FA_PLUS " Add")) {
+	if (ImGui::BeginMenu(ICON_FA_SQUARE_PLUS " Add")) {
 		if (ImGui::MenuItem(ICON_FA_CUBE " Entity")) {
 			IcePick::NewEntity();
 		}
 
-		if (ImGui::MenuItem(ICON_FA_VIDEO_CAMERA " Camera controller")) {
+		if (ImGui::MenuItem(ICON_FA_VIDEO " Camera controller")) {
 			IcePick::NewCameraController();
 		}
 
 		ImGui::BeginDisabled(true);
 
-		if (ImGui::MenuItem(ICON_FA_LIGHTBULB_O " Point light")) {
+		if (ImGui::MenuItem(ICON_FA_LIGHTBULB " Point light")) {
 			IcePick::NewPointLight();
 		}
 
-		if (ImGui::MenuItem(ICON_FA_SUN_O " Directional light")) {
+		if (ImGui::MenuItem(ICON_FA_SUN " Directional light")) {
 			IcePick::NewDirectionalLight();
 		}
 
@@ -69,6 +71,7 @@ void ScenePanel::ShowSceneHierarchy() {
 		ImGui::EndMenu();
 	}
 
+	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 	auto& activeSceneRegistry = IcePick::GetActiveSceneRegistry();
 	auto taggedEntityView = activeSceneRegistry.view<IcePick::TagComponent>();
 
@@ -78,12 +81,13 @@ void ScenePanel::ShowSceneHierarchy() {
 		const char* icon = GetListItemIcon(entityTag);
 
 		ImGuiTreeNodeFlags entityNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow |	ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_Leaf;
-		entityNodeFlags |= (m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0;
+		entityNodeFlags |= (selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0;
 
 		bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)entity, entityNodeFlags, "%s %s", icon, entityTag.value.c_str());
 
 		if (ImGui::IsItemClicked()) {
-			m_SelectedEntity = entity;
+			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
+			m_SelectionContext.SelectionId = static_cast<uint32_t>(entity);
 		}
 
 		if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
@@ -92,12 +96,13 @@ void ScenePanel::ShowSceneHierarchy() {
 
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
 			if (!m_IsDraggingItem)
-				m_EntitySelected = true;
+				m_SelectionContextChanged = true;
 		}
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-			m_SelectedEntity = entity;
-			m_EntitySelected = true;
+			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
+			m_SelectionContext.SelectionId = static_cast<uint32_t>(entity);
+			m_SelectionContextChanged = true;
 			ImGui::OpenPopup("Options");
 		}
 
@@ -118,27 +123,37 @@ void ScenePanel::ShowSceneHierarchy() {
 			if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginMenu("Add component"))
 			{
 				if (ImGui::MenuItem("Mesh renderer component")) {
-					IcePick::AddComponent<IcePick::MeshRendererComponent>(m_SelectedEntity);
+					IcePick::AddComponent<IcePick::MeshRendererComponent>(selectedEntity);
 				}
 
 				if (ImGui::MenuItem("Script component")) {
-					IcePick::AddComponent<IcePick::ScriptComponent>(m_SelectedEntity);
+					IcePick::AddComponent<IcePick::ScriptComponent>(selectedEntity);
 				}
 
 				if (ImGui::MenuItem("Rigid body component")) {
-					IcePick::AddComponent<IcePick::RigidBodyComponent>(m_SelectedEntity);
+					IcePick::AddComponent<IcePick::RigidBodyComponent>(selectedEntity);
 				}
 
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::MenuItem("Delete")) {
-				IcePick::DeleteEntity(m_SelectedEntity);
-				m_SelectedEntity = entt::null; // Deselect if deleted
-				SelectedEntityChangeCallback(entt::null);
+				IcePick::DeleteEntity(selectedEntity);
+				m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
+				m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null); // Deselect if deleted
+				SelectionContextChangeCallback(m_SelectionContext);
 			}
 
 			ImGui::EndPopup();
+		}
+
+		if (IcePick::HasComponent<IcePick::MeshRendererComponent>(entity) && nodeOpen) {
+			IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(entity);
+			if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+				IcePickRenderer::SkinnedMeshData& skinnedMeshData = engineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
+				IcePick::Skeleton& meshSkeleton = engineAPI.GetSkeletonById(skinnedMeshData.SkeletonId);
+				RenderSkeletonHierarchyRecursive(meshSkeleton.RootBone, meshSkeleton, entity);
+			}
 		}
 
 		if (nodeOpen) {
@@ -153,16 +168,37 @@ void ScenePanel::ShowSceneHierarchy() {
 	ImGui::End();
 }
 
-bool ScenePanel::EntitySelected() {
-	return m_EntitySelected;
+void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHierarchy& currentNode, IcePick::Skeleton& skeleton, entt::entity entityId) {
+	ImGuiTreeNodeFlags isLeafFlag = (currentNode.Children.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0;
+	ImGuiTreeNodeFlags isSelectedFlag = ((currentNode.BoneIndex == m_SelectionContext.SelectionData) && (m_SelectionContext.SelectionType == SelectionContext::Type::BONE)) ? ImGuiTreeNodeFlags_Selected : 0;
+	ImGuiTreeNodeFlags boneNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | isLeafFlag | isSelectedFlag;
+
+	ImGui::PushID(currentNode.BoneIndex);
+	bool nodeOpen = false;
+	bool isBone = currentNode.BoneIndex != -1;
+	const char* icon = (isBone) ? ICON_FA_BONE : ICON_FA_CUBES;
+
+	if (isBone || currentNode.Children.size()) {
+		nodeOpen = ImGui::TreeNodeEx("Bone", boneNodeFlags, "%s %s", icon, currentNode.NodeName.c_str());
+		if (ImGui::IsItemClicked() && isBone) {
+			m_SelectionContext.SelectionType = SelectionContext::Type::BONE;
+			m_SelectionContext.SelectionId = static_cast<uint32_t>(entityId);
+			m_SelectionContext.SelectionData = static_cast<uint32_t>(currentNode.BoneIndex);
+			m_SelectionContextChanged = true;
+		}
+	}
+
+	if (nodeOpen) {
+		for (unsigned int i = 0; i < currentNode.Children.size(); i++) {
+			RenderSkeletonHierarchyRecursive(currentNode.Children[i], skeleton, entityId);
+		}
+		ImGui::TreePop();
+	}
+	ImGui::PopID();
 }
 
 entt::entity ScenePanel::GetDraggedEntity() {
 	return m_DraggedEntity;
-}
-
-entt::entity ScenePanel::GetSelectedEntity() {
-	return m_SelectedEntity;
 }
 
 ScenePanel::~ScenePanel() {
