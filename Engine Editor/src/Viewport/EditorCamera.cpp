@@ -39,27 +39,28 @@ void EditorCamera::OnUpdate(DeltaTime dt) {
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
 
+    float sensitivity = moveSensitivity / 100.0f;
     // move camera
     if (m_ForwardStrafe) {
-        cameraPosition += cameraFront * moveSensitivity * dt.GetDelta();
+        cameraPosition += cameraFront * sensitivity * dt.GetDelta();
     }
     if (m_BackStrafe) {
-        cameraPosition -= cameraFront * moveSensitivity * dt.GetDelta();
+        cameraPosition -= cameraFront * sensitivity * dt.GetDelta();
     }
 
     if (m_LeftStrafe) {
-        cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * moveSensitivity * dt.GetDelta();
+        cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * sensitivity * dt.GetDelta();
     }
 
     if (m_RightStrafe) {
-        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * moveSensitivity * dt.GetDelta();
+        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * sensitivity * dt.GetDelta();
     }
 
     if (m_UpFloat) {
-        cameraPosition += cameraUp * moveSensitivity * dt.GetDelta();
+        cameraPosition += cameraUp * sensitivity * dt.GetDelta();
     }
     if (m_DownFloat) {
-        cameraPosition -= cameraUp * moveSensitivity * dt.GetDelta();
+        cameraPosition -= cameraUp * sensitivity * dt.GetDelta();
     }
 }
 

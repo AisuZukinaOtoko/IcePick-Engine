@@ -160,6 +160,7 @@
     <ClCompile Include="src\Physics Systems\PhysicsSystem3D.cpp" />
     <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp" />
     <ClCompile Include="src\Render Systems\SSBO.cpp" />
+    <ClCompile Include="src\Scene Systems\AssetRegistry.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="src\Event Systems\Event.h" />
     <ClInclude Include="src\Event Systems\Input.h" />
     <ClInclude Include="src\File Systems\AssetLoader.h" />
+    <ClInclude Include="src\File Systems\AssetTypes.h" />
     <ClInclude Include="src\File Systems\ImportSettings.h" />
     <ClInclude Include="src\File Systems\MaterialBase.h" />
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
@@ -232,6 +234,7 @@
     <ClInclude Include="src\Render Systems\Mesh.h" />
     <ClInclude Include="src\Render Systems\RenderLineBuffer.h" />
     <ClInclude Include="src\Render Systems\SSBO.h" />
+    <ClInclude Include="src\Scene Systems\AssetRegistry.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />

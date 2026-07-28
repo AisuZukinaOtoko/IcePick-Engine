@@ -6,6 +6,6 @@ struct SelectionContext {
 		ENTITY = 0,
 		BONE
 	} SelectionType{ Type::ENTITY };
-	uint32_t SelectionId{ 0 };
-	uint32_t SelectionData{ 0 };
+	uint64_t SelectionId{ 0 };
+	uint64_t SelectionData{ 0 };
 };

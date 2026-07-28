@@ -23,6 +23,7 @@ namespace IcePickRenderer {
 
 	bool WindowShouldClose();
 	GLFWwindow* GetRendererWindow();
+	void SetCurrentContext(GLFWwindow* window);
 	glm::ivec2 GetRendererWindowSize();
 	bool IsCursorLocked();
 	void RequestCursorLock();

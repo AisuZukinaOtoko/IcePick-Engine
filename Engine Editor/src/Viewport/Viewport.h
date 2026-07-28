@@ -50,6 +50,7 @@ private:
 	SelectionContext m_SelectionContext;
 
 	ImGuizmo::OPERATION m_GizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+	ImGuizmo::MODE m_GizmoCoordinateSpace = ImGuizmo::MODE::LOCAL;
 	void RenderEntityGizmos();
 	void RenderSkeletonGizmos();
 	void RenderRigidBodyDebugColliders();

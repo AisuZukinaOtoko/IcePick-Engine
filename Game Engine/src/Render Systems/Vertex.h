@@ -4,6 +4,13 @@
 namespace IcePickRenderer {
 	class VertexLayout;
 
+	enum VertexType {
+		STATIC_MESH_VERTEX = 0,
+		SKINNED_MESH_VERTEX,
+		LINE_POINT_VERTEX,
+		FULL_SCREEN_PASS_VERTEX
+	};
+
 	struct LinePointVertex3D {
 	public:
 		LinePointVertex3D();

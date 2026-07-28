@@ -6,29 +6,42 @@
 
 namespace IcePickRenderer {
 
-	VertexArray::VertexArray() {
+	VertexArray::VertexArray(void* vertexData, size_t vertexDataSize, unsigned int* indexBufferData, size_t indexCount, VertexLayout vertexLayout, VertexType vertexType) :
+		m_VertexBuffer(vertexData, vertexDataSize, vertexType),
+		m_IndexBuffer(indexBufferData, indexCount)
+	{
 		m_ID = 0;
+		Init();
+		if (vertexData && vertexDataSize) {
+			Bind();
+			m_VertexBuffer.InitializeAndUploadData();
+			m_VertexBuffer.Bind();
+			m_IndexBuffer.Bind();
+			AddBuffer(m_VertexBuffer, vertexLayout);
+		}		
+
+		Unbind();
+		m_IndexBuffer.Unbind();
+		m_VertexBuffer.Unbind();
+		IndexCount = indexCount;
 	}
 
 	void VertexArray::Init() {
 		glGenVertexArrays(1, &m_ID);
 	}
 
-	VertexArray::VertexArray(const VertexArray& other) {
+	VertexArray::VertexArray(VertexArray&& other) noexcept :
+		m_VertexBuffer(std::move(other.m_VertexBuffer)),
+		m_IndexBuffer(std::move(other.m_IndexBuffer))
+	{
 		m_ID = other.m_ID;
-		this->IndexCount = other.IndexCount;
+		IndexCount = other.IndexCount;
+
+		other.m_ID = 0;
+		other.IndexCount = 0;
 	}
 
-	VertexArray::~VertexArray() {
-	
-	}
-
-	void VertexArray::Destroy() {
-		std::cout << "Delete Vertex Array: " << m_ID << std::endl;
-		glDeleteVertexArrays(1, &m_ID);
-	}
-
-	void VertexArray::AddBuffer(const VertexBuffer& vb, const IcePickRenderer::VertexLayout& layout) {
+	void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexLayout& layout) {
 		Bind();
 		vb.Bind();
 		const auto& elements = layout.GetElements(); // std::vector<VertexBufferElement>&
@@ -60,4 +73,14 @@ namespace IcePickRenderer {
 		return m_ID;
 	}
 
+	void VertexArray::Destroy() {
+		std::cout << "Delete Vertex Array: " << m_ID << std::endl;
+		glDeleteVertexArrays(1, &m_ID);
+		m_VertexBuffer.Destroy();
+		m_IndexBuffer.Destroy();
+	}
+
+	VertexArray::~VertexArray() {
+	
+	}
 }

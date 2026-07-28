@@ -46,6 +46,12 @@ namespace IcePick {
 		bool ReceiveShadows = false;
 	};
 
+	struct IKSolverComponent {
+		unsigned int BoneCount = 1;
+		unsigned int BoneOneIndex = 0;
+		unsigned int BoneTwoIndex = 0;
+	};
+
 	struct ScriptComponent {
 		UUID ScriptId = UUID::Unitialised();
 		sol::table Self = sol::nil;

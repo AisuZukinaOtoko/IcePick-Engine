@@ -26,7 +26,10 @@ void IcePick::EditorLayer::OnAttach() {
 
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
+#ifdef _WIN64
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+#endif
     io.Fonts->AddFontDefault();
 
     ImFontConfig config;
@@ -74,9 +77,6 @@ void IcePick::EditorLayer::OnUpdate(DeltaTime dt) {
     m_MaterialEditor.OnUpdate(dt);
 }
 
-void IcePick::EditorLayer::OnDetach() {
-
-}
 
 void IcePick::EditorLayer::OnEvent(Event& event) {
     m_Viewport.OnViewportEvent(event);
@@ -127,5 +127,21 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     IP_CORE_PROFILE_POP();
+
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+#ifdef _WIN64
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+#else
+        IP_ASSERT(false, "Unsupported platform.");
+#endif
+        IcePickRenderer::SetCurrentContext(IcePickRenderer::GetRendererWindow());        
+    }
 }
 
+
+void IcePick::EditorLayer::OnDetach() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}

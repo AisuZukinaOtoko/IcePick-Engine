@@ -165,6 +165,9 @@
     <ClCompile Include="src\Panels\DopeSheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Menu\AssetRegistryViewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Material Editor\Nodes\Functions\CosineNode.h">
@@ -315,6 +318,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Viewport\SelectionContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Menu\AssetRegistryViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

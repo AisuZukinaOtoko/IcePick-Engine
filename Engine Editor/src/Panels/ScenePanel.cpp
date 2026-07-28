@@ -80,14 +80,14 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 		IcePick::TagComponent entityTag = activeSceneRegistry.get<IcePick::TagComponent>(entity);
 		const char* icon = GetListItemIcon(entityTag);
 
-		ImGuiTreeNodeFlags entityNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow |	ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_Leaf;
+		ImGuiTreeNodeFlags entityNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_Leaf;
 		entityNodeFlags |= (selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0;
 
 		bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)entity, entityNodeFlags, "%s %s", icon, entityTag.value.c_str());
 
 		if (ImGui::IsItemClicked()) {
 			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
-			m_SelectionContext.SelectionId = static_cast<uint32_t>(entity);
+			m_SelectionContext.SelectionId = static_cast<uint64_t>(entity);
 		}
 
 		if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
@@ -101,7 +101,7 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
 			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
-			m_SelectionContext.SelectionId = static_cast<uint32_t>(entity);
+			m_SelectionContext.SelectionId = static_cast<uint64_t>(entity);
 			m_SelectionContextChanged = true;
 			ImGui::OpenPopup("Options");
 		}
@@ -113,7 +113,9 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 				sceneObjectType = "SCENE_ENTITY";
 			else if (entityTag.Type == IcePick::TagComponent::EntityType::CAMERA_CONTROLLER)
 				sceneObjectType = "CAMERA_CONTROLLER";
-			ImGui::SetDragDropPayload(sceneObjectType.c_str(), nullptr, 0, ImGuiCond_Once);
+
+			SelectionContext dragDropContext{ SelectionContext::Type::ENTITY, static_cast<uint64_t>(entity), 0};
+			ImGui::SetDragDropPayload(sceneObjectType.c_str(), &dragDropContext, sizeof(SelectionContext), ImGuiCond_Once);
 			ImGui::Text("%s %s", icon, entityTag.value.c_str());
 			ImGui::EndDragDropSource();
 		}
@@ -134,13 +136,17 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 					IcePick::AddComponent<IcePick::RigidBodyComponent>(selectedEntity);
 				}
 
+				if (ImGui::MenuItem("IK solver component")) {
+					IcePick::AddComponent<IcePick::IKSolverComponent>(selectedEntity);
+				}
+
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::MenuItem("Delete")) {
 				IcePick::DeleteEntity(selectedEntity);
 				m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
-				m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null); // Deselect if deleted
+				m_SelectionContext.SelectionId = static_cast<uint64_t>(entt::null); // Deselect if deleted
 				SelectionContextChangeCallback(m_SelectionContext);
 			}
 
@@ -171,19 +177,22 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHierarchy& currentNode, IcePick::Skeleton& skeleton, entt::entity entityId) {
 	ImGuiTreeNodeFlags isLeafFlag = (currentNode.Children.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0;
 	ImGuiTreeNodeFlags isSelectedFlag = ((currentNode.BoneIndex == m_SelectionContext.SelectionData) && (m_SelectionContext.SelectionType == SelectionContext::Type::BONE)) ? ImGuiTreeNodeFlags_Selected : 0;
-	ImGuiTreeNodeFlags boneNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | isLeafFlag | isSelectedFlag;
+	ImGuiTreeNodeFlags boneNodeFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | isLeafFlag | isSelectedFlag;
 
 	ImGui::PushID(currentNode.BoneIndex);
 	bool nodeOpen = false;
 	bool isBone = currentNode.BoneIndex != -1;
 	const char* icon = (isBone) ? ICON_FA_BONE : ICON_FA_CUBES;
 
+	bool boneSelected = isBone && (m_SelectionContext.SelectionData == static_cast<uint64_t>(currentNode.BoneLocalTransformIndex));
+	boneNodeFlags |= (boneSelected) ? ImGuiTreeNodeFlags_Selected : 0;
+
 	if (isBone || currentNode.Children.size()) {
 		nodeOpen = ImGui::TreeNodeEx("Bone", boneNodeFlags, "%s %s", icon, currentNode.NodeName.c_str());
 		if (ImGui::IsItemClicked() && isBone) {
 			m_SelectionContext.SelectionType = SelectionContext::Type::BONE;
-			m_SelectionContext.SelectionId = static_cast<uint32_t>(entityId);
-			m_SelectionContext.SelectionData = static_cast<uint32_t>(currentNode.BoneIndex);
+			m_SelectionContext.SelectionId = static_cast<uint64_t>(entityId);
+			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.BoneLocalTransformIndex);
 			m_SelectionContextChanged = true;
 		}
 	}

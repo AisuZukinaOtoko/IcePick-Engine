@@ -1,6 +1,7 @@
 #include "Toolbar.h"
 #include <imgui-docking/imgui.h>
 #include "LogSystem.h"
+#include "Scene Systems/AssetRegistry.h"
 
 
 Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :
@@ -12,14 +13,18 @@ Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :
 void Toolbar::Render() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
-            ImGui::BeginDisabled(true);
+            if (ImGui::MenuItem("Asset Registry")) {
+                m_AssetRegistryViewer.SetOpen(true);
+            }
             if (ImGui::MenuItem("Open")) { 
                 
             }
             if (ImGui::MenuItem("Save")) {
-                
+                IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
+                assetRegistry.SerializeAssetRegistry();
             }
-            ImGui::EndDisabled();
+            //ImGui::BeginDisabled(true);
+            //ImGui::EndDisabled();
             ImGui::EndMenu();
         }
 
@@ -43,4 +48,6 @@ void Toolbar::Render() {
         }
         ImGui::EndMainMenuBar();
     }
+
+    m_AssetRegistryViewer.Render();
 }

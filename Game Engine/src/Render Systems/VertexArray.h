@@ -1,24 +1,30 @@
 #pragma once
-class VertexBuffer;
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 namespace IcePickRenderer {
 	class VertexLayout;
-
+	class VertexLayout;
+	
 	class VertexArray {
 	public:
-		VertexArray();
-		void Init();
-		VertexArray(const VertexArray& other);
+		VertexArray() = delete;
+		VertexArray(void* vertexData, size_t vertexDataSize, unsigned int* indexBufferData, size_t indexCount, VertexLayout vertexLayout, VertexType vertexType);
+		VertexArray(const VertexArray& other) = delete;
+		VertexArray(VertexArray&& other) noexcept;
 		~VertexArray();
 
 		void Destroy();
-		void AddBuffer(const VertexBuffer& vb, const IcePickRenderer::VertexLayout& layout);
+		void AddBuffer(const VertexBuffer& vb, const VertexLayout& layout);
 		void Bind() const;
 		void Unbind() const;
 		unsigned int GetID();
-		unsigned int IndexCount = 0;
+		size_t IndexCount = 0;
 	private:
-		unsigned int m_ID;
+		void Init();
+		unsigned int m_ID = 0;
+		VertexBuffer m_VertexBuffer;
+		IndexBuffer m_IndexBuffer;
 	};
 
 	struct NewVertexArrayData {

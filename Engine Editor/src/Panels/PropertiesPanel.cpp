@@ -29,8 +29,10 @@ static void CameraControllerDropTargetProperty(const char* label, IcePick::Scene
     ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
     if (ImGui::BeginDragDropTarget()) {
-        if (ImGui::AcceptDragDropPayload("CAMERA_CONTROLLER")) {
-            sceneCamera.SetNewCameraController(droppedSceneObject);
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CAMERA_CONTROLLER");
+        if (payload) {
+            SelectionContext droppedSelectionContext = *(SelectionContext*)payload->Data;
+            sceneCamera.SetNewCameraController(static_cast<entt::entity>(droppedSelectionContext.SelectionId));
         }
         ImGui::EndDragDropTarget();
     }
@@ -47,7 +49,7 @@ PropertiesPanel::PropertiesPanel(IcePick::EngineAPI engineAPI) :
     constexpr unsigned int previewRenderTargetSize = 600;
     m_PreviewRenderer.Init(previewRenderTargetSize, previewRenderTargetSize);
     m_PreviewRenderer.editorCamera.aspectRatio = 1.0f;
-    m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
+    m_SelectionContext.SelectionId = static_cast<uint64_t>(entt::null);
 }
 
 void PropertiesPanel::PanelSetup() {
@@ -399,8 +401,10 @@ void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& 
     ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
     if (ImGui::BeginDragDropTarget()) {
-        if (ImGui::AcceptDragDropPayload("SCENE_ENTITY")) {
-            entityProperty = m_DroppedEntity;
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_ENTITY");
+        if (payload) {
+            SelectionContext droppedSelectionContext = *(SelectionContext*)payload->Data;
+            entityProperty = static_cast<entt::entity>(droppedSelectionContext.SelectionId);
         }
         ImGui::EndDragDropTarget();
     }

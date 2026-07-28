@@ -19,6 +19,11 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
 	EventQueue.push(newEvent);
 }
 
+static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	// yoffset > 0 -> up
+	// yoffset < 0 -> down
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	IcePick::Event newEvent = { action, key, mods, 0, IP_KEYBOARD_EVENT };
 	EventQueue.push(newEvent);
@@ -41,6 +46,7 @@ bool IcePick::EventHandler::Init(){
 	GLFWwindow* window = IcePickRenderer::GetRendererWindow();
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetJoystickCallback(joystick_callback);
 	InitForController();
 	return true;

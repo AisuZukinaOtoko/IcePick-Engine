@@ -7,11 +7,13 @@
 #include "ImportSettings.h"
 #include <filesystem>
 #include <unordered_map>
+#include <assimp/scene.h>
 
 namespace IcePick {
 	class MaterialLoader;
 	class ShaderLoader;
 	class TextureLoader;
+	struct ImportSettings;
 
 	class MeshLoader {
 	public:
@@ -36,7 +38,7 @@ namespace IcePick {
 		IcePickRenderer::SkinnedMeshData m_DefaultEmptySkinnedMesh;
 		Skeleton m_DefaultEmptySkeleton;
 
-		UUID RegisterVertexArray(const IcePickRenderer::VertexArray& vertexArray);
+		UUID RegisterVertexArray(IcePickRenderer::VertexArray& vertexArray);
 		UUID RegisterStaticMesh(const IcePickRenderer::StaticMeshData staticMesh);
 		UUID RegisterSkinnedMesh(const IcePickRenderer::SkinnedMeshData skinnedMesh);
 		UUID RegisterMeshSkeleton(const IcePick::Skeleton& skeleton);
@@ -45,6 +47,7 @@ namespace IcePick {
 		void ParseImportMeshData(const aiScene* scene, std::vector<UUID>& loadVertexArrays, Skeleton& loadSkeleton, const ImportSettings& importSettings);
 		void ParseImportNodeTree(const aiNode* sceneNode, IcePickRenderer::MeshNode& parent, std::vector<UUID>& materialSlots, const aiScene* scene, std::vector<UUID>& sceneVertexArrayIds, MaterialLoader& materialLoader, TextureLoader& textureLoader, const ImportSettings& importSettings);
 		void ParseImportSkeletonHierarchy(const aiNode* sceneNode, SkeletonNodeHierarchy& skeletonNodeHierarchy, Skeleton& skeleton);
+		void SerializeMeshAsset(std::filesystem::path assetPath);
 
 		std::unordered_map<UUID, IcePickRenderer::StaticMeshData, UUIDHasher> m_LoadedStaticMeshes;
 		std::unordered_map<UUID, IcePickRenderer::SkinnedMeshData, UUIDHasher> m_LoadedSkinnedMeshes;

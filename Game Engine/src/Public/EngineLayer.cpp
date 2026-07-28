@@ -289,7 +289,7 @@ void IcePick::EngineLayer::RenderMeshNode(const IcePickRenderer::MeshNode& paren
 	glm::mat4 meshWorldTransform = parentTransform * parent.NodeTransform;
 
 	for (unsigned int i = 0; i < parent.VertexArrayIds.size(); i++) {
-		IcePickRenderer::VertexArray vertexArray = m_AssetLoader.GetMeshVertexArray(parent.VertexArrayIds[i]);
+		IcePickRenderer::VertexArray& vertexArray = m_AssetLoader.GetMeshVertexArray(parent.VertexArrayIds[i]);
 		unsigned int materialSlotIndex = parent.MaterialSlotIndices[i];
 
 		UUID meshMaterialInstanceId = (materialSlotIndex != -1) ? materialSlots[materialSlotIndex] : UUID::Unitialised();

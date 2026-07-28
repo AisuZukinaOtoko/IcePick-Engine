@@ -4,15 +4,20 @@
 #include "../Render Systems/IndexBuffer.h"
 #include "../Render Systems/VertexLayout.h"
 
+#include "MeshLoader.h"
 #include "../File Systems/TextureLoader.h"
 #include "../File Systems/MaterialLoader.h"
 #include "../File Systems/ShaderLoader.h"
-#include "MeshLoader.h"
 #include "../Scene Systems/Components.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <filesystem>
 #include "../LogSystem.h"
+
+constexpr unsigned int MESH_ASSET_VERSION = 1;
 
 static glm::mat4 AssimpMatrixToGlmMatrix(const aiMatrix4x4& matrix) {
 	glm::mat4 glmMatrix = {
@@ -25,22 +30,19 @@ static glm::mat4 AssimpMatrixToGlmMatrix(const aiMatrix4x4& matrix) {
 }
 
 namespace IcePick {
-	MeshLoader::MeshLoader() {
+	MeshLoader::MeshLoader()
+		: m_DefaultInvalidVertexArray(nullptr, 0, nullptr, 0, {}, IcePickRenderer::VertexType::STATIC_MESH_VERTEX)
+	{
 
 	}
 
 	void MeshLoader::Init(ShaderLoader& shaderLoader) {
-		//ShaderSource defaultSkinnedShaderSource;
-		//defaultSkinnedShaderSource.VertexShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/skinning.vert.shader", 0);
-		//defaultSkinnedShaderSource.FragmentShaderSource = shaderLoader.LoadFile("Game Engine/res/Shaders/default.frag.shader", 0);
 
-		//m_DefaultSkinnedMeshShaderProgramId = shaderLoader.CreateShaderProgram(defaultSkinnedShaderSource);
-		//IP_LOG(std::to_string(m_DefaultSkinnedMeshShaderProgramId));
 	}
 
-	UUID MeshLoader::RegisterVertexArray(const IcePickRenderer::VertexArray& vertexArray) {
+	UUID MeshLoader::RegisterVertexArray(IcePickRenderer::VertexArray& vertexArray) {
 		UUID newVertexArrayId;
-		m_LoadedVertexArrays.insert({ newVertexArrayId, vertexArray });
+		m_LoadedVertexArrays.insert({ newVertexArrayId, std::move(vertexArray) });
 		return newVertexArrayId;
 	}
 
@@ -79,8 +81,9 @@ namespace IcePick {
 	}
 
 	IcePickRenderer::VertexArray& MeshLoader::GetMeshNodeVertexArray(UUID vertexArrayId) {
-		if (m_LoadedVertexArrays.find(vertexArrayId) != m_LoadedVertexArrays.end()) {
-			return m_LoadedVertexArrays[vertexArrayId];
+		auto iterator = m_LoadedVertexArrays.find(vertexArrayId);
+		if (iterator != m_LoadedVertexArrays.end()) {
+			return iterator->second;
 		}
 
 		return m_DefaultInvalidVertexArray;
@@ -220,14 +223,10 @@ namespace IcePick {
 				}				
 			}
 
-			IcePickRenderer::VertexArray meshVertexArray;
-			meshVertexArray.Init();
-			meshVertexArray.IndexCount = mesh->mNumFaces * 3;
-			meshVertexArray.Bind();
-
 			void* vertexData = nullptr;
 			unsigned int vertexDataSize = 0;
 			IcePickRenderer::VertexLayout vertexLayout;
+			IcePickRenderer::VertexType vertexType = IcePickRenderer::VertexType::STATIC_MESH_VERTEX;
 
 			switch (importSettings.LoadMeshAs) {
 			case ImportSettings::MeshType::STATIC_MESH:
@@ -235,6 +234,7 @@ namespace IcePick {
 					vertexData = staticMeshVertices.data();
 					vertexDataSize = sizeof(IcePickRenderer::StaticVertex3D) * staticMeshVertices.size();
 					vertexLayout = IcePickRenderer::StaticVertex3D::GetVertexLayout();
+					vertexType = IcePickRenderer::VertexType::STATIC_MESH_VERTEX;
 					break;
 				}
 			case ImportSettings::MeshType::SKELETAL_MESH:
@@ -242,20 +242,19 @@ namespace IcePick {
 					vertexData = skinnedMeshVertices.data();
 					vertexDataSize = sizeof(IcePickRenderer::SkinnedVertex3D) * skinnedMeshVertices.size();
 					vertexLayout = IcePickRenderer::SkinnedVertex3D::GetVertexLayout();
+					vertexType = IcePickRenderer::VertexType::SKINNED_MESH_VERTEX;
 					break;
 				}
 			}
 
-			VertexBuffer vertexBuffer(vertexData, vertexDataSize);
-			vertexBuffer.Bind();
-			meshVertexArray.AddBuffer(vertexBuffer, vertexLayout);
-
-			IndexBuffer indexBuffer(indices.data(), mesh->mNumFaces * 3);
-			indexBuffer.Bind();
-
-			meshVertexArray.Unbind();
-			indexBuffer.Unbind();
-			vertexBuffer.Unbind();
+			IcePickRenderer::VertexArray meshVertexArray { 
+				vertexData,
+				vertexDataSize,
+				indices.data(),
+				indices.size(),
+				vertexLayout,
+				vertexType
+			};
 
 			UUID vertexArrayId = RegisterVertexArray(meshVertexArray);
 			loadVertexArrays.push_back(vertexArrayId);
@@ -340,6 +339,17 @@ namespace IcePick {
 		m_LoadedStaticMeshes.clear();
 		m_LoadedSkinnedMeshes.clear();
 		m_DefaultEmptySkeleton.Destroy();
+	}
+
+	void MeshLoader::SerializeMeshAsset(std::filesystem::path assetPath) {
+		std::ofstream outFile(assetPath);
+		if (!outFile.is_open()) {
+			IP_LOG("Failed to save mesh asset. Could not open file: " + assetPath.string(), IP_ERROR_LOG);
+			return;
+		}
+
+		nlohmann::json json;
+		json["version"] = MESH_ASSET_VERSION;
 	}
 
 	MeshLoader::~MeshLoader() {

@@ -150,6 +150,10 @@ namespace IcePickRenderer {
 		return MainTargetWindow;
 	}
 
+	void SetCurrentContext(GLFWwindow* window) {
+		glfwMakeContextCurrent(window);
+	}
+
 	glm::ivec2 GetRendererWindowSize() {
 		return MainTargetWindowSize;
 	}
@@ -262,7 +266,7 @@ namespace IcePickRenderer {
 	}
 
 	void TerminateRenderer() {
-		for (VertexArray va : VertexArrays) {
+		for (VertexArray& va : VertexArrays) {
 			va.Destroy();
 		}
 		VertexArrays.clear();

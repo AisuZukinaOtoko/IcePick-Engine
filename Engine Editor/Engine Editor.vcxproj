@@ -176,6 +176,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Rendering\TextureNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Utils.cpp" />
+    <ClCompile Include="src\Menu\AssetRegistryViewer.cpp" />
     <ClCompile Include="src\Menu\Toolbar.cpp" />
     <ClCompile Include="src\Panels\AssetBrowser.cpp" />
     <ClCompile Include="src\Panels\CameraControllerComponentDetails.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="src\Material Editor\Nodes\Utils.h" />
     <ClInclude Include="src\Menu\Toolbar.h" />
     <ClInclude Include="src\Panels\AssetBrowser.h" />
+    <ClInclude Include="src\Menu\AssetRegistryViewer.h" />
     <ClInclude Include="src\Panels\DopeSheet.h" />
     <ClInclude Include="src\Panels\LogPanel.h" />
     <ClInclude Include="src\Panels\PanelCommon.h" />

@@ -8,7 +8,7 @@
 namespace IcePick {
 	class TextureLoader;
 	class ShaderLoader;
-	class ImportSettings;
+	struct ImportSettings;
 
 	class MaterialLoader {
 	public:

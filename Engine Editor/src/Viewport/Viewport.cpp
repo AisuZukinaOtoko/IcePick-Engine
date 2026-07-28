@@ -117,7 +117,7 @@ Viewport::Viewport(IcePick::EngineAPI engineAPI) :
 {
 	m_ViewportSize = ImVec2(1920, 180);
 	m_UsingGizmo = false;
-	m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
+	m_SelectionContext.SelectionId = static_cast<uint64_t>(entt::null);
 }
 
 void Viewport::SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback) {
@@ -284,14 +284,14 @@ void Viewport::RenderEntityGizmos() {
 		glm::value_ptr(cameraViewMatrix),
 		glm::value_ptr(cameraProjectionMatrix),
 		m_GizmoOperation,
-		ImGuizmo::LOCAL,
+		m_GizmoCoordinateSpace,
 		glm::value_ptr(entityTransformMatrix)
 	);
 
 	if (ImGuizmo::IsUsing()) {
 		using namespace IcePick;
 		if ((keyState.IsKeyHeld(IP_KEY_LEFT_SHIFT) || keyState.IsKeyHeld(IP_KEY_RIGHT_SHIFT)) && !m_UsingGizmo) { // first frame using the gizmo when holding Shift
-			m_SelectionContext.SelectionId = (uint32_t)DuplicateEntity<
+			m_SelectionContext.SelectionId = (uint64_t)DuplicateEntity<
 				TagComponent,
 				TransformComponent,
 				MeshRendererComponent,
@@ -342,7 +342,7 @@ void Viewport::RenderSkeletonGizmos() {
 	IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
 	IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
 
-	unsigned int boneIndex = static_cast<unsigned int>(m_SelectionContext.SelectionData);
+	uint64_t boneIndex = static_cast<uint64_t>(m_SelectionContext.SelectionData);
 
 	glm::mat4& boneLocalTransform = skeleton.BoneLocalTransforms[boneIndex];
 	glm::mat4& boneParentMatrix = skeleton.BoneParentTransforms[boneIndex];
@@ -354,12 +354,12 @@ void Viewport::RenderSkeletonGizmos() {
 	ImGuizmo::SetDrawlist();
 
 	ImGuizmo::SetRect(m_WindowPosition.x, m_WindowPosition.y, m_ViewportSize.x, m_ViewportSize.y);
-
+	ImGuizmo::OPERATION gizmoOperation = ImGuizmo::OPERATION::ROTATE | ImGuizmo::OPERATION::TRANSLATE;
 	ImGuizmo::Manipulate(
 		glm::value_ptr(cameraViewMatrix),
 		glm::value_ptr(cameraProjectionMatrix),
-		m_GizmoOperation,
-		ImGuizmo::LOCAL,
+		gizmoOperation,
+		m_GizmoCoordinateSpace,
 		glm::value_ptr(gizmoMatrix)
 	);
 
@@ -423,8 +423,8 @@ void Viewport::RenderRigidBodyDebugColliders() {
 }
 
 void Viewport::RenderViewportControls() {
-	ImVec2 buttonSize{ 40, 40 };
-	ImVec2 viewportControlPosition{ (m_ViewportSize.x / 2) - (buttonSize.x / 2), 26};
+	ImVec2 playButtonSize{ 40, 40 };
+	ImVec2 viewportControlPosition{ (m_ViewportSize.x / 2) - (playButtonSize.x / 2), 26};
 
 	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 
@@ -438,7 +438,7 @@ void Viewport::RenderViewportControls() {
 	switch (currentEngineRuntimeState) {
 
 	case IcePick::RuntimeState::STOPPED:
-		if (ImGui::Button(ICON_FA_PLAY, buttonSize)) {
+		if (ImGui::Button(ICON_FA_PLAY, playButtonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::RUNNING);
 
 			entt::registry& editorRegistry = IcePick::GetSceneRegistry(IcePick::SceneRegistryTypes::DEFAULT);
@@ -455,7 +455,7 @@ void Viewport::RenderViewportControls() {
 
 	case IcePick::RuntimeState::RUNNING:
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-		if (ImGui::Button(ICON_FA_STOP, buttonSize)) {
+		if (ImGui::Button(ICON_FA_STOP, playButtonSize)) {
 			m_EngineAPI.SetEngineRuntimeState(IcePick::RuntimeState::STOPPED);
 			entt::registry& runtimeRegistry = IcePick::GetSceneRegistry(IcePick::SceneRegistryTypes::TEMPORARY);
 			runtimeRegistry.clear();
@@ -467,7 +467,7 @@ void Viewport::RenderViewportControls() {
 
 			entt::registry& activeRegistry = IcePick::GetActiveSceneRegistry();
 			if (!activeRegistry.valid(selectedEntity)) {
-				m_SelectionContext.SelectionId = static_cast<uint32_t>(entt::null);
+				m_SelectionContext.SelectionId = static_cast<uint64_t>(entt::null);
 				m_SelectionContextChanged = true;
 			}
 		}
@@ -480,6 +480,35 @@ void Viewport::RenderViewportControls() {
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar();
 	ImGui::PopStyleVar();
+
+	ImVec2 buttonSize{ 30.0f, 30.0f };
+	ImVec2 padding{ 20.0f, 30.0f };
+	const unsigned int operationButtonCount = 3;
+	const char* buttonIcons[operationButtonCount] = { ICON_FA_UP_DOWN_LEFT_RIGHT, ICON_FA_GROUP_ARROWS_ROTATE, ICON_FA_DOWN_LEFT_AND_UP_RIGHT_TO_CENTER };
+	ImGuizmo::OPERATION buttonOperations[operationButtonCount] = { ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::OPERATION::ROTATE, ImGuizmo::OPERATION::SCALE };
+	for (unsigned int i = 0; i < operationButtonCount; i++) {
+		ImGui::PushID(i);
+		ImGui::SetCursorPos(ImVec2{ buttonSize.x * i + padding.x, padding.y });
+		const bool selected = buttonOperations[i] == m_GizmoOperation;
+		if (selected)
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.7f, 0.7f, 0.0f, 1.0f });
+
+		if (ImGui::Button(buttonIcons[i], buttonSize)) {
+			m_GizmoOperation = buttonOperations[i];
+		}
+
+		if (selected)
+			ImGui::PopStyleColor();
+		ImGui::PopID();
+	}
+
+	// Editor camera speed control
+	ImGui::SetCursorPos(ImVec2{ operationButtonCount * buttonSize.x + padding.x * 2, padding.y });
+	ImGui::SetNextItemWidth(100.0f);
+	ImGui::DragFloat(ICON_FA_CAMERA "##CameraSpeed", &m_EditorCamera.moveSensitivity, 0.002f, 0.01f, 0.01f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+
+	m_EditorCamera.moveSensitivity = std::max(m_EditorCamera.moveSensitivity, 0.01f);
+	m_EditorCamera.moveSensitivity = std::min(m_EditorCamera.moveSensitivity, 100.0f);
 }
 
 void Viewport::GetViewportDebugData(uint32_t* debugData) {
