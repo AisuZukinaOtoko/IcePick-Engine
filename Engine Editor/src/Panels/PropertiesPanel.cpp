@@ -3,6 +3,7 @@
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
 #include "Scene Systems/Components.h"
+#include "File Systems/AssetTypes.h"
 #include <IconsFontAwesome7.h>
 #include "../Utils/Serialize.h"
 #include <iostream>
@@ -331,7 +332,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     }
 
                     if (ImGui::BeginDragDropTarget()) {
-                        if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
+                        if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
                             IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
                             m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
@@ -443,7 +444,7 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
         ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
         if (ImGui::BeginDragDropTarget()) {
             ImGui::Text("Dropping something");
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET")) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::STATIC_MESH))) {
                 //meshRenderer.MeshFilePath = m_DropAssetPath;
                 //meshRenderer.MeshLoaded = false;
                 m_MeshImportPopup.OpenPopup();
@@ -484,7 +485,7 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
                 }
 
                 if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
                         meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
                     }
                     ImGui::EndDragDropTarget();
@@ -528,7 +529,7 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
         if (ImGui::BeginDragDropTarget()) {
-            if (ImGui::AcceptDragDropPayload("SCRIPT_ASSET")) {
+            if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::SCRIPT_ASSET))) {
                 scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, selectedEntity);
             }
             ImGui::EndDragDropTarget();

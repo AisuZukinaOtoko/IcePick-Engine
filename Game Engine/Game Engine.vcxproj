@@ -148,6 +148,7 @@
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
     <ClCompile Include="src\Event Systems\Input.cpp" />
     <ClCompile Include="src\File Systems\AssetLoader.cpp" />
+    <ClCompile Include="src\File Systems\AssetTypes.cpp" />
     <ClCompile Include="src\File Systems\MaterialBase.cpp" />
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
     <ClCompile Include="src\File Systems\MeshLoader.cpp" />

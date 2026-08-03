@@ -1,4 +1,5 @@
 #include "TextureNode.h"
+#include "File Systems/AssetTypes.h"
 
 TextureNode::TextureNode(IcePick::UUID textureId) {
 	m_TextureId = textureId;
@@ -35,7 +36,7 @@ void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem:
 	ImGui::SetCursorScreenPos(imagePos);
 	ImGui::InvisibleButton("textureTarget", imageSize);
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
+		if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
 			m_TextureId = engineAPI.LoadTextureFromAsset(dropAssetPath);
 			m_TextureRenderId = engineAPI.GetTextureRenderId(m_TextureId);
 			MaterialInstanceStateChanged = true;

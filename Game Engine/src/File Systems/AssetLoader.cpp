@@ -1,4 +1,5 @@
 #include "AssetLoader.h"
+#include "AssetTypes.h"
 #include "../LogSystem.h"
 #include "../Scene Systems/Components.h"
 #include "../Render Systems/Vertex.h"
@@ -20,9 +21,12 @@ IcePick::AssetLoader::AssetLoader() {
 }
 
 void IcePick::AssetLoader::Init() {
+	InitialiseAssetTypes();
+
 	m_ShaderLoader.Init();
 	m_MaterialLoader.Init(m_ShaderLoader);
 	m_MeshLoader.Init(m_ShaderLoader);
+
 }
 
 unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {

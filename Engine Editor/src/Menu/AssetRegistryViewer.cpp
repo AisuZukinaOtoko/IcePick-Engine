@@ -4,22 +4,24 @@
 #include <imgui-docking/imgui.h>
 #include <string>
 
-static std::string GetAssetTypeString(IcePick::AssetTypes assetType) {
-	switch (assetType) {
-	case IcePick::AssetTypes::MESH:
-		return "Mesh";
-	case IcePick::AssetTypes::MATERIAL_BASE:
-		return "Material Base";
-	case IcePick::AssetTypes::MATERIAL_INSTANCE:
-		return "Material Instance";
-	case IcePick::AssetTypes::TEXTURE:
-		return "Texture";
-	case IcePick::AssetTypes::SKELETON:
-		return "Skeleton";
-	default:
-		return "Error";
-	}
-}
+//static std::string GetAssetRegistryAssetTypeString(IcePick::AssetTypes assetType) {
+//	switch (assetType) {
+//	case IcePick::AssetTypes::STATIC_MESH:
+//		return "Static Mesh";
+//	case IcePick::AssetTypes::SKELETAL_MESH:
+//		return "Skeletal Mesh";
+//	case IcePick::AssetTypes::MATERIAL_BASE:
+//		return "Material Base";
+//	case IcePick::AssetTypes::MATERIAL_INSTANCE:
+//		return "Material Instance";
+//	case IcePick::AssetTypes::TEXTURE:
+//		return "Texture";
+//	case IcePick::AssetTypes::SKELETON:
+//		return "Skeleton";
+//	default:
+//		return "Error";
+//	}
+//}
 
 void AssetRegistryViewer::Render() {
 	if (!m_IsOpen)
@@ -52,7 +54,7 @@ void AssetRegistryViewer::Render() {
 			ImGui::Text(assetReference.AssetRelativePath.string().c_str());
 
 			ImGui::TableNextColumn();
-			ImGui::Text(GetAssetTypeString(assetReference.AssetType).c_str());
+			ImGui::Text(GetAssetTypeString(assetReference.AssetType));
 
 			ImGui::TableNextColumn();
 			if (ImGui::Button(ICON_FA_TRASH, ImVec2(ImGui::GetContentRegionAvail().x, 0.0f))) {
