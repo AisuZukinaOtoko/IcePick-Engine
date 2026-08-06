@@ -1,5 +1,6 @@
 #pragma once
 #include "Public/EngineAPI.h"
+#include <imgui-docking/imgui.h>
 
 class Styles {
 public:
@@ -17,6 +18,11 @@ public:
 	};
 
 	unsigned int GetIconTexture(Icon icon) const;
+
+	ImFont* GetLargeFont() { return m_LargeFont; }
+	ImFont* GetSmallFont() { return m_SmallFont; }
 private:
+	ImFont* m_LargeFont = nullptr;
+	ImFont* m_SmallFont = nullptr;
 	unsigned int m_IconTextures[ICON_COUNT];
 };

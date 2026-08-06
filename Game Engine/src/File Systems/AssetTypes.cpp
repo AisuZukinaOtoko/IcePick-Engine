@@ -5,17 +5,20 @@ namespace IcePick {
 	static const char* AssetTypeStrings[AssetTypes::ASSET_TYPE_COUNT];
 	static const char* AssetTypeExtensions[AssetTypes::ASSET_TYPE_COUNT];
 
+	static constexpr unsigned int NumMeshSourceFileExtensions = 4;
+	static const char* MeshSourceFileExtensions[NumMeshSourceFileExtensions] = { ".obj", ".glb", ".gltf", ".fbx" };
+
 	void InitialiseAssetTypes() {
-		AssetTypeStrings[AssetTypes::STATIC_MESH] = "STATIC_MESH";
+		AssetTypeStrings[AssetTypes::STATIC_MESH] = "STATIC MESH";
 		AssetTypeExtensions[AssetTypes::STATIC_MESH] = ".ipstm";
 
-		AssetTypeStrings[AssetTypes::SKELETAL_MESH] = "SKELETAL_MESH";
+		AssetTypeStrings[AssetTypes::SKELETAL_MESH] = "SKELETAL MESH";
 		AssetTypeExtensions[AssetTypes::SKELETAL_MESH] = ".ipskm";
 
-		AssetTypeStrings[AssetTypes::MATERIAL_BASE] = "MATERIAL_BASE";
+		AssetTypeStrings[AssetTypes::MATERIAL_BASE] = "MATERIAL BASE";
 		AssetTypeExtensions[AssetTypes::MATERIAL_BASE] = ".ipmtb";
 
-		AssetTypeStrings[AssetTypes::MATERIAL_INSTANCE] = "MATERIAL_INSTANCE";
+		AssetTypeStrings[AssetTypes::MATERIAL_INSTANCE] = "MATERIAL INSTANCE";
 		AssetTypeExtensions[AssetTypes::MATERIAL_INSTANCE] = ".ipmti";
 
 		AssetTypeStrings[AssetTypes::TEXTURE] = "TEXTURE";
@@ -27,7 +30,7 @@ namespace IcePick {
 		AssetTypeStrings[AssetTypes::SCRIPT_ASSET] = "SCRIPT";
 		AssetTypeExtensions[AssetTypes::SCRIPT_ASSET] = ".lua";
 
-		AssetTypeStrings[AssetTypes::INVALID_ASSET] = "INVALID_ASSET";
+		AssetTypeStrings[AssetTypes::INVALID_ASSET] = "INVALID ASSET";
 		AssetTypeExtensions[AssetTypes::INVALID_ASSET] = ".asset";
 	}
 
@@ -41,6 +44,12 @@ namespace IcePick {
 			if (extension == AssetTypeExtensions[i])
 				return AssetTypeValuesArray[i];
 		}
+
+		for (unsigned int i = 0; i < NumMeshSourceFileExtensions; i++) {
+			if (extension == MeshSourceFileExtensions[i])
+				return AssetTypes::STATIC_MESH;
+		}
+
 		return AssetTypes::INVALID_ASSET;
 	}
 }

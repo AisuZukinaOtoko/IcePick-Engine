@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <functional>
+#include <imgui-docking/imgui.h>
 
 class AssetBrowser {
 public:
@@ -16,6 +17,7 @@ public:
 	void ChangeBrowsingDirectory(std::filesystem::path directory);
 private:
 	void DrawProjectFolders();
+	void DrawAssetActions();
 	void DrawAssets();
 	void MaterialBasePopupOptions(const std::filesystem::path& filepath);
 	void* GetFileIcon(const std::filesystem::path& extension);
@@ -34,4 +36,6 @@ private:
 	IcePick::EngineAPI m_EngineAPI;
 	std::filesystem::path m_CurrentBrowsingPath;
 	std::filesystem::path m_ProjectDirectory;
+
+	ImGuiTextFilter m_AssetNameFilter;
 };

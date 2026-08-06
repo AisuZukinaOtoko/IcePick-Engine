@@ -24,7 +24,7 @@ void IcePick::EditorLayer::OnAttach() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
 #ifdef _WIN64
@@ -32,28 +32,9 @@ void IcePick::EditorLayer::OnAttach() {
 #endif
     io.Fonts->AddFontDefault();
 
-    ImFontConfig config;
-    config.MergeMode = true;
-    config.PixelSnapH = true;
-
     ImGui::StyleColorsDark();
     m_Styles.Init(m_EngineAPI);
     m_AssetBrowser.Init(m_EngineAPI, m_Styles);
-
-    std::filesystem::path fontPath = "Engine Editor/res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
-    std::filesystem::path iconFontPath = "Engine Editor/res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";
-    m_EditorFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 18.0f);
-
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-
-    io.Fonts->AddFontFromFileTTF(
-        iconFontPath.string().c_str(), 18.0f,
-        &config, icon_ranges
-    );
-
-    io.Fonts->Build();
-    if (!m_EditorFont)
-        IP_LOG("Failed to load editor font: " + fontPath.string(), IP_WARN_LOG);
 
     GLFWwindow* window = IcePickRenderer::GetRendererWindow();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -98,7 +79,7 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     ImGuizmo::BeginFrame();
 
     IP_CORE_PROFILE_BEGIN("Editor layer");
-    ImGui::PushFont(m_EditorFont);
+    ImGui::PushFont(m_Styles.GetLargeFont());
     ImGuiViewport* mainViewPort = ImGui::GetMainViewport();
     ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
     ImGui::DockSpaceOverViewport(dockspace_id, mainViewPort, ImGuiDockNodeFlags_PassthruCentralNode);

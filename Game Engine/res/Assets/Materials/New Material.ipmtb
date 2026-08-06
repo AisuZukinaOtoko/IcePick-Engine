@@ -1,0 +1,13 @@
+{
+    "Id": 13858199636284751088,
+    "floatParameters": [],
+    "graphId": 0,
+    "shaderGraph": [],
+    "shaderId": 14599761243143193514,
+    "shaderSource": {
+        "fragment": "",
+        "vertex": ""
+    },
+    "textureParameters": [],
+    "version": 1
+}

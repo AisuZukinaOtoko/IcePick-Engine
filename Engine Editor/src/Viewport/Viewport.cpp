@@ -10,6 +10,7 @@
 #include "Scene Systems/SceneCamera.h"
 #include "Physics Systems/ColliderShapes.h"
 #include "Animation Systems/Skeleton.h"
+#include "File Systems/AssetTypes.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -202,7 +203,7 @@ void Viewport::Render(unsigned int renderTexture) {
 	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload("MATERIAL_INSTANCE_ASSET")) {
+		if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
 			DropMaterialIntoViewport();
 		}
 		ImGui::EndDragDropTarget();

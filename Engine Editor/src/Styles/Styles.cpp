@@ -1,6 +1,7 @@
 #include "Utilities/Assert.h"
+#include "LogSystem.h"
 #include "Styles.h"
-#include <imgui-docking/imgui.h>
+#include <IconsFontAwesome7.h>
 
 void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_GENERIC_FILE] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/file_icon.png");
@@ -43,6 +44,43 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	style.Colors[ImGuiCol_TabDimmedSelectedOverline] = ImColor(0, 140, 140, 0);
 	style.Colors[ImGuiCol_DockingPreview] = ImColor(0, 200, 200, 255);
 	style.Colors[ImGuiCol_DragDropTarget] = ImColor(0, 255, 255, 255);
+
+	const float largeFontSize = 18.0f;
+	const float smallFontSize = 13.0f;
+	
+	ImGuiIO& io = ImGui::GetIO();
+	std::filesystem::path fontPath = "Engine Editor/res/Fonts/freesans-font/FreeSans-LrmZ.ttf";
+	std::filesystem::path iconFontPath = "Engine Editor/res/Fonts/fontawesome-free-7.2.0-desktop/otfs/Font Awesome 7 Free-Solid-900.otf";
+	static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	
+	// Large Font
+	ImFontConfig largeFontConfig;
+	largeFontConfig.PixelSnapH = true;
+	largeFontConfig.MergeMode = true;
+	m_LargeFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), largeFontSize);
+	largeFontConfig.GlyphOffset.y = 1.0f;
+	io.Fonts->AddFontFromFileTTF(
+		iconFontPath.string().c_str(), largeFontSize,
+		&largeFontConfig, iconRanges
+	);
+
+	// Small Font
+	ImFontConfig smallFontConfig;
+	smallFontConfig.PixelSnapH = true;
+	smallFontConfig.MergeMode = true;
+	m_SmallFont = io.Fonts->AddFontFromFileTTF(fontPath.string().c_str(), smallFontSize);
+	smallFontConfig.GlyphOffset.y = 1.0f;
+	io.Fonts->AddFontFromFileTTF(
+		iconFontPath.string().c_str(), smallFontSize,
+		&smallFontConfig, iconRanges
+	);
+
+	io.Fonts->Build();
+	if (!m_LargeFont)
+		IP_LOG("Failed to load large editor font: " + fontPath.string(), IP_WARN_LOG);
+
+	if (!m_SmallFont)
+		IP_LOG("Failed to load small editor font: " + fontPath.string(), IP_WARN_LOG);
 }
 
 unsigned int Styles::GetIconTexture(Icon icon) const {
