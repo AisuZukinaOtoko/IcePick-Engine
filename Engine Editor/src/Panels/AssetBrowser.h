@@ -20,8 +20,10 @@ private:
 	void DrawAssetActions();
 	void DrawAssets();
 	void MaterialBasePopupOptions(const std::filesystem::path& filepath);
+	void NewAssetOptions();
 	void* GetFileIcon(const std::filesystem::path& extension);
 
+	void HandleDeleteAsset(std::filesystem::path assetPath);
 	void HandleMoveAssetToDirectory(std::filesystem::path destinationDirectory);
 	void HandleAssetDoubleClick(std::filesystem::path assetPath, IcePick::AssetTypes assetType);
 

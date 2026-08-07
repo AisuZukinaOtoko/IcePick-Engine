@@ -35,72 +35,6 @@ void AssetBrowser::Render() {
     IP_CORE_PROFILE_BEGIN("Asset browser render");
 	ImGui::Begin(m_Title);
 
-    if (ImGui::BeginPopup("NEW_ASSET")) {
-        bool closeMainPopUp = false;
-        ImGui::Text("Select an Asset Type.");
-        if (ImGui::Button("Material Base")) {                                                       
-            ImGui::OpenPopup("Create Base Material");     
-        }
-
-        if (ImGui::Button("Script")) {
-            ImGui::OpenPopup("Create New Script");
-        }
-
-        if (ImGui::BeginPopupModal("Create Base Material")) {
-            ImGui::InputText("File name (.ipmtb)", TextInputBuffer, sizeof(TextInputBuffer));
-
-            if (ImGui::Button("Save", ImVec2(120, 0))) {
-                IcePick::MaterialBase newMaterialBase;
-                newMaterialBase.ShaderId = IcePick::UUID{};
-                IcePick::ShaderSource newMaterialShaderSource;
-                Graph newMaterialShaderGraph;
-
-                std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
-                std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
-                SerializeMaterialBase(newMaterialBasePath, newMaterialBase, newMaterialShaderGraph, newMaterialShaderSource);
-
-                ClearTextInputBuffer();
-                ImGui::CloseCurrentPopup();
-                closeMainPopUp = true;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-                ClearTextInputBuffer();
-                ImGui::CloseCurrentPopup();
-                closeMainPopUp = true;
-            }
-            ImGui::EndPopup();
-        }
-
-        if (ImGui::BeginPopupModal("Create New Script")) {
-            ImGui::InputText("File name (.lua)", TextInputBuffer, sizeof(TextInputBuffer));
-
-            if (ImGui::Button("Save", ImVec2(120, 0))) {
-
-                std::string fileName = std::string(TextInputBuffer) + ".lua";
-                std::filesystem::path newScriptPath = m_CurrentBrowsingPath / fileName;
-                CreateNewScriptTemplate(newScriptPath);
-
-                ClearTextInputBuffer();
-                ImGui::CloseCurrentPopup();
-                closeMainPopUp = true;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-                ClearTextInputBuffer();
-                ImGui::CloseCurrentPopup();
-                closeMainPopUp = true;
-            }
-            ImGui::EndPopup();
-        }
-
-        if (closeMainPopUp) {
-            ImGui::CloseCurrentPopup();
-        }
-        
-        ImGui::EndPopup();
-    }
-
     ImGui::Separator();
 
     ImVec2 panelSize= ImGui::GetContentRegionAvail();
@@ -129,7 +63,6 @@ void AssetBrowser::DrawProjectFolderRecursive(const std::filesystem::path& curre
         ImGuiTreeNodeFlags isSelectedFlag = (directoryEntry == m_CurrentBrowsingPath) ? ImGuiTreeNodeFlags_Selected : 0;
         ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | isSelectedFlag;
         bool nodeOpen = ImGui::TreeNodeEx(directoryEntry.path().string().c_str(), treeNodeFlags, "");
-        //bool nodeOpen = ImGui::TreeNodeEx(directoryEntry.path().string().c_str(), treeNodeFlags, "%s %s", ICON_FA_FOLDER, directoryEntry.path().stem().string().c_str());
 
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType))) {
@@ -173,6 +106,7 @@ void AssetBrowser::DrawAssetActions() {
     if (ImGui::Button("New")) {
         ImGui::OpenPopup("NEW_ASSET");
     }
+    NewAssetOptions();
 
     ImGui::SameLine();
     ImGui::TextUnformatted(ICON_FA_MAGNIFYING_GLASS);
@@ -180,10 +114,13 @@ void AssetBrowser::DrawAssetActions() {
     ImGui::TextUnformatted("Search");
     ImGui::SameLine();
     m_AssetNameFilter.Draw("##Search", 200.0f);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     ImGui::SameLine();
     if (ImGui::Button(ICON_FA_CIRCLE_XMARK)) {
         m_AssetNameFilter.Clear();
     }
+    ImGui::PopStyleVar();
 
     const auto& relativeBrowsingPath = std::filesystem::relative(std::filesystem::canonical(m_CurrentBrowsingPath), m_ProjectDirectory);
     std::filesystem::path breadCrumbPath;
@@ -293,9 +230,11 @@ void AssetBrowser::DrawAssets() {
                     ImTextureID thumbnail = GetFileIcon(fileExtension);
 
                     if (fileExtension == ".iptex") {
-                        std::filesystem::path fullAssetPath = std::filesystem::canonical(directoryEntry.path());
-                        IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(fullAssetPath);
+                        IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(directoryEntry.path());
                         thumbnail = (void*)m_EngineAPI.GetTextureRenderId(textureId);
+                    }
+                    else if (fileExtension == ".ipmtb") {
+                        m_EngineAPI.LoadMaterialBaseFromAsset(directoryEntry.path());
                     }
 
                     draw_list->AddRectFilled(assetCardTopLeft, assetCardBottomRight, IM_COL32(60, 60, 60, 255), assetCardRounding, ImDrawFlags_RoundCornersAll);
@@ -341,6 +280,24 @@ void AssetBrowser::DrawAssets() {
                     if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                         HandleAssetDoubleClick(directoryEntry.path(), IcePick::GetAssetTypeFromExtension(fileExtension.string()));
                     }
+
+                    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                        ImGui::OpenPopup("GENERIC_FILE_POPUP");
+                    }
+
+                    if (ImGui::BeginPopup("GENERIC_FILE_POPUP")) {
+                        if (fileExtension == ".ipmtb") {
+                            MaterialBasePopupOptions(directoryEntry.path());
+                        }
+
+                        ImVec2 popupSize = ImGui::GetContentRegionAvail();
+                        if (ImGui::Button("Delete", ImVec2(popupSize.x, 0.0f))) {
+                            HandleDeleteAsset(directoryEntry.path());                            
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        ImGui::EndPopup();
+                    }
                     directoryEntryIndex++;
                 }
             }
@@ -349,6 +306,14 @@ void AssetBrowser::DrawAssets() {
         }
 
         ImGui::EndChild();
+    }
+}
+
+void AssetBrowser::HandleDeleteAsset(std::filesystem::path assetPath) {
+    std::error_code error;
+    std::filesystem::remove(assetPath, error);
+    if (error) {
+        IP_LOG(error.message(), IP_ERROR_LOG);
     }
 }
 
@@ -375,11 +340,12 @@ void AssetBrowser::HandleAssetDoubleClick(std::filesystem::path assetPath, IcePi
 }
 
 void AssetBrowser::MaterialBasePopupOptions(const std::filesystem::path& filepath) {
-    if (ImGui::Button("Edit material base")) {
+    ImVec2 popupSize = ImGui::GetContentRegionAvail();
+    if (ImGui::Button("Edit material base", ImVec2(popupSize.x, 0.0f))) {
         EditMaterialCallback(filepath);
     }
 
-    if (ImGui::Button("Create material instance")) {
+    if (ImGui::Button("Create material instance", ImVec2(popupSize.x, 0.0f))) {
         ImGui::OpenPopup("Create Material Instance");
         ClearTextInputBuffer();
     }
@@ -404,6 +370,76 @@ void AssetBrowser::MaterialBasePopupOptions(const std::filesystem::path& filepat
             ClearTextInputBuffer();
             ImGui::CloseCurrentPopup();
         }
+        ImGui::EndPopup();
+    }
+}
+
+void AssetBrowser::NewAssetOptions() {
+    if (ImGui::BeginPopup("NEW_ASSET")) {
+        bool closeMainPopUp = false;
+        ImGui::Text("Select an Asset Type.");
+        ImVec2 popupSize = ImGui::GetContentRegionAvail();
+
+        if (ImGui::Button("Material Base", ImVec2(popupSize.x, 0.0f))) {
+            ImGui::OpenPopup("Create Base Material");
+        }
+
+        if (ImGui::Button("Script", ImVec2(popupSize.x, 0.0f))) {
+            ImGui::OpenPopup("Create New Script");
+        }
+
+        if (ImGui::BeginPopupModal("Create Base Material")) {
+            ImGui::InputText("File name (.ipmtb)", TextInputBuffer, sizeof(TextInputBuffer));
+
+            if (ImGui::Button("Save", ImVec2(120, 0))) {
+                IcePick::MaterialBase newMaterialBase;
+                newMaterialBase.ShaderId = IcePick::UUID{};
+                IcePick::ShaderSource newMaterialShaderSource;
+                Graph newMaterialShaderGraph;
+
+                std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
+                std::filesystem::path newMaterialBasePath = m_CurrentBrowsingPath / fileName;
+                SerializeMaterialBase(newMaterialBasePath, newMaterialBase, newMaterialShaderGraph, newMaterialShaderSource);
+
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (ImGui::BeginPopupModal("Create New Script")) {
+            ImGui::InputText("File name (.lua)", TextInputBuffer, sizeof(TextInputBuffer));
+
+            if (ImGui::Button("Save", ImVec2(120, 0))) {
+
+                std::string fileName = std::string(TextInputBuffer) + ".lua";
+                std::filesystem::path newScriptPath = m_CurrentBrowsingPath / fileName;
+                CreateNewScriptTemplate(newScriptPath);
+
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (closeMainPopUp) {
+            ImGui::CloseCurrentPopup();
+        }
+
         ImGui::EndPopup();
     }
 }

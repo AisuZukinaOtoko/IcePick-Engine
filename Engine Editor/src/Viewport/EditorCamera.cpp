@@ -13,6 +13,7 @@ EditorCamera::EditorCamera() {
     pitch = 35.0f;
     aspectRatio = 1920.0f / 1080.0f;
     cameraFOV = glm::radians(45.0f);
+    moveSensitivity = 0.5f;
 }
 
 glm::mat4 EditorCamera::GetViewProjectionMatrix() {
