@@ -13,13 +13,14 @@ namespace IcePick {
 	class MaterialLoader;
 	class ShaderLoader;
 	class TextureLoader;
+	class AnimationLoader;
 	struct ImportSettings;
 
 	class MeshLoader {
 	public:
 		MeshLoader();
 		void Init(ShaderLoader& shaderLoader);
-		MeshRendererComponent ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, const ImportSettings& importSettings);
+		MeshRendererComponent ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, AnimationLoader& animationLoader, const ImportSettings& importSettings);
 		MeshRendererComponent LoadMeshAsset(std::filesystem::path assetPath);
 
 		IcePickRenderer::StaticMeshData& GetStaticMeshById(UUID staticMeshId);

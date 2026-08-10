@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Animation Systems\AnimationLoader.cpp" />
     <ClCompile Include="src\Animation Systems\Animator.cpp" />
     <ClCompile Include="src\Animation Systems\Skeleton.cpp" />
     <ClCompile Include="src\Event Systems\EventHandler.cpp" />
@@ -209,6 +210,7 @@
     <None Include="res\Textures\black_fabric_rough.iptex" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Animation Systems\AnimationLoader.h" />
     <ClInclude Include="src\Animation Systems\Animator.h" />
     <ClInclude Include="src\Animation Systems\Bone.h" />
     <ClInclude Include="src\Animation Systems\Skeleton.h" />

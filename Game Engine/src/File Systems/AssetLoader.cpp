@@ -190,7 +190,7 @@ void IcePick::AssetLoader::LoadModelMeshData(const aiScene* scene, std::vector<u
 }
 
 IcePick::MeshRendererComponent IcePick::AssetLoader::LoadMesh(std::filesystem::path filePath, IcePick::ImportSettings importSettings) {
-	return m_MeshLoader.ImportMesh(filePath, m_MaterialLoader, m_TextureLoader, importSettings);
+	return m_MeshLoader.ImportMesh(filePath, m_MaterialLoader, m_TextureLoader, m_AnimationLoader, importSettings);
 	//MeshRendererComponent returnMeshRendererComponent;
 
 	//if (m_loadedAssetPathToMeshRenderer.find(filePath) != m_loadedAssetPathToMeshRenderer.end()) {

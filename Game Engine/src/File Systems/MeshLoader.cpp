@@ -9,6 +9,8 @@
 #include "../File Systems/MaterialLoader.h"
 #include "../File Systems/ShaderLoader.h"
 #include "../Scene Systems/Components.h"
+#include "../Animation Systems/AnimationLoader.h"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -16,6 +18,8 @@
 #include <fstream>
 #include <filesystem>
 #include "../LogSystem.h"
+
+#include <glm/gtx/string_cast.hpp>
 
 constexpr unsigned int MESH_ASSET_VERSION = 1;
 
@@ -97,7 +101,7 @@ namespace IcePick {
 		return m_DefaultEmptySkeleton;
 	}
 
-	MeshRendererComponent MeshLoader::ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, const ImportSettings& importSettings) {
+	MeshRendererComponent MeshLoader::ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, AnimationLoader& animationLoader, const ImportSettings& importSettings) {
 		MeshRendererComponent returnMeshRendererComponent;
 
 		if (m_LoadedPathToMeshRenderer.find(filePath) != m_LoadedPathToMeshRenderer.end()) {
@@ -129,8 +133,12 @@ namespace IcePick {
 
 		if (importSettings.LoadSkeleton) {
 			sceneSkeleton.RootBone.NodeName = "Skeleton";
+			sceneSkeleton.Nodes.push_back(SkeletonNode{ "Skeleton", glm::mat4(1.0f), -1, -1 });
+			sceneSkeleton.NodeGlobalTransforms.emplace_back(1.0f);
+			//sceneSkeleton.InverseGlobalRootTransform = glm::inverse(AssimpMatrixToGlmMatrix(scene->mRootNode->mTransformation));
+			IP_LOG(glm::to_string(sceneSkeleton.InverseGlobalRootTransform));
+			IP_LOG("------------------------");
 			ParseImportSkeletonHierarchy(scene->mRootNode, sceneSkeleton.RootBone, sceneSkeleton);
-			sceneSkeleton.InverseGlobalRootTransform = glm::inverse(AssimpMatrixToGlmMatrix(scene->mRootNode->mTransformation));
 		}
 
 		switch (importSettings.LoadMeshAs) {
@@ -300,6 +308,7 @@ namespace IcePick {
 
 	void MeshLoader::ParseImportSkeletonHierarchy(const aiNode* sceneNode, SkeletonNodeHierarchy& skeletonNodeHierarchy, Skeleton& skeleton) {
 		SkeletonNodeHierarchy currentNode;
+		SkeletonNode skeletonNode;
 
 		bool nodeIsBone = skeleton.BoneExists(sceneNode->mName.C_Str());
 		if (nodeIsBone) {
@@ -313,6 +322,18 @@ namespace IcePick {
 			skeleton.BoneLocalTransforms.push_back(AssimpMatrixToGlmMatrix(sceneNode->mTransformation));
 		}
 
+		// Flat Array
+		currentNode.NodeIndex = skeleton.Nodes.size();
+		skeletonNode.NodeName = sceneNode->mName.C_Str();
+		skeletonNode.LocalTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
+		skeletonNode.ParentNodeIndex = skeletonNodeHierarchy.NodeIndex;
+		skeletonNode.BoneIndex = currentNode.BoneIndex;
+		IP_LOG(glm::to_string(skeletonNode.LocalTransform));
+
+		skeleton.Nodes.push_back(skeletonNode);
+		skeleton.NodeGlobalTransforms.emplace_back(1.0f);
+
+		// Editor Tree
 		currentNode.NodeName = sceneNode->mName.C_Str();
 		skeletonNodeHierarchy.Children.push_back(currentNode);
 		skeleton.BoneParentTransforms.emplace_back(1.0f);

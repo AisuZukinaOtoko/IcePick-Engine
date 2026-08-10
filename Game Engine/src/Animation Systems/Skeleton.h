@@ -7,11 +7,27 @@
 #include <string>
 
 namespace IcePick {
+	//struct SkeletonNodeHierarchy {
+	//	int BoneIndex = -1;
+	//	unsigned int BoneLocalTransformIndex = 0;
+	//	std::string NodeName;
+	//	std::vector<SkeletonNodeHierarchy> Children;
+	//};
+
 	struct SkeletonNodeHierarchy {
 		int BoneIndex = -1;
 		unsigned int BoneLocalTransformIndex = 0;
+
+		int NodeIndex = -1;
 		std::string NodeName;
 		std::vector<SkeletonNodeHierarchy> Children;
+	};
+
+	struct SkeletonNode {
+		std::string NodeName;
+		glm::mat4 LocalTransform;
+		int BoneIndex = -1;
+		int ParentNodeIndex = -1;
 	};
 
 	class Skeleton {
@@ -28,6 +44,8 @@ namespace IcePick {
 		std::vector<glm::mat4> BoneLocalTransforms;
 		std::vector<glm::mat4> BoneParentTransforms;
 
+		std::vector<SkeletonNode> Nodes;
+		std::vector<glm::mat4> NodeGlobalTransforms;
 	private:
 		bool m_DataBaked = false;
 		std::vector<Bone> m_Bones;

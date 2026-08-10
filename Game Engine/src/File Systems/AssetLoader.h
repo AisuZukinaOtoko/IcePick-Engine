@@ -3,6 +3,7 @@
 #include "MaterialLoader.h"
 #include "ShaderLoader.h"
 #include "MeshLoader.h"
+#include "../Animation Systems/AnimationLoader.h"
 #include <filesystem>
 #include <unordered_map>
 #include <unordered_set>
@@ -59,6 +60,7 @@ namespace IcePick {
 		MaterialLoader m_MaterialLoader;
 		ShaderLoader m_ShaderLoader;
 		MeshLoader m_MeshLoader;
+		AnimationLoader m_AnimationLoader;
 		std::unordered_set<unsigned int> m_LoadedMaterialIndices;
 
 		unsigned int m_RunningIndices[INDEX_COUNT];

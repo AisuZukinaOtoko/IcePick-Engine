@@ -1,0 +1,13 @@
+{
+    "Id": 2403583143543353122,
+    "baseId": 3542757993025585701,
+    "floatParameters": [],
+    "textureParameters": [
+        {
+            "Id": 3757677905593968449,
+            "baseDataId": 16001100580342710366,
+            "textureId": 0
+        }
+    ],
+    "version": 1
+}

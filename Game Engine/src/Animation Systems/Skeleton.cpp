@@ -43,6 +43,12 @@ namespace IcePick {
 			m_BoneTransforms[i] = m_Bones[i].FinalTransform;
 		}
 
+		//for (size_t i = 0; i < Nodes.size(); i++) {
+		//	if (Nodes[i].BoneIndex != -1) {
+		//		m_BoneTransforms[Nodes[i].BoneIndex] = NodeGlobalTransforms[i];
+		//	}
+		//}
+
 		Use();
 		m_InternalBonesBuffer.UploadData<glm::mat4>(m_BoneTransforms);
 	}

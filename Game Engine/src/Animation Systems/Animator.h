@@ -9,6 +9,6 @@ namespace IcePick {
 	public:
 		void CalculateSkeletonTransforms(Skeleton& skeleton);
 	private:
-		void CalculateBoneTransformRecursive(SkeletonNodeHierarchy& skeletonNode, Skeleton& skeleton, const glm::mat4& parentBoneTransform);
+		void CalculateBoneTransformRecursive(Skeleton& skeleton);
 	};
 }

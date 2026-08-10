@@ -343,10 +343,11 @@ void Viewport::RenderSkeletonGizmos() {
 	IcePickRenderer::SkinnedMeshData meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
 	IcePick::Skeleton& skeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
 
-	uint64_t boneIndex = static_cast<uint64_t>(m_SelectionContext.SelectionData);
+	uint64_t nodeIndex = static_cast<uint64_t>(m_SelectionContext.SelectionData);
 
-	glm::mat4& boneLocalTransform = skeleton.BoneLocalTransforms[boneIndex];
-	glm::mat4& boneParentMatrix = skeleton.BoneParentTransforms[boneIndex];
+	IcePick::SkeletonNode& node = skeleton.Nodes[nodeIndex];
+	glm::mat4& boneLocalTransform = node.LocalTransform;
+	glm::mat4& boneParentMatrix = skeleton.NodeGlobalTransforms[node.ParentNodeIndex];
 	glm::mat4 inverseParentMatrix = glm::inverse(boneParentMatrix);
 	glm::mat4 inverseEntityTransform = glm::inverse(entityTransformMatrix);
 	glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * boneParentMatrix * boneLocalTransform;

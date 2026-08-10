@@ -192,7 +192,7 @@ void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHie
 		if (ImGui::IsItemClicked() && isBone) {
 			m_SelectionContext.SelectionType = SelectionContext::Type::BONE;
 			m_SelectionContext.SelectionId = static_cast<uint64_t>(entityId);
-			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.BoneLocalTransformIndex);
+			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.NodeIndex);
 			m_SelectionContextChanged = true;
 		}
 	}

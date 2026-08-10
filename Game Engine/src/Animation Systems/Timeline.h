@@ -1,23 +1,44 @@
 #pragma once
 #include <vector>
+#include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <entt/entt.h>
+#include "../Scene Systems/UUID.h"
 
 namespace IcePick {
 
-	template<typename T>
+	template<typename Type>
 	struct KeyFrame {
-		T Value;
-
+		Type Value;
+		float KeyTime{ 0.0f };
 	};
 
-	struct TimelineChannel {
-		
+	template<typename KeyType>
+	struct GenericTimelineChannel {
+		uint64_t TargetId{ 0 };
+		uint64_t TargetData{ 0 };
+		std::vector<KeyFrame<KeyType>> ChannelKeys;
 	};
 
-	class Timeline {
-	public:
-		Timeline();
+	struct SkeletonPose {
+		std::vector<glm::mat4> NodeLocalTransforms;
+	};
 
-	private:
+	struct EntityTransformChannel {
+		uint32_t EntityId;
+		std::vector<KeyFrame<glm::vec3>> PositionKeys;
+		std::vector<KeyFrame<glm::quat>> RotationKeys;
+		std::vector<KeyFrame<glm::vec3>> ScaleKeys;
+	};
 
+	struct SkeletonPoseChannel {
+		UUID SkeletonId;
+		std::vector<KeyFrame<SkeletonPose>> SkeletalPoseKeys;
+	};
+
+	struct Timeline {
+		std::vector<EntityTransformChannel> EntityTransformChannels;
+		std::vector<SkeletonPoseChannel> SkeletonPoseChannels;
 	};
 }

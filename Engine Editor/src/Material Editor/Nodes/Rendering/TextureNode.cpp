@@ -1,4 +1,5 @@
 #include "TextureNode.h"
+#include "Public/EngineAPI.h"
 #include "File Systems/AssetTypes.h"
 
 TextureNode::TextureNode(IcePick::UUID textureId) {
@@ -17,7 +18,7 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 	NodeHeaderColour = ImU32(0xFF917410);
 }
 
-void TextureNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
+void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 	float nodeMinHeight = renderInfo.PinYSpacing * std::min(InputPins.size(), OutputPins.size()) + 1 + renderInfo.PinRadius + renderInfo.LabelPadding;

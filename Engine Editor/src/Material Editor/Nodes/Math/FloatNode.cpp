@@ -1,4 +1,5 @@
 #include "FloatNode.h"
+#include "Public/EngineAPI.h"
 
 FloatNode::FloatNode() {
 	OutputPins.emplace_back(Pin::FLOAT32, "Value", "");
@@ -8,7 +9,7 @@ FloatNode::FloatNode() {
 	m_NodeType = "float";
 }
 
-void FloatNode::CustomRendering(IcePick::EngineAPI engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
+void FloatNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
 	if (nodeIsParameter)
 		return;
 
