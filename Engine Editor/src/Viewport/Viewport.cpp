@@ -346,11 +346,11 @@ void Viewport::RenderSkeletonGizmos() {
 	uint64_t nodeIndex = static_cast<uint64_t>(m_SelectionContext.SelectionData);
 
 	IcePick::SkeletonNode& node = skeleton.Nodes[nodeIndex];
-	glm::mat4& boneLocalTransform = node.LocalTransform;
-	glm::mat4& boneParentMatrix = skeleton.NodeGlobalTransforms[node.ParentNodeIndex];
-	glm::mat4 inverseParentMatrix = glm::inverse(boneParentMatrix);
+	glm::mat4& nodeLocalTransform = node.LocalTransform;
+	glm::mat4& nodeParentMatrix = skeleton.NodeGlobalTransforms[node.ParentNodeIndex];
+	glm::mat4 inverseParentMatrix = glm::inverse(nodeParentMatrix);
 	glm::mat4 inverseEntityTransform = glm::inverse(entityTransformMatrix);
-	glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * boneParentMatrix * boneLocalTransform;
+	glm::mat4 gizmoMatrix = entityTransformMatrix * skeleton.InverseGlobalRootTransform * nodeParentMatrix * nodeLocalTransform;
 
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
@@ -373,7 +373,7 @@ void Viewport::RenderSkeletonGizmos() {
 	}
 
 	glm::mat4 globalRootTransform = glm::inverse(skeleton.InverseGlobalRootTransform);
-	boneLocalTransform = inverseParentMatrix * globalRootTransform * inverseEntityTransform * gizmoMatrix;
+	nodeLocalTransform = inverseParentMatrix * globalRootTransform * inverseEntityTransform * gizmoMatrix;
 }
 
 void Viewport::RenderRigidBodyDebugColliders() {

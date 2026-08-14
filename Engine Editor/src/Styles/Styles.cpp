@@ -13,10 +13,14 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_MATERIAL_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/material_icon.png");
 	m_IconTextures[ICON_SCRIPT_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/lua_icon.png");
 	ImGuiStyle& style = ImGui::GetStyle();
-	style.Colors[ImGuiCol_WindowBg] = ImColor(22, 22, 22, 255);
-	style.Colors[ImGuiCol_ChildBg] = ImColor(22, 22, 22, 255);
-	style.Colors[ImGuiCol_PopupBg] = ImColor(22, 22, 22, 255);
-	style.Colors[ImGuiCol_FrameBg] = ImColor(110, 110, 110, 255);
+	style.Colors[ImGuiCol_WindowBg] = ImColor(45, 45, 45, 255);
+	//style.Colors[ImGuiCol_Border] = ImColor(200, 200, 200, 0);
+	//style.Colors[ImGuiCol_WindowBg] = ImColor(22, 22, 22, 255);
+	style.Colors[ImGuiCol_ChildBg] = ImColor(45, 45, 45, 255);
+	//style.Colors[ImGuiCol_ChildBg] = ImColor(22, 22, 22, 255);
+	style.Colors[ImGuiCol_PopupBg] = ImColor(45, 45, 45, 255);
+	style.Colors[ImGuiCol_FrameBg] = ImColor(15, 15, 15, 255);
+	//style.Colors[ImGuiCol_FrameBg] = ImColor(110, 110, 110, 255);
 	style.Colors[ImGuiCol_FrameBgHovered] = ImColor(100, 100, 100, 255);
 	style.Colors[ImGuiCol_FrameBgActive] = ImColor(80, 80, 80, 255);
 	style.Colors[ImGuiCol_TitleBgActive] = ImColor(0, 0, 0, 255);
@@ -38,10 +42,10 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	style.Colors[ImGuiCol_Tab] = ImColor(110, 110, 110, 255);
 	style.Colors[ImGuiCol_TabHovered] = ImColor(150, 150, 150, 255);
 	style.Colors[ImGuiCol_TabSelected] = ImColor(0, 140, 140, 255);
-	style.Colors[ImGuiCol_TabSelectedOverline] = ImColor(0, 0, 0, 0);
+	style.Colors[ImGuiCol_TabSelectedOverline] = ImColor(0, 140, 140, 255);
 	style.Colors[ImGuiCol_TabDimmed] = ImColor(40, 40, 40, 255);
 	style.Colors[ImGuiCol_TabDimmedSelected] = ImColor(0, 140, 140, 255);
-	style.Colors[ImGuiCol_TabDimmedSelectedOverline] = ImColor(0, 140, 140, 0);
+	style.Colors[ImGuiCol_TabDimmedSelectedOverline] = ImColor(0, 140, 140, 255);
 	style.Colors[ImGuiCol_DockingPreview] = ImColor(0, 200, 200, 255);
 	style.Colors[ImGuiCol_DragDropTarget] = ImColor(0, 255, 255, 255);
 

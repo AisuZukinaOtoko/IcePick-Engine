@@ -150,7 +150,7 @@ void AssetBrowser::DrawAssets() {
 
         // Configuration
         const float thumbnailSize = 110.0f;
-        const float thumbnailPadding = 2.0f;
+        const float thumbnailPadding = 1.0f;
         const float cellPadding = 15.0f;
         const float cellWidth = thumbnailSize + cellPadding + thumbnailPadding;
 
@@ -159,7 +159,7 @@ void AssetBrowser::DrawAssets() {
         if (columnCount < 1)
             columnCount = 1;
 
-        float textPadding = thumbnailPadding;
+        float textPadding = thumbnailPadding + 1.0f;
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
@@ -237,7 +237,7 @@ void AssetBrowser::DrawAssets() {
                         m_EngineAPI.LoadMaterialBaseFromAsset(directoryEntry.path());
                     }
 
-                    draw_list->AddRectFilled(assetCardTopLeft, assetCardBottomRight, IM_COL32(60, 60, 60, 255), assetCardRounding, ImDrawFlags_RoundCornersAll);
+                    draw_list->AddRectFilled(assetCardTopLeft, assetCardBottomRight, IM_COL32(80, 80, 80, 255), assetCardRounding, ImDrawFlags_RoundCornersAll);
                     draw_list->AddRectFilled(thumbnailTopLeft, thumbnailBottomRight, IM_COL32(10, 10, 10, 255), assetCardRounding, ImDrawFlags_RoundCornersNone);
                     draw_list->AddImage(thumbnail, thumbnailTopLeft, thumbnailBottomRight, ImVec2(0, 1), ImVec2(1, 0));
 
@@ -254,7 +254,7 @@ void AssetBrowser::DrawAssets() {
                     ImVec2 fileTypeTextPosition{ assetCardBottomRight.x - textPadding - fileTypeTextSize.x, assetCardBottomRight.y - textPadding - fileTypeTextSize.y };
                     ImGui::SetCursorScreenPos(fileTypeTextPosition);
 
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
                     ImGui::Text(fileType.c_str());
                     ImGui::PopStyleColor();
                     ImGui::PopFont();

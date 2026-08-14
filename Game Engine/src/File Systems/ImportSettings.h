@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <filesystem>
 
 namespace IcePick {
 	struct ImportSettings {
-		std::string ImportName;
+		std::string ImportAssetName;
+		std::filesystem::path ImportTargetLocation;
 		enum class MeshType {
 			STATIC_MESH = 0,
 			SKELETAL_MESH

@@ -136,8 +136,6 @@ namespace IcePick {
 			sceneSkeleton.Nodes.push_back(SkeletonNode{ "Skeleton", glm::mat4(1.0f), -1, -1 });
 			sceneSkeleton.NodeGlobalTransforms.emplace_back(1.0f);
 			//sceneSkeleton.InverseGlobalRootTransform = glm::inverse(AssimpMatrixToGlmMatrix(scene->mRootNode->mTransformation));
-			IP_LOG(glm::to_string(sceneSkeleton.InverseGlobalRootTransform));
-			IP_LOG("------------------------");
 			ParseImportSkeletonHierarchy(scene->mRootNode, sceneSkeleton.RootBone, sceneSkeleton);
 		}
 
@@ -162,6 +160,8 @@ namespace IcePick {
 		}
 		returnMeshRendererComponent.MeshType = importSettings.LoadMeshAs;
 		returnMeshRendererComponent.MeshCount = scene->mNumMeshes;
+
+		animationLoader.ImportAnimationsFromScene(scene, importSettings);
 
 		materialLoader.CleanUpAfterLoad();
 		textureLoader.CleanUpAfterLoad();
@@ -328,7 +328,6 @@ namespace IcePick {
 		skeletonNode.LocalTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
 		skeletonNode.ParentNodeIndex = skeletonNodeHierarchy.NodeIndex;
 		skeletonNode.BoneIndex = currentNode.BoneIndex;
-		IP_LOG(glm::to_string(skeletonNode.LocalTransform));
 
 		skeleton.Nodes.push_back(skeletonNode);
 		skeleton.NodeGlobalTransforms.emplace_back(1.0f);

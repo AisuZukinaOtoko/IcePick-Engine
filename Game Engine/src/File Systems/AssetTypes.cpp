@@ -30,6 +30,9 @@ namespace IcePick {
 		AssetTypeStrings[AssetTypes::SCRIPT_ASSET] = "SCRIPT";
 		AssetTypeExtensions[AssetTypes::SCRIPT_ASSET] = ".lua";
 
+		AssetTypeStrings[AssetTypes::ANIMATION] = "ANIMATION";
+		AssetTypeExtensions[AssetTypes::ANIMATION] = ".anim";
+
 		AssetTypeStrings[AssetTypes::INVALID_ASSET] = "INVALID ASSET";
 		AssetTypeExtensions[AssetTypes::INVALID_ASSET] = ".asset";
 	}
@@ -37,6 +40,11 @@ namespace IcePick {
 	const char* GetAssetTypeString(AssetTypes assetType) {
 		IP_ASSERT((assetType >= 0) && (assetType < AssetTypes::ASSET_TYPE_COUNT), "Invalid asset type.");
 		return AssetTypeStrings[assetType];
+	}
+
+	const char* GetAssetTypeExtension(AssetTypes assetType) {
+		IP_ASSERT((assetType >= 0) && (assetType < AssetTypes::ASSET_TYPE_COUNT), "Invalid asset type.");
+		return AssetTypeExtensions[assetType];
 	}
 
 	AssetTypes GetAssetTypeFromExtension(std::string extension) {

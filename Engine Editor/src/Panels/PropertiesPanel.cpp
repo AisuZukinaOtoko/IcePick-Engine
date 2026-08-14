@@ -447,7 +447,7 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::STATIC_MESH))) {
                 //meshRenderer.MeshFilePath = m_DropAssetPath;
                 //meshRenderer.MeshLoaded = false;
-                m_MeshImportPopup.OpenPopup();
+                m_MeshImportPopup.OpenPopup(m_DropAssetPath);
             }
             ImGui::EndDragDropTarget();
         }

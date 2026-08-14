@@ -1,6 +1,7 @@
 #include "ScenePanel.h"
 #include "Render Systems/Mesh.h"
 #include "Scene Systems/Components.h"
+#include "LogSystem.h"
 #include <IconsFontAwesome7.h>
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
@@ -176,10 +177,10 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 
 void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHierarchy& currentNode, IcePick::Skeleton& skeleton, entt::entity entityId) {
 	ImGuiTreeNodeFlags isLeafFlag = (currentNode.Children.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0;
-	ImGuiTreeNodeFlags isSelectedFlag = ((currentNode.BoneIndex == m_SelectionContext.SelectionData) && (m_SelectionContext.SelectionType == SelectionContext::Type::BONE)) ? ImGuiTreeNodeFlags_Selected : 0;
+	ImGuiTreeNodeFlags isSelectedFlag = ((static_cast<uint64_t>(currentNode.NodeIndex) == m_SelectionContext.SelectionData) && (m_SelectionContext.SelectionType == SelectionContext::Type::BONE)) ? ImGuiTreeNodeFlags_Selected : 0;
 	ImGuiTreeNodeFlags boneNodeFlags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | isLeafFlag | isSelectedFlag;
 
-	ImGui::PushID(currentNode.BoneIndex);
+	ImGui::PushID(currentNode.NodeIndex);
 	bool nodeOpen = false;
 	bool isBone = currentNode.BoneIndex != -1;
 	const char* icon = (isBone) ? ICON_FA_BONE : ICON_FA_CUBES;
@@ -194,6 +195,7 @@ void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHie
 			m_SelectionContext.SelectionId = static_cast<uint64_t>(entityId);
 			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.NodeIndex);
 			m_SelectionContextChanged = true;
+			IP_LOG(std::to_string(m_SelectionContext.SelectionData));
 		}
 	}
 

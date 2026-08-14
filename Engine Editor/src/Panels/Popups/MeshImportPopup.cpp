@@ -1,12 +1,15 @@
 #include "MeshImportPopup.h"
 #include <imgui-docking/imgui.h>
 
-static constexpr unsigned int TextBufferSize = 255;
-static char InputTextBuffer[TextBufferSize];
+static constexpr size_t TextBufferSize = 40;
+static char InputAssetNameBuffer[TextBufferSize];
 
-void MeshImportPopup::OpenPopup() {
+void MeshImportPopup::OpenPopup(const std::filesystem::path& meshPath) {
 	ImGui::OpenPopup(m_Title);
 	m_Open = true;
+
+    m_MeshParentDirectory = meshPath.parent_path();
+    std::snprintf(InputAssetNameBuffer, TextBufferSize, meshPath.stem().string().c_str());
 }
 
 void MeshImportPopup::Render() {
@@ -22,10 +25,15 @@ void MeshImportPopup::Render() {
         }
 
         ImGui::Checkbox("Import Animations", &m_ImportSettings.LoadAnimations);
-        //ImGui::InputText("File name (.ipmtb)", InputTextBuffer, sizeof(InputTextBuffer));
+
+        if (ImGui::InputText("Asset Name", InputAssetNameBuffer, sizeof(InputAssetNameBuffer))) {
+            m_ImportSettings.ImportAssetName = InputAssetNameBuffer;
+        }
 
         if (ImGui::Button("Import", ImVec2(120, 0))) {         
             m_ImportSubmitted = true;
+
+            m_ImportSettings.ImportTargetLocation = m_MeshParentDirectory / m_ImportSettings.ImportAssetName;
             ClosePopup();
         }
         ImGui::SameLine();

@@ -10,6 +10,7 @@ namespace IcePick {
 		TEXTURE,
 		SKELETON,
 		SCRIPT_ASSET,
+		ANIMATION,
 		INVALID_ASSET,
 		ASSET_TYPE_COUNT
 	};
@@ -22,10 +23,12 @@ namespace IcePick {
 		TEXTURE,
 		SKELETON,
 		SCRIPT_ASSET,
+		ANIMATION,
 		INVALID_ASSET,
 	};
 
 	void InitialiseAssetTypes();
 	const char* GetAssetTypeString(AssetTypes assetType);
+	const char* GetAssetTypeExtension(AssetTypes assetType);
 	AssetTypes GetAssetTypeFromExtension(std::string extension);
 }
