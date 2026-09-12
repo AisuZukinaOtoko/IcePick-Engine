@@ -46,6 +46,11 @@ namespace IcePick {
 		bool ReceiveShadows = false;
 	};
 
+	struct AnimatorComponent {
+		UUID AnimationId = UUID::Unitialised();
+		float Time = 0.0f;
+	};
+
 	struct IKSolverComponent {
 		unsigned int BoneCount = 1;
 		unsigned int BoneOneIndex = 0;

@@ -14,7 +14,7 @@ uniform sampler2D  u_AlbedoTexUnit;
 const vec3 tempLightPosition = vec3(2.0f, 3.0f, 4.0f);
 const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const float tempLightIntensity = 0.68f;
-const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f);
+const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f) * 0.8f;
 
 #include "picking.util.shader"
 

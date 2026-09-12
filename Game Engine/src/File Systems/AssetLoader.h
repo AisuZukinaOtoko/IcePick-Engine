@@ -25,7 +25,7 @@ namespace IcePick {
 		IcePickRenderer::SkinnedMeshData& GetSkinnedMeshData(const MeshRendererComponent& meshRenderer);
 		Skeleton& GetSkeletonById(UUID skeletonId);
 
-		unsigned int LoadTexture(std::filesystem::path texturePath);
+		unsigned int LoadTexture(std::filesystem::path texturePath, bool isNonLinearSpace);
 		UUID LoadTextureFromAsset(std::filesystem::path& assetPath);
 		unsigned int GetTextureRenderId(UUID textureId);
 		const IcePickRenderer::Texture& GetTexture(UUID Id);

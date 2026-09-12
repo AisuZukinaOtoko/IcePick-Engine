@@ -29,8 +29,8 @@ void IcePick::AssetLoader::Init() {
 
 }
 
-unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath) {
-	UUID textureId = m_TextureLoader.NewTextureFromFile(texturePath);
+unsigned int IcePick::AssetLoader::LoadTexture(std::filesystem::path texturePath, bool isNonLinearSpace) {
+	UUID textureId = m_TextureLoader.NewTextureFromFile(texturePath, isNonLinearSpace);
 	return m_TextureLoader.GetTexture(textureId).GetID();
 }
 

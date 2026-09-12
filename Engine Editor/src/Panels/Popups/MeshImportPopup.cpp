@@ -10,6 +10,7 @@ void MeshImportPopup::OpenPopup(const std::filesystem::path& meshPath) {
 
     m_MeshParentDirectory = meshPath.parent_path();
     std::snprintf(InputAssetNameBuffer, TextBufferSize, meshPath.stem().string().c_str());
+    m_ImportSettings.ImportAssetName = InputAssetNameBuffer;
 }
 
 void MeshImportPopup::Render() {
@@ -26,13 +27,23 @@ void MeshImportPopup::Render() {
 
         ImGui::Checkbox("Import Animations", &m_ImportSettings.LoadAnimations);
 
+        if (ImGui::BeginTable("TextureFormats", 2, ImGuiTableFlags_Borders)) {
+            ImGui::TableNextRow(ImGuiTableRowFlags_None);
+            ImGui::TableNextColumn();
+
+            ImGui::Text("Albedo Texture is sRGB");
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("##Albedo", &m_ImportSettings.LoadDiffuseTextureAsSRGB);
+
+            ImGui::EndTable();
+        }
+
         if (ImGui::InputText("Asset Name", InputAssetNameBuffer, sizeof(InputAssetNameBuffer))) {
             m_ImportSettings.ImportAssetName = InputAssetNameBuffer;
         }
 
         if (ImGui::Button("Import", ImVec2(120, 0))) {         
             m_ImportSubmitted = true;
-
             m_ImportSettings.ImportTargetLocation = m_MeshParentDirectory / m_ImportSettings.ImportAssetName;
             ClosePopup();
         }

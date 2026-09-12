@@ -7,7 +7,7 @@ namespace IcePickRenderer {
 		unsigned int Width = 0;
 		unsigned int Height = 0;
 		enum class TextureFormat {
-			RGBA8 = 0, RGBA16, RGBA16F, RG32UI, 
+			RGBA8 = 0, SRGBA, RGBA16, RGBA16F, RG32UI, 
 			DEPTH_TEXTURE, DEPTH_STENCIL_TEXTURE
 		} Format = TextureFormat::RGBA8;
 	};
@@ -16,13 +16,13 @@ namespace IcePickRenderer {
 	public:
 		Texture() : m_TextureValid(false) { }
 		// Raw texture data
-		Texture(unsigned char* data, int m_width, int m_height, int m_BPP);
+		Texture(unsigned char* data, int m_width, int m_height, int m_BPP, bool isNonLinearSpace = false);
 
 		// External texture
-		Texture(const std::string& path);
+		Texture(const std::string& path, bool isNonLinearSpace = false);
 
 		// Compressed texture data
-		Texture(unsigned char* data, int width);
+		Texture(unsigned char* data, int width, bool isNonLinearSpace = false);
 
 		// Empty textures. Mainly as render targets
 		Texture(const TextureSettings& settings);
@@ -51,6 +51,7 @@ namespace IcePickRenderer {
 		int m_Width = 0;
 		int m_Height = 0;
 		int m_NumChannels = 0; // bytes per pixel
+		bool m_IsNonLinearSpace = false;
 		GLuint m_InternalFormat = GL_RGBA8;
 		GLenum m_LocalFormat = GL_RGBA;
 		GLenum m_LocalDataType = GL_UNSIGNED_BYTE;

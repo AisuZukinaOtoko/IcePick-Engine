@@ -297,6 +297,8 @@ void Viewport::RenderEntityGizmos() {
 				TransformComponent,
 				MeshRendererComponent,
 				ScriptComponent,
+				IKSolverComponent,
+				AnimatorComponent,
 				RigidBodyComponent>(selectedEntity);
 			m_SelectionContextChanged = true;
 			entityTransform = &GetComponent<TransformComponent>(selectedEntity);

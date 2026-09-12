@@ -56,8 +56,8 @@ namespace IcePick {
 		void InvalidateCache();
 
 		// Helper functions when creating a new material
-		UUID GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader);
-		void SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader);
+		UUID GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, bool isNonLinearSpace, aiMaterial* mat, TextureLoader& textureLoader);
+		void SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader, const ImportSettings& importSettings);
 
 		UUID RegisterMaterialBase(const MaterialBase& materialBase);
 		UUID RegisterMaterialInstance(const MaterialInstance& materialInstance);

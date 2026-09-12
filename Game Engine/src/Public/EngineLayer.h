@@ -31,7 +31,7 @@ namespace IcePick {
 		void OnPreRender() override;
 		void OnRender(RenderPayload& payload) override;
 
-		unsigned int CreateTexture(std::filesystem::path assetPath);
+		unsigned int CreateTexture(std::filesystem::path assetPath, bool isNonLinearSpace);
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 		void SetRenderTargetDefault();

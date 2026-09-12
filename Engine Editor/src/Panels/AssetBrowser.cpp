@@ -2,6 +2,7 @@
 #include "File Systems/AssetTypes.h"
 #include <filesystem>
 #include "../Utils/Serialize.h"
+#include "Scene Systems/AssetRegistry.h"
 #include "Utilities/DebugStatistics.h"
 #include "LogSystem.h"
 #include <IconsFontAwesome7.h>
@@ -19,11 +20,13 @@ AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
     m_EngineAPI(engineAPI)
 {
     ClearTextInputBuffer();
-    m_CurrentBrowsingPath = std::filesystem::canonical("Game Engine/res/Assets");
-    m_ProjectDirectory = std::filesystem::canonical("Game Engine/res");
 }
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
+    IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
+    m_ProjectDirectory = assetRegistry.GetProjectPath();
+    //m_ProjectDirectory = assetRegistry.GetProjectPath() / "res";
+    m_CurrentBrowsingPath = std::filesystem::canonical("Game Engine/res/Assets");
     m_Styles = styles;
 }
 
@@ -122,7 +125,8 @@ void AssetBrowser::DrawAssetActions() {
     }
     ImGui::PopStyleVar();
 
-    const auto& relativeBrowsingPath = std::filesystem::relative(std::filesystem::canonical(m_CurrentBrowsingPath), m_ProjectDirectory);
+    std::error_code errorCode;
+    const auto& relativeBrowsingPath = std::filesystem::relative(std::filesystem::canonical(m_CurrentBrowsingPath, errorCode), m_ProjectDirectory);
     std::filesystem::path breadCrumbPath;
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));

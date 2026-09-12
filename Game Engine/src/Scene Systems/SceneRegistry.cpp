@@ -183,6 +183,8 @@ void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::regis
             DirectionalLightComponent,
             CameraControllerComponent,
             RigidBodyComponent,
+            IKSolverComponent,
+            AnimatorComponent,
             SceneCamera
         >(sourceRegistry, sourceEntity, targetRegistry, targetEntity);
         

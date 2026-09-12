@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include "../Scene Systems/UUID.h"
 #include "../Render Systems/SSBO.h"
 #include <string>
 
@@ -33,12 +34,16 @@ namespace IcePick {
 	class Skeleton {
 	public:
 		unsigned int AddOrGetBoneId(std::string boneName);
+		int GetNodeIndex(const char* nodeName);
+
 		bool BoneExists(std::string boneName);
 		Bone& GetBone(unsigned int boneId);
 		void Bake();
 		void Use();
 		void UploadBoneData();
 		void Destroy();
+
+		UUID Id;
 		SkeletonNodeHierarchy RootBone;
 		glm::mat4 InverseGlobalRootTransform{ 1.0f };
 		std::vector<glm::mat4> BoneLocalTransforms;

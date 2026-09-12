@@ -62,7 +62,12 @@ namespace IcePick {
 				else {
 					std::string includeFile = line.substr(startQuote + 1, endQuote - startQuote - 1);
 					std::filesystem::path includePath = parentDirectory / includeFile;
-					line = LoadFile(std::filesystem::canonical(includePath), includeDepth + 1);
+
+					std::error_code errorCode;
+					std::filesystem::path canonicalIncludePath = std::filesystem::canonical(includePath, errorCode);
+
+					if (!errorCode)
+						line = LoadFile(canonicalIncludePath, includeDepth + 1);
 				}
 
 			}

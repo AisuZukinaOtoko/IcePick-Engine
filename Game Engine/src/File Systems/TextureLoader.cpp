@@ -7,7 +7,7 @@
 
 namespace IcePick {
 	TextureLoader::TextureLoader()
-	: m_DefaultTexture(m_DefaultTextureRelativePath),
+	: m_DefaultTexture(m_DefaultTextureRelativePath, true),
 	m_CachedTexture(m_DefaultTexture) {
 		m_DefaultTexturePath = std::filesystem::canonical(m_DefaultTextureRelativePath);
 		m_DefaultTextureId = UUID();
@@ -23,7 +23,7 @@ namespace IcePick {
 		return textureId;
 	}
 
-	UUID TextureLoader::NewTextureFromFile(std::filesystem::path loadTexturePath) {
+	UUID TextureLoader::NewTextureFromFile(std::filesystem::path loadTexturePath, bool isNonLinearSpace) {
 		std::error_code errorCode;
 		std::filesystem::path texturePath = std::filesystem::canonical(m_BaseFilePath / loadTexturePath, errorCode); // resolve symlinks and relative paths.
 		if (errorCode) {
@@ -40,13 +40,13 @@ namespace IcePick {
 			return iterator->second;
 		}
 
-		IcePickRenderer::Texture newTexture(texturePath.string());
+		IcePickRenderer::Texture newTexture(texturePath.string(), isNonLinearSpace);
 		UUID newTextureId = RegisterTexture(newTexture);
 		m_CachedTexturePaths.insert({ texturePath, newTextureId });
 		return newTextureId;
 	}
 
-	UUID TextureLoader::NewTextureFromMemory(unsigned char* data) {
+	UUID TextureLoader::NewTextureFromMemory(unsigned char* data, bool isNonLinearSpace) {
 		if (!data) {
 			IP_LOG("Texture has null data.", IP_ERROR_LOG);
 			return UUID::Unitialised();
@@ -56,14 +56,14 @@ namespace IcePick {
 		return UUID::Unitialised();
 	}
 
-	UUID TextureLoader::NewTextureFromScene(std::string texturePath, const aiScene* scene) {
+	UUID TextureLoader::NewTextureFromScene(std::string texturePath, const aiScene* scene, bool isNonLinearSpace) {
 		// Check if scene texture has been loaded.
 		auto iterator = m_CachedSceneTexturePaths.find(texturePath);
 		if (iterator != m_CachedSceneTexturePaths.end())
 			return iterator->second;
 
 		if (texturePath[0] != '*') { // External texture file
-			return NewTextureFromFile(texturePath);
+			return NewTextureFromFile(texturePath, isNonLinearSpace);
 		}
 
 		int texIndex = std::atoi(texturePath.c_str() + 1);
@@ -72,12 +72,12 @@ namespace IcePick {
 		const aiTexture* tex = scene->mTextures[texIndex];
 		UUID newTextureId;
 		if (tex->mHeight == 0) { // Compressed embedded texture
-			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth);
+			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth, isNonLinearSpace);
 			newTextureId = RegisterTexture(newTexture);
 		}
 		else { // Raw uncompressed embedded texture
 			const int numTextureChannels = 4;
-			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth, tex->mHeight, numTextureChannels);
+			IcePickRenderer::Texture newTexture(reinterpret_cast<unsigned char*>(tex->pcData), tex->mWidth, tex->mHeight, numTextureChannels, isNonLinearSpace);
 			newTextureId = RegisterTexture(newTexture);
 		}
 
@@ -97,11 +97,12 @@ namespace IcePick {
 		std::string assetVersion = assetFile.value("version", "0.0");
 		uint64_t textureId = JsonUtils::GetUint64(assetFile, "ID");
 		std::string sourcePath = assetFile.value("sourcePath", "");
+		bool isNonLinearSpace = assetFile.value("sRGB", false);
 
 		jsonFileStream.close();
 
 		SetLoaderBasePath(assetPath.parent_path());
-		bool newTextureCreated = NewTextureFromFileWithID(sourcePath, textureId);
+		bool newTextureCreated = NewTextureFromFileWithID(sourcePath, textureId, isNonLinearSpace);
 
 		if (newTextureCreated)
 			m_CachedTextureAssetPaths.insert({ assetPath, textureId });
@@ -157,7 +158,7 @@ namespace IcePick {
 		m_BaseFilePath.clear();
 	}
 
-	bool TextureLoader::NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId)	{
+	bool TextureLoader::NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId, bool isNonLinearSpace)	{
 		std::error_code errorCode;
 		texturePath = std::filesystem::canonical(m_BaseFilePath / texturePath, errorCode); // resolve symlinks and relative paths.
 		if (errorCode) {
@@ -174,7 +175,7 @@ namespace IcePick {
 			return false;
 		}
 
-		IcePickRenderer::Texture newTexture(texturePath.string());
+		IcePickRenderer::Texture newTexture(texturePath.string(), isNonLinearSpace);
 		if (!newTexture.IsValid())
 			return false;
 

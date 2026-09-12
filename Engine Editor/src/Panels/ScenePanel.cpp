@@ -141,6 +141,10 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 					IcePick::AddComponent<IcePick::IKSolverComponent>(selectedEntity);
 				}
 
+				if (ImGui::MenuItem("Animator component")) {
+					IcePick::AddComponent<IcePick::AnimatorComponent>(selectedEntity);
+				}
+
 				ImGui::EndMenu();
 			}
 

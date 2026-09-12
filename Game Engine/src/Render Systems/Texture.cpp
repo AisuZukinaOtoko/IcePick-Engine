@@ -26,11 +26,11 @@ namespace IcePickRenderer {
 			break;
 		case 3:
 			m_LocalFormat = GL_RGB;
-			m_InternalFormat = GL_RGB8;
+			m_InternalFormat = (m_IsNonLinearSpace) ? GL_SRGB8 : GL_RGB;
 			break;
 		case 4:
 			m_LocalFormat = GL_RGBA;
-			m_InternalFormat = GL_RGBA8;
+			m_InternalFormat = (m_IsNonLinearSpace) ? GL_SRGB8_ALPHA8 : GL_RGBA8;
 			break;
 		default:
 			IP_LOG("Invalid number of texture channels.", IP_WARN_LOG);
@@ -43,7 +43,7 @@ namespace IcePickRenderer {
 		m_TextureValid = true;
 	}
 
-	Texture::Texture(unsigned char* data, int width, int height, int numChannels) {
+	Texture::Texture(unsigned char* data, int width, int height, int numChannels, bool isNonLinearSpace) {
 		if (!data) {
 			IP_LOG("Texture received null data.", IP_ERROR_LOG);
 			return;
@@ -53,6 +53,8 @@ namespace IcePickRenderer {
 		m_Width = width;
 		m_Height = height;
 		m_NumChannels = numChannels;
+		m_IsNonLinearSpace = isNonLinearSpace;
+
 		CreateTextureContext();
 		SetTextureFormats();
 
@@ -60,11 +62,12 @@ namespace IcePickRenderer {
 		Unbind();
 	}
 
-	Texture::Texture(const std::string& path) {
+	Texture::Texture(const std::string& path, bool isNonLinearSpace) {
 		m_ID = 0;
 		m_FilePath = path;
 		m_LocalBuffer = nullptr;
 		m_Width = m_Height = m_NumChannels = 0;
+		m_IsNonLinearSpace = isNonLinearSpace;
 
 		stbi_set_flip_vertically_on_load(1);
 		m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_NumChannels, 0);
@@ -85,7 +88,7 @@ namespace IcePickRenderer {
 		m_LocalBuffer = nullptr;
 	}
 
-	Texture::Texture(unsigned char* data, int width) {
+	Texture::Texture(unsigned char* data, int width, bool isNonLinearSpace) {
 		if (!data) {
 			IP_LOG("Texture received null data.", IP_ERROR_LOG);
 			return;
@@ -98,6 +101,7 @@ namespace IcePickRenderer {
 			return;
 		}
 
+		m_IsNonLinearSpace = isNonLinearSpace;
 		CreateTextureContext();
 		SetTextureFormats();
 
@@ -108,7 +112,7 @@ namespace IcePickRenderer {
 		m_LocalBuffer = nullptr;
 	}
 
-	Texture::Texture(const TextureSettings& settings) {
+	Texture::Texture(const TextureSettings& settings) { // Create empty texture. Allocate VRAM
 		m_Width = settings.Width;
 		m_Height = settings.Height;
 		m_LocalBuffer = NULL;
@@ -117,6 +121,9 @@ namespace IcePickRenderer {
 		switch (settings.Format) {
 		case TextureSettings::TextureFormat::RGBA8:
 			m_InternalFormat = GL_RGBA8;
+			break;
+		case TextureSettings::TextureFormat::SRGBA:
+			m_InternalFormat = GL_SRGB8_ALPHA8;
 			break;
 		case TextureSettings::TextureFormat::RGBA16:
 			m_InternalFormat = GL_RGBA16;

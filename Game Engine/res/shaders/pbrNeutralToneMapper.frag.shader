@@ -9,5 +9,6 @@ uniform sampler2D  u_SceneTextureSlot;
 
 void main(){
     vec4 hdrColour = texture(u_SceneTextureSlot, v_TexCoord);
-    OutColour = vec4(PBRNeutralToneMapper(hdrColour.rgb), hdrColour.a);
+    vec4 toneMapped = vec4(PBRNeutralToneMapper(hdrColour.rgb), hdrColour.a);
+    OutColour = vec4(pow(toneMapped.xyz, vec3(1.0f / 2.2f)), hdrColour.a);
 };

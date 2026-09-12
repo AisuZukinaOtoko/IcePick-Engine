@@ -12,33 +12,49 @@ namespace IcePick {
 	struct KeyFrame {
 		Type Value;
 		float KeyTime{ 0.0f };
+
+		KeyFrame(Type value, float time) : Value(value), KeyTime(time) {}
 	};
 
 	template<typename KeyType>
-	struct GenericTimelineChannel {
+	struct GenericAnimationChannel {
 		uint64_t TargetId{ 0 };
 		uint64_t TargetData{ 0 };
 		std::vector<KeyFrame<KeyType>> ChannelKeys;
 	};
 
-	struct SkeletonPose {
-		std::vector<glm::mat4> NodeLocalTransforms;
+	struct TransformChannels {
+		GenericAnimationChannel<glm::vec3> PositionChannel;
+		GenericAnimationChannel<glm::quat> RotationChannel;
+		GenericAnimationChannel<glm::vec3> ScaleChannel;
 	};
 
-	struct EntityTransformChannel {
-		uint32_t EntityId;
-		std::vector<KeyFrame<glm::vec3>> PositionKeys;
-		std::vector<KeyFrame<glm::quat>> RotationKeys;
-		std::vector<KeyFrame<glm::vec3>> ScaleKeys;
+	struct NodeTransform {
+		unsigned int TargetNodeIndex = 0;
+		TransformChannels TransformChannels;
 	};
 
-	struct SkeletonPoseChannel {
-		UUID SkeletonId;
-		std::vector<KeyFrame<SkeletonPose>> SkeletalPoseKeys;
+	struct SkeletalNodeAnimation {
+		UUID AnimationId = UUID::Unitialised();
+		UUID Target = UUID::Unitialised();
+		std::vector<NodeTransform> NodeTransformChannels;
+	};
+
+	struct EntityTransformAnimation {
+		entt::entity Target;
+		TransformChannels TransformChannels;
+	};
+
+	struct GenericAnimation {
+		std::vector<GenericAnimationChannel<glm::vec4>> Vec4Channels;
+		std::vector<GenericAnimationChannel<glm::vec3>> Vec3Channels;
+		std::vector<GenericAnimationChannel<glm::vec2>> Vec2Channels;
+		std::vector<GenericAnimationChannel<float>> FloatChannels;
 	};
 
 	struct Timeline {
-		std::vector<EntityTransformChannel> EntityTransformChannels;
-		std::vector<SkeletonPoseChannel> SkeletonPoseChannels;
+		std::vector<SkeletalNodeAnimation> SkeletalAnimations;
+		std::vector<EntityTransformAnimation> TransformAnimations;
+		std::vector<GenericAnimation> GenericAnimations;
 	};
 }

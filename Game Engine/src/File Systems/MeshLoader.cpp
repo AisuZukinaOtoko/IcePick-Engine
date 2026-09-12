@@ -69,16 +69,18 @@ namespace IcePick {
 	}
 
 	IcePickRenderer::StaticMeshData& MeshLoader::GetStaticMeshById(UUID staticMeshId) {
-		if (m_LoadedStaticMeshes.find(staticMeshId) != m_LoadedStaticMeshes.end()) {
-			return m_LoadedStaticMeshes[staticMeshId];
+		auto iterator = m_LoadedStaticMeshes.find(staticMeshId);
+		if (iterator != m_LoadedStaticMeshes.end()) {
+			return iterator->second;
 		}
 
 		return m_DefaultEmptyStaticMesh;
 	}
 
 	IcePickRenderer::SkinnedMeshData& MeshLoader::GetSkinnedMeshById(UUID skinnedMeshId) {
-		if (m_LoadedSkinnedMeshes.find(skinnedMeshId) != m_LoadedSkinnedMeshes.end()) {
-			return m_LoadedSkinnedMeshes[skinnedMeshId];
+		auto iterator = m_LoadedSkinnedMeshes.find(skinnedMeshId);
+		if (iterator != m_LoadedSkinnedMeshes.end()) {
+			return iterator->second;
 		}
 
 		return m_DefaultEmptySkinnedMesh;
@@ -94,8 +96,10 @@ namespace IcePick {
 	}
 
 	Skeleton& MeshLoader::GetSkeletonById(UUID skeletonId) {
-		if (m_LoadedSkeletons.find(skeletonId) != m_LoadedSkeletons.end()) {
-			return m_LoadedSkeletons[skeletonId];
+		auto iterator = m_LoadedSkeletons.find(skeletonId);
+
+		if (iterator != m_LoadedSkeletons.end()) {
+			return iterator->second;
 		}
 
 		return m_DefaultEmptySkeleton;
@@ -104,8 +108,9 @@ namespace IcePick {
 	MeshRendererComponent MeshLoader::ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, AnimationLoader& animationLoader, const ImportSettings& importSettings) {
 		MeshRendererComponent returnMeshRendererComponent;
 
-		if (m_LoadedPathToMeshRenderer.find(filePath) != m_LoadedPathToMeshRenderer.end()) {
-			return m_LoadedPathToMeshRenderer[filePath];
+		auto iterator = m_LoadedPathToMeshRenderer.find(filePath);
+		if (iterator != m_LoadedPathToMeshRenderer.end()) {
+			return iterator->second;
 		}
 
 		Assimp::Importer importer;
@@ -161,7 +166,7 @@ namespace IcePick {
 		returnMeshRendererComponent.MeshType = importSettings.LoadMeshAs;
 		returnMeshRendererComponent.MeshCount = scene->mNumMeshes;
 
-		animationLoader.ImportAnimationsFromScene(scene, importSettings);
+		animationLoader.ImportAnimationsFromScene(scene, sceneSkeleton, importSettings);
 
 		materialLoader.CleanUpAfterLoad();
 		textureLoader.CleanUpAfterLoad();

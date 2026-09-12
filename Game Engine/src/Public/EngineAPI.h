@@ -17,7 +17,7 @@ namespace IcePick {
 		~EngineAPI();
 
 		// Textures
-		unsigned int GetTexture(std::filesystem::path assetPath);
+		unsigned int GetTexture(std::filesystem::path assetPath, bool isNonLinearSpace);
 		unsigned int GetTextureRenderId(UUID textureId);
 		UUID LoadTextureFromAsset(std::filesystem::path assetPath);
 		const IcePickRenderer::Texture& GetTexture(UUID textureId);

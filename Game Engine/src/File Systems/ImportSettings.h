@@ -14,5 +14,7 @@ namespace IcePick {
 		bool LoadMaterials = true;
 		bool LoadSkeleton = false;
 		bool LoadAnimations = false;
+
+		bool LoadDiffuseTextureAsSRGB = true;
 	};
 }

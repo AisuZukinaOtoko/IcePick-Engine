@@ -24,6 +24,15 @@ namespace IcePick {
 		return m_BoneNameToIdMap.find(boneName) != m_BoneNameToIdMap.end();
 	}
 
+	int Skeleton::GetNodeIndex(const char* nodeName) {
+		for (unsigned int i = 0; i < Nodes.size(); i++) {
+			SkeletonNode& node = Nodes[i];
+			if (node.NodeName == nodeName)
+				return i;
+		}
+		return -1;
+	}
+
 	void Skeleton::Bake() {
 		if (m_DataBaked)
 			return;

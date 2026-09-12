@@ -8,8 +8,8 @@ IcePick::EngineAPI::EngineAPI(std::shared_ptr<EngineLayer> engine) {
 	m_Engine = engine;
 }
 
-unsigned int IcePick::EngineAPI::GetTexture(std::filesystem::path texturePath) {
-	return m_Engine->CreateTexture(texturePath);
+unsigned int IcePick::EngineAPI::GetTexture(std::filesystem::path texturePath, bool isNonLinearSpace) {
+	return m_Engine->CreateTexture(texturePath, isNonLinearSpace);
 }
 
 unsigned int IcePick::EngineAPI::GetTextureRenderId(UUID textureId) {

@@ -20,10 +20,20 @@ namespace IcePick {
 		void DeleteAsset(UUID assetId);
 		void SerializeAssetRegistry();
 
+		// Asset path is the file path relative to the project path
+		std::filesystem::path ResolveAbsolutePathFromAssetPath(std::filesystem::path assetPath);
+		std::filesystem::path ResolveAssetPathFromAbsolutePath(std::filesystem::path absolutePath);
+
+		std::filesystem::path GetAssetPathFromAssetId(UUID assetId);
+		UUID GetAssetIdFromAssetPath(std::filesystem::path assetPath);
+
+		std::filesystem::path GetProjectPath();
+
 		const std::vector<AssetRegistryEntry>& GetRegisteredAssets();
 	private:
 		std::vector<AssetRegistryEntry> m_RegisteredAssets;
 		std::filesystem::path m_RegistryFilePath;
+		std::filesystem::path m_ProjectPath;
 		bool m_Initialised = false;
 	};
 

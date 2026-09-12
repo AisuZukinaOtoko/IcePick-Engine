@@ -61,7 +61,8 @@ namespace IcePickRenderer {
 	}
 
 	void FrameBuffer::ClearColourTarget() {
-		GLfloat colourTargetClearColour[4] = { 0.6f, 0.8f, 1.0f, 1.0f };
+		//GLfloat colourTargetClearColour[4] = { 0.6f, 0.8f, 1.0f, 1.0f };
+		GLfloat colourTargetClearColour[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		glClearBufferfv(GL_COLOR, COLOUR_TEXTURE, colourTargetClearColour);
 	}
 

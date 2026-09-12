@@ -10,6 +10,8 @@
 #include "../Scene Systems/SceneCamera.h"
 #include "../Event Systems/EventHandler.h"
 
+#include "../Scene Systems/AssetRegistry.h"
+
 
 IcePick::Input IcePick::EngineLayer::GameInput;
 
@@ -38,6 +40,7 @@ void IcePick::EngineLayer::OnAttach() {
 	IcePickRenderer::Texture debugTexture{ debugTextureSettings };
 	IcePickRenderer::Texture depthStencilTexture{ depthStencilTextureSettings };
 
+	//m_RenderTextureStorage.reserve(0);
 	m_RenderTextureStorage.push_back(colourTextureOne);
 	m_RenderTextureStorage.push_back(colourTextureTwo);
 	m_RenderTextureStorage.push_back(debugTexture);
@@ -51,6 +54,9 @@ void IcePick::EngineLayer::OnAttach() {
 	m_FrameBufferOne.InitWithTargets(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 	m_FrameBufferTwo.InitWithTargets(frameBufferTwoTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 
+	AssetRegistry& assetRegistry = GetAssetRegistry();
+
+	assetRegistry.Initialise(std::filesystem::current_path());
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
 	m_PhysicsSystem3D.Init();
@@ -170,8 +176,8 @@ void IcePick::EngineLayer::OnEvent(Event& event) {
 	GameInput.OnEvent(event);
 }
 
-unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePath) {
-	return m_AssetLoader.LoadTexture(texturePath);
+unsigned int IcePick::EngineLayer::CreateTexture(std::filesystem::path texturePath, bool isNonLinearSpace) {
+	return m_AssetLoader.LoadTexture(texturePath, isNonLinearSpace);
 }
 
 unsigned int IcePick::EngineLayer::GetTextureRenderId(UUID textureId) {

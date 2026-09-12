@@ -116,7 +116,7 @@ namespace IcePick {
 		InvalidateCache();
 	}
 
-	UUID MaterialLoader::GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, aiMaterial* mat, TextureLoader& textureLoader) {
+	UUID MaterialLoader::GetSceneMaterialTexture(const aiScene* scene, aiTextureType textureType, bool isNonLinearSpace, aiMaterial* mat, TextureLoader& textureLoader) {
 		// IcePick only supports 1 texture of each type, so index is hardcoded.
 		const unsigned int textureIndex = 0;
 		aiString t;
@@ -127,7 +127,7 @@ namespace IcePick {
 			return UUID::Unitialised();
 		}
 
-		return textureLoader.NewTextureFromScene(texturePath, scene);
+		return textureLoader.NewTextureFromScene(texturePath, scene, isNonLinearSpace);
 	}
 
 	//void MaterialLoader::GetSceneMaterialColours(MaterialAsset& materialAsset, aiMaterial* mat) {
@@ -151,18 +151,20 @@ namespace IcePick {
 		*/
 	//}
 
-	void MaterialLoader::SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader) {
+	void MaterialLoader::SetMaterialInstanceBaseTextureDataFromScene(MaterialInstance& materialInstance, MaterialTextureTypes textureType, const aiScene* scene, unsigned int materialIndex, TextureLoader& textureLoader, const ImportSettings& importSettings) {
 		const unsigned int numMaterials = scene->mNumMaterials;
 		IP_ASSERT(materialIndex < numMaterials, "Material index out of bounds.");
 		aiMaterial* sceneMaterial = scene->mMaterials[materialIndex];
 		
 		aiTextureType sceneTextureType;
+		bool textureIsNonLinear = false;
 		std::string textureSamplerIdentifier = m_DefaultMaterialTextureSamplerIdentifiers[textureType];
 		UUID materialBaseTextureDataId = UUID::Unitialised();
 
 		switch (textureType) {
 		case MaterialTextureTypes::DIFFUSE_TEXTURE:
 			sceneTextureType = aiTextureType_DIFFUSE;
+			textureIsNonLinear = importSettings.LoadDiffuseTextureAsSRGB;
 			break;
 		default:
 			sceneTextureType = aiTextureType_DIFFUSE;
@@ -176,7 +178,7 @@ namespace IcePick {
 			}
 		}
 
-		UUID materialInstanceTextureId = GetSceneMaterialTexture(scene, sceneTextureType, sceneMaterial, textureLoader);
+		UUID materialInstanceTextureId = GetSceneMaterialTexture(scene, sceneTextureType, textureIsNonLinear, sceneMaterial, textureLoader);
 		materialInstance.InstanceTextureData.emplace_back(materialBaseTextureDataId, materialInstanceTextureId);
 	}
 
@@ -200,7 +202,7 @@ namespace IcePick {
 		}
 		}
 
-		SetMaterialInstanceBaseTextureDataFromScene(newMaterialInstance, MaterialTextureTypes::DIFFUSE_TEXTURE, scene, materialIndex, textureLoader);
+		SetMaterialInstanceBaseTextureDataFromScene(newMaterialInstance, MaterialTextureTypes::DIFFUSE_TEXTURE, scene, materialIndex, textureLoader, importSettings);
 
 		UUID newMaterialInstanceId = RegisterMaterialInstance(newMaterialInstance);
 		m_CachedSceneMaterialInstances.insert({ materialIndex, newMaterialInstanceId });

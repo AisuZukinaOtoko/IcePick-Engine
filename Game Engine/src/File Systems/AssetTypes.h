@@ -11,6 +11,7 @@ namespace IcePick {
 		SKELETON,
 		SCRIPT_ASSET,
 		ANIMATION,
+		TIMELINE,
 		INVALID_ASSET,
 		ASSET_TYPE_COUNT
 	};
@@ -24,6 +25,7 @@ namespace IcePick {
 		SKELETON,
 		SCRIPT_ASSET,
 		ANIMATION,
+		TIMELINE,
 		INVALID_ASSET,
 	};
 
