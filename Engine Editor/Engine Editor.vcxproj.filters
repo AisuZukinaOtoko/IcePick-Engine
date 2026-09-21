@@ -323,5 +323,8 @@
     <ClInclude Include="src\Menu\AssetRegistryViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ProjectDetails.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

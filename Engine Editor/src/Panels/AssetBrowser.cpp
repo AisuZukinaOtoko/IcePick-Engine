@@ -24,9 +24,8 @@ AssetBrowser::AssetBrowser(IcePick::EngineAPI engineAPI) :
 
 void AssetBrowser::Init(IcePick::EngineAPI& engineAPI, Styles styles) {
     IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
-    m_ProjectDirectory = assetRegistry.GetProjectPath();
-    //m_ProjectDirectory = assetRegistry.GetProjectPath() / "res";
-    m_CurrentBrowsingPath = std::filesystem::canonical("Game Engine/res/Assets");
+    m_ProjectDirectory = assetRegistry.GetProjectRootDirectory() / "res";
+    m_CurrentBrowsingPath = m_ProjectDirectory;
     m_Styles = styles;
 }
 

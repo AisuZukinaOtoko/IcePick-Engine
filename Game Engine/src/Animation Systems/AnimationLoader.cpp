@@ -4,6 +4,7 @@
 #include "../Scene Systems/AssetRegistry.h"
 #include "../LogSystem.h"
 #include "../Utilities/JsonUtils.h"
+#include "../File Systems/Utils.h"
 #include <fstream>
 
 constexpr unsigned int ANIMATION_LOADER_VERSION = 1;
@@ -43,6 +44,7 @@ namespace IcePick {
 			std::string name = animation->mName.C_Str();
 			double duration = animation->mDuration;
 			double ticksPerSecond = animation->mTicksPerSecond;
+			importAnimation.Duration = duration;
 			IP_LOG(name);
 			IP_LOG(std::to_string(scene->mNumAnimations) + " animations");
 			IP_LOG(std::to_string(duration) + " duration");
@@ -76,11 +78,11 @@ namespace IcePick {
 			
 			UUID animationId = RegisterSkeletalAnimation(importAnimation);
 
-			std::filesystem::path animationAssetPath = importSettings.ImportTargetLocation / "Animations" / std::string(name + GetAssetTypeExtension(AssetTypes::ANIMATION));
+			std::filesystem::path animationAssetPath = importSettings.ImportTargetLocation / "Animations" / std::string(SanitizeAssetName(name) + GetAssetTypeExtension(AssetTypes::ANIMATION));
 			SerializeAnimation(importAnimation, animationAssetPath);
 
 			AssetRegistry& assetRegistry = GetAssetRegistry();
-			AssetRegistryEntry animationAssetEntry{ animationId, animationAssetPath, AssetTypes::ANIMATION };
+			AssetRegistryEntry animationAssetEntry{ animationId, assetRegistry.ResolveAssetPathFromAbsolutePath(animationAssetPath), AssetTypes::ANIMATION };
 			assetRegistry.RegisterNewAsset(animationAssetEntry);
 		}
 	}

@@ -4,6 +4,10 @@
 #include "LogSystem.h"
 #include <imgui-docking/ImGuizmo.h>
 #include <IconsFontAwesome7.h>
+#include "Scene Systems/AssetRegistry.h"
+
+#include "Utils/Serialize.h"
+#include "ProjectDetails.h"
 
 IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_EngineAPI(engineAPI),
@@ -18,6 +22,12 @@ IcePick::EditorLayer::EditorLayer(EngineAPI engineAPI) :
     m_Viewport.SetSelectionContextChangeCallback(selectionContextChangeCallback);
     m_ScenePanel.SetSelectionContextChangeCallback(selectionContextChangeCallback);
     m_AssetBrowser.SetEditMaterialCallback(editMaterialCallback);
+
+    std::filesystem::path startupProjectPath = GetEngineStartProjectPath();
+    ProjectDetails projectDetails = LoadProjectDetails(startupProjectPath);
+
+    AssetRegistry& assetRegistry = GetAssetRegistry();
+    assetRegistry.Initialise(projectDetails.ProjectRootDirectory);
 }
 
 void IcePick::EditorLayer::OnAttach() {

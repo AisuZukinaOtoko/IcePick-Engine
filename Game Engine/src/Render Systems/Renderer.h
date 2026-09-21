@@ -22,6 +22,7 @@ namespace IcePickRenderer {
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
 	bool WindowShouldClose();
+	void SetWindowTitle(const char* title);
 	GLFWwindow* GetRendererWindow();
 	void SetCurrentContext(GLFWwindow* window);
 	glm::ivec2 GetRendererWindowSize();

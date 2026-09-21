@@ -1,6 +1,7 @@
 #include "Serialize.h"
 #include "../Material Editor/Nodes/Utils.h"
 #include "../Material Editor/Nodes/Nodes.h"
+#include "../ProjectDetails.h"
 #include "Utilities/JsonUtils.h"
 #include "LogSystem.h"
 #include <cstdlib>
@@ -286,4 +287,48 @@ void OpenScriptEditor(const std::filesystem::path& scriptPath) {
 	int result = std::system(editScriptCommand.c_str());
 	if (result != 0)
 		IP_LOG("Failed to open Visual Studio Code.", IP_ERROR_LOG);
+}
+
+
+std::filesystem::path GetEngineStartProjectPath() {
+	using nlohmann::json;
+	std::ifstream jsonFileStream("config.json"); // Always in engine working directory.
+	if (jsonFileStream.fail()) {
+		IP_LOG("Failed to load engine config.", IP_ERROR_LOG);
+		return "";
+	}
+
+	json configFile = json::parse(jsonFileStream);
+	return configFile.value("startupProject", "");
+}
+
+void SaveEngineStartProject(std::filesystem::path projectPath) {
+	nlohmann::json json;
+
+	json["startupProject"] = projectPath;
+
+	std::ofstream outFile("config.json");
+	if (outFile.is_open()) {
+		outFile << std::setw(4) << json; // pretty print
+	}
+	else {
+		IP_LOG("Failed to save engine config.", IP_ERROR_LOG);
+	}
+}
+
+ProjectDetails LoadProjectDetails(std::filesystem::path projectPath) {
+	using nlohmann::json;
+	std::ifstream jsonFileStream(projectPath);
+	if (jsonFileStream.fail()) {
+		IP_LOG("Failed to load project details.", IP_ERROR_LOG);
+		return {};
+	}
+
+	ProjectDetails loadProjectDetails;
+	json projectFile = json::parse(jsonFileStream);
+
+	loadProjectDetails.ProjectName = projectFile.value("projectName", "IcePick Project");
+	loadProjectDetails.ProjectRootDirectory = projectPath.parent_path();
+
+	return loadProjectDetails;
 }

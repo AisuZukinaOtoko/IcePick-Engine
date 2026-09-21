@@ -297,7 +297,6 @@ namespace IcePick {
 			}
 		}
 
-		const aiMatrix4x4& t = sceneNode->mTransformation;
 		glm::mat4 nodeTransform = AssimpMatrixToGlmMatrix(sceneNode->mTransformation);
 
 		if (importSettings.LoadMeshAs == ImportSettings::MeshType::SKELETAL_MESH)

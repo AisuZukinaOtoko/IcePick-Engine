@@ -13,3 +13,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType);
 void CreateNewScriptTemplate(const std::filesystem::path& scriptPath);
 
 void OpenScriptEditor(const std::filesystem::path& scriptPath);
+
+std::filesystem::path GetEngineStartProjectPath();
+void SaveEngineStartProject(std::filesystem::path projectPath);
+
+struct ProjectDetails;
+ProjectDetails LoadProjectDetails(std::filesystem::path projectPath);

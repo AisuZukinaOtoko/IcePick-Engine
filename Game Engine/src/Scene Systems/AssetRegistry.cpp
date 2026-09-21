@@ -10,17 +10,12 @@ namespace IcePick {
 	static AssetRegistry s_AssetRegistry;
 
 	AssetRegistry::AssetRegistry() {
-		m_RegisteredAssets.push_back({});
-		m_RegisteredAssets.push_back({});
-		m_RegisteredAssets.push_back({});
-		m_RegisteredAssets.push_back({});
-		m_RegisteredAssets.push_back({});
-		m_RegisteredAssets.push_back({});
 
-		m_ProjectPath = std::filesystem::current_path(); //temp
 	}
 
-	void AssetRegistry::Initialise(std::filesystem::path assetRegistryFilePath) {
+	void AssetRegistry::Initialise(std::filesystem::path projectRootDirectory) {
+
+		std::filesystem::path assetRegistryFilePath = projectRootDirectory / "registry.json";
 		std::ifstream inFile(assetRegistryFilePath);
 
 		if (!inFile.is_open()) {
@@ -30,7 +25,7 @@ namespace IcePick {
 
 		m_RegisteredAssets.clear();
 		m_RegistryFilePath = assetRegistryFilePath;
-		m_ProjectPath = std::filesystem::current_path();
+		m_ProjectRootDirectory = projectRootDirectory;
 
 		nlohmann::json loadFile = nlohmann::json::parse(inFile);
 		unsigned int registryVersion = loadFile.value("version", 0);
@@ -50,18 +45,20 @@ namespace IcePick {
 				m_RegisteredAssets.push_back(loadAsset);
 			}
 		}
+
+		m_Initialised = true;
 	}
 
 	std::filesystem::path AssetRegistry::ResolveAbsolutePathFromAssetPath(std::filesystem::path assetPath) {
-		return m_ProjectPath / assetPath;
+		return m_ProjectRootDirectory / assetPath;
 	}
 
 	std::filesystem::path AssetRegistry::ResolveAssetPathFromAbsolutePath(std::filesystem::path absolutePath) {
-		return std::filesystem::relative(absolutePath, m_ProjectPath);
+		return std::filesystem::relative(absolutePath, m_ProjectRootDirectory);
 	}
 
 	std::filesystem::path AssetRegistry::GetAssetPathFromAssetId(UUID assetId) {
-		for (size_t currentIndex = 0; currentIndex < m_RegisteredAssets.size(); currentIndex++) {
+		for (size_t currentIndex = 0; currentIndex < m_RegisteredAssets.size(); currentIndex++)	{
 			if (m_RegisteredAssets[currentIndex].AssetId == assetId) {
 				return m_RegisteredAssets[currentIndex].AssetRelativePath;
 			}
@@ -78,8 +75,8 @@ namespace IcePick {
 		return UUID::Unitialised();
 	}
 
-	std::filesystem::path AssetRegistry::GetProjectPath() {
-		return m_ProjectPath;
+	std::filesystem::path AssetRegistry::GetProjectRootDirectory() {
+		return m_ProjectRootDirectory;
 	}
 
 	const std::vector<AssetRegistryEntry>& AssetRegistry::GetRegisteredAssets() {
@@ -88,6 +85,7 @@ namespace IcePick {
 
 	void AssetRegistry::RegisterNewAsset(AssetRegistryEntry newAsset) {
 		m_RegisteredAssets.push_back(newAsset);
+		SerializeAssetRegistry();
 	}
 
 	void AssetRegistry::DeleteAsset(UUID assetId) {
@@ -112,7 +110,7 @@ namespace IcePick {
 
 		json["version"] = ASSET_REGISTRY_VERSION;
 		nlohmann::json registeredAssets = nlohmann::json::array();
-		for (size_t assetIndex = 0; assetIndex < m_RegisteredAssets.size(); assetIndex) {
+		for (size_t assetIndex = 0; assetIndex < m_RegisteredAssets.size(); assetIndex++) {
 			AssetRegistryEntry& registryEntry = m_RegisteredAssets[assetIndex];
 			nlohmann::json registryEntryObject;
 

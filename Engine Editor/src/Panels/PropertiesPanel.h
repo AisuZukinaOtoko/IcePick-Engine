@@ -8,6 +8,10 @@
 #include <glm/glm.hpp>
 #include <entt/entt.h>
 
+namespace IcePick {
+	enum AssetTypes;
+}
+
 class PropertiesPanel {
 public:
 	PropertiesPanel(IcePick::EngineAPI engineAPI);
@@ -19,6 +23,7 @@ public:
 	void SetDropEntity(entt::entity entity);
 	void SetDropAssetPath(std::string filePath);
 private:
+
 	void PanelSetup();
 	void EntityProperties(const Styles& styles);
 	void Vec3Control(const char* label, glm::vec3& values, const float dragSpeed);
@@ -28,6 +33,7 @@ private:
 	void FloatSlider(const char* label, float* value, float min, float max);
 	void CheckBox(const char* label, bool* value);
 	void ColourPicker(const char* label, glm::vec3& rgb);
+	void AssetDropTarget(const char* label, IcePick::UUID& assetIdTarget, IcePick::AssetTypes assetType);
 	void MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance);
 	void EntityDropTargetProperty(const char* label, entt::entity& entityProperty);
 
@@ -37,6 +43,7 @@ private:
 	void ScriptComponentDetails(const Styles& styles);
 	void RigidBodyComponentDetails(const Styles& styles);
 	void CameraControllerDetails();
+	void AnimatorComponentDetails();
 
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;

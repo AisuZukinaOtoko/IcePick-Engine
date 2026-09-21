@@ -15,7 +15,9 @@ namespace IcePick {
 	public:
 		AssetRegistry();
 		AssetRegistry(const AssetRegistry& other) = delete;
-		void Initialise(std::filesystem::path assetRegistryFilePath);
+		void Initialise(std::filesystem::path projectRootDirectory);
+		bool IsInitialised() { return m_Initialised; }
+
 		void RegisterNewAsset(AssetRegistryEntry newAsset);
 		void DeleteAsset(UUID assetId);
 		void SerializeAssetRegistry();
@@ -27,13 +29,13 @@ namespace IcePick {
 		std::filesystem::path GetAssetPathFromAssetId(UUID assetId);
 		UUID GetAssetIdFromAssetPath(std::filesystem::path assetPath);
 
-		std::filesystem::path GetProjectPath();
+		std::filesystem::path GetProjectRootDirectory();
 
 		const std::vector<AssetRegistryEntry>& GetRegisteredAssets();
 	private:
 		std::vector<AssetRegistryEntry> m_RegisteredAssets;
 		std::filesystem::path m_RegistryFilePath;
-		std::filesystem::path m_ProjectPath;
+		std::filesystem::path m_ProjectRootDirectory;
 		bool m_Initialised = false;
 	};
 

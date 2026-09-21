@@ -154,6 +154,7 @@
     <ClCompile Include="src\File Systems\MaterialLoader.cpp" />
     <ClCompile Include="src\File Systems\MeshLoader.cpp" />
     <ClCompile Include="src\File Systems\SceneLoader.cpp" />
+    <ClCompile Include="src\File Systems\Utils.cpp" />
     <ClCompile Include="src\Public\Application.cpp" />
     <ClCompile Include="src\Physics Systems\ObjectBroadPhaseLayerImpl.cpp" />
     <ClCompile Include="src\Physics Systems\ObjectLayerPairFilterImpl.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="src\Scene Systems\Scene.cpp" />
     <ClCompile Include="src\Render Systems\Texture.cpp" />
     <ClCompile Include="src\Scene Systems\SceneRegistry.cpp" />
+    <ClCompile Include="src\Scene Systems\TerrainSystem.cpp" />
     <ClCompile Include="src\Scene Systems\UUID.cpp" />
     <ClCompile Include="src\Utilities\Clock.cpp" />
     <ClCompile Include="src\Utilities\DebugStatistics.cpp" />
@@ -224,6 +226,7 @@
     <ClInclude Include="src\File Systems\MaterialLoader.h" />
     <ClInclude Include="src\File Systems\MeshLoader.h" />
     <ClInclude Include="src\File Systems\SceneLoader.h" />
+    <ClInclude Include="src\File Systems\Utils.h" />
     <ClInclude Include="src\Public\Application.h" />
     <ClInclude Include="src\Public\EngineRuntimeStates.h" />
     <ClInclude Include="src\Physics Systems\ObjectAndBroadPhaseLayers.h" />
@@ -250,6 +253,7 @@
     <ClInclude Include="src\Render Systems\VertexLayout.h" />
     <ClInclude Include="src\Scene Systems\Components.h" />
     <ClInclude Include="src\Scene Systems\SceneRegistry.h" />
+    <ClInclude Include="src\Scene Systems\TerrainSystem.h" />
     <ClInclude Include="src\Scene Systems\UUID.h" />
     <ClInclude Include="src\Utilities\Clock.h" />
     <ClInclude Include="src\Event Systems\EventHandler.h" />

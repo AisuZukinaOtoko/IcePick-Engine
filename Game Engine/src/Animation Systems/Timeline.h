@@ -37,6 +37,7 @@ namespace IcePick {
 	struct SkeletalNodeAnimation {
 		UUID AnimationId = UUID::Unitialised();
 		UUID Target = UUID::Unitialised();
+		float Duration = 0.0f;
 		std::vector<NodeTransform> NodeTransformChannels;
 	};
 

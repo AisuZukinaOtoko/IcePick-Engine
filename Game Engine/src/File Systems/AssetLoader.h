@@ -33,6 +33,12 @@ namespace IcePick {
 		MaterialBase& GetMaterialBase(UUID Id);
 		MaterialInstance& GetMaterialInstance(UUID Id);
 
+		TextureLoader& GetTextureLoader() { return m_TextureLoader;  }
+		MaterialLoader& GetMaterialLoader() { return m_MaterialLoader;  }
+		ShaderLoader& GetShaderLoader() { return m_ShaderLoader; }
+		MeshLoader& GetMeshLoader() { return m_MeshLoader; }
+		AnimationLoader& GetAnimationLoader() { return m_AnimationLoader; }
+
 
 		UUID CreateShaderFromSource(ShaderSource& source);
 		std::string LoadShaderSourceFromFile(std::filesystem::path filepath);

@@ -239,6 +239,7 @@
     <ClInclude Include="src\Panels\PropertiesPanel.h" />
     <ClInclude Include="src\Panels\ScenePanel.h" />
     <ClInclude Include="src\Panels\StatisticsPanel.h" />
+    <ClInclude Include="src\ProjectDetails.h" />
     <ClInclude Include="src\Styles\Styles.h" />
     <ClInclude Include="src\Styles\ThumbnailManager.h" />
     <ClInclude Include="src\Utils\Serialize.h" />

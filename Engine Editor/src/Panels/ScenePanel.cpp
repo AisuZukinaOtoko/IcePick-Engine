@@ -43,7 +43,7 @@ void ScenePanel::OnUpdate(DeltaTime dt) {
 
 
 void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
-	ImGui::Begin(m_Title);
+	ImGui::Begin(m_Title, nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
 	if (ImGui::BeginMenu(ICON_FA_SQUARE_PLUS " Add")) {
 		if (ImGui::MenuItem(ICON_FA_CUBE " Entity")) {
@@ -199,7 +199,7 @@ void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHie
 			m_SelectionContext.SelectionId = static_cast<uint64_t>(entityId);
 			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.NodeIndex);
 			m_SelectionContextChanged = true;
-			IP_LOG(std::to_string(m_SelectionContext.SelectionData));
+			//IP_LOG(std::to_string(m_SelectionContext.SelectionData));
 		}
 	}
 

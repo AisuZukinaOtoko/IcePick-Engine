@@ -147,6 +147,10 @@ namespace IcePickRenderer {
 		return glfwWindowShouldClose(MainTargetWindow);
 	}
 
+	void SetWindowTitle(const char* title) {
+		glfwSetWindowTitle(MainTargetWindow, title);
+	}
+
 	GLFWwindow* GetRendererWindow()	{
 		return MainTargetWindow;
 	}

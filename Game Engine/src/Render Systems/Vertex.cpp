@@ -42,6 +42,27 @@ VertexLayout FullScreenPassVertex::GetVertexLayout() {
 	return layout;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+TerrainVertex3D::TerrainVertex3D() {
+	Position = glm::vec2(0.0f);
+	TextureCoords = glm::vec2(0.0f);
+}
+
+TerrainVertex3D::TerrainVertex3D(glm::vec2 position, glm::vec2 textureCooords)
+	: Position(position), TextureCoords(textureCooords)
+{
+
+}
+
+VertexLayout TerrainVertex3D::GetVertexLayout() {
+	VertexLayout layout{ sizeof(TerrainVertex3D) };
+
+	layout.Push<float>(2, offsetof(TerrainVertex3D, Position));
+	layout.Push<float>(2, offsetof(TerrainVertex3D, TextureCoords));
+	return layout;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

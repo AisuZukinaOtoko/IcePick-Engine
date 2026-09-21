@@ -1,5 +1,6 @@
 #include "PropertiesPanel.h"
 #include "PanelCommon.h"
+#include "Scene Systems/AssetRegistry.h"
 #include "Scene Systems/SceneRegistry.h"
 #include "Scene Systems/SceneCamera.h"
 #include "Scene Systems/Components.h"
@@ -34,6 +35,45 @@ static void CameraControllerDropTargetProperty(const char* label, IcePick::Scene
         if (payload) {
             SelectionContext droppedSelectionContext = *(SelectionContext*)payload->Data;
             sceneCamera.SetNewCameraController(static_cast<entt::entity>(droppedSelectionContext.SelectionId));
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+}
+
+void PropertiesPanel::AssetDropTarget(const char* label, IcePick::UUID & assetIdTarget, IcePick::AssetTypes assetType) {
+    ImGui::PushID(label);
+    ImGui::Columns(2);
+
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text(label);
+    ImGui::NextColumn();
+
+    IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
+
+    const char* defaultText = "None";
+    std::string buttonText = defaultText;
+    if (assetIdTarget != IcePick::UUID::Unitialised()) {
+        std::filesystem::path assetPath = assetRegistry.GetAssetPathFromAssetId(assetIdTarget);
+
+        if (assetPath.has_stem())
+            buttonText = assetPath.stem().string();
+        else
+            buttonText = defaultText;
+    }
+
+    if (ImGui::Button(ICON_FA_TRASH)) {
+        assetIdTarget == IcePick::UUID::Unitialised();
+    }
+    ImGui::SameLine();
+    ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+    if (ImGui::BeginDragDropTarget()) {
+        if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(assetType))) {
+            std::filesystem::path assetPath = assetRegistry.ResolveAssetPathFromAbsolutePath(m_DropAssetPath);
+            assetIdTarget = assetRegistry.GetAssetIdFromAssetPath(assetPath);
         }
         ImGui::EndDragDropTarget();
     }
@@ -182,6 +222,7 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         MeshRendererDetails(styles);
     }
 
+
     if (HasComponent<ScriptComponent>(selectedEntity)) {
         ImGui::Spacing();
         ScriptComponentDetails(styles);
@@ -216,6 +257,13 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
             FloatSlider("Intensity", &directionalLightComponent.Intensity, 0.0f, 10.0f);
             FloatSlider("Azimuth", &directionalLightComponent.Azimuth, 0.0f, 360.0f);
             FloatSlider("Elevation", &directionalLightComponent.Elevation, -180.0f, 180.0f);
+        }
+    }
+
+    if (HasComponent<AnimatorComponent>(selectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Animator Component", ImGuiTreeNodeFlags_DefaultOpen)) {
+            AnimatorComponentDetails();
         }
     }
 }
@@ -443,10 +491,7 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
         ImGui::NextColumn();
         ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
         if (ImGui::BeginDragDropTarget()) {
-            ImGui::Text("Dropping something");
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::STATIC_MESH))) {
-                //meshRenderer.MeshFilePath = m_DropAssetPath;
-                //meshRenderer.MeshLoaded = false;
                 m_MeshImportPopup.OpenPopup(m_DropAssetPath);
             }
             ImGui::EndDragDropTarget();
@@ -543,4 +588,14 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
             OpenScriptEditor(scriptPath);
         }
     }
+}
+
+void PropertiesPanel::AnimatorComponentDetails() {
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    IcePick::AnimatorComponent& animatorComponent = IcePick::GetComponent<IcePick::AnimatorComponent>(selectedEntity);
+
+    AssetDropTarget("Animation Asset", animatorComponent.AnimationId, IcePick::AssetTypes::ANIMATION);
+
+    ImGui::Columns(1);
+
 }

@@ -1,29 +1,114 @@
 #include "Animator.h"
 #include "Skeleton.h"
+#include "AnimationLoader.h"
+#include "../Scene Systems/Components.h"
+#include "../Utilities/Clock.h"
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <math.h>
 
 namespace IcePick {
 	void Animator::CalculateSkeletonTransforms(Skeleton& skeleton) {
 		glm::mat4 rootTransform{ 1.0f };
-		CalculateBoneTransformRecursive(skeleton);
+        CalculateBoneTransforms(skeleton);
 		skeleton.UploadBoneData();
 	}
 
-	//void Animator::CalculateBoneTransformRecursive(SkeletonNodeHierarchy& skeletonNode, Skeleton& skeleton, const glm::mat4& parentBoneTransform) {
- //       glm::mat4& localTransform = skeleton.BoneLocalTransforms[skeletonNode.BoneLocalTransformIndex];
- //       glm::mat4 boneWorldTransform = parentBoneTransform * localTransform;
- //       skeleton.BoneParentTransforms[skeletonNode.BoneLocalTransformIndex] = parentBoneTransform;
+    void Animator::ProcessAnimationClip(Skeleton& skeleton, AnimatorComponent& animatorComponent, AnimationLoader& animationLoader, DeltaTime dt) {
+        if (animatorComponent.AnimationId == UUID::Unitialised())
+            return;
 
- //       if (skeletonNode.BoneIndex != -1) {
- //           Bone& bone = skeleton.GetBone(skeletonNode.BoneIndex);
- //           bone.FinalTransform = skeleton.InverseGlobalRootTransform * boneWorldTransform * bone.OffsetMatrix;
- //       }
+        SkeletalNodeAnimation& skeletalAnimation = animationLoader.GetSkeletalAnimationById(animatorComponent.AnimationId);
+        if (skeletalAnimation.Target != skeleton.Id)
+            return;
 
- //       for (size_t i = 0; i < skeletonNode.Children.size(); i++) {
- //           CalculateBoneTransformRecursive(skeletonNode.Children[i], skeleton, boneWorldTransform);
- //       }
-	//}
+        animatorComponent.Time += dt.GetDelta();
+        animatorComponent.Time = fmod(animatorComponent.Time, skeletalAnimation.Duration);
 
-    void Animator::CalculateBoneTransformRecursive(Skeleton& skeleton) {
+        for (const auto& nodeTransformChannel : skeletalAnimation.NodeTransformChannels) {
+            SkeletonNode& skeletonNode = skeleton.Nodes[nodeTransformChannel.TargetNodeIndex];
+
+            glm::mat4 nodeLocalTransform{ 1.0f };
+
+            // Position
+            unsigned int channelKeyIndex = 0;
+            const auto& positionKeys = nodeTransformChannel.TransformChannels.PositionChannel.ChannelKeys;
+            glm::vec3 interpolatedKeyPosition{ 1.0f, 1.0f, 1.0f };
+            if (positionKeys.size()) {
+                for (size_t i = 0; i < positionKeys.size(); i++) {
+                    const auto& channelKey = positionKeys[i];
+                    if (channelKey.KeyTime > animatorComponent.Time) {
+                        channelKeyIndex = i;
+                        break;
+                    }
+                }
+                //float keyTimeRation = (positionKeys[channelKeyIndex] - anim);
+
+                interpolatedKeyPosition = positionKeys[channelKeyIndex].Value;
+                //if (channelKeyIndex == 0) {
+
+                //}
+                //else {
+
+                //}
+            }
+            
+            // Rotation
+            channelKeyIndex = 0;
+            const auto& rotationKeys = nodeTransformChannel.TransformChannels.RotationChannel.ChannelKeys;
+            glm::quat interpolatedKeyRotation = glm::quat(glm::vec3(0.0f));
+            if (rotationKeys.size()) {
+                for (size_t i = 0; i < rotationKeys.size(); i++) {
+                    const auto& channelKey = rotationKeys[i];
+                    if (channelKey.KeyTime > animatorComponent.Time) {
+                        channelKeyIndex = i;
+                        break;
+                    }
+                }
+                //float keyTimeRation = (positionKeys[channelKeyIndex] - anim);
+
+                interpolatedKeyRotation = rotationKeys[channelKeyIndex].Value;
+                //if (channelKeyIndex == 0) {
+
+                //}
+                //else {
+
+                //}
+            }
+
+            // Scale
+            channelKeyIndex = 0;
+            const auto& scaleKeys = nodeTransformChannel.TransformChannels.ScaleChannel.ChannelKeys;
+            glm::vec3 interpolatedKeyScale{ 1.0f, 1.0f, 1.0f };
+            if (scaleKeys.size()) {
+                for (size_t i = 0; i < scaleKeys.size(); i++) {
+                    const auto& channelKey = scaleKeys[i];
+                    if (channelKey.KeyTime > animatorComponent.Time) {
+                        channelKeyIndex = i;
+                        break;
+                    }
+                }
+                //float keyTimeRation = (positionKeys[channelKeyIndex] - anim);
+
+                interpolatedKeyScale = scaleKeys[channelKeyIndex].Value;
+                //if (channelKeyIndex == 0) {
+
+                //}
+                //else {
+
+                //}
+            }
+
+            nodeLocalTransform = glm::translate(nodeLocalTransform, interpolatedKeyPosition);
+            nodeLocalTransform *= glm::toMat4(interpolatedKeyRotation);
+            nodeLocalTransform = glm::scale(nodeLocalTransform, interpolatedKeyScale);
+            
+            skeletonNode.LocalTransform = nodeLocalTransform;
+        }
+    }
+
+    void Animator::CalculateBoneTransforms(Skeleton& skeleton) {
         for (size_t i = 0; i < skeleton.Nodes.size(); i++) {
             int parentIndex = skeleton.Nodes[i].ParentNodeIndex;
             

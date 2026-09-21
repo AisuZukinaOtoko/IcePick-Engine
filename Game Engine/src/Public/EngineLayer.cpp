@@ -55,8 +55,8 @@ void IcePick::EngineLayer::OnAttach() {
 	m_FrameBufferTwo.InitWithTargets(frameBufferTwoTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 
 	AssetRegistry& assetRegistry = GetAssetRegistry();
+	IP_ASSERT(assetRegistry.IsInitialised(), "Asset Registry must be initialised before attaching the engine layer.");
 
-	assetRegistry.Initialise(std::filesystem::current_path());
 	m_ScriptRunner.Init();
 	m_AssetLoader.Init();
 	m_PhysicsSystem3D.Init();
@@ -118,6 +118,18 @@ void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
 			sol::error err = result;
 			IP_LOG(err.what(), IP_ERROR_LOG);
 			entityScriptComponent.Active = false;
+		}
+	}
+
+	auto animatedMeshesView = ActiveSceneRegistry.view<AnimatorComponent, MeshRendererComponent>();
+	for (entt::entity entity : animatedMeshesView) {
+		MeshRendererComponent& meshRendererComponent = ActiveSceneRegistry.get<MeshRendererComponent>(entity);
+		AnimatorComponent& animatorComponent = ActiveSceneRegistry.get<AnimatorComponent>(entity);
+
+		if (meshRendererComponent.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+			IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(meshRendererComponent);
+			Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
+			m_Animator.ProcessAnimationClip(meshSkeleton, animatorComponent, m_AssetLoader.GetAnimationLoader(), dt);
 		}
 	}
 

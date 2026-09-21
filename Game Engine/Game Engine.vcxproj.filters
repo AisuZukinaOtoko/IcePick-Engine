@@ -141,6 +141,12 @@
     <ClCompile Include="src\Animation Systems\AnimationLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\File Systems\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene Systems\TerrainSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\depth.frag.shader" />
@@ -335,6 +341,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Animation Systems\AnimationLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File Systems\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene Systems\TerrainSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

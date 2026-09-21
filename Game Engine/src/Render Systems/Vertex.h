@@ -8,6 +8,7 @@ namespace IcePickRenderer {
 		STATIC_MESH_VERTEX = 0,
 		SKINNED_MESH_VERTEX,
 		LINE_POINT_VERTEX,
+		TERRAIN_VERTEX,
 		FULL_SCREEN_PASS_VERTEX
 	};
 
@@ -20,6 +21,18 @@ namespace IcePickRenderer {
 
 		glm::vec4 Colour;
 		glm::vec3 Position;
+	private:
+	};
+
+	struct TerrainVertex3D {
+	public:
+		TerrainVertex3D();
+		TerrainVertex3D(glm::vec2 position, glm::vec2 textureCooords);
+
+		static VertexLayout GetVertexLayout();
+
+		glm::vec2 Position;
+		glm::vec2 TextureCoords;
 	private:
 	};
 

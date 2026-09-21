@@ -1,14 +1,18 @@
 #pragma once
 #include <glm/glm.hpp>
 
+class DeltaTime;
+
 namespace IcePick {
 	class Skeleton;
-	struct SkeletonNodeHierarchy;
+	class AnimationLoader;
+	struct AnimatorComponent;
 
 	class Animator {
 	public:
 		void CalculateSkeletonTransforms(Skeleton& skeleton);
+		void ProcessAnimationClip(Skeleton& skeleton, AnimatorComponent& animatorComponent, AnimationLoader& animationLoader, DeltaTime dt);
 	private:
-		void CalculateBoneTransformRecursive(Skeleton& skeleton);
+		void CalculateBoneTransforms(Skeleton& skeleton);
 	};
 }

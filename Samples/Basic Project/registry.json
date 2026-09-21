@@ -1,0 +1,20 @@
+{
+    "assets": [
+        {
+            "assetId": 359878680281645023,
+            "assetType": 7,
+            "relativePath": "res\\Assets\\snow_miku\\Animations\\FlossYawnF_Idle.anim"
+        },
+        {
+            "assetId": 8468343264185567254,
+            "assetType": 7,
+            "relativePath": "res\\Assets\\Lara Croft\\Animations\\F_MED_Temple.ao-Temple_Female_Idle.anim"
+        },
+        {
+            "assetId": 4426920589746379537,
+            "assetType": 7,
+            "relativePath": "res\\Assets\\Lara Croft\\Animations\\F_MED_Temple.ao-Emote_Temple_CMF.anim"
+        }
+    ],
+    "version": 1
+}
