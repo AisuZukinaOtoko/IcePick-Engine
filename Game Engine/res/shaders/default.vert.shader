@@ -17,4 +17,4 @@ void main() {
     v_Pos = (u_Modelmatrix * vec4(position, 1.0)).xyz;
     v_Normal = normalize(u_NormalMatrix * normal);
     v_TexCoord = texCoord;
-};
+}

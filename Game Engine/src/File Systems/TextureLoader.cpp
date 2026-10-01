@@ -23,6 +23,10 @@ namespace IcePick {
 		return textureId;
 	}
 
+	void TextureLoader::InvalidateCache() {
+		m_CachedTextureId = UUID::Unitialised();
+	}
+
 	UUID TextureLoader::NewTextureFromFile(std::filesystem::path loadTexturePath, bool isNonLinearSpace) {
 		std::error_code errorCode;
 		std::filesystem::path texturePath = std::filesystem::canonical(m_BaseFilePath / loadTexturePath, errorCode); // resolve symlinks and relative paths.
@@ -46,7 +50,7 @@ namespace IcePick {
 		return newTextureId;
 	}
 
-	UUID TextureLoader::NewTextureFromMemory(unsigned char* data, bool isNonLinearSpace) {
+	UUID TextureLoader::NewUncompressedTextureFromMemory(void* data, IcePickRenderer::TextureSettings textureSettings, bool isNonLinearSpace) {
 		if (!data) {
 			IP_LOG("Texture has null data.", IP_ERROR_LOG);
 			return UUID::Unitialised();
@@ -141,9 +145,19 @@ namespace IcePick {
 		m_BaseFilePath = filePath;
 	}
 
-	void TextureLoader::UpdateTexture(UUID id, const IcePickRenderer::Texture& other) {
+	void TextureLoader::DestroyTextureById(UUID textureId) {
+		if (textureId == UUID::Unitialised() || textureId == m_DefaultTextureId)
+			return;
 
-	}	
+		InvalidateCache();
+
+		auto iterator = m_LoadedTextures.find(textureId);
+		if (iterator != m_LoadedTextures.end()) {
+			iterator->second.Destroy();
+			m_LoadedTextures.erase(iterator);
+		}
+
+	}
 
 	void TextureLoader::ShutDown() {
 		for (auto iterator = m_LoadedTextures.begin(); iterator != m_LoadedTextures.end(); ++iterator) {

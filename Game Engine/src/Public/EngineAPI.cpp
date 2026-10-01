@@ -99,6 +99,14 @@ IcePick::Skeleton& IcePick::EngineAPI::GetSkeletonById(IcePick::UUID skeletonId)
 	return m_Engine->m_AssetLoader.GetSkeletonById(skeletonId);
 }
 
+void IcePick::EngineAPI::CreateNewTerrain(unsigned int resolution) {
+	m_Engine->m_TerrainSystem.CreateTerrain(resolution, m_Engine->m_AssetLoader.GetTextureLoader());
+}
+
+bool IcePick::EngineAPI::IsTerrainCreated() {
+	return m_Engine->m_TerrainSystem.IsCreated();
+}
+
 IcePickRenderer::StaticMeshData& IcePick::EngineAPI::GetStaticMeshDataById(IcePick::UUID meshDataId) {
 	return m_Engine->m_AssetLoader.m_MeshLoader.GetStaticMeshById(meshDataId);
 }

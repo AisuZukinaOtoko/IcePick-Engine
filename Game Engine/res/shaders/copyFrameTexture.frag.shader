@@ -7,4 +7,4 @@ uniform sampler2D  u_SceneTextureSlot;
 
 void main(){
     OutColour = texture(u_SceneTextureSlot, v_TexCoord);
-};
+}

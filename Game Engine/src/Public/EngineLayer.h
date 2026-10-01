@@ -6,6 +6,7 @@
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
 #include "../Scene Systems/ScriptRunner.h"
+#include "../Scene Systems/TerrainSystem.h"
 #include "EngineRuntimeStates.h"
 
 #include "../Physics Systems/PhysicsSystem3D.h"
@@ -56,6 +57,7 @@ namespace IcePick {
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
 		Animator m_Animator;
+		TerrainSystem m_TerrainSystem;
 
 		void RenderEntityMeshes();
 		void RenderMeshNode(const IcePickRenderer::MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);

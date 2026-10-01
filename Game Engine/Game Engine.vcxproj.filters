@@ -170,6 +170,8 @@
     <None Include="res\Shaders\toneMapper.frag.shader" />
     <None Include="res\Shaders\copyFrameTexture.frag.shader" />
     <None Include="res\Shaders\skinning.vert.shader" />
+    <None Include="res\Shaders\terrain.vert.shader" />
+    <None Include="res\Shaders\terrain.frag.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">

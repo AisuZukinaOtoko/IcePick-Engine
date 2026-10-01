@@ -13,17 +13,18 @@ namespace IcePick {
 		~TextureLoader();
 
 		UUID NewTextureFromFile(std::filesystem::path texturePath, bool isNonLinearSpace);
-		UUID NewTextureFromMemory(unsigned char* data, bool isNonLinearSpace);
+		UUID NewUncompressedTextureFromMemory(void* data, IcePickRenderer::TextureSettings textureSettings, bool isNonLinearSpace);
 		UUID NewTextureFromScene(std::string texturePath, const aiScene* scene, bool isNonLinearSpace);
 		UUID NewTextureFromAsset(std::filesystem::path& assetPath);
 		const IcePickRenderer::Texture& GetTexture(UUID id);
 		const IcePickRenderer::Texture& GetDefaultTexture();
 		const UUID GetDefaultTextureID();
 		void SetLoaderBasePath(std::filesystem::path filePath);
-		void UpdateTexture(UUID id, const IcePickRenderer::Texture& other);
+		void DestroyTextureById(UUID textureId);
 		void CleanUpAfterLoad();
 	private:
 		bool NewTextureFromFileWithID(std::filesystem::path texturePath, UUID textureId, bool isNonLinearSpace);
+		void InvalidateCache();
 
 		UUID m_CachedTextureId = UUID::Unitialised();
 		UUID m_DefaultTextureId = UUID::Unitialised();

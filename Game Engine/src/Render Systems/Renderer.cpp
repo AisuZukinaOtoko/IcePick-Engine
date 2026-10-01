@@ -61,7 +61,7 @@ namespace IcePickRenderer {
 			return false;
 
 		glfwMakeContextCurrent(MainTargetWindow);
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 		glfwMaximizeWindow(MainTargetWindow);
 		glfwGetWindowSize(MainTargetWindow, &MainTargetWindowSize[0], &MainTargetWindowSize[1]);
 		IP_ASSERT((MainTargetWindowSize[0] != 0 && MainTargetWindowSize[1] != 0), "Invalid window size");
@@ -263,6 +263,15 @@ namespace IcePickRenderer {
 		shaderProgram.SetUniformMat3("u_NormalMatrix", RenderWorldNormalMatrix);
 		shaderProgram.SetUniformVec3("u_CameraPosition", CameraPosition);
 
+		shaderProgram.Use();
+		vertexArray.Bind();
+		glDrawElements(GL_TRIANGLES, vertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);
+		vertexArray.Unbind();
+		shaderProgram.UnBind();
+	}
+
+	void DrawMeshNoUniforms(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram) {
+		shaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
 		shaderProgram.Use();
 		vertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, vertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);

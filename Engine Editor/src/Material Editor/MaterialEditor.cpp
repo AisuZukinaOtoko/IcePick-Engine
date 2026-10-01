@@ -282,13 +282,12 @@ void MaterialEditor::DrawNodes() {
             ImGui::OpenPopup("NODE_OPTIONS");
         }
 
-        if (ImGui::BeginPopup("NODE_OPTIONS")) {            
+        if (ImGui::BeginPopup("NODE_OPTIONS")) {
             ShowNodeEditOptions(node);
             ImGui::EndPopup();
-        }
-        
+        }        
 
-        for (int j = 0; j < node->InputPins.size(); j++) {
+        for (int j = 0; (j < node->InputPins.size()) && (!node->nodeIsParameter); j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
 
@@ -438,44 +437,12 @@ void MaterialEditor::DrawNodeConnections() {
 
 void MaterialEditor::ShowEditMaterialBaseParameters() {
     ImGui::BeginChild("EditMaterialBaseParameters");
-    if (ImGui::BeginTable("Texture parameters", 1)) {
+    if (ImGui::BeginTable("Material Base Barameters", 1)) {
         ImGui::TableNextRow(ImGuiTableRowFlags_None);
         ImGui::TableSetColumnIndex(0);
 
-        //for (int i = 0; i < m_MaterialEditorMaterialBase.MaterialTextures.size(); i++) {
-        //    ImGui::PushID(i);
-        //    auto& baseTextureParam = m_MaterialEditorMaterialBase.MaterialTextures[i];
-        //    IcePick::UUID baseDataId = baseTextureParam.Id;
-        //    IcePick::UUID parameterTextureId = m_MaterialEditorMaterialInstance.GetMaterialInstanceTextureId(baseDataId);
-        //    unsigned int parameterTextureRenderId = m_EngineAPI.GetTextureRenderId(parameterTextureId);
 
-        //    if (ImGui::BeginTable("Material Texture", 2)) {
-        //        ImGui::TableNextRow(ImGuiTableRowFlags_None);
-        //        ImGui::TableNextColumn();
-        //        const int imageSize = 45;
-        //        ImGui::Image((void*)parameterTextureRenderId, ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
-
-        //        ImGui::TableNextColumn();
-
-        //        ImGui::Text(baseTextureParam.DisplayName.c_str());
-        //        if (ImGui::Button("Clear")) {
-        //            m_MaterialEditorMaterialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
-        //            m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // Calling update will invalidate the cache. This is desired.
-        //        }
-        //        ImGui::EndTable();
-        //    }
-
-        //    if (ImGui::BeginDragDropTarget()) {
-        //        if (ImGui::AcceptDragDropPayload("TEXTURE_ASSET")) {
-        //            IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
-        //            m_MaterialEditorMaterialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
-        //            m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // Calling update will invalidate the cache. This is desired.
-        //        }
-        //        ImGui::EndDragDropTarget();
-        //    }
-        //    ImGui::PopID();
-        //}
-
+        // Float Parameters
         for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceFloatData.size(); i++) {
             ImGui::PushID(i);
             auto& instanceFloatData = m_MaterialEditorMaterialInstance.InstanceFloatData[i];
@@ -495,6 +462,114 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
 
                 ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
                 if (ImGui::DragFloat("##Material Instance Float", &instanceFloatData.Data, 0.005)) {
+                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                }
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
+        }
+
+        // Vec2 Parameters
+        for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceVec2Data.size(); i++) {
+            ImGui::PushID(i);
+            auto& instanceVec2Data = m_MaterialEditorMaterialInstance.InstanceVec2Data[i];
+
+            if (ImGui::BeginTable("Instance Vec2 Parameter", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+
+                std::string parameterName = "Vec2 parameter.";
+                for (const auto& baseVec2Data : m_MaterialEditorMaterialBase.MaterialVec2Parameters) {
+                    if (baseVec2Data.Id == instanceVec2Data.MaterialBaseDataId) {
+                        parameterName = baseVec2Data.DisplayName;
+                    }
+                }
+                ImGui::Text(parameterName.c_str());
+                ImGui::TableNextColumn();
+
+                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+                if (ImGui::DragFloat2("##Material Instance Vec2", &instanceVec2Data.Data[0], 0.005)) {
+                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                }
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
+        }
+
+        // Vec3 Parameters
+        for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceVec3Data.size(); i++) {
+            ImGui::PushID(i);
+            auto& instanceVec3Data = m_MaterialEditorMaterialInstance.InstanceVec3Data[i];
+
+            if (ImGui::BeginTable("Instance Vec3 Parameter", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+
+                std::string parameterName = "Vec3 parameter.";
+                for (const auto& baseVec3Data : m_MaterialEditorMaterialBase.MaterialVec3Parameters) {
+                    if (baseVec3Data.Id == instanceVec3Data.MaterialBaseDataId) {
+                        parameterName = baseVec3Data.DisplayName;
+                    }
+                }
+                ImGui::Text(parameterName.c_str());
+                ImGui::TableNextColumn();
+
+                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+                if (ImGui::DragFloat3("##Material Instance Vec3", &instanceVec3Data.Data[0], 0.005)) {
+                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                }
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
+        }
+
+        // Vec4 Parameters
+        for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceVec4Data.size(); i++) {
+            ImGui::PushID(i);
+            auto& instanceVec4Data = m_MaterialEditorMaterialInstance.InstanceVec4Data[i];
+
+            if (ImGui::BeginTable("Instance Vec4 Parameter", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+
+                std::string parameterName = "Vec4 parameter.";
+                for (const auto& baseVec4Data : m_MaterialEditorMaterialBase.MaterialVec4Parameters) {
+                    if (baseVec4Data.Id == instanceVec4Data.MaterialBaseDataId) {
+                        parameterName = baseVec4Data.DisplayName;
+                    }
+                }
+                ImGui::Text(parameterName.c_str());
+                ImGui::TableNextColumn();
+
+                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+                if (ImGui::DragFloat4("##Material Instance Vec4", &instanceVec4Data.Data[0], 0.005)) {
+                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                }
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
+        }
+
+        // ColourVec4 Parameters
+        for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceColourVec4Data.size(); i++) {
+            ImGui::PushID(i);
+            auto& instanceColourVec4Data = m_MaterialEditorMaterialInstance.InstanceColourVec4Data[i];
+
+            if (ImGui::BeginTable("Instance ColourVec4 Parameter", 2)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableNextColumn();
+
+                std::string parameterName = "Colour parameter.";
+                for (const auto& baseColourVec4Data : m_MaterialEditorMaterialBase.MaterialColourVec4Parameters) {
+                    if (baseColourVec4Data.Id == instanceColourVec4Data.MaterialBaseDataId) {
+                        parameterName = baseColourVec4Data.DisplayName;
+                    }
+                }
+                ImGui::Text(parameterName.c_str());
+                ImGui::TableNextColumn();
+
+                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+                if (ImGui::ColorEdit4("##Material Instance ColourVec4", &instanceColourVec4Data.Data[0], 0.005)) {
                     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
                 }
                 ImGui::EndTable();
@@ -691,6 +766,13 @@ void MaterialEditor::ShowNodeEditOptions(std::shared_ptr<Node> node) {
     std::string nodeParameterToggleText = (node->nodeIsParameter) ? "Demote from parameter" : "Convert to parameter";
     if (ImGui::MenuItem(nodeParameterToggleText.c_str(), NULL, false, node->nodeCanBeParamterized)) {
         node->nodeIsParameter = !node->nodeIsParameter;
+
+        if (node->nodeIsParameter) { // Disconnect all input pins if node is a parameter.
+            for (unsigned int pinIndex = 0; pinIndex < node->InputPins.size(); pinIndex++) {
+                DisconnectPins(node, pinIndex, true);
+            }
+        }
+
         m_GraphStateChanged = true;
     }
 
@@ -899,6 +981,22 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
 
     for (const auto& materialFloatParameter : m_MaterialEditorMaterialBase.MaterialFloatParameters) {
         uniformSS << "uniform float " << materialFloatParameter.ShaderIdentifier << ";\n";
+    }
+
+    for (const auto& materialVec2Parameter : m_MaterialEditorMaterialBase.MaterialVec2Parameters) {
+        uniformSS << "uniform vec2 " << materialVec2Parameter.ShaderIdentifier << ";\n";
+    }
+
+    for (const auto& materialVec3Parameter : m_MaterialEditorMaterialBase.MaterialVec3Parameters) {
+        uniformSS << "uniform vec3 " << materialVec3Parameter.ShaderIdentifier << ";\n";
+    }
+
+    for (const auto& materialVec4Parameter : m_MaterialEditorMaterialBase.MaterialVec4Parameters) {
+        uniformSS << "uniform vec4 " << materialVec4Parameter.ShaderIdentifier << ";\n";
+    }
+
+    for (const auto& materialColourVec4Parameter : m_MaterialEditorMaterialBase.MaterialColourVec4Parameters) {
+        uniformSS << "uniform vec4 " << materialColourVec4Parameter.ShaderIdentifier << ";\n";
     }
 
     std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;

@@ -5,8 +5,8 @@ namespace IcePick {
 	static const char* AssetTypeStrings[AssetTypes::ASSET_TYPE_COUNT];
 	static const char* AssetTypeExtensions[AssetTypes::ASSET_TYPE_COUNT];
 
-	static constexpr unsigned int NumMeshSourceFileExtensions = 4;
-	static const char* MeshSourceFileExtensions[NumMeshSourceFileExtensions] = { ".obj", ".glb", ".gltf", ".fbx" };
+	static constexpr unsigned int NumMeshSourceFileExtensions = 5;
+	static const char* MeshSourceFileExtensions[NumMeshSourceFileExtensions] = { ".obj", ".glb", ".gltf", ".fbx", ".pmx"};
 
 	void InitialiseAssetTypes() {
 		AssetTypeStrings[AssetTypes::STATIC_MESH] = "STATIC MESH";

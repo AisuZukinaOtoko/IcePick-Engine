@@ -13,4 +13,4 @@ void main() {
     v_TexCoord = texCoord;
     v_Normal = vec3(0.0f, 1.0f, 0.0f);
     gl_Position = u_ViewProjectionMatrix * vec4(v_Pos, 1.0f);
-};
+}

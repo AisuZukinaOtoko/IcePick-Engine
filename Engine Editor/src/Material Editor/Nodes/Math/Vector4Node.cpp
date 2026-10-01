@@ -6,6 +6,8 @@ Vector4Node::Vector4Node() {
 	InputPins.emplace_back(Pin::FLOAT32, "Z");
 	InputPins.emplace_back(Pin::FLOAT32, "W");
 	OutputPins.emplace_back(Pin::VEC4, "XYZW", ".xyzw");
+
+	m_Identifier = "node_" + std::to_string(Id);
 	m_NodeType = "vec4";
 	NodeName = "Vector4";
 	nodeCanBeParamterized = true;
@@ -15,12 +17,21 @@ void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	if (m_Initialised)
 		return;
 
-	m_Identifier = "node_" + std::to_string(Id);
-	std::string& sx = InputPins[0].ShaderIdentifier;
-	std::string& sy = InputPins[1].ShaderIdentifier;
-	std::string& sz = InputPins[2].ShaderIdentifier;
-	std::string& sw = InputPins[3].ShaderIdentifier;
-	ss << "vec4 " << m_Identifier << " = vec4(" << sx << "," << sy << "," << sz << "," << sw << ");\n";
+	if (!nodeIsParameter) {
+		std::string& sx = InputPins[0].ShaderIdentifier;
+		std::string& sy = InputPins[1].ShaderIdentifier;
+		std::string& sz = InputPins[2].ShaderIdentifier;
+		std::string& sw = InputPins[3].ShaderIdentifier;
+		ss << "vec4 " << m_Identifier << " = vec4(" << sx << "," << sy << "," << sz << "," << sw << ");\n";
+	}
+	else {
+		IcePick::MaterialBaseParameter materialBaseVec4Parameter{ NodeName, m_Identifier, Id };
+		editMaterialBase.MaterialVec4Parameters.push_back(materialBaseVec4Parameter);
+
+		IcePick::MaterialInstanceData<glm::vec4> materialInstanceVec4Parameter{ materialBaseVec4Parameter.Id, glm::vec4(0.0f) };
+		editMaterialInstance.InstanceVec4Data.push_back(materialInstanceVec4Parameter);
+	}
+	
 	m_Initialised = true;
 }
 

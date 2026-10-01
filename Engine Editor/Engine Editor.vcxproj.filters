@@ -168,6 +168,9 @@
     <ClCompile Include="src\Menu\AssetRegistryViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Panels\TerrainPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Material Editor\Nodes\Functions\CosineNode.h">
@@ -324,6 +327,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ProjectDetails.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\TerrainPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

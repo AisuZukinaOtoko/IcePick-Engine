@@ -206,6 +206,8 @@
     <None Include="res\Shaders\pbrNeutralToneMapper.frag.shader" />
     <None Include="res\Shaders\picking.util.shader" />
     <None Include="res\Shaders\skinning.vert.shader" />
+    <None Include="res\Shaders\terrain.frag.shader" />
+    <None Include="res\Shaders\terrain.vert.shader" />
     <None Include="res\Shaders\toneMapper.frag.shader" />
     <None Include="res\Shaders\toneMapper.util.shader" />
     <None Include="res\Textures\black_fabric_diffuse.iptex" />

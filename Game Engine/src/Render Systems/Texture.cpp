@@ -2,6 +2,7 @@
 #include <STB/stb_image.h>
 #include "Texture.h"
 #include "../LogSystem.h"
+#include "../Utilities/Assert.h"
 
 namespace IcePickRenderer {
 	void Texture::CreateTextureContext() {
@@ -64,7 +65,6 @@ namespace IcePickRenderer {
 
 	Texture::Texture(const std::string& path, bool isNonLinearSpace) {
 		m_ID = 0;
-		m_FilePath = path;
 		m_LocalBuffer = nullptr;
 		m_Width = m_Height = m_NumChannels = 0;
 		m_IsNonLinearSpace = isNonLinearSpace;
@@ -112,24 +112,35 @@ namespace IcePickRenderer {
 		m_LocalBuffer = nullptr;
 	}
 
-	Texture::Texture(const TextureSettings& settings) { // Create empty texture. Allocate VRAM
+	void Texture::SetTextureSettings(const TextureSettings& settings) {
 		m_Width = settings.Width;
 		m_Height = settings.Height;
-		m_LocalBuffer = NULL;
 
-		m_LocalFormat = GL_RGBA; // Not important
 		switch (settings.Format) {
 		case TextureSettings::TextureFormat::RGBA8:
 			m_InternalFormat = GL_RGBA8;
+			m_LocalFormat = GL_RGBA;
+			m_LocalDataType = GL_UNSIGNED_BYTE;
 			break;
 		case TextureSettings::TextureFormat::SRGBA:
 			m_InternalFormat = GL_SRGB8_ALPHA8;
+			m_LocalFormat = GL_RGBA;
+			m_LocalDataType = GL_UNSIGNED_BYTE;
 			break;
 		case TextureSettings::TextureFormat::RGBA16:
 			m_InternalFormat = GL_RGBA16;
+			m_LocalFormat = GL_RGBA;
+			m_LocalDataType = GL_UNSIGNED_SHORT;
 			break;
 		case TextureSettings::TextureFormat::RGBA16F:
-			m_InternalFormat = GL_RGBA16F;
+			m_InternalFormat = GL_RGBA16F;	
+			m_LocalFormat = GL_RGBA;
+			m_LocalDataType = GL_HALF_FLOAT;
+			break;
+		case TextureSettings::TextureFormat::R32F:
+			m_InternalFormat = GL_R32F;
+			m_LocalFormat = GL_RED;
+			m_LocalDataType = GL_FLOAT;
 			break;
 		case TextureSettings::TextureFormat::RG32UI:
 			m_InternalFormat = GL_RG32UI;
@@ -146,7 +157,22 @@ namespace IcePickRenderer {
 			m_LocalFormat = GL_DEPTH_STENCIL;
 			m_LocalDataType = GL_UNSIGNED_INT_24_8;
 			break;
+		default:
+			IP_ASSERT(false, "Texture format not implemented.");
 		}
+	}
+
+	Texture::Texture(const TextureSettings& settings) { // Create empty texture. Allocate VRAM
+		SetTextureSettings(settings);
+		m_LocalBuffer = NULL;
+
+		CreateTextureContext();
+		UploadTextureData();
+	}
+
+	Texture::Texture(void* data, const TextureSettings& settings) {
+		m_LocalBuffer = data;
+		SetTextureSettings(settings);
 
 		CreateTextureContext();
 		UploadTextureData();

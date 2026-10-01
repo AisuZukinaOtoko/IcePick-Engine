@@ -7,7 +7,7 @@ namespace IcePickRenderer {
 		unsigned int Width = 0;
 		unsigned int Height = 0;
 		enum class TextureFormat {
-			RGBA8 = 0, SRGBA, RGBA16, RGBA16F, RG32UI, 
+			RGBA8 = 0, SRGBA, RGBA16, R32F, RGBA16F, RG32UI, 
 			DEPTH_TEXTURE, DEPTH_STENCIL_TEXTURE
 		} Format = TextureFormat::RGBA8;
 	};
@@ -27,6 +27,9 @@ namespace IcePickRenderer {
 		// Empty textures. Mainly as render targets
 		Texture(const TextureSettings& settings);
 
+		// Raw texture data
+		Texture(void* data, const TextureSettings& settings);
+
 		Texture(const Texture& other) = default;
 		~Texture();
 
@@ -42,19 +45,22 @@ namespace IcePickRenderer {
 		void GetTextureSize(unsigned int* width, unsigned int* height);
 
 	private:
+		void SetTextureSettings(const TextureSettings& settings);
 		void CreateTextureContext();
 		void SetTextureFormats();
 		void UploadTextureData();
-		unsigned int m_ID = 0;
-		std::string m_FilePath;
-		unsigned char* m_LocalBuffer = nullptr; // points to invalid memory after texture is created
+
+		void* m_LocalBuffer = nullptr; // points to invalid memory after texture is created
 		int m_Width = 0;
 		int m_Height = 0;
 		int m_NumChannels = 0; // bytes per pixel
+
+		unsigned int m_ID = 0;
 		bool m_IsNonLinearSpace = false;
 		GLuint m_InternalFormat = GL_RGBA8;
 		GLenum m_LocalFormat = GL_RGBA;
 		GLenum m_LocalDataType = GL_UNSIGNED_BYTE;
+
 		bool m_TextureValid = false;
 	};
 }

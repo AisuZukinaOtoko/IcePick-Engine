@@ -28,14 +28,22 @@ namespace IcePick {
 		UUID Id;
 		UUID MaterialBaseId = UUID::Unitialised();
 		std::vector<MaterialInstanceData<UUID>> InstanceTextureData;
-		//std::vector<MaterialInstanceData<glm::vec4>> InstanceVec4Data;
 		std::vector<MaterialInstanceData<float>> InstanceFloatData;
+		std::vector<MaterialInstanceData<glm::vec2>> InstanceVec2Data;
+		std::vector<MaterialInstanceData<glm::vec3>> InstanceVec3Data;
+		std::vector<MaterialInstanceData<glm::vec4>> InstanceVec4Data;
+		std::vector<MaterialInstanceData<glm::vec4>> InstanceColourVec4Data;
 
 		void ClearMaterialInstanceData();
 
 		UUID GetMaterialInstanceTextureId(UUID materialBaseDataId) const;
 		void SetMaterialInstanceTextureId(UUID materialBaseDataId, UUID textureId);
+
 		float GetMaterialInstanceFloatParameter(UUID materialBaseDataId) const;
+		glm::vec2 GetMaterialInstanceVec2Parameter(UUID materialBaseDataId) const;
+		glm::vec3 GetMaterialInstanceVec3Parameter(UUID materialBaseDataId) const;
+		glm::vec4 GetMaterialInstanceVec4Parameter(UUID materialBaseDataId) const;
+		glm::vec4 GetMaterialInstanceColourVec4Parameter(UUID materialBaseDataId) const;
 	private:
 	};
 
@@ -46,13 +54,7 @@ namespace IcePick {
 		UUID Id;
 	};
 
-	/*struct MaterialBaseVec4Parameter {
-		std::string DisplayName;
-		glm::vec4 Vec4Data;
-		UUID Id;
-	};*/
-
-	struct MaterialBaseFloatParameter {
+	struct MaterialBaseParameter {
 		std::string DisplayName;
 		std::string ShaderIdentifier;
 		UUID Id;
@@ -76,8 +78,11 @@ namespace IcePick {
 		UUID ShaderId = UUID::Unitialised();
 		UUID ShaderGraphId = UUID::Unitialised();
 		std::vector<MaterialBaseTextureData> MaterialTextures;
-		//std::vector<MaterialBaseVec4Parameter> MaterialVec4Parameters;
-		std::vector<MaterialBaseFloatParameter> MaterialFloatParameters;
+		std::vector<MaterialBaseParameter> MaterialFloatParameters;
+		std::vector<MaterialBaseParameter> MaterialVec2Parameters;
+		std::vector<MaterialBaseParameter> MaterialVec3Parameters;
+		std::vector<MaterialBaseParameter> MaterialVec4Parameters;
+		std::vector<MaterialBaseParameter> MaterialColourVec4Parameters;
 		std::vector<MaterialBaseReadRenderTexture> MaterialReadRenderTextures;
 
 		bool WriteDepthTexture = true;

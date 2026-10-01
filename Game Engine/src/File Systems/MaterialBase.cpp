@@ -14,6 +14,10 @@ void IcePick::MaterialBase::AddShaderInput(ShaderInput inputType) {
 void IcePick::MaterialBase::ClearMaterialBaseData() {
 	MaterialTextures.clear();
     MaterialFloatParameters.clear();
+    MaterialVec2Parameters.clear();
+    MaterialVec3Parameters.clear();
+    MaterialVec4Parameters.clear();
+    MaterialColourVec4Parameters.clear();
 }
 
 void IcePick::MaterialBase::BindMaterialInstanceParameters(EngineAPI engineAPI, const MaterialInstance& materialInstance) {
@@ -33,6 +37,30 @@ void IcePick::MaterialBase::BindMaterialInstanceParameters(EngineAPI engineAPI, 
         float instanceFloatDataValue = materialInstance.GetMaterialInstanceFloatParameter(MaterialFloatParameters[i].Id);
         materialShader.SetUniformFloat(floatUniform.c_str(), instanceFloatDataValue);
     }
+
+    for (int i = 0; i < MaterialVec2Parameters.size(); i++) {
+        std::string& uniform = MaterialVec2Parameters[i].ShaderIdentifier;
+        glm::vec2 instanceVec2DataValue = materialInstance.GetMaterialInstanceVec2Parameter(MaterialVec2Parameters[i].Id);
+        materialShader.SetUniformVec2(uniform.c_str(), instanceVec2DataValue);
+    }
+
+    for (int i = 0; i < MaterialVec3Parameters.size(); i++) {
+        std::string& uniform = MaterialVec3Parameters[i].ShaderIdentifier;
+        glm::vec3 instanceVec3DataValue = materialInstance.GetMaterialInstanceVec3Parameter(MaterialVec3Parameters[i].Id);
+        materialShader.SetUniformVec3(uniform.c_str(), instanceVec3DataValue);
+    }
+
+    for (int i = 0; i < MaterialVec4Parameters.size(); i++) {
+        std::string& uniform = MaterialVec4Parameters[i].ShaderIdentifier;
+        glm::vec4 instanceVec4DataValue = materialInstance.GetMaterialInstanceVec4Parameter(MaterialVec4Parameters[i].Id);
+        materialShader.SetUniformVec4(uniform.c_str(), instanceVec4DataValue);
+    }
+
+    for (int i = 0; i < MaterialColourVec4Parameters.size(); i++) {
+        std::string& uniform = MaterialColourVec4Parameters[i].ShaderIdentifier;
+        glm::vec4 instanceColourVec4DataValue = materialInstance.GetMaterialInstanceColourVec4Parameter(MaterialColourVec4Parameters[i].Id);
+        materialShader.SetUniformVec4(uniform.c_str(), instanceColourVec4DataValue);
+    }
 }
 
 IcePick::MaterialInstance::MaterialInstance(const MaterialInstance& other) {
@@ -40,6 +68,10 @@ IcePick::MaterialInstance::MaterialInstance(const MaterialInstance& other) {
     MaterialBaseId = other.MaterialBaseId;
     InstanceTextureData = other.InstanceTextureData;
     InstanceFloatData = other.InstanceFloatData;
+    InstanceVec2Data = other.InstanceVec2Data;
+    InstanceVec3Data = other.InstanceVec3Data;
+    InstanceVec4Data = other.InstanceVec4Data;
+    InstanceColourVec4Data = other.InstanceColourVec4Data;
 }
 
 IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() const {
@@ -67,6 +99,10 @@ void IcePick::MaterialInstance::SetMaterialInstanceTextureId(UUID materialBaseDa
 void IcePick::MaterialInstance::ClearMaterialInstanceData() {
 	InstanceTextureData.clear();
     InstanceFloatData.clear();
+    InstanceVec2Data.clear();
+    InstanceVec3Data.clear();
+    InstanceVec4Data.clear();
+    InstanceColourVec4Data.clear();
 }
 
 IcePick::UUID IcePick::MaterialInstance::GetMaterialInstanceTextureId(UUID materialBaseDataId) const {
@@ -85,4 +121,43 @@ float IcePick::MaterialInstance::GetMaterialInstanceFloatParameter(UUID material
     }
 
     return 0.0f;
+}
+
+glm::vec2 IcePick::MaterialInstance::GetMaterialInstanceVec2Parameter(UUID materialBaseDataId) const {
+    for (const auto& vec2Data : InstanceVec2Data) {
+        if (vec2Data.MaterialBaseDataId == materialBaseDataId)
+            return vec2Data.Data;
+    }
+
+    return glm::vec2(0.0f);
+}
+
+
+glm::vec3 IcePick::MaterialInstance::GetMaterialInstanceVec3Parameter(UUID materialBaseDataId) const {
+    for (const auto& vec3Data : InstanceVec3Data) {
+        if (vec3Data.MaterialBaseDataId == materialBaseDataId)
+            return vec3Data.Data;
+    }
+
+    return glm::vec3(0.0f);
+}
+
+glm::vec4 IcePick::MaterialInstance::GetMaterialInstanceVec4Parameter(UUID materialBaseDataId) const {
+    for (const auto& vec4Data : InstanceVec4Data) {
+        if (vec4Data.MaterialBaseDataId == materialBaseDataId)
+            return vec4Data.Data;
+    }
+
+    return glm::vec4(0.0f);
+}
+
+glm::vec4 IcePick::MaterialInstance::GetMaterialInstanceColourVec4Parameter(UUID materialBaseDataId) const {
+    for (const auto& colourVec4Data : InstanceColourVec4Data) {
+        if (colourVec4Data.MaterialBaseDataId == materialBaseDataId) {
+            // TODO: Convert to non-linear colour space
+            return colourVec4Data.Data;
+        }            
+    }
+
+    return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }

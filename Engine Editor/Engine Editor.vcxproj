@@ -187,6 +187,7 @@
     <ClCompile Include="src\Panels\RigidBodyComponentDetails.cpp" />
     <ClCompile Include="src\Panels\ScenePanel.cpp" />
     <ClCompile Include="src\Panels\StatisticsPanel.cpp" />
+    <ClCompile Include="src\Panels\TerrainPanel.cpp" />
     <ClCompile Include="src\Styles\Styles.cpp" />
     <ClCompile Include="src\Styles\ThumbnailManager.cpp" />
     <ClCompile Include="src\Utils\Serialize.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="src\Panels\PropertiesPanel.h" />
     <ClInclude Include="src\Panels\ScenePanel.h" />
     <ClInclude Include="src\Panels\StatisticsPanel.h" />
+    <ClInclude Include="src\Panels\TerrainPanel.h" />
     <ClInclude Include="src\ProjectDetails.h" />
     <ClInclude Include="src\Styles\Styles.h" />
     <ClInclude Include="src\Styles\ThumbnailManager.h" />

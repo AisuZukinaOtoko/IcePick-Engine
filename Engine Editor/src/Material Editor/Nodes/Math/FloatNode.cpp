@@ -27,7 +27,7 @@ void FloatNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMat
 		return;
 
 	if (nodeIsParameter) {
-		IcePick::MaterialBaseFloatParameter materialBaseFloatParameter{ NodeName, m_Identifier, Id };
+		IcePick::MaterialBaseParameter materialBaseFloatParameter{ NodeName, m_Identifier, Id };
 		editMaterialBase.MaterialFloatParameters.push_back(materialBaseFloatParameter);
 
 		IcePick::MaterialInstanceData<float> materialInstanceFloatParameter{ materialBaseFloatParameter.Id, m_Value };

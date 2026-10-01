@@ -135,4 +135,8 @@ namespace IcePick {
 		JPH::BodyID RigidBodyId;
 		unsigned int ColliderShapeCount = 0;
 	};
+
+	struct TerrainSettingsComponent {
+		unsigned int Resolution = 200.0f;
+	};
 }

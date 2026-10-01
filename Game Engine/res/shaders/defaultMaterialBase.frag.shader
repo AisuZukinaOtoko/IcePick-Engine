@@ -16,4 +16,4 @@ void main() {
 #ifdef VIEW_PICKING
     OutEntityMat = GetEntityMatSlot();
 #endif
-};
+}

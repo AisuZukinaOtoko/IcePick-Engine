@@ -1,7 +1,5 @@
 #version 450 core
 layout(location = 0) out vec4 OutColour;
-layout(location = 1) out uvec4 OutEntityMat;
-
 
 in vec3 v_Pos;
 in vec2 v_TexCoord;
@@ -16,7 +14,6 @@ const vec3 tempLightColour = vec3(1.0f, 1.0f, 1.0f);
 const float tempLightIntensity = 0.68f;
 const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f) * 0.8f;
 
-#include "picking.util.shader"
 
 void main() {
     vec4 OutputColour = vec4(0.0f);
@@ -38,7 +35,4 @@ void main() {
     }
 
     OutColour = OutputColour;
-#ifdef VIEW_PICKING
-    OutEntityMat = GetEntityMatSlot();
-#endif
 }

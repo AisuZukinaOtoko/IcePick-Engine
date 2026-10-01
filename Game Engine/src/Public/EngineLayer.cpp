@@ -93,6 +93,9 @@ void IcePick::EngineLayer::OnAttach() {
 	MaterialInstance copyBufferMaterialInstance = copyBufferMaterialBase.CreateEmptyInstanceFromBase();
 	engineAPI.RegisterMaterialBase(copyBufferMaterialBase);
 	FrameBufferCopyMaterialInstanceId = engineAPI.RegisterMaterialInstance(copyBufferMaterialInstance);
+
+	// Terrain System
+	m_TerrainSystem.Init(m_AssetLoader.GetShaderLoader(), m_AssetLoader.GetMaterialLoader());
 }
 
 void IcePick::EngineLayer::OnUpdate(DeltaTime dt) {
@@ -235,6 +238,10 @@ void IcePick::EngineLayer::OnRender(RenderPayload& payload) {
 #endif
 
 	IcePickRenderer::FlushLineRenderBuffer();
+	IP_CORE_PROFILE_POP();
+
+	IP_CORE_PROFILE_BEGIN("Terrain render.");
+	m_TerrainSystem.RenderTerrain(m_AssetLoader.GetMaterialLoader(), m_AssetLoader.GetShaderLoader(), shared_from_this());
 	IP_CORE_PROFILE_POP();
 
 	m_CurrentFrameBuffer = FrameBufferEnum::TWO;
@@ -396,6 +403,8 @@ void IcePick::EngineLayer::FullScreenPass(UUID materialInstanceId) {
 }
 
 void IcePick::EngineLayer::OnBeginScene() {
+	m_TerrainSystem.CreateTerrain(20, m_AssetLoader.GetTextureLoader());
+
 	auto& activeSceneRegistry = GetActiveSceneRegistry();
 	auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();
 	
@@ -419,6 +428,7 @@ void IcePick::EngineLayer::OnEndScene() {
 }
 
 void IcePick::EngineLayer::OnDetach() {
+	m_TerrainSystem.Destroy(m_AssetLoader.GetTextureLoader());
 	m_AssetLoader.ShutDown();
 	m_ScriptRunner.ShutDown();
 	m_PhysicsSystem3D.Shutdown();

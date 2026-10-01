@@ -265,7 +265,7 @@ namespace IcePick {
 			json& materialFloatParameters = assetFile["floatParameters"];
 
 			for (auto floatIterator = materialFloatParameters.begin(); floatIterator != materialFloatParameters.end(); floatIterator++) {
-				MaterialBaseFloatParameter& materialBaseFloatParameter = loadMaterialBase.MaterialFloatParameters.emplace_back();
+				MaterialBaseParameter& materialBaseFloatParameter = loadMaterialBase.MaterialFloatParameters.emplace_back();
 				materialBaseFloatParameter.Id = JsonUtils::GetUint64(*floatIterator, "Id");
 				materialBaseFloatParameter.ShaderIdentifier = floatIterator->value("shaderIdentifier", "none");
 #ifndef RELEASE

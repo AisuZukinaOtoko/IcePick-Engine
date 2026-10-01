@@ -19,6 +19,7 @@ namespace IcePickRenderer {
 	void NewFrame();
 	void EndFrame();
 	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
+	void DrawMeshNoUniforms(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
 	bool WindowShouldClose();

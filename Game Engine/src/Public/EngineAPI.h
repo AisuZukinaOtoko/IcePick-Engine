@@ -49,6 +49,10 @@ namespace IcePick {
 		IcePickRenderer::StaticMeshData& GetStaticMeshDataById(UUID meshDataId);
 		IcePickRenderer::SkinnedMeshData& GetSkinnedMeshDataById(UUID meshDataId);
 
+		// Terrain
+		void CreateNewTerrain(unsigned int resolution);
+		bool IsTerrainCreated();
+
 		// Scripts
 		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
 		void ReloadScripts();
