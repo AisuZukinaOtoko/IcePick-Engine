@@ -11,6 +11,7 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 	OutputPins.emplace_back(Pin::FLOAT32, "B", ".b");
 	OutputPins.emplace_back(Pin::FLOAT32, "A", ".a");
 
+	m_Identifier = "node_" + std::to_string(Id);
 	m_NodeType = "texture";
 	NodeWidth = 160.0f;
 	nodeIsParameter = true;
@@ -24,7 +25,7 @@ void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem
 	float nodeMinHeight = renderInfo.PinYSpacing * std::min(InputPins.size(), OutputPins.size()) + 1 + renderInfo.PinRadius + renderInfo.LabelPadding;
 	float nodeMaxHeight = renderInfo.PinYSpacing * std::max(InputPins.size(), OutputPins.size());
 	ImVec2 imagePos = ImVec2(CanvasPosition.x + canvasScreenPos.x + canvasScrolling.x + renderInfo.PinRadius + renderInfo.LabelPadding, CanvasPosition.y + canvasScreenPos.y + canvasScrolling.y + renderInfo.NodeHeaderHeight + nodeMinHeight);
-	ImVec2 imageEnd = ImVec2(0.0f, imagePos.y + nodeMaxHeight - renderInfo.NodePadding);
+	ImVec2 imageEnd = ImVec2(0.0f, imagePos.y + nodeMaxHeight - renderInfo.NodePadding - renderInfo.LabelPadding);
 	imageEnd.x = imagePos.x + imageEnd.y - imagePos.y;
 	ImVec2 imageSize = ImVec2(imageEnd.x - imagePos.x, imageEnd.y - imagePos.y);
 	draw_list->AddImage((void*)(intptr_t)m_TextureRenderId, imagePos, imageEnd, ImVec2(0, 1), ImVec2(1, 0));
@@ -58,7 +59,6 @@ void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	IcePick::MaterialInstanceData<IcePick::UUID> materialInstanceTextureData{ materialBaseTextureData.Id, m_TextureId };
 	editMaterialInstance.InstanceTextureData.push_back(materialInstanceTextureData);
 
-	m_Identifier = "node_" + std::to_string(Id);
 	std::string& s1 = InputPins[0].ShaderIdentifier;
 	ss << "vec4 " << m_Identifier << " = texture(" << sampler << "," << s1 << ");\n";
 	m_Initialised = true;

@@ -69,25 +69,77 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 	}
 	json["shaderGraph"] = shaderGraphJsonObject;
 
-	nlohmann::json textureParameters = nlohmann::json::array();
-	for (const auto& materialBaseTexture : materialBase.MaterialTextures) {
-		nlohmann::json materialBaseTextureJson;
-		materialBaseTextureJson["Id"] = static_cast<uint64_t>(materialBaseTexture.Id);
-		materialBaseTextureJson["sampler"] = materialBaseTexture.SamplerIdentifier;
-		materialBaseTextureJson["displayName"] = materialBaseTexture.DisplayName;
-		textureParameters.push_back(materialBaseTextureJson);
+	{
+		nlohmann::json textureParameters = nlohmann::json::array();
+		for (const auto& materialBaseTexture : materialBase.MaterialTextures) {
+			nlohmann::json materialBaseTextureJson;
+			materialBaseTextureJson["Id"] = static_cast<uint64_t>(materialBaseTexture.Id);
+			materialBaseTextureJson["sampler"] = materialBaseTexture.SamplerIdentifier;
+			materialBaseTextureJson["displayName"] = materialBaseTexture.DisplayName;
+			textureParameters.push_back(materialBaseTextureJson);
+		}
+		json["textureParameters"] = textureParameters;
 	}
-	json["textureParameters"] = textureParameters;
 
-	nlohmann::json floatParameters = nlohmann::json::array();
-	for (const auto& materialBaseFloatParameter : materialBase.MaterialFloatParameters) {
-		nlohmann::json materialBaseFloatJson;
-		materialBaseFloatJson["Id"] = static_cast<uint64_t>(materialBaseFloatParameter.Id);
-		materialBaseFloatJson["shaderIdentifier"] = materialBaseFloatParameter.ShaderIdentifier;
-		materialBaseFloatJson["displayName"] = materialBaseFloatParameter.DisplayName;
-		floatParameters.push_back(materialBaseFloatJson);
+	{
+		nlohmann::json floatParameters = nlohmann::json::array();
+		for (const auto& materialBaseFloatParameter : materialBase.MaterialFloatParameters) {
+			nlohmann::json materialBaseFloatJson;
+			materialBaseFloatJson["Id"] = static_cast<uint64_t>(materialBaseFloatParameter.Id);
+			materialBaseFloatJson["shaderIdentifier"] = materialBaseFloatParameter.ShaderIdentifier;
+			materialBaseFloatJson["displayName"] = materialBaseFloatParameter.DisplayName;
+			floatParameters.push_back(materialBaseFloatJson);
+		}
+		json["floatParameters"] = floatParameters;
 	}
-	json["floatParameters"] = floatParameters;
+
+	{
+		nlohmann::json vec2Parameters = nlohmann::json::array();
+		for (const auto& materialBaseVec2Parameter : materialBase.MaterialVec2Parameters) {
+			nlohmann::json materialBaseVec2Json;
+			materialBaseVec2Json["Id"] = static_cast<uint64_t>(materialBaseVec2Parameter.Id);
+			materialBaseVec2Json["shaderIdentifier"] = materialBaseVec2Parameter.ShaderIdentifier;
+			materialBaseVec2Json["displayName"] = materialBaseVec2Parameter.DisplayName;
+			vec2Parameters.push_back(materialBaseVec2Json);
+		}
+		json["vec2Parameters"] = vec2Parameters;
+	}
+
+	{
+		nlohmann::json vec3Parameters = nlohmann::json::array();
+		for (const auto& materialBaseVec3Parameter : materialBase.MaterialVec3Parameters) {
+			nlohmann::json materialBaseVec3Json;
+			materialBaseVec3Json["Id"] = static_cast<uint64_t>(materialBaseVec3Parameter.Id);
+			materialBaseVec3Json["shaderIdentifier"] = materialBaseVec3Parameter.ShaderIdentifier;
+			materialBaseVec3Json["displayName"] = materialBaseVec3Parameter.DisplayName;
+			vec3Parameters.push_back(materialBaseVec3Json);
+		}
+		json["vec3Parameters"] = vec3Parameters;
+	}
+
+	{
+		nlohmann::json vec4Parameters = nlohmann::json::array();
+		for (const auto& materialBaseVec4Parameter : materialBase.MaterialVec4Parameters) {
+			nlohmann::json materialBaseVec4Json;
+			materialBaseVec4Json["Id"] = static_cast<uint64_t>(materialBaseVec4Parameter.Id);
+			materialBaseVec4Json["shaderIdentifier"] = materialBaseVec4Parameter.ShaderIdentifier;
+			materialBaseVec4Json["displayName"] = materialBaseVec4Parameter.DisplayName;
+			vec4Parameters.push_back(materialBaseVec4Json);
+		}
+		json["vec4Parameters"] = vec4Parameters;
+	}
+
+	{
+		nlohmann::json colourVec4Parameters = nlohmann::json::array();
+		for (const auto& materialBaseColourVec4Parameter : materialBase.MaterialColourVec4Parameters) {
+			nlohmann::json materialBaseColourVec4Json;
+			materialBaseColourVec4Json["Id"] = static_cast<uint64_t>(materialBaseColourVec4Parameter.Id);
+			materialBaseColourVec4Json["shaderIdentifier"] = materialBaseColourVec4Parameter.ShaderIdentifier;
+			materialBaseColourVec4Json["displayName"] = materialBaseColourVec4Parameter.DisplayName;
+			colourVec4Parameters.push_back(materialBaseColourVec4Json);
+		}
+		json["colourVec4Parameters"] = colourVec4Parameters;
+	}	
 
 	std::ofstream outFile(assetPath);
 	if (outFile.is_open()) {
@@ -121,6 +173,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	}
 	else if (nodeType == "dotProduct") {
 		return std::make_shared<DotProductNode>();
+	}
+	else if (nodeType == "fresnel") {
+		return std::make_shared<FresnelNode>();
 	}
 	else if (nodeType == "length") {
 		return std::make_shared<LengthNode>();
@@ -186,6 +241,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	}
 	else if (nodeType == "voronoiNoise") {
 		return std::make_shared<VoronoiNoiseNode>();
+	}
+	else if (nodeType == "colour") {
+		return std::make_shared<ColourNode>();
 	}
 	
 	else {

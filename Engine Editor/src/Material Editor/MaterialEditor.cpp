@@ -285,9 +285,11 @@ void MaterialEditor::DrawNodes() {
         if (ImGui::BeginPopup("NODE_OPTIONS")) {
             ShowNodeEditOptions(node);
             ImGui::EndPopup();
-        }        
+        }
 
-        for (int j = 0; (j < node->InputPins.size()) && (!node->nodeIsParameter); j++) {
+        bool showInputPins = (!node->nodeIsParameter) || (node->nodeIsParameter && (node->GetNodeType() == "texture"));
+
+        for (int j = 0; (j < node->InputPins.size()) && showInputPins; j++) {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
 
@@ -568,9 +570,19 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
                 ImGui::Text(parameterName.c_str());
                 ImGui::TableNextColumn();
 
-                ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
-                if (ImGui::ColorEdit4("##Material Instance ColourVec4", &instanceColourVec4Data.Data[0], 0.005)) {
-                    m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                ImVec4 colourParameter{ instanceColourVec4Data.Data.r, instanceColourVec4Data.Data.g, instanceColourVec4Data.Data.b, instanceColourVec4Data.Data.a };
+                bool openColourEditPopup = ImGui::ColorButton("##Colour Button", colourParameter, 0, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight()));
+
+                if (openColourEditPopup) {
+                    ImGui::OpenPopup("ColourNodeEditPopup");
+                }
+
+                if (ImGui::BeginPopup("ColourNodeEditPopup")) {
+                    if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourParameter)) {
+                        instanceColourVec4Data.Data = glm::vec4(colourParameter.x, colourParameter.y, colourParameter.z, colourParameter.w);
+                        m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
+                    }
+                    ImGui::EndPopup();
                 }
                 ImGui::EndTable();
             }
@@ -596,6 +608,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }
+
+        if (ImGui::MenuItem("Colour Node", NULL, false)) {
+            std::shared_ptr<ColourNode> newNode = std::make_shared<ColourNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
         ImGui::EndMenu();
     }
 
@@ -615,6 +633,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
 
         if (ImGui::MenuItem("Dot Product Node", NULL, false)) {
             std::shared_ptr<DotProductNode> newNode = std::make_shared<DotProductNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
+        if (ImGui::MenuItem("Fresnel Node", NULL, false)) {
+            std::shared_ptr<FresnelNode> newNode = std::make_shared<FresnelNode>();
             newNode->CanvasPosition = mousePosInCanvas;
             m_EditMaterialNodeGraph.push_back(newNode);
         }

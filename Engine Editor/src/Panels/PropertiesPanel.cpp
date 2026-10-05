@@ -344,7 +344,9 @@ void PropertiesPanel::ColourPicker(const char* label, glm::vec3& rgb) {
 }
 
 void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance) {
-    bool baseHasParameters = materialBase.MaterialTextures.size() || materialBase.MaterialFloatParameters.size();
+    bool baseHasParameters = materialBase.MaterialTextures.size() || materialBase.MaterialFloatParameters.size()
+        || materialBase.MaterialVec2Parameters.size() || materialBase.MaterialVec3Parameters.size() || materialBase.MaterialVec4Parameters.size()
+        || materialBase.MaterialColourVec4Parameters.size();
 
     if (baseHasParameters) {
         ImGui::TableNextRow(ImGuiTableRowFlags_None);
@@ -352,7 +354,8 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
 
         if (ImGui::CollapsingHeader("Material Parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
             ImGui::Indent();
-            if (ImGui::BeginTable("Texture parameters", 1)) {
+
+            if (materialBase.MaterialTextures.size() && ImGui::BeginTable("Texture parameters", 1)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableSetColumnIndex(0);
 
@@ -393,7 +396,8 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::EndTable();
             }
 
-            if (ImGui::BeginTable("Float parameters", 1)) {
+            // Float Parameters
+            if (materialBase.MaterialFloatParameters.size() && ImGui::BeginTable("Float parameters", 1)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableSetColumnIndex(0);
 
@@ -419,6 +423,157 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                                 m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                             }
                         }                        
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
+
+            // Vec2 Parameters
+            if (materialBase.MaterialVec2Parameters.size() && ImGui::BeginTable("Vec2 parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialVec2Parameters.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseVec2Parameter = materialBase.MaterialVec2Parameters[i];
+
+                    if (ImGui::BeginTable("Instance Vec2 Parameter", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text(baseVec2Parameter.DisplayName.c_str());
+                        ImGui::TableNextColumn();
+
+                        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space.
+                        for (int j = 0; j < materialInstance.InstanceVec2Data.size(); j++) {
+                            auto& instanceVec2Data = materialInstance.InstanceVec2Data[j];
+
+                            if (instanceVec2Data.MaterialBaseDataId != baseVec2Parameter.Id)
+                                continue;
+
+                            if (ImGui::DragFloat2("##Material Instance Vec2", (float*)&instanceVec2Data.Data[0], 0.005)) {
+                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
+
+            // Vec3 Parameters
+            if (materialBase.MaterialVec3Parameters.size() && ImGui::BeginTable("Vec3 parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialVec3Parameters.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseVec3Parameter = materialBase.MaterialVec3Parameters[i];
+
+                    if (ImGui::BeginTable("Instance Vec3 Parameter", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text(baseVec3Parameter.DisplayName.c_str());
+                        ImGui::TableNextColumn();
+
+                        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space.
+                        for (int j = 0; j < materialInstance.InstanceVec3Data.size(); j++) {
+                            auto& instanceVec3Data = materialInstance.InstanceVec3Data[j];
+
+                            if (instanceVec3Data.MaterialBaseDataId != baseVec3Parameter.Id)
+                                continue;
+
+                            if (ImGui::DragFloat3("##Material Instance Vec3", (float*)&instanceVec3Data.Data[0], 0.005)) {
+                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
+
+            // Vec4 Parameters
+            if (materialBase.MaterialVec4Parameters.size() && ImGui::BeginTable("Vec4 parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialVec4Parameters.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseVec4Parameter = materialBase.MaterialVec4Parameters[i];
+
+                    if (ImGui::BeginTable("Instance Vec4 Parameter", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text(baseVec4Parameter.DisplayName.c_str());
+                        ImGui::TableNextColumn();
+
+                        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space.
+                        for (int j = 0; j < materialInstance.InstanceVec4Data.size(); j++) {
+                            auto& instanceVec4Data = materialInstance.InstanceVec4Data[j];
+
+                            if (instanceVec4Data.MaterialBaseDataId != baseVec4Parameter.Id)
+                                continue;
+
+                            if (ImGui::DragFloat4("##Material Instance Vec4", (float*)&instanceVec4Data.Data[0], 0.005)) {
+                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
+
+            // Colour Vec4 Parameters
+            if (materialBase.MaterialColourVec4Parameters.size() && ImGui::BeginTable("Colour Vec4 parameters", 1)) {
+                ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                ImGui::TableSetColumnIndex(0);
+
+                for (int i = 0; i < materialBase.MaterialColourVec4Parameters.size(); i++) {
+                    ImGui::PushID(i);
+                    auto& baseColourVec4Parameter = materialBase.MaterialColourVec4Parameters[i];
+
+                    if (ImGui::BeginTable("Instance Colour Vec4 Parameter", 2)) {
+                        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                        ImGui::TableNextColumn();
+
+                        ImGui::Text(baseColourVec4Parameter.DisplayName.c_str());
+                        ImGui::TableNextColumn();
+
+                        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space.
+                        for (int j = 0; j < materialInstance.InstanceColourVec4Data.size(); j++) {
+                            auto& instanceColourVec4Data = materialInstance.InstanceColourVec4Data[j];
+
+                            if (instanceColourVec4Data.MaterialBaseDataId != baseColourVec4Parameter.Id)
+                                continue;
+
+                            ImVec4 colourVec4Data{ instanceColourVec4Data.Data.x, instanceColourVec4Data.Data.y, instanceColourVec4Data.Data.z, instanceColourVec4Data.Data.w };
+                            bool openColourEditPopup = ImGui::ColorButton("##Colour Button", colourVec4Data, 0, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight()));
+
+                            if (openColourEditPopup) {
+                                ImGui::OpenPopup("ColourEditPopup");
+                            }
+
+                            if (ImGui::BeginPopup("ColourEditPopup")) {
+                                if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourVec4Data)) {
+                                    instanceColourVec4Data.Data = glm::vec4(colourVec4Data.x, colourVec4Data.y, colourVec4Data.z, colourVec4Data.w);
+                                    m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // update material editor instance for updated previews
+                                }
+                                ImGui::EndPopup();
+                            }
+                        }
                         ImGui::EndTable();
                     }
                     ImGui::PopID();

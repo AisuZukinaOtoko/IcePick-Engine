@@ -86,6 +86,22 @@ IcePick::MaterialInstance IcePick::MaterialBase::CreateEmptyInstanceFromBase() c
         tempMaterialInstance.InstanceFloatData.emplace_back(floatParameter.Id, 0.0f);
     }
 
+    for (const auto& vec2Parameter : MaterialVec2Parameters) {
+        tempMaterialInstance.InstanceVec2Data.emplace_back(vec2Parameter.Id, glm::vec2(0.0f, 0.0f));
+    }
+
+    for (const auto& vec3Parameter : MaterialVec3Parameters) {
+        tempMaterialInstance.InstanceVec3Data.emplace_back(vec3Parameter.Id, glm::vec3(0.0f, 0.0f, 0.0f));
+    }
+
+    for (const auto& vec4Parameter : MaterialVec4Parameters) {
+        tempMaterialInstance.InstanceVec4Data.emplace_back(vec4Parameter.Id, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+    }
+
+    for (const auto& colourVec4Parameter : MaterialColourVec4Parameters) {
+        tempMaterialInstance.InstanceColourVec4Data.emplace_back(colourVec4Parameter.Id, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    }
+
     return tempMaterialInstance;
 }
 

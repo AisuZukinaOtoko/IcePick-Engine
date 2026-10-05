@@ -4,6 +4,7 @@
 #include "Functions/CosineNode.h"
 #include "Functions/CrossProductNode.h"
 #include "Functions/DotProductNode.h"
+#include "Functions/FresnelNode.h"
 #include "Functions/LengthNode.h"
 #include "Functions/LerpNode.h"
 #include "Functions/NormalizeNode.h"
@@ -30,5 +31,6 @@
 #include "Math/SplitVectorNode.h"
 
 #include "Rendering/BSDFNode.h"
+#include "Rendering/ColourNode.h"
 #include "Rendering/TextureNode.h"
 #include "Rendering/VoronoiNoiseNode.h"

@@ -149,6 +149,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Functions\CosineNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\CrossProductNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\DotProductNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Functions\FresnelNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\LengthNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\LerpNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\NormalizeNode.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Math\Vector4Node.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\NodeBase.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Rendering\ColourNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\TextureNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Utils.cpp" />
@@ -202,6 +204,7 @@
     <ClInclude Include="src\Material Editor\Nodes\Functions\CosineNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\CrossProductNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\DotProductNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Functions\FresnelNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\LengthNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\LerpNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\NormalizeNode.h" />
@@ -227,6 +230,7 @@
     <ClInclude Include="src\Material Editor\Nodes\NodeBase.h" />
     <ClInclude Include="src\Material Editor\Nodes\Nodes.h" />
     <ClInclude Include="src\Material Editor\Nodes\Rendering\BSDFNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Rendering\ColourNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Rendering\TextureNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Utils.h" />
