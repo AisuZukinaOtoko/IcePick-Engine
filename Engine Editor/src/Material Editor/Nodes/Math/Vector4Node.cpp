@@ -27,9 +27,6 @@ void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	else {
 		IcePick::MaterialBaseParameter materialBaseVec4Parameter{ NodeName, m_Identifier, Id };
 		editMaterialBase.MaterialVec4Parameters.push_back(materialBaseVec4Parameter);
-
-		IcePick::MaterialInstanceData<glm::vec4> materialInstanceVec4Parameter{ materialBaseVec4Parameter.Id, glm::vec4(0.0f) };
-		editMaterialInstance.InstanceVec4Data.push_back(materialInstanceVec4Parameter);
 	}
 	
 	m_Initialised = true;

@@ -61,9 +61,6 @@ void ColourNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMa
 	else {
 		IcePick::MaterialBaseParameter materialBaseColourVec4Parameter{ NodeName, m_Identifier, Id };
 		editMaterialBase.MaterialColourVec4Parameters.push_back(materialBaseColourVec4Parameter);
-
-		IcePick::MaterialInstanceData<glm::vec4> materialInstanceColourVec4Parameter{ materialBaseColourVec4Parameter.Id, { m_Value.x, m_Value.y, m_Value.z, m_Value.w } };
-		editMaterialInstance.InstanceColourVec4Data.push_back(materialInstanceColourVec4Parameter);
 	}
 
 	m_Initialised = true;

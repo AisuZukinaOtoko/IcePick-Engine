@@ -26,6 +26,7 @@ private:
 	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
 	void DrawNodeConnections();
 	void ShowEditMaterialBaseParameters();
+	void ShowEditMaterialBaseSettings();
 	void ShowAddNodeOptions(ImVec2 mousePosInCanvas);
 	void ShowNodeEditOptions(std::shared_ptr<Node> node);
 	bool NodeExists(IcePick::UUID nodeId);
@@ -46,7 +47,6 @@ private:
 	void CompileMaterial();
 	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth);
 	IcePick::ShaderSource GetShaderSourceFromGraph();
-	std::unordered_map<IcePick::UUID, std::string, UUIDHasher> m_NodeIdentifiers;
 	std::filesystem::path m_DropAssetPath;
 
 	bool m_Open = false;
@@ -62,7 +62,8 @@ private:
 	IcePick::UUID m_MaterialEditorShaderId = IcePick::UUID::Unitialised();
 	IcePick::MaterialBase m_MaterialEditorMaterialBase;
 	IcePick::MaterialInstance m_MaterialEditorMaterialInstance;
-	IcePick::ShaderSource m_MaterialEditorShaderSourceTemplate;
+	std::string m_MaterialEditorFragmentShaderSourceTemplate;
+	std::vector<std::string> m_MaterialSurfaceVertexShaderSources;
 
 	bool m_PinActive = false; //dragging a node pin
 	bool m_IsInputPin = false;

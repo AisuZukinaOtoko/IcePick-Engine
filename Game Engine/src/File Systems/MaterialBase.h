@@ -43,7 +43,13 @@ namespace IcePick {
 		glm::vec2 GetMaterialInstanceVec2Parameter(UUID materialBaseDataId) const;
 		glm::vec3 GetMaterialInstanceVec3Parameter(UUID materialBaseDataId) const;
 		glm::vec4 GetMaterialInstanceVec4Parameter(UUID materialBaseDataId) const;
-		glm::vec4 GetMaterialInstanceColourVec4Parameter(UUID materialBaseDataId) const;
+		glm::vec4 GetMaterialInstanceColourVec4Parameter(UUID materialBaseDataId, bool convertToNonLinear = false) const;
+
+		void SetMaterialInstanceFloatParameter(UUID materialBaseDataId, float value);
+		void SetMaterialInstanceVec2Parameter(UUID materialBaseDataId, glm::vec2 value);
+		void SetMaterialInstanceVec3Parameter(UUID materialBaseDataId, glm::vec3 value);
+		void SetMaterialInstanceVec4Parameter(UUID materialBaseDataId, glm::vec4 value);
+		void SetMaterialInstanceColourVec4Parameter(UUID materialBaseDataId, glm::vec4 value);
 	private:
 	};
 
@@ -70,9 +76,18 @@ namespace IcePick {
 
 	class MaterialBase {
 	public:
-		enum ShaderInput {
-			DELTA_TIME = 0b1 << 0
-		};
+		
+		enum MaterialSurfaceType {
+			STATIC_MESH = 0,
+			SKELETAL_MESH,
+			MATERIAL_MESH_TYPE_COUNT
+		} SurfaceType = STATIC_MESH;
+
+		enum MaterialShadingModel {
+			UNLIT = 0,
+			PHONG_SHADING,
+			MATERIAL_SHADING_MODEL_COUNT
+		} ShadingModel = PHONG_SHADING;
 
 		UUID Id;
 		UUID ShaderId = UUID::Unitialised();
@@ -87,13 +102,16 @@ namespace IcePick {
 
 		bool WriteDepthTexture = true;
 
-		void ClearShaderInputs();
-		void AddShaderInput(ShaderInput inputType);
 		void ClearMaterialBaseData();
+
+		UUID GetFloatParameterBaseIdByDisplayName(const std::string& displayName) const;
+		UUID GetVec2ParameterBaseIdByDisplayName(const std::string& displayName) const;
+		UUID GetVec3ParameterBaseIdByDisplayName(const std::string& displayName) const;
+		UUID GetVec4ParameterBaseIdByDisplayName(const std::string& displayName) const;
+		UUID GetColourVec4ParameterBaseIdByDisplayName(const std::string& displayName) const;
 
 		void BindMaterialInstanceParameters(EngineAPI engineAPI, const MaterialInstance& materialInstance);
 		MaterialInstance CreateEmptyInstanceFromBase() const;
 	private:
-		unsigned int m_ShaderInputFlags = 0;
 	};
 }

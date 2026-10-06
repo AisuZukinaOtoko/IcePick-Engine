@@ -7,6 +7,50 @@
 
 static bool RenameNodeTextNeedsFocus = false;
 
+static const char* MaterialSurfaceTypeToString(IcePick::MaterialBase::MaterialSurfaceType MaterialSurfaceType) {
+    switch (MaterialSurfaceType) {
+        case IcePick::MaterialBase::MaterialSurfaceType::STATIC_MESH:
+        return "Static";
+        case IcePick::MaterialBase::MaterialSurfaceType::SKELETAL_MESH:
+        return "Skeletal";
+    default:
+        return "Error";
+    }
+}
+
+static const char* MaterialShadingModelToString(IcePick::MaterialBase::MaterialShadingModel materialShadingModel) {
+    switch (materialShadingModel) {
+    case IcePick::MaterialBase::MaterialShadingModel::UNLIT:
+        return "Unlit";
+    case IcePick::MaterialBase::MaterialShadingModel::PHONG_SHADING:
+        return "Phong Shading";
+    default:
+        return "Error";
+    }
+}
+
+static void CopyAvailableMaterialInstanceData(IcePick::MaterialInstance& sourceMaterialInstance, IcePick::MaterialInstance& targetMaterialInstance) {
+    for (auto& floatParameter : targetMaterialInstance.InstanceFloatData) {
+        floatParameter.Data = sourceMaterialInstance.GetMaterialInstanceFloatParameter(floatParameter.MaterialBaseDataId);
+    }
+
+    for (auto& vec2Parameter : targetMaterialInstance.InstanceVec2Data) {
+        vec2Parameter.Data = sourceMaterialInstance.GetMaterialInstanceVec2Parameter(vec2Parameter.MaterialBaseDataId);
+    }
+
+    for (auto& vec3Parameter : targetMaterialInstance.InstanceVec3Data) {
+        vec3Parameter.Data = sourceMaterialInstance.GetMaterialInstanceVec3Parameter(vec3Parameter.MaterialBaseDataId);
+    }
+
+    for (auto& vec4Parameter : targetMaterialInstance.InstanceVec4Data) {
+        vec4Parameter.Data = sourceMaterialInstance.GetMaterialInstanceVec4Parameter(vec4Parameter.MaterialBaseDataId);
+    }
+
+    for (auto& colourVec4Parameter : targetMaterialInstance.InstanceColourVec4Data) {
+        colourVec4Parameter.Data = sourceMaterialInstance.GetMaterialInstanceColourVec4Parameter(colourVec4Parameter.MaterialBaseDataId);
+    }
+}
+
 MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
 	m_EngineAPI(engineAPI),
 	m_Renderer(engineAPI)
@@ -23,8 +67,11 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialEditorMaterialInstance.MaterialBaseId = m_MaterialEditorMaterialBaseId;
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
-    m_MaterialEditorShaderSourceTemplate.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.vert.shader");
-    m_MaterialEditorShaderSourceTemplate.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/materialTemplate.frag.shader");
+
+    m_MaterialEditorFragmentShaderSourceTemplate = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/materialTemplate.frag.shader");
+    m_MaterialSurfaceVertexShaderSources.reserve(IcePick::MaterialBase::MaterialSurfaceType::MATERIAL_MESH_TYPE_COUNT);
+    m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.vert.shader"));
+    m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/skinning.vert.shader"));
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
     m_MaterialEditorShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
@@ -51,7 +98,6 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
         m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
     }
 
-    m_MaterialEditorMaterialBase.ClearShaderInputs();
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
     CompileMaterial();
@@ -123,7 +169,19 @@ void MaterialEditor::Render() {
         }
 
         ImGui::Separator();
-        ShowEditMaterialBaseParameters();
+
+        if (ImGui::BeginTabBar("MaterialTabBar", ImGuiTabBarFlags_None)) {
+            if (ImGui::BeginTabItem("Parameters")) {
+                ShowEditMaterialBaseParameters();
+                ImGui::EndTabItem();
+            }
+            if (ImGui::BeginTabItem("Settings")) {
+                ShowEditMaterialBaseSettings();
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+        }
+        
 
 		ImGui::TableNextColumn();
 		DrawCanvas();
@@ -443,13 +501,13 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
         ImGui::TableNextRow(ImGuiTableRowFlags_None);
         ImGui::TableSetColumnIndex(0);
 
-
+        ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
         // Float Parameters
         for (int i = 0; i < m_MaterialEditorMaterialInstance.InstanceFloatData.size(); i++) {
             ImGui::PushID(i);
             auto& instanceFloatData = m_MaterialEditorMaterialInstance.InstanceFloatData[i];
 
-            if (ImGui::BeginTable("Instance Float Parameter", 2)) {
+            if (ImGui::BeginTable("Instance Float Parameter", 2, tableFlags)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableNextColumn();
 
@@ -476,7 +534,7 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
             ImGui::PushID(i);
             auto& instanceVec2Data = m_MaterialEditorMaterialInstance.InstanceVec2Data[i];
 
-            if (ImGui::BeginTable("Instance Vec2 Parameter", 2)) {
+            if (ImGui::BeginTable("Instance Vec2 Parameter", 2, tableFlags)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableNextColumn();
 
@@ -503,7 +561,7 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
             ImGui::PushID(i);
             auto& instanceVec3Data = m_MaterialEditorMaterialInstance.InstanceVec3Data[i];
 
-            if (ImGui::BeginTable("Instance Vec3 Parameter", 2)) {
+            if (ImGui::BeginTable("Instance Vec3 Parameter", 2, tableFlags)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableNextColumn();
 
@@ -530,7 +588,7 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
             ImGui::PushID(i);
             auto& instanceVec4Data = m_MaterialEditorMaterialInstance.InstanceVec4Data[i];
 
-            if (ImGui::BeginTable("Instance Vec4 Parameter", 2)) {
+            if (ImGui::BeginTable("Instance Vec4 Parameter", 2, tableFlags)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableNextColumn();
 
@@ -557,7 +615,7 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
             ImGui::PushID(i);
             auto& instanceColourVec4Data = m_MaterialEditorMaterialInstance.InstanceColourVec4Data[i];
 
-            if (ImGui::BeginTable("Instance ColourVec4 Parameter", 2)) {
+            if (ImGui::BeginTable("Instance ColourVec4 Parameter", 2, tableFlags)) {
                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
                 ImGui::TableNextColumn();
 
@@ -578,7 +636,7 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
                 }
 
                 if (ImGui::BeginPopup("ColourNodeEditPopup")) {
-                    if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourParameter)) {
+                    if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourParameter, ImGuiColorEditFlags_AlphaBar)) {
                         instanceColourVec4Data.Data = glm::vec4(colourParameter.x, colourParameter.y, colourParameter.z, colourParameter.w);
                         m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance); // update material editor instance for updated previews
                     }
@@ -592,6 +650,57 @@ void MaterialEditor::ShowEditMaterialBaseParameters() {
         ImGui::EndTable();
     }
     ImGui::EndChild();
+}
+
+void MaterialEditor::ShowEditMaterialBaseSettings() {
+    ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+    if (ImGui::BeginTable("Material Base Settings", 2, tableFlags)) {
+        ImGui::TableNextRow(ImGuiTableRowFlags_None);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("Surface Type");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+        if (ImGui::BeginCombo("##MaterialSurfaceType", MaterialSurfaceTypeToString(m_MaterialEditorMaterialBase.SurfaceType))) {
+            for (int i = 0; i < (int)IcePick::MaterialBase::MaterialSurfaceType::MATERIAL_MESH_TYPE_COUNT; ++i) {
+                IcePick::MaterialBase::MaterialSurfaceType value = static_cast<IcePick::MaterialBase::MaterialSurfaceType>(i);
+                bool selected = (m_MaterialEditorMaterialBase.SurfaceType == value);
+
+                if (ImGui::Selectable(MaterialSurfaceTypeToString(value), selected)) {
+                    m_MaterialEditorMaterialBase.SurfaceType = value;
+                    CompileMaterial();
+                }
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::Text("Shading Model");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN); // Use all available horizontal space
+        if (ImGui::BeginCombo("##MaterialShadingModel", MaterialShadingModelToString(m_MaterialEditorMaterialBase.ShadingModel))) {
+            for (int i = 0; i < (int)IcePick::MaterialBase::MaterialShadingModel::MATERIAL_SHADING_MODEL_COUNT; ++i) {
+                IcePick::MaterialBase::MaterialShadingModel value = static_cast<IcePick::MaterialBase::MaterialShadingModel>(i);
+                bool selected = (m_MaterialEditorMaterialBase.ShadingModel == value);
+
+                if (ImGui::Selectable(MaterialShadingModelToString(value), selected)) {
+                    m_MaterialEditorMaterialBase.ShadingModel = value;
+                    CompileMaterial();
+                }
+
+                if (selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        
+        ImGui::EndTable();
+    }
 }
 
 void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
@@ -954,6 +1063,12 @@ void MaterialEditor::DeleteNode(IcePick::UUID nodeId) {
 void MaterialEditor::CompileMaterial() {
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
 
+    // Copy existing instance data to new instance to make the artist experience smoother
+    IcePick::MaterialInstance newMaterialInstance = m_MaterialEditorMaterialBase.CreateEmptyInstanceFromBase();
+    CopyAvailableMaterialInstanceData(m_MaterialEditorMaterialInstance, newMaterialInstance);
+    m_MaterialEditorMaterialInstance = newMaterialInstance;
+
+
     m_EngineAPI.UpdateShaderWithSource(m_MaterialEditorShaderId, newShaderSource);
     m_EngineAPI.UpdateMaterialBase(m_MaterialEditorMaterialBaseId, m_MaterialEditorMaterialBase);
     m_EngineAPI.UpdateMaterialInstance(m_MaterialEditorMaterialInstanceId, m_MaterialEditorMaterialInstance);
@@ -993,7 +1108,6 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
     }
 
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
-    m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
 
     std::stringstream uniformSS;
     std::stringstream shaderSS;
@@ -1023,7 +1137,7 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
         uniformSS << "uniform vec4 " << materialColourVec4Parameter.ShaderIdentifier << ";\n";
     }
 
-    std::string fragShader = m_MaterialEditorShaderSourceTemplate.FragmentShaderSource;
+    std::string fragShader = m_MaterialEditorFragmentShaderSourceTemplate;
 
     std::string replaceTarget = "#uniforms";
     size_t pos = fragShader.find(replaceTarget);
@@ -1038,7 +1152,7 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
     }
 
     IcePick::ShaderSource newShaderSource;
-    newShaderSource.VertexShaderSource = m_MaterialEditorShaderSourceTemplate.VertexShaderSource;
+    newShaderSource.VertexShaderSource = m_MaterialSurfaceVertexShaderSources[m_MaterialEditorMaterialBase.SurfaceType];
     newShaderSource.FragmentShaderSource = fragShader;
 
     return newShaderSource;

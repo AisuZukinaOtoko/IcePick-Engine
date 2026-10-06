@@ -23,9 +23,6 @@ void Vector2Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	else {
 		IcePick::MaterialBaseParameter materialBaseVec2Parameter{ NodeName, m_Identifier, Id };
 		editMaterialBase.MaterialVec2Parameters.push_back(materialBaseVec2Parameter);
-
-		IcePick::MaterialInstanceData<glm::vec2> materialInstanceVec2Parameter{ materialBaseVec2Parameter.Id, glm::vec2(0.0f) };
-		editMaterialInstance.InstanceVec2Data.push_back(materialInstanceVec2Parameter);
 	}
 
 	

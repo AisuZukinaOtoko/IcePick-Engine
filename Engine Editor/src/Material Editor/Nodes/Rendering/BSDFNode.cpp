@@ -8,6 +8,7 @@ BSDFNode::BSDFNode() {
 	//InputPins.emplace_back(Pin::FLOAT32, "Emissive");
 	NodeName = "Output";
 	m_NodeType = "bsdf";
+	m_Identifier = "node_" + std::to_string(Id);
 
 	NodeHeaderColour = ImU32(0xFF4B92C2);
 }
@@ -16,7 +17,6 @@ void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMate
 	if (m_Initialised)
 		return;
 
-	m_Identifier = "node_" + std::to_string(Id);
 	std::string& sAlbedo = InputPins[0].ShaderIdentifier;
 	ss << "OutColour = " << sAlbedo << ";\n";
 	m_Initialised = true;

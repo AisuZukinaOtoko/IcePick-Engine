@@ -395,6 +395,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
 
                     ImGui::EndTable();
             }
+            ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg;
 
             // Float Parameters
             if (materialBase.MaterialFloatParameters.size() && ImGui::BeginTable("Float parameters", 1)) {
@@ -405,7 +406,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::PushID(i);
                     auto& baseFloatParameter = materialBase.MaterialFloatParameters[i];
 
-                    if (ImGui::BeginTable("Instance Float Parameter", 2)) {
+                    if (ImGui::BeginTable("Instance Float Parameter", 2, tableFlags)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
 
@@ -440,7 +441,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::PushID(i);
                     auto& baseVec2Parameter = materialBase.MaterialVec2Parameters[i];
 
-                    if (ImGui::BeginTable("Instance Vec2 Parameter", 2)) {
+                    if (ImGui::BeginTable("Instance Vec2 Parameter", 2, tableFlags)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
 
@@ -475,7 +476,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::PushID(i);
                     auto& baseVec3Parameter = materialBase.MaterialVec3Parameters[i];
 
-                    if (ImGui::BeginTable("Instance Vec3 Parameter", 2)) {
+                    if (ImGui::BeginTable("Instance Vec3 Parameter", 2, tableFlags)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
 
@@ -510,7 +511,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::PushID(i);
                     auto& baseVec4Parameter = materialBase.MaterialVec4Parameters[i];
 
-                    if (ImGui::BeginTable("Instance Vec4 Parameter", 2)) {
+                    if (ImGui::BeginTable("Instance Vec4 Parameter", 2, tableFlags)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
 
@@ -545,7 +546,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     ImGui::PushID(i);
                     auto& baseColourVec4Parameter = materialBase.MaterialColourVec4Parameters[i];
 
-                    if (ImGui::BeginTable("Instance Colour Vec4 Parameter", 2)) {
+                    if (ImGui::BeginTable("Instance Colour Vec4 Parameter", 2, tableFlags)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
                         ImGui::TableNextColumn();
 
@@ -567,7 +568,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                             }
 
                             if (ImGui::BeginPopup("ColourEditPopup")) {
-                                if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourVec4Data)) {
+                                if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourVec4Data, ImGuiColorEditFlags_AlphaBar)) {
                                     instanceColourVec4Data.Data = glm::vec4(colourVec4Data.x, colourVec4Data.y, colourVec4Data.z, colourVec4Data.w);
                                     m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // update material editor instance for updated previews
                                 }
