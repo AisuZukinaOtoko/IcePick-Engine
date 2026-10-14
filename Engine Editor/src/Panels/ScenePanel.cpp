@@ -3,6 +3,8 @@
 #include "Scene Systems/Components.h"
 #include "LogSystem.h"
 #include <IconsFontAwesome7.h>
+#include <string>
+#include <entt/entt.h>
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
 	switch (tag.Type) {

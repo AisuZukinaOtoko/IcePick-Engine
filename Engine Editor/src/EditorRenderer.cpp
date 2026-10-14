@@ -20,15 +20,20 @@ void EditorRenderer::Init(unsigned int width, unsigned int height) {
 	m_FrameBuffer.InitWithTargets(frameBufferOneTextures, numTexturesPerFrameBuffer, depthStencilTexture, transferTextureOwnership);
 }
 
-void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix) {
+void EditorRenderer::BeginRenderPass() {
+	IcePick::SceneRenderDetails& sceneRenderDetails = m_EngineAPI.GetSceneRenderDetails();
+	sceneRenderDetails.ViewProjectionMatrix = editorCamera.GetViewProjectionMatrix();
+	sceneRenderDetails.CameraPosition = editorCamera.cameraPosition;
+	m_EngineAPI.UploadSceneRenderDetails();
+	m_EngineAPI.BindSceneRenderDetails(0);
 	m_FrameBuffer.Bind();
+}
 
-	glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelMatrix)));
-	IcePickRenderer::SetRenderWorldNormalMatrix(normalMatrix);
-	IcePickRenderer::SetRenderViewProjectionMatrix(editorCamera.GetViewProjectionMatrix());
-	IcePickRenderer::SetRenderCameraWorldPosition(editorCamera.cameraPosition);
+void EditorRenderer::RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix) {
+	m_EngineAPI.RenderMesh(mesh, modelMatrix, entt::null);	
+}
 
-	m_EngineAPI.RenderMesh(mesh, modelMatrix, entt::null);
+void EditorRenderer::EndRenderPass() {
 	m_FrameBuffer.UnBind();
 }
 

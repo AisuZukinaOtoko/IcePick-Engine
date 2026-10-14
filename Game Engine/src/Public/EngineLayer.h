@@ -2,11 +2,13 @@
 #include "Layer.h"
 #include "../Event Systems/Input.h"
 #include "../Render Systems/FrameBuffer.h"
+#include "../Render Systems/UniformBuffer.h"
 #include "../Scene Systems/Scene.h"
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
 #include "../Scene Systems/ScriptRunner.h"
 #include "../Scene Systems/TerrainSystem.h"
+#include "../Scene Systems/SceneRenderDetails.h"
 #include "EngineRuntimeStates.h"
 
 #include "../Physics Systems/PhysicsSystem3D.h"
@@ -43,21 +45,29 @@ namespace IcePick {
 		void CopyActiveFrameBufferToDefaultFrameBuffer();
 
 		void GetEntityMatPixelData(int x, int y, void* pixelData);
+
+		SceneRenderDetails& GetSceneRenderDetails();
+		void UploadSceneRenderDetails();
+
 	private:
 		friend class EngineAPI;
 		RuntimeState m_CurrentRuntimeState = RuntimeState::STOPPED;
+
 		enum class FrameBufferEnum {
 			ONE = 0, TWO
 		} m_CurrentFrameBuffer = FrameBufferEnum::ONE;
 		IcePickRenderer::FrameBuffer m_FrameBufferOne;
 		IcePickRenderer::FrameBuffer m_FrameBufferTwo;
 		IcePickRenderer::FrameBuffer& GetFrameBuffer(FrameBufferEnum frameBuffer);
+		IcePickRenderer::UniformBuffer<SceneRenderDetails> m_SceneRenderDetailsUniformBuffer;
 
 		AssetLoader m_AssetLoader;
 		ScriptRunner m_ScriptRunner;
 		PhysicsSystem3D m_PhysicsSystem3D;
 		Animator m_Animator;
 		TerrainSystem m_TerrainSystem;
+
+		SceneRenderDetails m_SceneRenderDetails;
 
 		void RenderEntityMeshes();
 		void RenderMeshNode(const IcePickRenderer::MeshNode& parent, glm::mat4 parentTransform, const std::vector<UUID>& materialSlots, const entt::entity entityId);

@@ -154,6 +154,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	if (nodeType == "fragmentCoordinate") {
 		return std::make_shared<FragmentCoordinateNode>();
 	}
+	else if (nodeType == "time") {
+		return std::make_shared<TimeNode>();
+	}
 	else if (nodeType == "uv") {
 		return std::make_shared<UVNode>();
 	}

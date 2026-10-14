@@ -158,8 +158,11 @@ void Viewport::OnUpdate(DeltaTime dt) {
 	m_EditorCamera.pitch += mouseDelta.y * 0.152;
 	m_EditorCamera.OnUpdate(dt);
 	glm::mat4 viewProjMatrix = m_EditorCamera.GetViewProjectionMatrix();
-	IcePickRenderer::SetRenderViewProjectionMatrix(viewProjMatrix);
-	IcePickRenderer::SetRenderCameraWorldPosition(m_EditorCamera.cameraPosition);
+	IcePick::SceneRenderDetails& sceneRenderDetails = m_EngineAPI.GetSceneRenderDetails();
+	sceneRenderDetails.ViewProjectionMatrix = m_EditorCamera.GetViewProjectionMatrix();
+	sceneRenderDetails.CameraPosition = m_EditorCamera.cameraPosition;
+	m_EngineAPI.UploadSceneRenderDetails();
+	m_EngineAPI.BindSceneRenderDetails(0);
 }
 
 void Viewport::OnViewportEvent(IcePick::Event& event) {

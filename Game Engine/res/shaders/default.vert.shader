@@ -3,6 +3,8 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texCoord;
 
+#include "sceneDetails.util.shader"
+
 out vec3 v_Pos;
 out vec2 v_TexCoord;
 out vec3 v_Normal;

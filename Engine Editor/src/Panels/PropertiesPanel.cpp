@@ -692,6 +692,13 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
                     ImGui::EndDragDropTarget();
                 }
 
+                if (static_cast<unsigned int>(materialBase.SurfaceType) != static_cast<unsigned int>(meshRenderer.MeshType)) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+                    ImGui::Text(ICON_FA_TRIANGLE_EXCLAMATION " Material surface type and mesh type do not match!", "%s %s");
+                    ImGui::PopStyleColor();
+                }
+
                 MaterialInstanceParameters(materialBase, materialInstance);
 
                 ImGui::PopID();

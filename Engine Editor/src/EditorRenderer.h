@@ -7,7 +7,9 @@ public:
 	EditorRenderer() = delete;
 	EditorRenderer(IcePick::EngineAPI engineAPI);
 	void Init(unsigned int width, unsigned int height);
+	void BeginRenderPass();
 	void RenderMesh(IcePick::MeshRendererComponent& mesh, glm::mat4& modelMatrix);
+	void EndRenderPass();
 	void Clear();
 
 	void Use();

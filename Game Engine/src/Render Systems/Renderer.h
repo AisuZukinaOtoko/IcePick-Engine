@@ -18,7 +18,7 @@ namespace IcePickRenderer {
 	void TerminateRenderer();
 	void NewFrame();
 	void EndFrame();
-	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
+	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, IcePick::ShaderProgram& shaderProgram);
 	void DrawMeshNoUniforms(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram);
 	void UpdateRenderViewProjectionMatrix(const glm::mat4 vpm);
 
@@ -46,9 +46,9 @@ namespace IcePickRenderer {
 	void FullScreenPass();
 	
 	// Render camera settings
-	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);
-	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
-	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
+	//void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition);
+	//void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix);
+	//void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix);
 	//NewVertexArrayData AddVertexArray();
 }
 

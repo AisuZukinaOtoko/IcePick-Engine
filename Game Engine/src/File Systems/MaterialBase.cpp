@@ -150,11 +150,11 @@ namespace IcePick {
 
     void MaterialInstance::ClearMaterialInstanceData() {
 	    InstanceTextureData.clear();
-        InstanceFloatData.clear();
-        InstanceVec2Data.clear();
-        InstanceVec3Data.clear();
-        InstanceVec4Data.clear();
-        InstanceColourVec4Data.clear();
+        //InstanceFloatData.clear();
+        //InstanceVec2Data.clear();
+        //InstanceVec3Data.clear();
+        //InstanceVec4Data.clear();
+        //InstanceColourVec4Data.clear();
     }
 
     UUID MaterialInstance::GetMaterialInstanceTextureId(UUID materialBaseDataId) const {

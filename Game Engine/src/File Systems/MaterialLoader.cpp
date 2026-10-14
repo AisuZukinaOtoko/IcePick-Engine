@@ -23,6 +23,8 @@ namespace IcePick {
 	void MaterialLoader::Init(ShaderLoader& shaderLoader) {
 		MaterialBase defaultSkinnedMeshMaterialBase;
 		UUID baseTextureDataId{};
+		defaultSkinnedMeshMaterialBase.SurfaceType = MaterialBase::MaterialSurfaceType::SKELETAL_MESH;
+		defaultSkinnedMeshMaterialBase.ShadingModel = MaterialBase::MaterialShadingModel::PHONG_SHADING;
 		defaultSkinnedMeshMaterialBase.MaterialTextures.push_back({ "Diffuse Texture", m_DefaultMaterialTextureSamplerIdentifiers[DIFFUSE_TEXTURE], baseTextureDataId });
 
 		ShaderSource defaultSkinnedShaderSource;

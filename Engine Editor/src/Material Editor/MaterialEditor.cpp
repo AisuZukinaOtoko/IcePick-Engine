@@ -10,9 +10,9 @@ static bool RenameNodeTextNeedsFocus = false;
 static const char* MaterialSurfaceTypeToString(IcePick::MaterialBase::MaterialSurfaceType MaterialSurfaceType) {
     switch (MaterialSurfaceType) {
         case IcePick::MaterialBase::MaterialSurfaceType::STATIC_MESH:
-        return "Static";
+        return "Static Mesh";
         case IcePick::MaterialBase::MaterialSurfaceType::SKELETAL_MESH:
-        return "Skeletal";
+        return "Skeletal Mesh";
     default:
         return "Error";
     }
@@ -30,6 +30,10 @@ static const char* MaterialShadingModelToString(IcePick::MaterialBase::MaterialS
 }
 
 static void CopyAvailableMaterialInstanceData(IcePick::MaterialInstance& sourceMaterialInstance, IcePick::MaterialInstance& targetMaterialInstance) {
+    for (auto& textureParameter : targetMaterialInstance.InstanceTextureData) {
+        textureParameter.Data = sourceMaterialInstance.GetMaterialInstanceTextureId(textureParameter.MaterialBaseDataId);
+    }
+    
     for (auto& floatParameter : targetMaterialInstance.InstanceFloatData) {
         floatParameter.Data = sourceMaterialInstance.GetMaterialInstanceFloatParameter(floatParameter.MaterialBaseDataId);
     }
@@ -59,7 +63,14 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_CanvasScrolling = ImVec2(0.0f, 0.0f);
     m_Renderer.editorCamera.aspectRatio = 1.0f;
     m_Renderer.Init(previewImageSize, previewImageSize);
-    previewMesh = m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb", IcePick::ImportSettings{});
+
+    m_PreviewMeshes.reserve(IcePick::MaterialBase::MaterialSurfaceType::MATERIAL_MESH_TYPE_COUNT);
+    
+    IcePick::ImportSettings importSettings;
+    importSettings.LoadSkeleton = true;
+    importSettings.LoadMeshAs = IcePick::ImportSettings::MeshType::SKELETAL_MESH;
+    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb", IcePick::ImportSettings{}));
+    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/skinnedSphere.glb", importSettings));
 
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
 
@@ -207,9 +218,12 @@ void MaterialEditor::PreviewMaterial() {
 
     m_Renderer.Clear();
 
+    IcePick::MeshRendererComponent& previewMesh = m_PreviewMeshes[m_MaterialEditorMaterialBase.SurfaceType];
     previewMesh.MaterialSlots[0] = m_MaterialEditorMaterialInstanceId;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    m_Renderer.BeginRenderPass();
     m_Renderer.RenderMesh(previewMesh, modelMatrix);
+    m_Renderer.EndRenderPass();
 }
 
 void MaterialEditor::DrawCanvas() {
@@ -873,6 +887,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
+        if (ImGui::MenuItem("Time Node", NULL, false)) {
+            std::shared_ptr<TimeNode> newNode = std::make_shared<TimeNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("UV Node", NULL, false)) {
             std::shared_ptr<UVNode> newNode = std::make_shared<UVNode>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -1108,6 +1128,7 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
     }
 
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
+    m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
 
     std::stringstream uniformSS;
     std::stringstream shaderSS;

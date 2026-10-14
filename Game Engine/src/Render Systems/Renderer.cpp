@@ -44,8 +44,6 @@ namespace IcePickRenderer {
 	static RenderLineBuffer LineBuffer;
 	static ShaderProgram LineShaderProgram;
 
-	static unsigned int BasicMaterialShaderID = 0;
-
 	bool InitRenderer() {
 		if (!glfwInit())
 			return false;
@@ -243,26 +241,19 @@ namespace IcePickRenderer {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
-	void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {
-		CameraPosition = CameraWorldPosition;
-	}
+	//void SetRenderCameraWorldPosition(glm::vec3 CameraWorldPosition) {
+	//	CameraPosition = CameraWorldPosition;
+	//}
 
-	void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix) {
-		RenderViewProjectionMatrix = ViewProjectionMatrix;
-	}
+	//void SetRenderViewProjectionMatrix(glm::mat4 ViewProjectionMatrix) {
+	//	RenderViewProjectionMatrix = ViewProjectionMatrix;
+	//}
 
-	void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix) {
-		RenderWorldNormalMatrix = WorldNormalMatrix;
-	}
+	//void SetRenderWorldNormalMatrix(glm::mat3 WorldNormalMatrix) {
+	//	RenderWorldNormalMatrix = WorldNormalMatrix;
+	//}
 
-	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, glm::mat4 modelTransformMatrix, IcePick::ShaderProgram& shaderProgram) {
-		glm::mat4 MVP = RenderViewProjectionMatrix * modelTransformMatrix;
-
-		shaderProgram.SetUniformMat4("u_MVP", MVP);
-		shaderProgram.SetUniformMat4("u_Modelmatrix", modelTransformMatrix);
-		shaderProgram.SetUniformMat3("u_NormalMatrix", RenderWorldNormalMatrix);
-		shaderProgram.SetUniformVec3("u_CameraPosition", CameraPosition);
-
+	void DrawMesh(IcePickRenderer::VertexArray& vertexArray, IcePick::ShaderProgram& shaderProgram) {
 		shaderProgram.Use();
 		vertexArray.Bind();
 		glDrawElements(GL_TRIANGLES, vertexArray.IndexCount, GL_UNSIGNED_INT, nullptr);

@@ -63,6 +63,9 @@ namespace IcePick {
 		void SetRenderTargetFrameBuffer();
 		void CopyFrameBufferResultToDefaultBuffer();
 		void ReloadShaders();
+		SceneRenderDetails& GetSceneRenderDetails();
+		void UploadSceneRenderDetails();
+		void BindSceneRenderDetails(unsigned int bindLocation);
 
 		bool& QueryEngineRenderDebugPhysics();
 

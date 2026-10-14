@@ -177,6 +177,9 @@
     <ClCompile Include="src\Material Editor\Nodes\Functions\FresnelNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\TimeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Material Editor\Nodes\Functions\CosineNode.h">
@@ -342,6 +345,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Material Editor\Nodes\Functions\FresnelNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\TimeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

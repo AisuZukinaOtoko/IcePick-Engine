@@ -44,7 +44,6 @@ namespace IcePick {
 		const unsigned int numberOfIndices = numberOfQuads * 6;
 
 		std::vector<IcePickRenderer::TerrainVertex3D> vertexBuffer(resolution * resolution);
-		//std::vector<unsigned int> indexBuffer(numberOfIndices);
 		std::vector<unsigned int> indexBuffer;
 
 		for (unsigned int x = 0; x < resolution; x++) {

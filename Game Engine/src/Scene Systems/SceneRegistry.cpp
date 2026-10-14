@@ -168,9 +168,13 @@ entt::entity IcePick::InstantiatePrefab(entt::entity prefabId) {
 }
 
 void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::registry& targetRegistry) {
+    IP_ASSERT(&sourceRegistry != &targetRegistry, "Cannot duplicate a registry into itself.");
     targetRegistry.clear();    
 
     for (auto sourceEntity : sourceRegistry.storage<entt::entity>()) {
+        if (!sourceRegistry.valid(sourceEntity))
+            continue;
+
         entt::entity targetEntity = targetRegistry.create(sourceEntity);
         IP_ASSERT(sourceEntity == targetEntity, "Entity IDs do not match.");
 

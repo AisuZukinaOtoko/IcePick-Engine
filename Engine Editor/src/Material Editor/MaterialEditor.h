@@ -83,7 +83,7 @@ private:
 	bool previewWindowRightClicked = false;
 	bool lockCursorFirstFrame = false;
 	EditorRenderer m_Renderer;
-	IcePick::MeshRendererComponent previewMesh;
+	std::vector<IcePick::MeshRendererComponent> m_PreviewMeshes;
 
 	// Node render variables
 	NodeRenderInfo m_RenderInfo;

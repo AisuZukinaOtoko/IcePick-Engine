@@ -172,6 +172,7 @@
     <None Include="res\Shaders\skinning.vert.shader" />
     <None Include="res\Shaders\terrain.vert.shader" />
     <None Include="res\Shaders\terrain.frag.shader" />
+    <None Include="res\Shaders\sceneDetails.util.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Render Systems\Renderer.h">
@@ -349,6 +350,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene Systems\TerrainSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render Systems\UniformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene Systems\SceneRenderDetails.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

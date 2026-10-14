@@ -2,12 +2,11 @@
 layout(location = 0) out vec4 OutColour;
 layout(location = 1) out uvec4 OutEntityMat;
 
+#include "sceneDetails.util.shader"
 
 in vec3 v_Pos;
 in vec2 v_TexCoord;
 in vec3 v_Normal;
-
-uniform vec3 u_CameraPosition;
 
 uniform sampler2D  u_AlbedoTexUnit;
 
@@ -24,7 +23,7 @@ void main() {
     vec3 normal = normalize(v_Normal);
     vec3 L = normalize(tempLightPosition - vec3(0.0f));
     vec3 R = normalize(reflect(-L, normalize(normal)));
-    vec3 V = normalize(u_CameraPosition - v_Pos);
+    vec3 V = normalize(CameraPosition - v_Pos);
 
     vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
 

@@ -159,6 +159,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Functions\StepNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Functions\TangentNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Inputs\FragmentCoordinateNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\TimeNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Inputs\UVNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Inputs\WorldNormalNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Inputs\WorldPositionNode.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="src\Material Editor\Nodes\Functions\StepNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\TangentNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\TimeNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\UVNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\WorldNormalNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\WorldPositionNode.h" />
