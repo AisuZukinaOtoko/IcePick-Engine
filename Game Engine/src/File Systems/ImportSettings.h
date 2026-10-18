@@ -8,7 +8,8 @@ namespace IcePick {
 		std::filesystem::path ImportTargetLocation;
 		enum class MeshType {
 			STATIC_MESH = 0,
-			SKELETAL_MESH
+			SKELETAL_MESH,
+			TERRAIN_MESH
 		} LoadMeshAs{ MeshType::STATIC_MESH };
 		bool LoadMesh = true;
 		bool LoadMaterials = true;

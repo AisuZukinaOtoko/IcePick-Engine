@@ -129,10 +129,6 @@ void Viewport::SetSelectionContext(SelectionContext selectionContext) {
 	m_SelectionContext = selectionContext;
 }
 
-void Viewport::SetDropAssetPath(std::string filePath) {
-	m_DropAssetPath = filePath;
-}
-
 void Viewport::OnUpdate(DeltaTime dt) {
 	if (m_SelectionContextChanged) {
 		SelectionContextChangeCallback(m_SelectionContext);
@@ -206,8 +202,9 @@ void Viewport::Render(unsigned int renderTexture) {
 	ImGui::Image((void*)(intptr_t)renderTexture, m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 	
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
-			DropMaterialIntoViewport();
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
+			std::filesystem::path droppedAssetPath((const char*)payload->Data);
+			DropMaterialIntoViewport(droppedAssetPath);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -531,7 +528,7 @@ void Viewport::GetViewportDebugData(uint32_t* debugData) {
 	m_EngineAPI.GetEntityMatPixelData(x, y, debugData);
 }
 
-void Viewport::DropMaterialIntoViewport() {
+void Viewport::DropMaterialIntoViewport(std::filesystem::path materialAssetPath) {
 	uint32_t pixelData[2] = { 0, 0 };
 	GetViewportDebugData(pixelData);
 	
@@ -546,7 +543,7 @@ void Viewport::DropMaterialIntoViewport() {
 
 	IcePick::MeshRendererComponent& entityMeshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(viewEntity);
 
-	IcePick::UUID droppedMaterialInstanceId = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
+	IcePick::UUID droppedMaterialInstanceId = m_EngineAPI.LoadMaterialInstanceFromAsset(materialAssetPath);
 	entityMeshRenderer.MaterialSlots[materialSlot] = droppedMaterialInstanceId;
 }
 

@@ -16,6 +16,8 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 	json["Id"] = static_cast<uint64_t>(materialBase.Id);
 	json["shaderId"] = static_cast<uint64_t>(materialBase.ShaderId);
 	json["graphId"] = static_cast<uint64_t>(materialBase.ShaderGraphId);
+	json["surfaceType"] = static_cast<uint32_t>(materialBase.SurfaceType);
+	json["shadingModel"] = static_cast<uint32_t>(materialBase.ShadingModel);
 
 	nlohmann::json shaderSourceJsonObject;
 	shaderSourceJsonObject["vertex"] = shaderSource.VertexShaderSource;
@@ -151,7 +153,10 @@ void SerializeMaterialBase(std::filesystem::path assetPath, const IcePick::Mater
 }
 
 std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
-	if (nodeType == "fragmentCoordinate") {
+	if (nodeType == "cameraView") {
+		return std::make_shared<CameraViewNode>();
+	}
+	else if (nodeType == "fragmentCoordinate") {
 		return std::make_shared<FragmentCoordinateNode>();
 	}
 	else if (nodeType == "time") {
@@ -219,6 +224,9 @@ std::shared_ptr<Node> CreateNodeByType(const std::string& nodeType) {
 	}
 	else if (nodeType == "multiply") {
 		return std::make_shared<MultiplyNode>();
+	}
+	else if (nodeType == "oneMinus") {
+		return std::make_shared<OneMinusNode>();
 	}
 	else if (nodeType == "splitVector") {
 		return std::make_shared<SplitVectorNode>();

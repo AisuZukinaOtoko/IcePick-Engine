@@ -18,8 +18,6 @@ const vec3 tempAmbientColour = vec3(0.525f, 0.565f, 0.565f) * 0.8f;
 #include "picking.util.shader"
 
 void main() {
-    vec4 OutputColour = vec4(0.0f);
-
     vec3 normal = normalize(v_Normal);
     vec3 L = normalize(tempLightPosition - vec3(0.0f));
     vec3 R = normalize(reflect(-L, normalize(normal)));
@@ -27,6 +25,7 @@ void main() {
 
     vec4 diffuseColour = texture(u_AlbedoTexUnit, v_TexCoord);
 
+    vec4 OutputColour = vec4(0.0f);
     if (dot(normal, L)  < 0.0f){
         OutputColour = vec4(tempAmbientColour * diffuseColour.xyz, diffuseColour.a);
     }

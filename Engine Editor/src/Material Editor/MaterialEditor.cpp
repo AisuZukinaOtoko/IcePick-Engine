@@ -1,3 +1,7 @@
+#include "Render Systems/Renderer.h"
+#include "Render Systems/Vertex.h"
+#include "Render Systems/VertexLayout.h"
+#include "Scene Systems/SceneUtils.h"
 #include "MaterialEditor.h"
 #include "Nodes/Nodes.h"
 #include "imgui-docking/imgui.h"
@@ -13,6 +17,8 @@ static const char* MaterialSurfaceTypeToString(IcePick::MaterialBase::MaterialSu
         return "Static Mesh";
         case IcePick::MaterialBase::MaterialSurfaceType::SKELETAL_MESH:
         return "Skeletal Mesh";
+        case IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH:
+            return "Terrain Mesh";
     default:
         return "Error";
     }
@@ -69,8 +75,8 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     IcePick::ImportSettings importSettings;
     importSettings.LoadSkeleton = true;
     importSettings.LoadMeshAs = IcePick::ImportSettings::MeshType::SKELETAL_MESH;
-    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/sphere.glb", IcePick::ImportSettings{}));
-    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/skinnedSphere.glb", importSettings));
+    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/smoothSphere.glb", IcePick::ImportSettings{}));
+    m_PreviewMeshes.push_back(m_EngineAPI.LoadMesh("Game Engine/res/Assets/smoothSkinnedSphere.glb", importSettings));
 
     m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
 
@@ -78,19 +84,30 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialEditorMaterialInstance.MaterialBaseId = m_MaterialEditorMaterialBaseId;
     m_MaterialEditorMaterialInstanceId = m_EngineAPI.RegisterMaterialInstance(m_MaterialEditorMaterialInstance);
 
-
     m_MaterialEditorFragmentShaderSourceTemplate = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/materialTemplate.frag.shader");
     m_MaterialSurfaceVertexShaderSources.reserve(IcePick::MaterialBase::MaterialSurfaceType::MATERIAL_MESH_TYPE_COUNT);
     m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.vert.shader"));
     m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/skinning.vert.shader"));
+    m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/terrain.vert.shader"));
+
+    unsigned int previewTerrainSize = 2;
+    unsigned int previewTerrainUnitsPerMetre = 5;
+    unsigned int resolution = previewTerrainSize * previewTerrainUnitsPerMetre;
+    std::vector<IcePickRenderer::TerrainVertex3D> vertexBuffer(resolution * resolution);
+    std::vector<unsigned int> indexBuffer;
+    IcePick::GenerateTerrainVertexData(vertexBuffer, indexBuffer, previewTerrainSize, previewTerrainUnitsPerMetre);
+    m_TerrainPreviewVertexArray = new IcePickRenderer::VertexArray(
+        vertexBuffer.data(),
+        vertexBuffer.size() * sizeof(IcePickRenderer::TerrainVertex3D),
+        indexBuffer.data(),
+        indexBuffer.size(),
+        IcePickRenderer::TerrainVertex3D::GetVertexLayout(),
+        IcePickRenderer::VertexType::TERRAIN_VERTEX
+    );
 
     IcePick::ShaderSource newShaderSource = GetShaderSourceFromGraph();
     m_MaterialEditorShaderId = m_EngineAPI.CreateShaderFromSource(newShaderSource);
     m_MaterialEditorMaterialBase.ShaderId = m_MaterialEditorShaderId;
-}
-
-void MaterialEditor::SetDropAssetPath(std::filesystem::path filePath) {
-    m_DropAssetPath = filePath;
 }
 
 void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
@@ -218,11 +235,30 @@ void MaterialEditor::PreviewMaterial() {
 
     m_Renderer.Clear();
 
-    IcePick::MeshRendererComponent& previewMesh = m_PreviewMeshes[m_MaterialEditorMaterialBase.SurfaceType];
-    previewMesh.MaterialSlots[0] = m_MaterialEditorMaterialInstanceId;
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    viewRadius = (m_MaterialEditorMaterialBase.SurfaceType == IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH) ? 4.5f : 3.0f;
+
     m_Renderer.BeginRenderPass();
-    m_Renderer.RenderMesh(previewMesh, modelMatrix);
+    if (m_TerrainPreviewVertexArray && (m_MaterialEditorMaterialBase.SurfaceType == IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH)) {
+        IcePick::ShaderProgram& terrainMaterialShaderProgram = m_EngineAPI.GetShaderProgram(m_MaterialEditorMaterialBase.ShaderId);
+        terrainMaterialShaderProgram.SetUniformFloat("u_HeightScale", 0.5f);
+        terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (2 * 5));
+
+        const IcePickRenderer::Texture& heightMapTexture = m_EngineAPI.GetTexture(IcePick::UUID::Unitialised()); // Use default texture as height map for material previews
+        heightMapTexture.Bind(m_MaterialEditorMaterialBase.MaterialTextures.size());
+        terrainMaterialShaderProgram.SetUniformInt32("u_HeightFieldTextureUnit", m_MaterialEditorMaterialBase.MaterialTextures.size());
+
+        m_MaterialEditorMaterialBase.BindMaterialInstanceParameters(m_EngineAPI, m_MaterialEditorMaterialInstance);
+
+        IcePickRenderer::DrawMesh(*m_TerrainPreviewVertexArray, terrainMaterialShaderProgram);
+    }
+    else {
+        IcePick::MeshRendererComponent& previewMesh = m_PreviewMeshes[m_MaterialEditorMaterialBase.SurfaceType];
+        previewMesh.MaterialSlots[0] = m_MaterialEditorMaterialInstanceId;
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+        m_Renderer.RenderMesh(previewMesh, modelMatrix);
+    }
+
     m_Renderer.EndRenderPass();
 }
 
@@ -448,7 +484,7 @@ void MaterialEditor::DrawNodes() {
             ImGui::PopID();
         }
 
-        node->CustomRendering(m_EngineAPI, m_DropAssetPath, m_RenderInfo, m_CanvasScreenPos, m_CanvasScrolling);
+        node->CustomRendering(m_EngineAPI, m_RenderInfo, m_CanvasScreenPos, m_CanvasScrolling);
 
         // Only update node position at the end to avoid inconsistencies with pins
         if (nodeHeaderHeld && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
@@ -847,6 +883,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
             m_EditMaterialNodeGraph.push_back(newNode);
         }
 
+        if (ImGui::MenuItem("One Minus Node", NULL, false)) {
+            std::shared_ptr<OneMinusNode> newNode = std::make_shared<OneMinusNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Split Vector Node", NULL, false)) {
             std::shared_ptr<SplitVectorNode> newNode = std::make_shared<SplitVectorNode>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -881,6 +923,12 @@ void MaterialEditor::ShowAddNodeOptions(ImVec2 mousePosInCanvas) {
     }
 
     if (ImGui::BeginMenu("Input Nodes")) {
+        if (ImGui::MenuItem("Camera View Node", NULL, false)) {
+            std::shared_ptr<CameraViewNode> newNode = std::make_shared<CameraViewNode>();
+            newNode->CanvasPosition = mousePosInCanvas;
+            m_EditMaterialNodeGraph.push_back(newNode);
+        }
+
         if (ImGui::MenuItem("Fragment Coordinate Node", NULL, false)) {
             std::shared_ptr<FragmentCoordinateNode> newNode = std::make_shared<FragmentCoordinateNode>();
             newNode->CanvasPosition = mousePosInCanvas;
@@ -1180,7 +1228,11 @@ IcePick::ShaderSource MaterialEditor::GetShaderSourceFromGraph() {
 }
 
 MaterialEditor::~MaterialEditor() {
-
+    if (m_TerrainPreviewVertexArray) {
+        m_TerrainPreviewVertexArray->Destroy();
+        delete m_TerrainPreviewVertexArray;
+        m_TerrainPreviewVertexArray = nullptr;
+    }
 }
 
 

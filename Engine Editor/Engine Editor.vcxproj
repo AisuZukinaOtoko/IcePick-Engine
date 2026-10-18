@@ -168,6 +168,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Math\DivideNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Math\FloatNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Math\MultiplyNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Math\OneMinusNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Math\SplitVectorNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Math\SubtractNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Math\Vector2Node.cpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="src\Material Editor\Nodes\Math\Vector4Node.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\NodeBase.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\BSDFNode.cpp" />
+    <ClCompile Include="src\Material Editor\Nodes\Inputs\CameraViewNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\ColourNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\TextureNode.cpp" />
     <ClCompile Include="src\Material Editor\Nodes\Rendering\VoronoiNoiseNode.cpp" />
@@ -214,6 +216,7 @@
     <ClInclude Include="src\Material Editor\Nodes\Functions\SmoothstepNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\StepNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Functions\TangentNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Inputs\CameraViewNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\FragmentCoordinateNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\TimeNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Inputs\UVNode.h" />
@@ -224,6 +227,7 @@
     <ClInclude Include="src\Material Editor\Nodes\Math\DivideNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Math\FloatNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Math\MultiplyNode.h" />
+    <ClInclude Include="src\Material Editor\Nodes\Math\OneMinusNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Math\SplitVectorNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Math\SubtractNode.h" />
     <ClInclude Include="src\Material Editor\Nodes\Math\Vector2Node.h" />

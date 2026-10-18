@@ -2,6 +2,7 @@
 #include "../Render Systems/VertexArray.h"
 #include "../Render Systems/VertexLayout.h"
 #include "TerrainSystem.h"
+#include "SceneUtils.h"
 #include "../Public/EngineAPI.h"
 #include "../File Systems/MaterialLoader.h"
 #include "../File Systems/ShaderLoader.h"
@@ -21,7 +22,10 @@ namespace IcePick {
 
 		MaterialBase terrainMaterialBase;
 		UUID baseTextureDataId;
-		terrainMaterialBase.MaterialTextures.push_back({"", "u_AlbedoTexUnit", baseTextureDataId });
+		terrainMaterialBase.SurfaceType = MaterialBase::MaterialSurfaceType::TERRAIN_MESH;
+		terrainMaterialBase.MaterialTextures.push_back({"Albedo Texture", "u_AlbedoTexUnit", baseTextureDataId });
+		//terrainMaterialBase.MaterialTextures.push_back({ "Height Map", "u_HeightFieldTextureUnit", UUID{} });
+
 		terrainMaterialBase.ShaderId = shaderLoader.CreateShaderProgram(terrainShaderSource);
 		MaterialInstance terrainMaterialInstance = terrainMaterialBase.CreateEmptyInstanceFromBase();
 
@@ -31,45 +35,24 @@ namespace IcePick {
 		TerrainMaterialInstanceIds.push_back(m_DefaultTerrainMaterialInstanceId);
 	} 
 
-	void TerrainSystem::CreateTerrain(unsigned int resolution, TextureLoader& textureLoader) {
-		if (resolution < 2) {
-			IP_LOG("Cannot create terrain with a resolution less than 2 units.", IP_ERROR_LOG);
+	void TerrainSystem::CreateTerrain(unsigned int size, unsigned int unitsPerMetre, TextureLoader& textureLoader) {
+		if (size < 2) {
+			IP_LOG("Cannot create terrain with a size less than 2 metres.", IP_ERROR_LOG);
+			return;
+		}
+		
+		if (unitsPerMetre < 1) {
+			IP_LOG("Cannot create terrain with invalid units per metre.", IP_ERROR_LOG);
 			return;
 		}
 
 		Destroy(textureLoader);
 
-		const unsigned int indicesPerTriangle = 3;
-		const unsigned int numberOfQuads = (resolution - 1) * (resolution - 1);
-		const unsigned int numberOfIndices = numberOfQuads * 6;
-
+		unsigned int resolution = size * unitsPerMetre;
 		std::vector<IcePickRenderer::TerrainVertex3D> vertexBuffer(resolution * resolution);
 		std::vector<unsigned int> indexBuffer;
 
-		for (unsigned int x = 0; x < resolution; x++) {
-			for (unsigned int y = 0; y < resolution; y++) {
-				glm::vec2 position{ x - resolution / 2.0f, y - resolution / 2.0f };
-				glm::vec2 uv{ (x + 1) / (float)resolution, (y + 1) / (float)resolution };
-				vertexBuffer[x * resolution + y] = { position, uv };
-			}
-		}
-
-		for (unsigned int x = 0; x < resolution - 1; x++) {
-			for (unsigned int y = 0; y < resolution - 1; y++) {
-				const unsigned int topLeft = x + y * resolution;
-				const unsigned int topRight = topLeft + 1;
-				const unsigned int bottomLeft = (y + 1) * resolution + x;
-				const unsigned int bottomRight = bottomLeft + 1;
-
-				indexBuffer.emplace_back(bottomLeft);
-				indexBuffer.emplace_back(topLeft);
-				indexBuffer.emplace_back(topRight);
-
-				indexBuffer.emplace_back(bottomLeft);
-				indexBuffer.emplace_back(topRight);
-				indexBuffer.emplace_back(bottomRight);
-			}
-		}
+		GenerateTerrainVertexData(vertexBuffer, indexBuffer, size, unitsPerMetre);
 
 		m_InternalTerrainVertexArray = new IcePickRenderer::VertexArray(
 			vertexBuffer.data(),
@@ -85,11 +68,16 @@ namespace IcePick {
 		m_HeightMapTextureId = textureLoader.NewUncompressedTextureFromMemory(heightMapData.data(), heightMapTextureSettings, false);
 
 		m_Created = true;
-
+		m_TerrainSize = size;
+		m_TerrainUnitsPerMetre = unitsPerMetre;
 	}
 
 	void TerrainSystem::SetHeightMapTexture(UUID textureId) {
 		m_HeightMapTextureId = textureId;
+	}
+
+	UUID TerrainSystem::GetHeightMapTexture() {
+		return m_HeightMapTextureId;
 	}
 
 	void TerrainSystem::RenderTerrain(MaterialLoader& materialLoader, ShaderLoader& shaderLoader, EngineAPI engineAPI) {
@@ -100,10 +88,16 @@ namespace IcePick {
 			MaterialInstance& terrainMaterialInstance = materialLoader.GetMaterialInstance(terrainMaterialInstanceId);
 			MaterialBase& terrainMaterialBase = materialLoader.GetMaterialBase(terrainMaterialInstance.MaterialBaseId);
 			ShaderProgram& terrainMaterialShaderProgram = shaderLoader.GetShaderProgram(terrainMaterialBase.ShaderId);
+			terrainMaterialShaderProgram.SetUniformFloat("u_HeightScale", TerrainHeightScale);
+			terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (m_TerrainSize * m_TerrainUnitsPerMetre));
+
+			const IcePickRenderer::Texture& materialTexture = engineAPI.GetTexture(m_HeightMapTextureId);
+			materialTexture.Bind(terrainMaterialBase.MaterialTextures.size());
+			terrainMaterialShaderProgram.SetUniformInt32("u_HeightFieldTextureUnit", terrainMaterialBase.MaterialTextures.size());
 
 			terrainMaterialBase.BindMaterialInstanceParameters(engineAPI, terrainMaterialInstance);
 
-			IcePickRenderer::DrawMeshNoUniforms(*m_InternalTerrainVertexArray, glm::mat4(1.0f), terrainMaterialShaderProgram);
+			IcePickRenderer::DrawMesh(*m_InternalTerrainVertexArray, terrainMaterialShaderProgram);
 		}
 	}
 
@@ -117,7 +111,6 @@ namespace IcePick {
 		TerrainMaterialInstanceIds.clear();
 		TerrainMaterialInstanceIds.push_back(m_DefaultTerrainMaterialInstanceId);
 
-		textureLoader.DestroyTextureById(m_HeightMapTextureId);
 		m_HeightMapTextureId = UUID::Unitialised();
 		m_Created = false;
 	}

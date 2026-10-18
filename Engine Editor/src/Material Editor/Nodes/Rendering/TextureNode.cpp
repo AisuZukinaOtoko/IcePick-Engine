@@ -19,7 +19,7 @@ TextureNode::TextureNode(IcePick::UUID textureId) {
 	NodeHeaderColour = ImU32(0xFF917410);
 }
 
-void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
+void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 	float nodeMinHeight = renderInfo.PinYSpacing * std::min(InputPins.size(), OutputPins.size()) + 1 + renderInfo.PinRadius + renderInfo.LabelPadding;
@@ -38,8 +38,9 @@ void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem
 	ImGui::SetCursorScreenPos(imagePos);
 	ImGui::InvisibleButton("textureTarget", imageSize);
 	if (ImGui::BeginDragDropTarget()) {
-		if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
-			m_TextureId = engineAPI.LoadTextureFromAsset(dropAssetPath);
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
+			std::filesystem::path droppedAssetPath((const char*)payload->Data);
+			m_TextureId = engineAPI.LoadTextureFromAsset(droppedAssetPath);
 			m_TextureRenderId = engineAPI.GetTextureRenderId(m_TextureId);
 			MaterialInstanceStateChanged = true;
 		}

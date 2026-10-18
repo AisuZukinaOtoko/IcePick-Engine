@@ -8,6 +8,7 @@ void MeshImportPopup::OpenPopup(const std::filesystem::path& meshPath) {
 	ImGui::OpenPopup(m_Title);
 	m_Open = true;
 
+    m_MeshFilePath = meshPath;
     m_MeshParentDirectory = meshPath.parent_path();
     std::snprintf(InputAssetNameBuffer, TextBufferSize, meshPath.stem().string().c_str());
     m_ImportSettings.ImportAssetName = InputAssetNameBuffer;

@@ -164,6 +164,7 @@
     <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp" />
     <ClCompile Include="src\Render Systems\SSBO.cpp" />
     <ClCompile Include="src\Scene Systems\AssetRegistry.cpp" />
+    <ClCompile Include="src\Scene Systems\SceneUtils.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
     <ClCompile Include="src\File Systems\ShaderLoader.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="src\Render Systems\UniformBuffer.h" />
     <ClInclude Include="src\Scene Systems\AssetRegistry.h" />
     <ClInclude Include="src\Scene Systems\SceneRenderDetails.h" />
+    <ClInclude Include="src\Scene Systems\SceneUtils.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />

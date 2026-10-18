@@ -20,7 +20,7 @@ ColourNode::ColourNode() {
 	NodeHeaderColour = ImU32(0xFF917410);
 }
 
-void ColourNode::CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
+void ColourNode::CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {
 	if (nodeIsParameter)
 		return;
 

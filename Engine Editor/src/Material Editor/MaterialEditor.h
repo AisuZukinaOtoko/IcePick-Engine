@@ -13,7 +13,6 @@ class MaterialEditor {
 public:
 	MaterialEditor() = delete;
 	MaterialEditor(IcePick::EngineAPI engineAPI);
-	void SetDropAssetPath(std::filesystem::path filePath);
 	void SetEditMaterial(std::filesystem::path materialPath);
 	void OnUpdate(DeltaTime dt);
 	void Render();
@@ -47,7 +46,6 @@ private:
 	void CompileMaterial();
 	std::string CreateShaderFromGraph(std::stringstream& ss, std::shared_ptr<Node> node, unsigned int outputPinIndex, int recursiveDepth);
 	IcePick::ShaderSource GetShaderSourceFromGraph();
-	std::filesystem::path m_DropAssetPath;
 
 	bool m_Open = false;
 	IcePick::EngineAPI m_EngineAPI;
@@ -84,6 +82,7 @@ private:
 	bool lockCursorFirstFrame = false;
 	EditorRenderer m_Renderer;
 	std::vector<IcePick::MeshRendererComponent> m_PreviewMeshes;
+	IcePickRenderer::VertexArray* m_TerrainPreviewVertexArray = nullptr;
 
 	// Node render variables
 	NodeRenderInfo m_RenderInfo;

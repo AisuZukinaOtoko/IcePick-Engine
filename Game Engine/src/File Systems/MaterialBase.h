@@ -80,6 +80,7 @@ namespace IcePick {
 		enum MaterialSurfaceType {
 			STATIC_MESH = 0,
 			SKELETAL_MESH,
+			TERRAIN_MESH,
 			MATERIAL_MESH_TYPE_COUNT
 		} SurfaceType = STATIC_MESH;
 

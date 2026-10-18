@@ -268,7 +268,9 @@ void AssetBrowser::DrawAssets() {
                     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                         m_DragFilePath = directoryEntry.path();
                         m_DragAssetType = IcePick::GetAssetTypeFromExtension(fileExtension.string());
-                        ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), nullptr, 0, ImGuiCond_Once);
+                        //ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), nullptr, 0, ImGuiCond_Once);
+                        std::string filepath = directoryEntry.path().string();
+                        ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), filepath.c_str(), filepath.length() + 1, ImGuiCond_Once);
 
                         // Dragging asset preview
                         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));

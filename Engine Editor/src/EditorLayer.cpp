@@ -100,11 +100,9 @@ void IcePick::EditorLayer::OnRender(RenderPayload& payload) {
     m_ScenePanel.ShowSceneHierarchy(m_EngineAPI);
     m_AssetBrowser.Render();
     m_DopeSheet.Render();
+    m_TerrainPanel.Render(m_EngineAPI, m_Styles);
 
     m_PropertiesPanel.SetDropEntity(m_ScenePanel.GetDraggedEntity());
-    m_PropertiesPanel.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
-    m_Viewport.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
-    m_MaterialEditor.SetDropAssetPath(m_AssetBrowser.GetDragFilePath());
 
     m_PropertiesPanel.SelectedProperties(m_Styles);
     m_MaterialEditor.Render();

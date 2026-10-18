@@ -71,8 +71,9 @@ void PropertiesPanel::AssetDropTarget(const char* label, IcePick::UUID & assetId
     ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
     if (ImGui::BeginDragDropTarget()) {
-        if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(assetType))) {
-            std::filesystem::path assetPath = assetRegistry.ResolveAssetPathFromAbsolutePath(m_DropAssetPath);
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(assetType))) {
+            std::filesystem::path droppedAssetPath((const char*)payload->Data);
+            std::filesystem::path assetPath = assetRegistry.ResolveAssetPathFromAbsolutePath(droppedAssetPath);
             assetIdTarget = assetRegistry.GetAssetIdFromAssetPath(assetPath);
         }
         ImGui::EndDragDropTarget();
@@ -188,8 +189,58 @@ void PropertiesPanel::SetDropEntity(entt::entity entity) {
     m_DroppedEntity = entity;
 }
 
-void PropertiesPanel::SetDropAssetPath(std::string filePath) {
-    m_DropAssetPath = filePath;
+ void PropertiesPanel::RenderMaterialSlots(std::vector<IcePick::UUID>& materialSlots, IcePick::EngineAPI engineAPI, const Styles& styles, IcePick::ImportSettings::MeshType meshType) {
+     ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
+     flags |= ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
+     if (ImGui::BeginTable("table_nested1", 1, flags)) {
+
+         for (unsigned int i = 0; i < materialSlots.size(); i++) {
+             IcePick::UUID materialInstanceId = materialSlots[i];
+             IcePick::MaterialInstance& materialInstance = engineAPI.GetMaterialInstance(materialInstanceId);
+             IcePick::MaterialBase& materialBase = engineAPI.GetMaterialBase(materialInstance.MaterialBaseId);
+
+             ImGui::PushID(i);
+             ImGui::TableNextRow(ImGuiTableRowFlags_None);
+             ImGui::TableSetColumnIndex(0);
+
+             if (ImGui::BeginTable("Material", 2)) {
+                 ImGui::TableNextRow(ImGuiTableRowFlags_None);
+                 ImGui::TableNextColumn();
+                 const int imageSize = 45;
+                 ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
+
+                 ImGui::TableNextColumn();
+
+                 ImGui::Text("Material: %d", i);
+
+                 ImGui::EndTable();
+             }
+
+             if (ImGui::BeginDragDropTarget()) {
+                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
+                     std::filesystem::path droppedAssetPath((const char*)payload->Data);
+                     materialSlots[i] = engineAPI.LoadMaterialInstanceFromAsset(droppedAssetPath);
+                 }
+                 ImGui::EndDragDropTarget();
+             }
+
+             if (static_cast<unsigned int>(materialBase.SurfaceType) != static_cast<unsigned int>(meshType)) {
+                 ImGui::SetNextItemWidth(-FLT_MIN);
+                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+                 ImGui::Text(ICON_FA_TRIANGLE_EXCLAMATION " Material surface type and mesh type do not match!", "%s %s");
+                 ImGui::PopStyleColor();
+             }
+
+             MaterialInstanceParameters(materialBase, materialInstance, engineAPI);
+
+             ImGui::PopID();
+
+             /*if (i < meshRenderer.MaterialSlots.size() - 1) {
+                 ImGui::Separator();
+             }*/
+         }
+         ImGui::EndTable();
+     }
 }
 
 void PropertiesPanel::EntityProperties(const Styles& styles) {
@@ -343,7 +394,7 @@ void PropertiesPanel::ColourPicker(const char* label, glm::vec3& rgb) {
     ImGui::PopID();
 }
 
-void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance) {
+void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance, IcePick::EngineAPI engineAPI) {
     bool baseHasParameters = materialBase.MaterialTextures.size() || materialBase.MaterialFloatParameters.size()
         || materialBase.MaterialVec2Parameters.size() || materialBase.MaterialVec3Parameters.size() || materialBase.MaterialVec4Parameters.size()
         || materialBase.MaterialColourVec4Parameters.size();
@@ -364,7 +415,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                     auto& baseTextureParam = materialBase.MaterialTextures[i];
                     IcePick::UUID baseDataId = baseTextureParam.Id;
                     IcePick::UUID parameterTextureId = materialInstance.GetMaterialInstanceTextureId(baseDataId);
-                    unsigned int parameterTextureRenderId = m_EngineAPI.GetTextureRenderId(parameterTextureId);
+                    unsigned int parameterTextureRenderId = engineAPI.GetTextureRenderId(parameterTextureId);
 
                     if (ImGui::BeginTable("Material Texture", 2)) {
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
@@ -377,16 +428,17 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                         ImGui::Text(baseTextureParam.DisplayName.c_str());
                         if (ImGui::Button("Clear")) {
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, IcePick::UUID::Unitialised());
-                            m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                         }
                         ImGui::EndTable();
                     }
 
                     if (ImGui::BeginDragDropTarget()) {
-                        if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
-                            IcePick::UUID droppedTextureId = m_EngineAPI.LoadTextureFromAsset(m_DropAssetPath);
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::TEXTURE))) {
+                            std::filesystem::path droppedAssetPath((const char*)payload->Data);
+                            IcePick::UUID droppedTextureId = engineAPI.LoadTextureFromAsset(droppedAssetPath);
                             materialInstance.SetMaterialInstanceTextureId(baseDataId, droppedTextureId);
-                            m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                            engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                         }
                         ImGui::EndDragDropTarget();
                     }
@@ -421,7 +473,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                                 continue;
 
                             if (ImGui::DragFloat("##Material Instance Float", &instanceFloatData.Data, 0.005)) {
-                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                                engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                             }
                         }                        
                         ImGui::EndTable();
@@ -456,7 +508,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                                 continue;
 
                             if (ImGui::DragFloat2("##Material Instance Vec2", (float*)&instanceVec2Data.Data[0], 0.005)) {
-                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                                engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                             }
                         }
                         ImGui::EndTable();
@@ -491,7 +543,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                                 continue;
 
                             if (ImGui::DragFloat3("##Material Instance Vec3", (float*)&instanceVec3Data.Data[0], 0.005)) {
-                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                                engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                             }
                         }
                         ImGui::EndTable();
@@ -526,7 +578,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                                 continue;
 
                             if (ImGui::DragFloat4("##Material Instance Vec4", (float*)&instanceVec4Data.Data[0], 0.005)) {
-                                m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
+                                engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // Calling update will invalidate the cache. This is desired.
                             }
                         }
                         ImGui::EndTable();
@@ -570,7 +622,7 @@ void PropertiesPanel::MaterialInstanceParameters(IcePick::MaterialBase& material
                             if (ImGui::BeginPopup("ColourEditPopup")) {
                                 if (ImGui::ColorPicker4("##ColourEdit", (float*)&colourVec4Data, ImGuiColorEditFlags_AlphaBar)) {
                                     instanceColourVec4Data.Data = glm::vec4(colourVec4Data.x, colourVec4Data.y, colourVec4Data.z, colourVec4Data.w);
-                                    m_EngineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // update material editor instance for updated previews
+                                    engineAPI.UpdateMaterialInstance(materialInstance.Id, materialInstance); // update material editor instance for updated previews
                                 }
                                 ImGui::EndPopup();
                             }
@@ -648,67 +700,19 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
         ImGui::ImageButton("##MeshButton", (void*)styles.GetIconTexture(Styles::ICON_STATIC_MESH_ASSET), ImVec2(30, 30), ImVec2(0, 1), ImVec2(1, 0));
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::STATIC_MESH))) {
-                m_MeshImportPopup.OpenPopup(m_DropAssetPath);
+                std::filesystem::path droppedAssetPath((const char*)payload->Data);
+                m_MeshImportPopup.OpenPopup(droppedAssetPath);
             }
             ImGui::EndDragDropTarget();
         }
         if (m_MeshImportPopup.ImportSubmitted()) {
-            meshRenderer = m_EngineAPI.LoadMesh(m_DropAssetPath, m_MeshImportPopup.GetImportSettings());
+            meshRenderer = m_EngineAPI.LoadMesh(m_MeshImportPopup.GetMeshFilePath(), m_MeshImportPopup.GetImportSettings());
             m_MeshImportPopup.HandleSubmit();
         }
     }
 
     if (!meshRenderer.MaterialSlots.empty() && ImGui::CollapsingHeader("Materials", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGuiTableFlags flags = ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
-        flags |= ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner;
-        if (ImGui::BeginTable("table_nested1", 1, flags)) {
-
-            for (unsigned int i = 0; i < meshRenderer.MaterialSlots.size(); i++) {
-                IcePick::UUID materialInstanceId = meshRenderer.MaterialSlots[i];
-                IcePick::MaterialInstance& materialInstance = m_EngineAPI.GetMaterialInstance(materialInstanceId);
-                IcePick::MaterialBase& materialBase = m_EngineAPI.GetMaterialBase(materialInstance.MaterialBaseId);
-
-                ImGui::PushID(i);
-                ImGui::TableNextRow(ImGuiTableRowFlags_None);
-                ImGui::TableSetColumnIndex(0);
-
-                if (ImGui::BeginTable("Material", 2)) {
-                    ImGui::TableNextRow(ImGuiTableRowFlags_None);
-                    ImGui::TableNextColumn();
-                    const int imageSize = 45;
-                    ImGui::ImageButton("##MaterialButton", (void*)styles.GetIconTexture(Styles::ICON_MATERIAL_ASSET), ImVec2(imageSize, imageSize), ImVec2(0, 1), ImVec2(1, 0));
-
-                    ImGui::TableNextColumn();
-
-                    ImGui::Text("Material: %d", i);
-
-                    ImGui::EndTable();
-                }
-
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::MATERIAL_INSTANCE))) {
-                        meshRenderer.MaterialSlots[i] = m_EngineAPI.LoadMaterialInstanceFromAsset(m_DropAssetPath);
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-
-                if (static_cast<unsigned int>(materialBase.SurfaceType) != static_cast<unsigned int>(meshRenderer.MeshType)) {
-                    ImGui::SetNextItemWidth(-FLT_MIN);
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-                    ImGui::Text(ICON_FA_TRIANGLE_EXCLAMATION " Material surface type and mesh type do not match!", "%s %s");
-                    ImGui::PopStyleColor();
-                }
-
-                MaterialInstanceParameters(materialBase, materialInstance);
-
-                ImGui::PopID();
-
-                /*if (i < meshRenderer.MaterialSlots.size() - 1) {
-                    ImGui::Separator();
-                }*/
-            }
-            ImGui::EndTable();
-        }
+        RenderMaterialSlots(meshRenderer.MaterialSlots, m_EngineAPI, styles, meshRenderer.MeshType);
     }
 }
 
@@ -737,8 +741,9 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
         ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
 
         if (ImGui::BeginDragDropTarget()) {
-            if (ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::SCRIPT_ASSET))) {
-                scriptComponent = m_EngineAPI.LoadScript(m_DropAssetPath, selectedEntity);
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::SCRIPT_ASSET))) {
+                std::filesystem::path droppedAssetPath((const char*)payload->Data);
+                scriptComponent = m_EngineAPI.LoadScript(droppedAssetPath, selectedEntity);
             }
             ImGui::EndDragDropTarget();
         }

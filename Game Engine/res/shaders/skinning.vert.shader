@@ -19,16 +19,17 @@ layout(std430, binding = 0) readonly buffer BoneMatrices {
 
 
 void main() {
-     mat4 skin =
+     mat4 boneMatrix =
           bones[boneIds.x] * boneWeights.x
         + bones[boneIds.y] * boneWeights.y
         + bones[boneIds.z] * boneWeights.z
         + bones[boneIds.w] * boneWeights.w;
 
-    vec4 skinPosition = skin * vec4(position, 1.0);
+    vec4 skinPosition = boneMatrix * vec4(position, 1.0);
+    vec3 skinnedNormal = mat3(boneMatrix) * normal;
 
     gl_Position = u_MVP * skinPosition;
     v_Pos = (u_Modelmatrix * skinPosition).xyz;
-    v_Normal = normalize(u_NormalMatrix * normal);
+    v_Normal = normalize(u_NormalMatrix * skinnedNormal);
     v_TexCoord = texCoord;
 };

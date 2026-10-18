@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <filesystem>
 #include "Scene Systems/UUID.h"
 #include <imgui-docking/imgui.h>
 #include "File Systems/MaterialBase.h"
@@ -70,7 +69,7 @@ public:
 	std::string NodeName;
 	std::vector<InputPin> InputPins;
 	std::vector<OutputPin> OutputPins;
-	virtual void CustomRendering(IcePick::EngineAPI& engineAPI, std::filesystem::path& dropAssetPath, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
+	virtual void CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
 	virtual void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {}
 	virtual void ParseNodeLogic(std::stringstream& ss) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }

@@ -21,7 +21,9 @@ public:
 	void SetSelectionContext(SelectionContext selectionContext);
 
 	void SetDropEntity(entt::entity entity);
-	void SetDropAssetPath(std::string filePath);
+
+	static void RenderMaterialSlots(std::vector<IcePick::UUID>& materialSlots, IcePick::EngineAPI engineAPI, const Styles& styles, IcePick::ImportSettings::MeshType meshType);
+	static void MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance, IcePick::EngineAPI engineAPI);
 private:
 
 	void PanelSetup();
@@ -34,7 +36,6 @@ private:
 	void CheckBox(const char* label, bool* value);
 	void ColourPicker(const char* label, glm::vec3& rgb);
 	void AssetDropTarget(const char* label, IcePick::UUID& assetIdTarget, IcePick::AssetTypes assetType);
-	void MaterialInstanceParameters(IcePick::MaterialBase& materialBase, IcePick::MaterialInstance& materialInstance);
 	void EntityDropTargetProperty(const char* label, entt::entity& entityProperty);
 
 	// Component Properties
@@ -52,7 +53,6 @@ private:
 	entt::entity m_DroppedEntity = entt::null;
 	SelectionContext m_SelectionContext;
 
-	std::string m_DropAssetPath;
 	IcePick::EngineAPI m_EngineAPI;
 	MeshImportPopup m_MeshImportPopup;
 	EditorRenderer m_PreviewRenderer;

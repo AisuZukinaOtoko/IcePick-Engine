@@ -147,6 +147,9 @@
     <ClCompile Include="src\Scene Systems\TerrainSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene Systems\SceneUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\depth.frag.shader" />
@@ -356,6 +359,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene Systems\SceneRenderDetails.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene Systems\SceneUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

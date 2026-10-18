@@ -107,12 +107,32 @@ namespace IcePick {
 		return m_Engine->m_AssetLoader.GetSkeletonById(skeletonId);
 	}
 
-	void EngineAPI::CreateNewTerrain(unsigned int resolution) {
-		m_Engine->m_TerrainSystem.CreateTerrain(resolution, m_Engine->m_AssetLoader.GetTextureLoader());
+	void EngineAPI::CreateNewTerrain(unsigned int size, unsigned int unitsPerMetre) {
+		m_Engine->m_TerrainSystem.CreateTerrain(size, unitsPerMetre, m_Engine->m_AssetLoader.GetTextureLoader());
 	}
 
 	bool EngineAPI::IsTerrainCreated() {
 		return m_Engine->m_TerrainSystem.IsCreated();
+	}
+
+	float& EngineAPI::GetTerrainHeightScale() {
+		return m_Engine->m_TerrainSystem.TerrainHeightScale;
+	}
+
+	std::vector<UUID>& EngineAPI::GetTerrainMaterialSlots() {
+		return m_Engine->m_TerrainSystem.TerrainMaterialInstanceIds;
+	}
+
+	void EngineAPI::DestroyTerrain() {
+		return m_Engine->m_TerrainSystem.Destroy(m_Engine->m_AssetLoader.GetTextureLoader());
+	}
+
+	UUID EngineAPI::GetTerrainHeightMapId() {
+		return m_Engine->m_TerrainSystem.GetHeightMapTexture();
+	}
+
+	void EngineAPI::SetTerrainHeightMapId(UUID heightMapId) {
+		m_Engine->m_TerrainSystem.SetHeightMapTexture(heightMapId);
 	}
 
 	IcePickRenderer::StaticMeshData& EngineAPI::GetStaticMeshDataById(UUID meshDataId) {

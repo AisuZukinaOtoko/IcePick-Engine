@@ -244,6 +244,8 @@ namespace IcePick {
 		uint64_t materialId = JsonUtils::GetUint64(assetFile, "Id");
 		uint64_t shaderId = JsonUtils::GetUint64(assetFile, "shaderId");
 		uint64_t graphId = JsonUtils::GetUint64(assetFile, "graphId");
+		loadMaterialBase.SurfaceType = static_cast<MaterialBase::MaterialSurfaceType>(JsonUtils::GetUint32(assetFile, "surfaceType"));
+		loadMaterialBase.ShadingModel = static_cast<MaterialBase::MaterialShadingModel>(JsonUtils::GetUint32(assetFile, "shadingModel"));
 
 		UUID Id{ materialId };
 		loadMaterialBase.Id = Id;

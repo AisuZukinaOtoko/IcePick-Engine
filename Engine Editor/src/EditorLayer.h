@@ -8,6 +8,7 @@
 #include "Panels/AssetBrowser.h"
 #include "Panels/StatisticsPanel.h"
 #include "Panels/DopeSheet.h"
+#include "Panels/TerrainPanel.h"
 #include "Menu/Toolbar.h"
 #include "Styles/Styles.h"
 #include "Material Editor/MaterialEditor.h"
@@ -37,6 +38,7 @@ namespace IcePick {
 		StatisticsPanel m_StatisticsPanel;
 		MaterialEditor m_MaterialEditor;
 		DopeSheet m_DopeSheet;
+		TerrainPanel m_TerrainPanel;
 
 		ImFont* m_EditorFont = nullptr;
 	};

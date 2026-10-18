@@ -18,7 +18,6 @@ public:
 	void SetSelectionContextChangeCallback(std::function<void(SelectionContext)> callback);
 	void SetSelectionContext(SelectionContext selectionContext);
 
-	void SetDropAssetPath(std::string filePath);
 	void OnUpdate(DeltaTime dt);
 	void OnViewportEvent(IcePick::Event& event);
 	void Render(unsigned int frameBuffer);
@@ -42,7 +41,6 @@ private:
 	EditorCamera m_EditorCamera;
 	IcePick::EngineAPI m_EngineAPI;
 
-	std::filesystem::path m_DropAssetPath;
 	std::function<void(SelectionContext)> SelectionContextChangeCallback;
 	bool m_UsingGizmo = false;
 
@@ -56,5 +54,5 @@ private:
 	void RenderRigidBodyDebugColliders();
 	void RenderViewportControls();
 	void GetViewportDebugData(uint32_t* debugData);
-	void DropMaterialIntoViewport();
+	void DropMaterialIntoViewport(std::filesystem::path materialAssetPath);
 };

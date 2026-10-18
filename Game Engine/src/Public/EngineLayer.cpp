@@ -427,7 +427,7 @@ namespace IcePick {
 	}
 
 	void EngineLayer::OnBeginScene() {
-		m_TerrainSystem.CreateTerrain(20, m_AssetLoader.GetTextureLoader());
+		//m_TerrainSystem.CreateTerrain(100, 20, m_AssetLoader.GetTextureLoader());
 
 		auto& activeSceneRegistry = GetActiveSceneRegistry();
 		auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();

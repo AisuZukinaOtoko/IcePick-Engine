@@ -14,6 +14,7 @@
 #include "Functions/StepNode.h"
 #include "Functions/TangentNode.h"
 
+#include "Inputs/CameraViewNode.h"
 #include "Inputs/FragmentCoordinateNode.h"
 #include "Inputs/TimeNode.h"
 #include "Inputs/UVNode.h"
@@ -26,10 +27,11 @@
 #include "Math/MultiplyNode.h"
 #include "Math/DivideNode.h"
 #include "Math/DecimalNode.h"
+#include "Math/OneMinusNode.h"
+#include "Math/SplitVectorNode.h"
 #include "Math/Vector2Node.h"
 #include "Math/Vector3Node.h"
 #include "Math/Vector4Node.h"
-#include "Math/SplitVectorNode.h"
 
 #include "Rendering/BSDFNode.h"
 #include "Rendering/ColourNode.h"
