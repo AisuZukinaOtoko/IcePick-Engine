@@ -7,12 +7,8 @@ TimeNode::TimeNode() {
 	NodeHeaderColour = ImU32(0xFF001CC8);
 }
 
-void TimeNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-
-}
-
-void TimeNode::ParseNodeLogic(std::stringstream& ss) {
-
+void TimeNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	m_NodeVisited = true;
 }
 
 std::string TimeNode::GetPinOutput(unsigned int outputPinIndex) {

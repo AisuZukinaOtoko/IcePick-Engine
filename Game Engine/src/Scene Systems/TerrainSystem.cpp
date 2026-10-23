@@ -3,6 +3,7 @@
 #include "../Render Systems/VertexLayout.h"
 #include "TerrainSystem.h"
 #include "SceneUtils.h"
+#include "../Physics Systems/PhysicsSystem3D.h"
 #include "../Public/EngineAPI.h"
 #include "../File Systems/MaterialLoader.h"
 #include "../File Systems/ShaderLoader.h"
@@ -33,7 +34,12 @@ namespace IcePick {
 		m_DefaultTerrainMaterialInstanceId = materialLoader.NewMaterialInstanceFromCopy(terrainMaterialInstance);
 
 		TerrainMaterialInstanceIds.push_back(m_DefaultTerrainMaterialInstanceId);
-	} 
+	}
+
+	void TerrainSystem::InitTerrainPhysics(PhysicsSystem3D& physicsSystem) {
+
+	}
+
 
 	void TerrainSystem::CreateTerrain(unsigned int size, unsigned int unitsPerMetre, TextureLoader& textureLoader) {
 		if (size < 2) {
@@ -68,15 +74,15 @@ namespace IcePick {
 		m_HeightMapTextureId = textureLoader.NewUncompressedTextureFromMemory(heightMapData.data(), heightMapTextureSettings, false);
 
 		m_Created = true;
-		m_TerrainSize = size;
-		m_TerrainUnitsPerMetre = unitsPerMetre;
+		TerrainSettings.TerrainSize = size;
+		TerrainSettings.TerrainUnitsPerMetre = unitsPerMetre;
 	}
 
 	void TerrainSystem::SetHeightMapTexture(UUID textureId) {
 		m_HeightMapTextureId = textureId;
 	}
 
-	UUID TerrainSystem::GetHeightMapTexture() {
+	UUID TerrainSystem::GetHeightMapTexture() const {
 		return m_HeightMapTextureId;
 	}
 
@@ -88,8 +94,8 @@ namespace IcePick {
 			MaterialInstance& terrainMaterialInstance = materialLoader.GetMaterialInstance(terrainMaterialInstanceId);
 			MaterialBase& terrainMaterialBase = materialLoader.GetMaterialBase(terrainMaterialInstance.MaterialBaseId);
 			ShaderProgram& terrainMaterialShaderProgram = shaderLoader.GetShaderProgram(terrainMaterialBase.ShaderId);
-			terrainMaterialShaderProgram.SetUniformFloat("u_HeightScale", TerrainHeightScale);
-			terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (m_TerrainSize * m_TerrainUnitsPerMetre));
+			terrainMaterialShaderProgram.SetUniformFloat("u_HeightScale", TerrainSettings.TerrainHeightScale);
+			terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (TerrainSettings.TerrainSize * TerrainSettings.TerrainUnitsPerMetre));
 
 			const IcePickRenderer::Texture& materialTexture = engineAPI.GetTexture(m_HeightMapTextureId);
 			materialTexture.Bind(terrainMaterialBase.MaterialTextures.size());

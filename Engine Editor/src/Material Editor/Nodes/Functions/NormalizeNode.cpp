@@ -10,8 +10,8 @@ NormalizeNode::NormalizeNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void NormalizeNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void NormalizeNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -19,11 +19,7 @@ void NormalizeNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& edi
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = normalize(" << sx << ");\n";
-	m_Initialised = true;
-}
-
-void NormalizeNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool NormalizeNode::NodeStateValid() {

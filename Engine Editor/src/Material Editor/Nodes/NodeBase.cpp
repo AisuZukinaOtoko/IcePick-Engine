@@ -43,5 +43,5 @@ void OutputPin::DeleteConnection(IcePick::UUID connectedNode, unsigned int pinIn
 }
 
 void Node::Unitialise() {
-	m_Initialised = false;
+	m_NodeVisited = false;
 }

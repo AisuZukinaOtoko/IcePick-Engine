@@ -12,7 +12,7 @@ namespace IcePick {
 		for (unsigned int x = 0; x < resolution; x++) {
 			for (unsigned int y = 0; y < resolution; y++) {
 				glm::vec2 position{ (x / (float)(resolution - 1)) * size - halfSize, (y / (float)(resolution - 1)) * size - halfSize };
-				glm::vec2 uv{ (x + 1) / (float)resolution, (y + 1) / (float)resolution };
+				glm::vec2 uv{ (x + 1) / (float)resolution, ((y + 1) / (float)resolution) };
 				vertices[x * resolution + y] = { position, uv };
 			}
 		}

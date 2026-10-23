@@ -12,8 +12,8 @@ Vector3Node::Vector3Node() {
 	nodeCanBeParamterized = true;
 }
 
-void Vector3Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void Vector3Node::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	if (!nodeIsParameter) {
@@ -27,11 +27,7 @@ void Vector3Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 		editMaterialBase.MaterialVec3Parameters.push_back(materialBaseVec3Parameter);
 	}
 	
-	m_Initialised = true;
-}
-
-void Vector3Node::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool Vector3Node::NodeStateValid() {

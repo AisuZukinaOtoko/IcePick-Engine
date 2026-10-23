@@ -11,19 +11,15 @@ CrossProductNode::CrossProductNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void CrossProductNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void CrossProductNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string& sy = InputPins[1].ShaderIdentifier;
 	ss << "vec3 " << m_Identifier << " = cross(" << sx << ", " << sy << ");\n";
-	m_Initialised = true;
-}
-
-void CrossProductNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool CrossProductNode::NodeStateValid() {

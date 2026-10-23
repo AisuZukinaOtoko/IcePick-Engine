@@ -24,8 +24,8 @@ SplitVectorNode::SplitVectorNode() {
 	nodeCanBeParamterized = false;
 }
 
-void SplitVectorNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void SplitVectorNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 	
 	const int numberOfVectorComponents = GetNumberOfComponents(InputPins[0].ConnectedPinType);
@@ -49,11 +49,7 @@ void SplitVectorNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& e
 	//}
 	////<< sx << " + " << sy;
 	//ss << ");\n";
-	m_Initialised = true;
-}
-
-void SplitVectorNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool SplitVectorNode::NodeStateValid() {

@@ -9,12 +9,8 @@ WorldPositionNode::WorldPositionNode() {
 	NodeHeaderColour = ImU32(0xFF001CC8);
 }
 
-void WorldPositionNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-
-}
-
-void WorldPositionNode::ParseNodeLogic(std::stringstream& ss) {
-
+void WorldPositionNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	m_NodeVisited = true;
 }
 
 std::string WorldPositionNode::GetPinOutput(unsigned int outputPinIndex) {

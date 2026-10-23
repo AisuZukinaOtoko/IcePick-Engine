@@ -10,8 +10,8 @@ DivideNode::DivideNode() {
 	nodeCanBeParamterized = false;
 }
 
-void DivideNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void DivideNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -20,11 +20,7 @@ void DivideNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMa
 	std::string& sy = InputPins[1].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = " << sx << " / " << sy << ";\n";
-	m_Initialised = true;
-}
-
-void DivideNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool DivideNode::NodeStateValid() {

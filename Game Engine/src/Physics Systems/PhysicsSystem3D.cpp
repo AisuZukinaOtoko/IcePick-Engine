@@ -1,3 +1,4 @@
+#include "../Render Systems/Texture.h"
 #include "PhysicsSystem3D.h"
 #include "PhysicsUtils.h"
 
@@ -12,10 +13,13 @@
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Collision/Shape/StaticCompoundShape.h>
 #include <Jolt/Physics/Collision/Shape/ScaledShape.h>
+#include <Jolt/Physics/Collision/Shape/HeightFieldShape.h>
 
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 
+#include "../File Systems/TextureLoader.h"
+#include "../Scene Systems/TerrainSystem.h"
 #include "../Scene Systems/Components.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
@@ -348,6 +352,46 @@ namespace IcePick {
 	void PhysicsSystem3D::Update() {
 		const float timeStep = 1.0f / 60.0f;
 		m_PhysicsSystem.Update(timeStep, 1,	m_TempAllocator, m_JobSystem);
+	}
+
+	void PhysicsSystem3D::AddTerrainHeightField(const TerrainSystem& terrainSystem, TextureLoader& textureLoader) {
+		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+
+		if (bodyInterface.IsAdded(m_TerrainBody)) {
+			bodyInterface.RemoveBody(m_TerrainBody);
+			bodyInterface.DestroyBody(m_TerrainBody);
+		}
+		
+		IcePickRenderer::Texture heightMapTexture = textureLoader.GetTexture(terrainSystem.GetHeightMapTexture());
+		unsigned int textureWidth, textureHeight;
+		heightMapTexture.GetTextureSize(&textureWidth, &textureHeight);
+
+		if (textureWidth != textureHeight) {
+			IP_LOG("Height map width and height need to match to create the terrain physics.", IP_ERROR_LOG);
+			return;
+		}
+
+		std::vector<float> textureData(textureWidth * textureHeight);
+		heightMapTexture.GetTextureDataAsFloat(textureData.data(), textureData.size() * sizeof(float), IcePickRenderer::TextureSettings::TextureFormat::R32F);
+
+		const float horizontalScale = terrainSystem.TerrainSettings.TerrainSize / static_cast<float>(textureWidth - 1);
+		JPH::HeightFieldShapeSettings heightFieldShapeSettings {
+			textureData.data(),
+			JPH::Vec3(-(terrainSystem.TerrainSettings.TerrainSize / 2.0f), 0.0f, -(terrainSystem.TerrainSettings.TerrainSize / 2.0f)),
+			JPH::Vec3(horizontalScale, terrainSystem.TerrainSettings.TerrainHeightScale, horizontalScale),
+			textureWidth
+		};
+		JPH::ShapeSettings::ShapeResult shapeResult = heightFieldShapeSettings.Create();
+
+		if (shapeResult.HasError()) {
+			IP_LOG("Physics system failed to create the terrain shape.", IP_ERROR_LOG);
+			IP_LOG(shapeResult.GetError().c_str(), IP_ERROR_LOG);
+			return;
+		}
+
+		JPH::ShapeRefC terrainShape = shapeResult.Get();
+		JPH::BodyCreationSettings bodyCreationSettings{ terrainShape, JPH::RVec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ObjectLayers::NON_MOVING };
+		m_TerrainBody = bodyInterface.CreateAndAddBody(bodyCreationSettings, JPH::EActivation::Activate);
 	}
 
 #ifndef DIST

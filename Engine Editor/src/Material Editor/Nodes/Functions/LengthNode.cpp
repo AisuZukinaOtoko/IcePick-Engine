@@ -10,18 +10,14 @@ LengthNode::LengthNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void LengthNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void LengthNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	ss << "float " << m_Identifier << " = length(" << sx << ");\n";
-	m_Initialised = true;
-}
-
-void LengthNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool LengthNode::NodeStateValid() {

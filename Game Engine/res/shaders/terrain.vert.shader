@@ -16,7 +16,7 @@ float GetHeightMapValue(vec2 uv) {
     return texture(u_HeightFieldTextureUnit, uv).r * u_HeightScale;
 }
 
-vec3 CalculateNormal(){
+vec3 CalculateNormal() {
     float leftHeight = GetHeightMapValue(texCoord + vec2(-u_TexelSize, 0.0f));
     float rightHeight = GetHeightMapValue(texCoord + vec2(u_TexelSize, 0.0f));
     float upHeight = GetHeightMapValue(texCoord + vec2(0.0f, u_TexelSize));

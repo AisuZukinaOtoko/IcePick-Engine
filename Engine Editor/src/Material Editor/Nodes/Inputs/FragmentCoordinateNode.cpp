@@ -7,12 +7,8 @@ FragmentCoordinateNode::FragmentCoordinateNode() {
 	NodeHeaderColour = ImU32(0xFF001CC8);
 }
 
-void FragmentCoordinateNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-
-}
-
-void FragmentCoordinateNode::ParseNodeLogic(std::stringstream& ss) {
-
+void FragmentCoordinateNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	m_NodeVisited = true;
 }
 
 std::string FragmentCoordinateNode::GetPinOutput(unsigned int outputPinIndex) {

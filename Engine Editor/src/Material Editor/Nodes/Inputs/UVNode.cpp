@@ -7,12 +7,8 @@ UVNode::UVNode() {
 	NodeHeaderColour = ImU32(0xFF001CC8);
 }
 
-void UVNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-
-}
-
-void UVNode::ParseNodeLogic(std::stringstream& ss) {
-
+void UVNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	m_NodeVisited = true;
 }
 
 std::string UVNode::GetPinOutput(unsigned int outputPinIndex) {

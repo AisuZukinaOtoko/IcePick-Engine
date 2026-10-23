@@ -11,8 +11,8 @@ PowerNode::PowerNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void PowerNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void PowerNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -21,11 +21,7 @@ void PowerNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMat
 	std::string& s2 = InputPins[1].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = pow(" << s1 << ", " << s2 <<");\n";
-	m_Initialised = true;
-}
-
-void PowerNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool PowerNode::NodeStateValid() {

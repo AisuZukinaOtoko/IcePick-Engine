@@ -8,16 +8,12 @@ CameraViewNode::CameraViewNode() {
 	m_Identifier = "node_" + std::to_string(Id);
 }
 
-void CameraViewNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void CameraViewNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	ss << "vec3 " << m_Identifier << " = CameraPosition - v_Pos;\n";
-	m_Initialised = true;
-}
-
-void CameraViewNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 std::string CameraViewNode::GetPinOutput(unsigned int outputPinIndex) {

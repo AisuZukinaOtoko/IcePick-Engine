@@ -7,12 +7,8 @@ WorldNormalNode::WorldNormalNode() {
 	NodeHeaderColour = ImU32(0xFF001CC8);
 }
 
-void WorldNormalNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-
-}
-
-void WorldNormalNode::ParseNodeLogic(std::stringstream& ss) {
-
+void WorldNormalNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	m_NodeVisited = true;
 }
 
 std::string WorldNormalNode::GetPinOutput(unsigned int outputPinIndex) {

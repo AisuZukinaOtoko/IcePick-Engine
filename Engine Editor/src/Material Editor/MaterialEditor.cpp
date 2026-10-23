@@ -90,8 +90,8 @@ MaterialEditor::MaterialEditor(IcePick::EngineAPI engineAPI) :
     m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/skinning.vert.shader"));
     m_MaterialSurfaceVertexShaderSources.push_back(m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/terrain.vert.shader"));
 
-    unsigned int previewTerrainSize = 2;
-    unsigned int previewTerrainUnitsPerMetre = 5;
+    unsigned int previewTerrainSize = 4;
+    unsigned int previewTerrainUnitsPerMetre = 20;
     unsigned int resolution = previewTerrainSize * previewTerrainUnitsPerMetre;
     std::vector<IcePickRenderer::TerrainVertex3D> vertexBuffer(resolution * resolution);
     std::vector<unsigned int> indexBuffer;
@@ -235,13 +235,13 @@ void MaterialEditor::PreviewMaterial() {
 
     m_Renderer.Clear();
 
-    viewRadius = (m_MaterialEditorMaterialBase.SurfaceType == IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH) ? 4.5f : 3.0f;
+    viewRadius = (m_MaterialEditorMaterialBase.SurfaceType == IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH) ? 4.0f : 3.0f;
 
     m_Renderer.BeginRenderPass();
     if (m_TerrainPreviewVertexArray && (m_MaterialEditorMaterialBase.SurfaceType == IcePick::MaterialBase::MaterialSurfaceType::TERRAIN_MESH)) {
         IcePick::ShaderProgram& terrainMaterialShaderProgram = m_EngineAPI.GetShaderProgram(m_MaterialEditorMaterialBase.ShaderId);
         terrainMaterialShaderProgram.SetUniformFloat("u_HeightScale", 0.5f);
-        terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (2 * 5));
+        terrainMaterialShaderProgram.SetUniformFloat("u_TexelSize", 1.0f / (4 * 20));
 
         const IcePickRenderer::Texture& heightMapTexture = m_EngineAPI.GetTexture(IcePick::UUID::Unitialised()); // Use default texture as height map for material previews
         heightMapTexture.Bind(m_MaterialEditorMaterialBase.MaterialTextures.size());
@@ -345,17 +345,22 @@ void MaterialEditor::DrawNodes() {
         ImVec2 nodeSize = CalculateNodeSize(node);
 
         bool nodeStateIsValid = node->NodeStateValid();
+        bool nodeIsVisited = node->IsNodeVisited();
         ImU32 borderColour = (nodeStateIsValid) ? IM_COL32(150, 150, 150, 255) : IM_COL32(200, 0, 0, 255);
+        ImU32 backgroundColour = (nodeIsVisited) ? m_RenderInfo.NodeBgColour : m_RenderInfo.DisabledNodeBgColour;
+        ImU32 headerColour = (nodeIsVisited) ? node->NodeHeaderColour : IM_COL32(60, 60, 60, 255);
+        ImU32 labelColour = (nodeIsVisited) ? m_RenderInfo.LabelColour : m_RenderInfo.DisabledLabelColour;
+        ImU32 pinColourHovered = (nodeIsVisited) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.DisabledNodePinColourHovered;
         float nodeBorderWidth = 2.0f;
 
         draw_list->AddRectFilled(ImVec2(nodePosition.x - nodeBorderWidth, nodePosition.y - nodeBorderWidth), ImVec2(nodePosition.x + nodeSize.x + nodeBorderWidth, nodePosition.y + nodeSize.y + nodeBorderWidth), borderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
-        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), m_RenderInfo.NodeBgColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
-        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), node->NodeHeaderColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
+        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + nodeSize.y), backgroundColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersAll);
+        draw_list->AddRectFilled(nodePosition, ImVec2(nodePosition.x + nodeSize.x, nodePosition.y + m_RenderInfo.NodeHeaderHeight), headerColour, m_RenderInfo.NodeCornerRounding, ImDrawFlags_RoundCornersTop);
 
         ImVec2 nodeTitleTextSize = ImGui::CalcTextSize(node->NodeName.c_str());
         ImVec2 nodeTitleTextPosition = ImVec2(nodePosition.x + m_RenderInfo.LabelPadding, nodePosition.y + ((m_RenderInfo.NodeHeaderHeight - nodeTitleTextSize.y) / 2.0f));
         if (node->Id != m_RenameNodeId)
-            draw_list->AddText(NULL, 20.0f, nodeTitleTextPosition, IM_COL32(255, 255, 255, 255), node->NodeName.c_str());
+            draw_list->AddText(NULL, 20.0f, nodeTitleTextPosition, labelColour, node->NodeName.c_str());
 
         ImGui::SetCursorScreenPos(nodePosition);
         ImGui::SetNextItemAllowOverlap();
@@ -379,7 +384,7 @@ void MaterialEditor::DrawNodes() {
             if (ImGui::IsItemDeactivated()) {
                 node->NodeName = inputTextBuffer;
                 m_RenameNodeId = IcePick::UUID::Unitialised();
-                m_GraphStateChanged = true; //to update the labels on the edit widgets
+                m_GraphStateChanged = true; //to update the labels on the parameter edit widgets
             }
 
             ImGui::PopStyleVar();
@@ -401,16 +406,20 @@ void MaterialEditor::DrawNodes() {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, true);
 
+            bool pinUsedInNode = node->InputPins[j].PinIsUsedByNode;
+            ImU32 pinColour = (nodeIsVisited && pinUsedInNode) ? m_RenderInfo.NodePinColour : m_RenderInfo.DisabledNodePinColour;
+            ImU32 textColour = (pinUsedInNode) ? labelColour : m_RenderInfo.DisabledNodePinColour;
+
             std::string& label = node->InputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
             ImVec2 labelPosition = ImVec2(pinPosition.x + m_RenderInfo.PinRadius + m_RenderInfo.LabelPadding, pinPosition.y - (labelSize.y / 2.0f));
-            draw_list->AddText(labelPosition, m_RenderInfo.LabelColour, label.c_str());
+            draw_list->AddText(labelPosition, textColour, label.c_str());
 
             bool mouseInRectX = (mousePos.x > pinPosition.x - m_RenderInfo.PinRadius) && (mousePos.x < labelPosition.x + labelSize.x);
             bool mouseInRectY = (mousePos.y > labelPosition.y) && (mousePos.y < labelPosition.y + labelSize.y);
             bool currentPinHovered = mouseInRectX && mouseInRectY;
 
-            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            ImU32 colour = (currentPinHovered) ? pinColourHovered : pinColour;
             draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
             bool pinShouldBeFilled = (node->InputPins[j].ConnectedNodeId == IcePick::UUID::Unitialised()) && !(m_SourcePinIndex == j && m_SourcePinNodeId == node->Id && m_IsInputPin && m_PinActive);
             if (pinShouldBeFilled)
@@ -445,16 +454,18 @@ void MaterialEditor::DrawNodes() {
             ImGui::PushID(j);
             ImVec2 pinPosition = CalculatePinPosition(node, j, false);
 
+            ImU32 pinColour = (nodeIsVisited) ? m_RenderInfo.NodePinColour : m_RenderInfo.DisabledNodePinColour;
+
             std::string& label = node->OutputPins[j].Label;
             ImVec2 labelSize = ImGui::CalcTextSize(label.c_str());
             ImVec2 labelPosition = ImVec2(pinPosition.x - m_RenderInfo.PinRadius - m_RenderInfo.LabelPadding - labelSize.x, pinPosition.y - (labelSize.y / 2.0f));
-            draw_list->AddText(labelPosition, IM_COL32(255, 255, 255, 255), label.c_str());
+            draw_list->AddText(labelPosition, labelColour, label.c_str());
 
             bool mouseInRectX = (mousePos.x < (pinPosition.x + m_RenderInfo.PinRadius)) && (mousePos.x > labelPosition.x);
             bool mouseInRectY = (mousePos.y > labelPosition.y) && (mousePos.y < labelPosition.y + labelSize.y);
             bool currentPinHovered = mouseInRectX && mouseInRectY;
 
-            ImU32 colour = (currentPinHovered) ? m_RenderInfo.NodePinColourHovered : m_RenderInfo.NodePinColour;
+            ImU32 colour = (currentPinHovered) ? pinColourHovered : pinColour;
             draw_list->AddCircleFilled(pinPosition, m_RenderInfo.PinRadius, colour, m_RenderInfo.PinSegments);
             bool pinShouldBeFilled = (node->OutputPins[j].ConnectedNodeIds.size() == 0) && !(m_SourcePinIndex == j && m_SourcePinNodeId == node->Id && !m_IsInputPin && m_PinActive);
             if (pinShouldBeFilled)
@@ -510,21 +521,22 @@ void MaterialEditor::DrawDragPin() {
     ImVec2 lineP1 = CalculatePinPosition(node, m_SourcePinIndex, m_IsInputPin);
     ImVec2 lineP4 = ImGui::GetMousePos();
 
-    DrawLine(lineP1, lineP4, m_IsInputPin);
+    DrawLine(lineP1, lineP4, m_IsInputPin, !node->IsNodeVisited());
 }
 
-void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin) {
+void MaterialEditor::DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin, bool connectionIsDisabled) {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     int sign = (startIsInputPin) ? -1 : 1;
     float innerPointXOffset = std::abs(lineEnd.x - lineStart.x) / 3.0f + 10.0f;
     float innerPointYOffset = (lineEnd.y - lineStart.y) / 8.0f;
-    //float innerPointYOffset = 0;
+    innerPointYOffset = 0;
     
     ImVec2 lineP2 = ImVec2(lineStart.x + innerPointXOffset * sign, lineStart.y + innerPointYOffset);
     ImVec2 lineP3 = ImVec2(lineEnd.x - innerPointXOffset * sign, lineEnd.y - innerPointYOffset);
+    ImU32 lineColour = (connectionIsDisabled) ? m_RenderInfo.DisabledNodePinColour : m_RenderInfo.NodePinColour;
 
-    draw_list->AddBezierCubic(lineStart, lineP2, lineP3, lineEnd, m_RenderInfo.NodePinColour, m_RenderInfo.LineThickness, m_RenderInfo.LineSegments);
+    draw_list->AddBezierCubic(lineStart, lineP2, lineP3, lineEnd, lineColour, m_RenderInfo.LineThickness, m_RenderInfo.LineSegments);
 }
 
 void MaterialEditor::DrawNodeConnections() {
@@ -539,8 +551,9 @@ void MaterialEditor::DrawNodeConnections() {
 
             ImVec2 inputPinLocation = CalculatePinPosition(node, i, true);
             ImVec2 outputPinLocation = CalculatePinPosition(connectedOutputNode, connectedOutputPinIndex, false);
+            bool connectionIsActive = node->IsNodeVisited() && connectedOutputNode->IsNodeVisited();
 
-            DrawLine(inputPinLocation, outputPinLocation, true);
+            DrawLine(inputPinLocation, outputPinLocation, true, !connectionIsActive);
         }
     }
 }
@@ -1148,8 +1161,13 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
         return "";
     }
 
+    node->InitialiseNodeState(m_MaterialEditorMaterialBase);
+
     // Get current node input values
     for (InputPin& pin : node->InputPins) {
+        if (!pin.PinIsUsedByNode)
+            continue;
+
         if (pin.ConnectedNodeId == IcePick::UUID::Unitialised()) {
             pin.ShaderIdentifier = Pin::GetPinDefault(pin.Type);
             continue;
@@ -1165,8 +1183,7 @@ std::string MaterialEditor::CreateShaderFromGraph(std::stringstream& ss, std::sh
         pin.ConnectedPinType = connectedNode->OutputPins[pin.ConnectedPinIndex].Type;
     }
 
-    node->Initialise(ss, m_MaterialEditorMaterialBase, m_MaterialEditorMaterialInstance);
-    node->ParseNodeLogic(ss);
+    node->ParseLogic(ss, m_MaterialEditorMaterialBase, m_MaterialEditorMaterialInstance);
     return node->GetPinOutput(outputPinIndex);
 }
 

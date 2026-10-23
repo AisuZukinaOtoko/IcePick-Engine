@@ -5,8 +5,7 @@ class OneMinusNode : public Node {
 public:
 	OneMinusNode();
 
-	void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) override;
-	void ParseNodeLogic(std::stringstream& ss) override;
+	void ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) override;
 	bool NodeStateValid() override;
 	std::string GetPinOutput(unsigned int outputPinIndex) override;
 };

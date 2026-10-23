@@ -11,19 +11,15 @@ VoronoiNoiseNode::VoronoiNoiseNode() {
 	NodeHeaderColour = ImU32(0xFF917410);
 }
 
-void VoronoiNoiseNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void VoronoiNoiseNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& sUV = InputPins[0].ShaderIdentifier;
 	std::string& st = InputPins[1].ShaderIdentifier;
 	ss << "float " << m_Identifier << " = VoronoiNoise(" << sUV << ", " << st << ");\n";
-	m_Initialised = true;
-}
-
-void VoronoiNoiseNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool VoronoiNoiseNode::NodeStateValid() {

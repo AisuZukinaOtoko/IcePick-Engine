@@ -200,7 +200,7 @@ namespace IcePickRenderer {
 		if (LineBuffer.NumPoints == 0)
 			return;
 
-		LineShaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
+		//LineShaderProgram.SetUniformMat4("u_ViewProjectionMatrix", RenderViewProjectionMatrix);
 		LineShaderProgram.Use();
 
 		glBindVertexArray(InternalLineVertexArrayId);

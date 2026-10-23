@@ -116,7 +116,7 @@ namespace IcePick {
 	}
 
 	float& EngineAPI::GetTerrainHeightScale() {
-		return m_Engine->m_TerrainSystem.TerrainHeightScale;
+		return m_Engine->m_TerrainSystem.TerrainSettings.TerrainHeightScale;
 	}
 
 	std::vector<UUID>& EngineAPI::GetTerrainMaterialSlots() {
@@ -133,6 +133,10 @@ namespace IcePick {
 
 	void EngineAPI::SetTerrainHeightMapId(UUID heightMapId) {
 		m_Engine->m_TerrainSystem.SetHeightMapTexture(heightMapId);
+	}
+
+	void EngineAPI::UpdatePhysicsSystemTerrainHeightField() {
+		m_Engine->m_PhysicsSystem3D.AddTerrainHeightField(m_Engine->m_TerrainSystem, m_Engine->m_AssetLoader.GetTextureLoader());
 	}
 
 	IcePickRenderer::StaticMeshData& EngineAPI::GetStaticMeshDataById(UUID meshDataId) {

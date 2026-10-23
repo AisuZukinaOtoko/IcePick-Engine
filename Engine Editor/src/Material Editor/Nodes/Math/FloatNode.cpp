@@ -22,8 +22,8 @@ void FloatNode::CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRenderI
 	}
 }
 
-void FloatNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void FloatNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	if (nodeIsParameter) {
@@ -31,11 +31,7 @@ void FloatNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMat
 		editMaterialBase.MaterialFloatParameters.push_back(materialBaseFloatParameter);
 	}
 
-	m_Initialised = true;
-}
-
-void FloatNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 std::string FloatNode::GetPinOutput(unsigned int outputPinIndex) {

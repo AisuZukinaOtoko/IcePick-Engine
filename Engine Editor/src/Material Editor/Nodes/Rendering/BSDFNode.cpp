@@ -14,8 +14,12 @@ BSDFNode::BSDFNode() {
 	NodeHeaderColour = ImU32(0xFF4B92C2);
 }
 
-void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void BSDFNode::InitialiseNodeState(IcePick::MaterialBase& editMaterialBase) {
+	InputPins[1].PinIsUsedByNode = (editMaterialBase.ShadingModel != IcePick::MaterialBase::MaterialShadingModel::UNLIT);
+}
+
+void BSDFNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	std::string& sAlbedo = InputPins[0].ShaderIdentifier;
@@ -54,11 +58,7 @@ void BSDFNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMate
 		
 	}
 
-	m_Initialised = true;
-}
-
-void BSDFNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool BSDFNode::NodeStateValid() {

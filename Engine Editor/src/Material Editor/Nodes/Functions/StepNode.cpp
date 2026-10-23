@@ -11,8 +11,8 @@ StepNode::StepNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void StepNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void StepNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -21,11 +21,7 @@ void StepNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMate
 	std::string& sy = InputPins[1].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = step(" << sy << ", " << sx << ");\n";
-	m_Initialised = true;
-}
-
-void StepNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool StepNode::NodeStateValid() {

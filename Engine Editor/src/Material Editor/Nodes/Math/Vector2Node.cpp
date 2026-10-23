@@ -11,8 +11,8 @@ Vector2Node::Vector2Node() {
 	nodeCanBeParamterized = true;
 }
 
-void Vector2Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void Vector2Node::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	if (!nodeIsParameter) {
@@ -26,11 +26,7 @@ void Vector2Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	}
 
 	
-	m_Initialised = true;
-}
-
-void Vector2Node::ParseNodeLogic(std::stringstream& ss) {
-	
+	m_NodeVisited = true;
 }
 
 bool Vector2Node::NodeStateValid() {

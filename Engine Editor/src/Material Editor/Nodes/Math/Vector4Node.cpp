@@ -13,8 +13,8 @@ Vector4Node::Vector4Node() {
 	nodeCanBeParamterized = true;
 }
 
-void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void Vector4Node::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	if (!nodeIsParameter) {
@@ -29,11 +29,7 @@ void Vector4Node::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 		editMaterialBase.MaterialVec4Parameters.push_back(materialBaseVec4Parameter);
 	}
 	
-	m_Initialised = true;
-}
-
-void Vector4Node::ParseNodeLogic(std::stringstream& ss) {
-	
+	m_NodeVisited = true;
 }
 
 bool Vector4Node::NodeStateValid() {

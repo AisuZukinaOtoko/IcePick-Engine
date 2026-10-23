@@ -47,8 +47,8 @@ void ColourNode::CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRender
 
 }
 
-void ColourNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void ColourNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	if (!nodeIsParameter) {
@@ -63,11 +63,7 @@ void ColourNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMa
 		editMaterialBase.MaterialColourVec4Parameters.push_back(materialBaseColourVec4Parameter);
 	}
 
-	m_Initialised = true;
-}
-
-void ColourNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 std::string ColourNode::GetPinOutput(unsigned int outputPinIndex) {

@@ -33,6 +33,7 @@ struct InputPin {
 	IcePick::UUID ConnectedNodeId = IcePick::UUID::Unitialised();
 	unsigned int ConnectedPinIndex = 0;
 	Pin::PinType ConnectedPinType = Pin::PinType::ANY;
+	bool PinIsUsedByNode = true;
 };
 
 struct OutputPin {
@@ -61,6 +62,11 @@ struct NodeRenderInfo {
 	ImU32 NodeBgColour = IM_COL32(20, 20, 20, 255);
 	ImU32 NodePinColour = IM_COL32(255, 255, 255, 255);
 	ImU32 NodePinColourHovered = IM_COL32(100, 100, 255, 255);
+
+	ImU32 DisabledLabelColour = IM_COL32(185, 185, 185, 255);
+	ImU32 DisabledNodeBgColour = IM_COL32(30, 30, 30, 255);
+	ImU32 DisabledNodePinColour = IM_COL32(185, 185, 185, 255);
+	ImU32 DisabledNodePinColourHovered = IM_COL32(80, 80, 165, 255);
 };
 
 class Node {
@@ -70,11 +76,13 @@ public:
 	std::vector<InputPin> InputPins;
 	std::vector<OutputPin> OutputPins;
 	virtual void CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRenderInfo& renderInfo, ImVec2 canvasScreenPos, ImVec2 canvasScrolling) {}
-	virtual void Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {}
-	virtual void ParseNodeLogic(std::stringstream& ss) {}
+	virtual void InitialiseNodeState(IcePick::MaterialBase& editMaterialBase) {}
+	virtual void ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {}
 	virtual std::string GetPinOutput(unsigned int outputPinIndex) { return ""; }
 	virtual bool NodeStateValid() { return true; }
 	void Unitialise();
+
+	bool IsNodeVisited() { return m_NodeVisited; }
 	std::string GetNodeType() { return m_NodeType; }
 	ImVec2 CanvasPosition;
 	unsigned int NodeWidth = 150.0f;
@@ -86,7 +94,7 @@ public:
 	bool nodeIsParameter = false;
 	bool nodeCanBeParamterized = false;
 protected:
-	bool m_Initialised = false;
+	bool m_NodeVisited = false;
 	std::string m_Identifier;
 	std::string m_NodeType = "base";
 };

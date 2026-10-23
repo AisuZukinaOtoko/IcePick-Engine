@@ -450,6 +450,11 @@ void Viewport::RenderViewportControls() {
 			IcePick::DuplicateSceneRegistry(editorRegistry, runtimeRegistry);
 
 			IcePick::SetActiveSceneRegistry(IcePick::SceneRegistryTypes::TEMPORARY);
+
+			if (m_EngineAPI.IsTerrainCreated()) {
+				m_EngineAPI.UpdatePhysicsSystemTerrainHeightField();
+			}
+
 			m_GameIsPlaying = true;
 		}
 		break;

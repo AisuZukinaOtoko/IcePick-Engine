@@ -10,8 +10,8 @@ CosineNode::CosineNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void CosineNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void CosineNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -19,11 +19,7 @@ void CosineNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMa
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = cos(" << sx << ");\n";
-	m_Initialised = true;
-}
-
-void CosineNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool CosineNode::NodeStateValid() {

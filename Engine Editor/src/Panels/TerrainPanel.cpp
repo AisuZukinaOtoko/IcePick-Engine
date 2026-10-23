@@ -13,10 +13,13 @@ void TerrainPanel::Render(IcePick::EngineAPI engineAPI, const Styles& styles) {
 	ImGui::Begin("Terrain");
 	bool terrainCreated = engineAPI.IsTerrainCreated();
 
+	bool gameIsRunning = (engineAPI.QueryEngineRuntimeState() != IcePick::RuntimeState::STOPPED);
+	ImGui::BeginDisabled(gameIsRunning);
 	if (terrainCreated)
 		TerrainCreatedUI(engineAPI, styles);
 	else
 		NoTerrainCreatedUI(engineAPI);
+	ImGui::EndDisabled();
 
 	ImGui::End();
 }

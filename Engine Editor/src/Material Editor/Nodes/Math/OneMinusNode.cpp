@@ -9,19 +9,15 @@ OneMinusNode::OneMinusNode() {
 	m_Identifier = "node_" + std::to_string(Id);
 }
 
-void OneMinusNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void OneMinusNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = " << type + "(1.0f) - " << sx << ";\n";
-	m_Initialised = true;
-}
-
-void OneMinusNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool OneMinusNode::NodeStateValid() {

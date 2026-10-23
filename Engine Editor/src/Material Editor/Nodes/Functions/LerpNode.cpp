@@ -12,8 +12,8 @@ LerpNode::LerpNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void LerpNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void LerpNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -23,11 +23,7 @@ void LerpNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMate
 	std::string& st = InputPins[2].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = mix(" << sa<< ", " << sb << ", " << st << ");\n";
-	m_Initialised = true;
-}
-
-void LerpNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool LerpNode::NodeStateValid() {

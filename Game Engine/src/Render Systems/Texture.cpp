@@ -5,6 +5,23 @@
 #include "../Utilities/Assert.h"
 
 namespace IcePickRenderer {
+
+	//static int FormatTypeToSize(TextureSettings::TextureFormat format) {
+	//	switch (format) {
+	//	default:
+	//		return 0;
+	//	}
+	//}
+
+	static int FormatToLocalFormatEnum(TextureSettings::TextureFormat format) {
+		switch (format) {
+		case TextureSettings::TextureFormat::R32F:
+			return GL_RED;
+		default:
+			return GL_RED;
+		}
+	}
+
 	void Texture::CreateTextureContext() {
 		glGenTextures(1, &m_ID);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -206,6 +223,15 @@ namespace IcePickRenderer {
 
 		if (height)
 			*height = m_Height;
+	}
+
+	void Texture::GetTextureDataAsFloat(float* buffer, int bufferSize, TextureSettings::TextureFormat format) {
+		if (!buffer) {
+			IP_LOG("Cannot write texture data to invalid address.", IP_ERROR_LOG);
+			return;
+		}
+
+		glGetTextureImage(m_ID, 0, FormatToLocalFormatEnum(format), GL_FLOAT, static_cast<GLsizei>(bufferSize), buffer);
 	}
 
 	void Texture::Destroy() {

@@ -15,6 +15,8 @@
 namespace IcePick {
 	struct TransformComponent;
 	struct RigidBodyComponent;
+	class TerrainSystem;
+	class TextureLoader;
 
 	class PhysicsSystem3D {
 	public:
@@ -27,6 +29,8 @@ namespace IcePick {
 
 		void MultiRemoveBodyPrepare(const RigidBodyComponent& rigidBody);
 		void MultiRemoveBodiesFinalize();
+
+		void AddTerrainHeightField(const TerrainSystem& terrainSystem, TextureLoader& textureLoader);
 
 		glm::vec3 GetBodyPosition(JPH::BodyID bodyId) const;
 		glm::quat GetBodyRotation(JPH::BodyID bodyId) const;
@@ -46,6 +50,8 @@ namespace IcePick {
 
 		JPH::EActivation GetObjectActivation(const RigidBodyComponent& rigidBody) const;
 		JPH::EMotionType GetObjectMotionType(const RigidBodyComponent& rigidBody) const;
+
+		JPH::BodyID m_TerrainBody;
 
 		ObjectLayerPairFilterImpl m_ObjectLayerPairFilter;
 		ObjectBroadPhaseLayerImpl m_ObjectBroadPhaseLayer;

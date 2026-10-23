@@ -12,8 +12,8 @@ SmoothstepNode::SmoothstepNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void SmoothstepNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void SmoothstepNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -23,11 +23,7 @@ void SmoothstepNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& ed
 	std::string& sE2 = InputPins[2].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = smoothstep(" << sE1 << ", " << sE2 << ", " << sI << ");\n";
-	m_Initialised = true;
-}
-
-void SmoothstepNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool SmoothstepNode::NodeStateValid() {

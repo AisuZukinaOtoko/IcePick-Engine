@@ -43,6 +43,7 @@ namespace IcePickRenderer {
 		unsigned int GetID() const;
 
 		void GetTextureSize(unsigned int* width, unsigned int* height);
+		void GetTextureDataAsFloat(float* buffer, int bufferSize, TextureSettings::TextureFormat format);
 
 	private:
 		void SetTextureSettings(const TextureSettings& settings);

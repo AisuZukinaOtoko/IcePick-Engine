@@ -11,19 +11,15 @@ DotProductNode::DotProductNode() {
 	NodeHeaderColour = ImU32(0xFF1B9F47);
 }
 
-void DotProductNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void DotProductNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	m_Identifier = "node_" + std::to_string(Id);
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string& sy = InputPins[1].ShaderIdentifier;
 	ss << "float " << m_Identifier << " = dot(" << sx << ", " << sy << ");\n";
-	m_Initialised = true;
-}
-
-void DotProductNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool DotProductNode::NodeStateValid() {

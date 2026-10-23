@@ -56,6 +56,7 @@ namespace IcePick {
 		std::vector<UUID>& GetTerrainMaterialSlots();
 		UUID GetTerrainHeightMapId();
 		void SetTerrainHeightMapId(UUID heightMapId);
+		void UpdatePhysicsSystemTerrainHeightField();
 		void DestroyTerrain();
 
 		// Scripts

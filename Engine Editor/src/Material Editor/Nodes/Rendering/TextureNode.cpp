@@ -49,8 +49,8 @@ void TextureNode::CustomRendering(IcePick::EngineAPI& engineAPI, const NodeRende
 
 }
 
-void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void TextureNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	std::string sampler = "sampler_" + std::to_string(Id);
@@ -62,11 +62,7 @@ void TextureNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 
 	std::string& s1 = InputPins[0].ShaderIdentifier;
 	ss << "vec4 " << m_Identifier << " = texture(" << sampler << "," << s1 << ");\n";
-	m_Initialised = true;
-}
-
-void TextureNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool TextureNode::NodeStateValid() {

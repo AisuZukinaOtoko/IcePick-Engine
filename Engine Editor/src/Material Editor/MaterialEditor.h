@@ -22,7 +22,7 @@ private:
 	void DrawCanvas();
 	void DrawNodes();
 	void DrawDragPin();
-	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin);
+	void DrawLine(ImVec2 lineStart, ImVec2 lineEnd, bool startIsInputPin, bool connectionIsDisabled);
 	void DrawNodeConnections();
 	void ShowEditMaterialBaseParameters();
 	void ShowEditMaterialBaseSettings();

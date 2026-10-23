@@ -12,8 +12,8 @@ FresnelNode::FresnelNode() {
 	m_Identifier = "node_" + std::to_string(Id);
 }
 
-void FresnelNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void FresnelNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	std::string& normal = InputPins[0].ShaderIdentifier;
@@ -24,11 +24,7 @@ void FresnelNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 		" = pow(" << 
 		"1.0f - max(dot(normalize(" << normal << "), normalize(" << view << ")), 0.0f)" <<
 		", " << power << ");\n";
-	m_Initialised = true;
-}
-
-void FresnelNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool FresnelNode::NodeStateValid() {

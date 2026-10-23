@@ -260,6 +260,7 @@
     <ClInclude Include="src\Render Systems\VertexLayout.h" />
     <ClInclude Include="src\Scene Systems\Components.h" />
     <ClInclude Include="src\Scene Systems\SceneRegistry.h" />
+    <ClInclude Include="src\Scene Systems\TerrainSettings.h" />
     <ClInclude Include="src\Scene Systems\TerrainSystem.h" />
     <ClInclude Include="src\Scene Systems\UUID.h" />
     <ClInclude Include="src\Utilities\Clock.h" />

@@ -9,8 +9,8 @@ DecimalNode::DecimalNode() {
 	nodeCanBeParamterized = false;
 }
 
-void DecimalNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
-	if (m_Initialised)
+void DecimalNode::ParseLogic(std::stringstream& ss, IcePick::MaterialBase& editMaterialBase, IcePick::MaterialInstance& editMaterialInstance) {
+	if (m_NodeVisited)
 		return;
 
 	OutputPins[0].Type = InputPins[0].ConnectedPinType;
@@ -18,11 +18,7 @@ void DecimalNode::Initialise(std::stringstream& ss, IcePick::MaterialBase& editM
 	std::string& sx = InputPins[0].ShaderIdentifier;
 	std::string type = GetPinTypeString(InputPins[0].ConnectedPinType);
 	ss << type << " " << m_Identifier << " = fract(" << sx << ");\n";
-	m_Initialised = true;
-}
-
-void DecimalNode::ParseNodeLogic(std::stringstream& ss) {
-
+	m_NodeVisited = true;
 }
 
 bool DecimalNode::NodeStateValid() {
