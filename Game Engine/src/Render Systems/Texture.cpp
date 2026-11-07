@@ -33,6 +33,7 @@ namespace IcePickRenderer {
 	}
 
 	void Texture::SetTextureFormats() {
+		m_LocalDataType = GL_UNSIGNED_BYTE;
 		switch (m_NumChannels) {
 		case 1:
 			m_LocalFormat = GL_RED;
@@ -57,6 +58,7 @@ namespace IcePickRenderer {
 	}
 
 	void Texture::UploadTextureData() {
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_LocalFormat, m_LocalDataType, m_LocalBuffer);
 		m_TextureValid = true;
 	}

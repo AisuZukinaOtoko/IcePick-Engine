@@ -3,6 +3,7 @@
 #include "../Render Systems/Renderer.h"
 #include "../Render Systems/Vertex.h"
 #include "../Scene Systems/Components.h"
+#include "../Scene Systems/SceneCamera.h"
 
 namespace IcePick {
 	EngineAPI::EngineAPI(std::shared_ptr<EngineLayer> engine) {
@@ -177,6 +178,10 @@ namespace IcePick {
 
 	SceneRenderDetails& EngineAPI::GetSceneRenderDetails() {
 		return m_Engine->GetSceneRenderDetails();
+	}
+
+	SceneCamera& EngineAPI::GetSceneCamera()	{
+		return m_Engine->m_SceneCamera;
 	}
 
 	void EngineAPI::UploadSceneRenderDetails() {

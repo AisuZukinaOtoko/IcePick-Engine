@@ -4,7 +4,7 @@
 
 ColourNode::ColourNode() {
 	OutputPins.emplace_back(Pin::VEC4, "RGBA", ".rgba");
-	OutputPins.emplace_back(Pin::VEC4, "RGB", ".rgb");
+	OutputPins.emplace_back(Pin::VEC3, "RGB", ".rgb");
 	OutputPins.emplace_back(Pin::FLOAT32, "R", ".r");
 	OutputPins.emplace_back(Pin::FLOAT32, "G", ".g");
 	OutputPins.emplace_back(Pin::FLOAT32, "B", ".b");

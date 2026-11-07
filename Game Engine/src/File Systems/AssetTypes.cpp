@@ -36,6 +36,9 @@ namespace IcePick {
 		AssetTypeStrings[AssetTypes::TIMELINE] = "TIMELINE";
 		AssetTypeExtensions[AssetTypes::TIMELINE] = ".tmln";
 
+		AssetTypeStrings[AssetTypes::SCENE] = "SCENE";
+		AssetTypeExtensions[AssetTypes::SCENE] = ".ipscene";
+
 		AssetTypeStrings[AssetTypes::INVALID_ASSET] = "INVALID ASSET";
 		AssetTypeExtensions[AssetTypes::INVALID_ASSET] = ".asset";
 	}

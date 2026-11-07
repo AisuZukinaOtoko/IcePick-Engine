@@ -5,6 +5,7 @@
 namespace IcePick {
 	class ShaderProgram;
 	class Skeleton;
+	class SceneCamera;
 	struct ShaderSource;
 	struct MeshRendererComponent;
 	struct ScriptComponent;
@@ -70,6 +71,7 @@ namespace IcePick {
 		void CopyFrameBufferResultToDefaultBuffer();
 		void ReloadShaders();
 		SceneRenderDetails& GetSceneRenderDetails();
+		SceneCamera& GetSceneCamera();
 		void UploadSceneRenderDetails();
 		void BindSceneRenderDetails(unsigned int bindLocation);
 

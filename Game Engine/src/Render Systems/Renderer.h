@@ -6,7 +6,6 @@
 struct NewVertexArrayData;
 
 namespace  IcePick {
-	struct MeshComponent;
 	class ShaderProgram;
 };
 

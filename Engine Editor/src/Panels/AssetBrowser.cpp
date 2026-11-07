@@ -4,6 +4,7 @@
 #include "../Utils/Serialize.h"
 #include "Scene Systems/AssetRegistry.h"
 #include "Utilities/DebugStatistics.h"
+#include "Scene Systems/SceneSerializer.h"
 #include "LogSystem.h"
 #include <IconsFontAwesome7.h>
 
@@ -173,7 +174,12 @@ void AssetBrowser::DrawAssets() {
         ImVec2 assetCardSize{ assertCardWidth, assertCardWidth + assetCardNameHeight };
 
         unsigned int directoryEntryIndex = 0;
+
+        // Folders
         for (const auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentBrowsingPath)) {
+            if (!directoryEntry.is_directory())
+                continue;
+
             ImGui::PushID(directoryEntryIndex);
 
             int rowIndex = (int)(directoryEntryIndex / columnCount);
@@ -185,126 +191,141 @@ void AssetBrowser::DrawAssets() {
             ImVec2 thumbnailBottomRight{ thumbnailTopLeft.x + thumbnailSize, thumbnailTopLeft.y + thumbnailSize };
 
 
-            if (directoryEntry.is_directory()) {
-                const std::string folderName = directoryEntry.path().stem().string();
+            const std::string folderName = directoryEntry.path().stem().string();
 
-                if (m_AssetNameFilter.PassFilter(folderName.c_str())) {
-                    ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FOLDER);
-                    draw_list->AddImage(icon, thumbnailTopLeft, thumbnailBottomRight, ImVec2(0, 1), ImVec2(1, 0));
+            if (m_AssetNameFilter.PassFilter(folderName.c_str())) {
+                ImTextureID icon = (void*)m_Styles.GetIconTexture(Styles::ICON_FOLDER);
+                draw_list->AddImage(icon, thumbnailTopLeft, thumbnailBottomRight, ImVec2(0, 1), ImVec2(1, 0));
 
-                    ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
+                ImVec2 textSize = ImGui::CalcTextSize(folderName.c_str());
 
-                    float folderTextWidth = std::min(textSize.x, assertCardWidth);
-                    float textOffset = (assertCardWidth - folderTextWidth) / 2.0f;
+                float folderTextWidth = std::min(textSize.x, assertCardWidth);
+                float textOffset = (assertCardWidth - folderTextWidth) / 2.0f;
 
-                    ImVec2 fileNameTextPosition{ assetCardTopLeft.x + textPadding + textOffset, thumbnailBottomRight.y + textPadding };
+                ImVec2 fileNameTextPosition{ assetCardTopLeft.x + textPadding + textOffset, thumbnailBottomRight.y + textPadding };
 
-                    ImGui::SetCursorScreenPos(fileNameTextPosition);
-                    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + assertCardWidth - (2 * textPadding));
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+                ImGui::SetCursorScreenPos(fileNameTextPosition);
+                ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + assertCardWidth - (2 * textPadding));
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
 
-                    ImGui::TextUnformatted(folderName.c_str());
+                ImGui::TextUnformatted(folderName.c_str());
 
-                    ImGui::PopStyleColor();
-                    ImGui::PopTextWrapPos();
+                ImGui::PopStyleColor();
+                ImGui::PopTextWrapPos();
 
-                    ImGui::SetCursorScreenPos(assetCardTopLeft);
-                    ImGui::InvisibleButton("DirectoryCard", assetCardSize, ImGuiButtonFlags_MouseButtonLeft);
+                ImGui::SetCursorScreenPos(assetCardTopLeft);
+                ImGui::InvisibleButton("DirectoryCard", assetCardSize, ImGuiButtonFlags_MouseButtonLeft);
 
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType))) {
-                            HandleMoveAssetToDirectory(directoryEntry.path());
-                        }
-                        ImGui::EndDragDropTarget();
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType))) {
+                        HandleMoveAssetToDirectory(directoryEntry.path());
                     }
-
-                    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                        ChangeBrowsingDirectory(directoryEntry.path());
-                    }
-                    directoryEntryIndex++;
+                    ImGui::EndDragDropTarget();
                 }
 
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                    ChangeBrowsingDirectory(directoryEntry.path());
+                }
+                directoryEntryIndex++;
             }
-            else if (directoryEntry.is_regular_file()) {
-                const std::filesystem::path& fileExtension = directoryEntry.path().extension();
-                std::string fileName = directoryEntry.path().stem().string();
 
-                if (m_AssetNameFilter.PassFilter(fileName.c_str())) {
-                    ImTextureID thumbnail = GetFileIcon(fileExtension);
+            ImGui::PopID();
+        }
 
-                    if (fileExtension == ".iptex") {
-                        IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(directoryEntry.path());
-                        thumbnail = (void*)m_EngineAPI.GetTextureRenderId(textureId);
-                    }
-                    else if (fileExtension == ".ipmtb") {
-                        m_EngineAPI.LoadMaterialBaseFromAsset(directoryEntry.path());
-                    }
+        // Regular files
+        for (const auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentBrowsingPath)) {
+            if (!directoryEntry.is_regular_file())
+                continue;
 
-                    draw_list->AddRectFilled(assetCardTopLeft, assetCardBottomRight, IM_COL32(80, 80, 80, 255), assetCardRounding, ImDrawFlags_RoundCornersAll);
-                    draw_list->AddRectFilled(thumbnailTopLeft, thumbnailBottomRight, IM_COL32(10, 10, 10, 255), assetCardRounding, ImDrawFlags_RoundCornersNone);
-                    draw_list->AddImage(thumbnail, thumbnailTopLeft, thumbnailBottomRight, ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::PushID(directoryEntryIndex);
 
-                    ImVec2 fileNameTextPosition{ assetCardTopLeft.x + textPadding, thumbnailBottomRight.y + textPadding };
+            int rowIndex = (int)(directoryEntryIndex / columnCount);
+            int columnIndex = directoryEntryIndex % columnCount;
+            ImVec2 assetCardTopLeft{ drawRegionStart.x + (columnIndex * cellWidth), drawRegionStart.y + (rowIndex * (assetCardSize.y + cellPadding)) };
+            ImVec2 assetCardBottomRight{ assetCardTopLeft.x + assetCardSize.x, assetCardTopLeft.y + assetCardSize.y };
 
-                    ImGui::SetCursorScreenPos(fileNameTextPosition);
-                    ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + assertCardWidth - (2 * textPadding));
-                    ImGui::TextUnformatted(fileName.c_str());
-                    ImGui::PopTextWrapPos();
+            ImVec2 thumbnailTopLeft{ assetCardTopLeft.x + thumbnailPadding, assetCardTopLeft.y + thumbnailPadding };
+            ImVec2 thumbnailBottomRight{ thumbnailTopLeft.x + thumbnailSize, thumbnailTopLeft.y + thumbnailSize };
 
-                    ImGui::PushFont(m_Styles.GetSmallFont());
-                    std::string fileType = IcePick::GetAssetTypeString(IcePick::GetAssetTypeFromExtension(fileExtension.string()));
-                    ImVec2 fileTypeTextSize = ImGui::CalcTextSize(fileType.c_str());
-                    ImVec2 fileTypeTextPosition{ assetCardBottomRight.x - textPadding - fileTypeTextSize.x, assetCardBottomRight.y - textPadding - fileTypeTextSize.y };
-                    ImGui::SetCursorScreenPos(fileTypeTextPosition);
 
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
-                    ImGui::Text(fileType.c_str());
-                    ImGui::PopStyleColor();
-                    ImGui::PopFont();
+            const std::filesystem::path& fileExtension = directoryEntry.path().extension();
+            std::string fileName = directoryEntry.path().stem().string();
 
-                    ImGui::SetCursorScreenPos(assetCardTopLeft);
-                    ImGui::InvisibleButton("AssetCard", assetCardSize, ImGuiButtonFlags_MouseButtonLeft);
+            if (m_AssetNameFilter.PassFilter(fileName.c_str())) {
+                ImTextureID thumbnail = GetFileIcon(fileExtension);
 
-                    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-                        m_DragFilePath = directoryEntry.path();
-                        m_DragAssetType = IcePick::GetAssetTypeFromExtension(fileExtension.string());
-                        //ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), nullptr, 0, ImGuiCond_Once);
-                        std::string filepath = directoryEntry.path().string();
-                        ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), filepath.c_str(), filepath.length() + 1, ImGuiCond_Once);
-
-                        // Dragging asset preview
-                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-                        ImGui::ImageButton("##Hello", thumbnail, ImVec2(40, 40), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1));
-                        ImGui::PopStyleVar();
-
-                        ImGui::SameLine();
-                        ImGui::Text(fileName.c_str());
-                        ImGui::EndDragDropSource();
-                    }
-
-                    if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                        HandleAssetDoubleClick(directoryEntry.path(), IcePick::GetAssetTypeFromExtension(fileExtension.string()));
-                    }
-
-                    if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-                        ImGui::OpenPopup("GENERIC_FILE_POPUP");
-                    }
-
-                    if (ImGui::BeginPopup("GENERIC_FILE_POPUP")) {
-                        if (fileExtension == ".ipmtb") {
-                            MaterialBasePopupOptions(directoryEntry.path());
-                        }
-
-                        ImVec2 popupSize = ImGui::GetContentRegionAvail();
-                        if (ImGui::Button("Delete", ImVec2(popupSize.x, 0.0f))) {
-                            HandleDeleteAsset(directoryEntry.path());                            
-                            ImGui::CloseCurrentPopup();
-                        }
-
-                        ImGui::EndPopup();
-                    }
-                    directoryEntryIndex++;
+                if (fileExtension == ".iptex") {
+                    IcePick::UUID textureId = m_EngineAPI.LoadTextureFromAsset(directoryEntry.path());
+                    thumbnail = (void*)m_EngineAPI.GetTextureRenderId(textureId);
                 }
+                else if (fileExtension == ".ipmtb") {
+                    m_EngineAPI.LoadMaterialBaseFromAsset(directoryEntry.path());
+                }
+
+                draw_list->AddRectFilled(assetCardTopLeft, assetCardBottomRight, IM_COL32(80, 80, 80, 255), assetCardRounding, ImDrawFlags_RoundCornersAll);
+                draw_list->AddRectFilled(thumbnailTopLeft, thumbnailBottomRight, IM_COL32(10, 10, 10, 255), assetCardRounding, ImDrawFlags_RoundCornersNone);
+                draw_list->AddImage(thumbnail, thumbnailTopLeft, thumbnailBottomRight, ImVec2(0, 1), ImVec2(1, 0));
+
+                ImVec2 fileNameTextPosition{ assetCardTopLeft.x + textPadding, thumbnailBottomRight.y + textPadding };
+
+                ImGui::SetCursorScreenPos(fileNameTextPosition);
+                ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + assertCardWidth - (2 * textPadding));
+                ImGui::TextUnformatted(fileName.c_str());
+                ImGui::PopTextWrapPos();
+
+                ImGui::PushFont(m_Styles.GetSmallFont());
+                std::string fileType = IcePick::GetAssetTypeString(IcePick::GetAssetTypeFromExtension(fileExtension.string()));
+                ImVec2 fileTypeTextSize = ImGui::CalcTextSize(fileType.c_str());
+                ImVec2 fileTypeTextPosition{ assetCardBottomRight.x - textPadding - fileTypeTextSize.x, assetCardBottomRight.y - textPadding - fileTypeTextSize.y };
+                ImGui::SetCursorScreenPos(fileTypeTextPosition);
+
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
+                ImGui::Text(fileType.c_str());
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+
+                ImGui::SetCursorScreenPos(assetCardTopLeft);
+                ImGui::InvisibleButton("AssetCard", assetCardSize, ImGuiButtonFlags_MouseButtonLeft);
+
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+                    m_DragFilePath = directoryEntry.path();
+                    m_DragAssetType = IcePick::GetAssetTypeFromExtension(fileExtension.string());
+                    //ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), nullptr, 0, ImGuiCond_Once);
+                    std::string filepath = directoryEntry.path().string();
+                    ImGui::SetDragDropPayload(IcePick::GetAssetTypeString(m_DragAssetType), filepath.c_str(), filepath.length() + 1, ImGuiCond_Once);
+
+                    // Dragging asset preview
+                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+                    ImGui::ImageButton("##Hello", thumbnail, ImVec2(40, 40), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1));
+                    ImGui::PopStyleVar();
+
+                    ImGui::SameLine();
+                    ImGui::Text(fileName.c_str());
+                    ImGui::EndDragDropSource();
+                }
+
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                    HandleAssetDoubleClick(directoryEntry.path(), IcePick::GetAssetTypeFromExtension(fileExtension.string()));
+                }
+
+                if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                    ImGui::OpenPopup("GENERIC_FILE_POPUP");
+                }
+
+                if (ImGui::BeginPopup("GENERIC_FILE_POPUP")) {
+                    if (fileExtension == ".ipmtb") {
+                        MaterialBasePopupOptions(directoryEntry.path());
+                    }
+
+                    ImVec2 popupSize = ImGui::GetContentRegionAvail();
+                    if (ImGui::Button("Delete", ImVec2(popupSize.x, 0.0f))) {
+                        HandleDeleteAsset(directoryEntry.path());
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    ImGui::EndPopup();
+                }
+                directoryEntryIndex++;
             }
 
             ImGui::PopID();
@@ -339,6 +360,12 @@ void AssetBrowser::HandleAssetDoubleClick(std::filesystem::path assetPath, IcePi
     case IcePick::AssetTypes::SCRIPT_ASSET:
         OpenScriptEditor(assetPath);
         break;
+    case IcePick::AssetTypes::SCENE:
+    {
+        IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
+        IcePick::DeserializeScene(assetRegistry.ResolveAbsolutePathFromAssetPath("res/Scenes/TestScene.ipscene"));
+        break;
+    }
     default:
         break;
     }
@@ -393,6 +420,10 @@ void AssetBrowser::NewAssetOptions() {
             ImGui::OpenPopup("Create New Script");
         }
 
+        if (ImGui::Button("Scene", ImVec2(popupSize.x, 0.0f))) {
+            ImGui::OpenPopup("Create New Scene");
+        }
+
         if (ImGui::BeginPopupModal("Create Base Material")) {
             ImGui::InputText("File name (.ipmtb)", TextInputBuffer, sizeof(TextInputBuffer));
 
@@ -400,6 +431,8 @@ void AssetBrowser::NewAssetOptions() {
                 IcePick::MaterialBase newMaterialBase;
                 newMaterialBase.ShaderId = IcePick::UUID{};
                 IcePick::ShaderSource newMaterialShaderSource;
+                newMaterialShaderSource.VertexShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.vert.shader");
+                newMaterialShaderSource.FragmentShaderSource = m_EngineAPI.LoadShaderSourceFile("Game Engine/res/shaders/default.frag.shader");
                 Graph newMaterialShaderGraph;
 
                 std::string fileName = std::string(TextInputBuffer) + ".ipmtb";
@@ -425,6 +458,28 @@ void AssetBrowser::NewAssetOptions() {
             if (ImGui::Button("Save", ImVec2(120, 0))) {
 
                 std::string fileName = std::string(TextInputBuffer) + ".lua";
+                std::filesystem::path newScriptPath = m_CurrentBrowsingPath / fileName;
+                CreateNewScriptTemplate(newScriptPath);
+
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ClearTextInputBuffer();
+                ImGui::CloseCurrentPopup();
+                closeMainPopUp = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        if (ImGui::BeginPopupModal("Create New Scene")) {
+            ImGui::InputText("File name (.lua)", TextInputBuffer, sizeof(TextInputBuffer));
+
+            if (ImGui::Button("Save", ImVec2(120, 0))) {
+
+                std::string fileName = std::string(TextInputBuffer) + IcePick::GetAssetTypeExtension(IcePick::AssetTypes::SCENE);
                 std::filesystem::path newScriptPath = m_CurrentBrowsingPath / fileName;
                 CreateNewScriptTemplate(newScriptPath);
 
@@ -469,6 +524,9 @@ void* AssetBrowser::GetFileIcon(const std::filesystem::path& extension) {
     }
     else if (extension == ".lua") {
         icon = (void*)m_Styles.GetIconTexture(Styles::ICON_SCRIPT_ASSET);
+    }
+    else if (extension == IcePick::GetAssetTypeExtension(IcePick::AssetTypes::SCENE)) {
+        icon = (void*)m_Styles.GetIconTexture(Styles::ICON_SCENE_ASSET);
     }
     else {
         icon = (void*)m_Styles.GetIconTexture(Styles::ICON_GENERIC_FILE);

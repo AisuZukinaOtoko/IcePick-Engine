@@ -72,6 +72,7 @@ private:
 
 	ImVec2 m_CanvasScreenPos;
 	ImVec2 m_CanvasScrolling;
+	ImVec2 m_CanvasSize;
 
 	// Preview render variables
 	const int previewImageSize = 300;

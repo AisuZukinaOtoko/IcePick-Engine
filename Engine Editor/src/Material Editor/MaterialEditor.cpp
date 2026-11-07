@@ -118,6 +118,9 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     const IcePick::MaterialBase& editMaterialBase = m_EngineAPI.GetMaterialBase(m_EditMaterialBaseId);
     m_EditMaterialShaderId = editMaterialBase.ShaderId;
 
+    m_MaterialEditorMaterialBase.SurfaceType = editMaterialBase.SurfaceType;
+    m_MaterialEditorMaterialBase.ShadingModel = editMaterialBase.ShadingModel;
+
     m_EditMaterialNodeGraph.clear();
     m_EditMaterialNodeGraph = LoadMaterialBaseEditorData(materialBasePath, nullptr);
 
@@ -125,6 +128,10 @@ void MaterialEditor::SetEditMaterial(std::filesystem::path materialBasePath) {
     if (!m_EditMaterialNodeGraph.size()) {
         m_EditMaterialNodeGraph.push_back(std::make_shared<BSDFNode>());
     }
+
+    // Centre the graph around the bsdf node
+    m_CanvasScrolling.x = (m_CanvasSize.x / 2.0f) - m_EditMaterialNodeGraph[0]->CanvasPosition.x;
+    m_CanvasScrolling.y = (m_CanvasSize.y / 2.0f) - m_EditMaterialNodeGraph[0]->CanvasPosition.y;
 
     m_MaterialEditorMaterialBase.ClearMaterialBaseData();
     m_MaterialEditorMaterialInstance.ClearMaterialInstanceData();
@@ -270,6 +277,7 @@ void MaterialEditor::DrawCanvas() {
     ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();      // ImDrawList API uses screen coordinates!
     m_CanvasScreenPos = canvas_p0;
     ImVec2 canvas_sz = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
+    m_CanvasSize = canvas_sz;
     if (canvas_sz.x < 50.0f)
         canvas_sz.x = 50.0f;
     if (canvas_sz.y < 50.0f)

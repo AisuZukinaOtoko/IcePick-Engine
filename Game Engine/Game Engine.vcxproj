@@ -164,6 +164,7 @@
     <ClCompile Include="src\Physics Systems\PhysicsUtils.cpp" />
     <ClCompile Include="src\Render Systems\SSBO.cpp" />
     <ClCompile Include="src\Scene Systems\AssetRegistry.cpp" />
+    <ClCompile Include="src\Scene Systems\SceneSerializer.cpp" />
     <ClCompile Include="src\Scene Systems\SceneUtils.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptAPI.cpp" />
     <ClCompile Include="src\Scene Systems\ScriptRunner.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\Animation Systems\AnimationLoader.h" />
     <ClInclude Include="src\Animation Systems\Animator.h" />
     <ClInclude Include="src\Animation Systems\Bone.h" />
+    <ClInclude Include="src\Animation Systems\BoneSolveGroup.h" />
     <ClInclude Include="src\Animation Systems\Skeleton.h" />
     <ClInclude Include="src\Animation Systems\Timeline.h" />
     <ClInclude Include="src\Event Systems\Event.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="src\Render Systems\UniformBuffer.h" />
     <ClInclude Include="src\Scene Systems\AssetRegistry.h" />
     <ClInclude Include="src\Scene Systems\SceneRenderDetails.h" />
+    <ClInclude Include="src\Scene Systems\SceneSerializer.h" />
     <ClInclude Include="src\Scene Systems\SceneUtils.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />

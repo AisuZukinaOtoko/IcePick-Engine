@@ -9,6 +9,8 @@ namespace IcePick {
 			return broadPhaseLayer == BroadPhaseLayers::MOVING;
 		case ObjectLayers::MOVING:
 			return true;
+		case ObjectLayers::PLAYER:
+			return true;
 		default:
 			IP_ASSERT(false, "Invalid object layer.");
 			return false;

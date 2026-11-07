@@ -108,7 +108,7 @@ glm::vec2 IcePick::Input::GetLookActionAxes() {
 		lookAxes = IcePickRenderer::GetMouseDelta();
 	}
 	else if (m_CurrentInputType == InputPeripheral::IP_CONTROLLER) {
-		float controllerSensitivityMultiplier = 10.0f;
+		float controllerSensitivityMultiplier = 2.0f;
 		lookAxes.x = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_X);
 		lookAxes.y = GetControllerAxisValue(m_CurrentControllerId, IP_CONTROLLER_AXIS_RIGHT_Y);
 		lookAxes *= controllerSensitivityMultiplier;

@@ -11,6 +11,7 @@
 #include "../Event Systems/EventHandler.h"
 
 #include "../Scene Systems/AssetRegistry.h"
+#include "../Physics Systems/PhysicsUtils.h"
 #include <cstddef>
 
 
@@ -67,10 +68,9 @@ namespace IcePick {
 		AssetRegistry& assetRegistry = GetAssetRegistry();
 		IP_ASSERT(assetRegistry.IsInitialised(), "Asset Registry must be initialised before attaching the engine layer.");
 
-		m_ScriptRunner.Init();
+		m_ScriptRunner.Init(m_PhysicsSystem3D, m_SceneCamera);
 		m_AssetLoader.Init();
 		m_PhysicsSystem3D.Init();
-		m_SceneCameraId = AddSceneCamera();
 
 		// Tone maaping shader setup
 		EngineAPI engineAPI{ shared_from_this() };
@@ -110,66 +110,95 @@ namespace IcePick {
 
 	void EngineLayer::OnUpdate(DeltaTime dt) {
 		m_SceneRenderDetails.AccumulatedTime += dt.GetDelta();
-		if (m_CurrentRuntimeState != RuntimeState::RUNNING)
-			return;
 
-		auto& ActiveSceneRegistry = GetActiveSceneRegistry();
-		auto scriptedEntitiesView = ActiveSceneRegistry.view<ScriptComponent>();
+		auto& activeSceneRegistry = GetActiveSceneRegistry();
 
-		for (entt::entity entity : scriptedEntitiesView) {
-			ScriptComponent& entityScriptComponent = ActiveSceneRegistry.get<ScriptComponent>(entity);
+		if (m_CurrentRuntimeState == RuntimeState::RUNNING) {
+			auto scriptedEntitiesView = activeSceneRegistry.view<ScriptComponent>();
 
-			if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
-				continue;
+			for (entt::entity entity : scriptedEntitiesView) {
+				ScriptComponent& entityScriptComponent = activeSceneRegistry.get<ScriptComponent>(entity);
 
-			Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
+				if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
+					continue;
 
-			if (!entityScript.IsValid)
-				continue;
+				Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
 
-			sol::protected_function_result result = entityScript.OnUpdateFunction(entityScriptComponent.Self, dt.GetDelta());
-			if (!result.valid()) {
-				sol::error err = result;
-				IP_LOG(err.what(), IP_ERROR_LOG);
-				entityScriptComponent.Active = false;
+				if (!entityScript.IsValid)
+					continue;
+
+				sol::protected_function_result result = entityScript.OnUpdateFunction(entityScriptComponent.Self, dt.GetDelta());
+				if (!result.valid()) {
+					sol::error err = result;
+					IP_LOG(err.what(), IP_ERROR_LOG);
+					entityScriptComponent.Active = false;
+				}
 			}
-		}
 
-		auto animatedMeshesView = ActiveSceneRegistry.view<AnimatorComponent, MeshRendererComponent>();
-		for (entt::entity entity : animatedMeshesView) {
-			MeshRendererComponent& meshRendererComponent = ActiveSceneRegistry.get<MeshRendererComponent>(entity);
-			AnimatorComponent& animatorComponent = ActiveSceneRegistry.get<AnimatorComponent>(entity);
+			auto animatedMeshesView = activeSceneRegistry.view<AnimatorComponent, MeshRendererComponent>();
+			for (entt::entity entity : animatedMeshesView) {
+				MeshRendererComponent& meshRendererComponent = activeSceneRegistry.get<MeshRendererComponent>(entity);
+				AnimatorComponent& animatorComponent = activeSceneRegistry.get<AnimatorComponent>(entity);
+
+				if (meshRendererComponent.MeshType == ImportSettings::MeshType::SKELETAL_MESH) {
+					IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(meshRendererComponent);
+					Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
+					m_Animator.ProcessAnimationClip(meshSkeleton, animatorComponent, m_AssetLoader.GetAnimationLoader(), dt);
+				}
+			}
+		}		
+
+		auto ikSolversView = activeSceneRegistry.view<IKSolverComponent, MeshRendererComponent>();
+		for (entt::entity entity : ikSolversView) {
+			TransformComponent& entityTransformComponent = activeSceneRegistry.get<TransformComponent>(entity);
+			MeshRendererComponent& meshRendererComponent = activeSceneRegistry.get<MeshRendererComponent>(entity);
+			IKSolverComponent& ikSolverComponent = activeSceneRegistry.get<IKSolverComponent>(entity);
+
+			glm::mat4 entityTransformMatrix = glm::translate(glm::mat4(1.0f), entityTransformComponent.Position);
+			entityTransformMatrix *= glm::toMat4(entityTransformComponent.Rotation);
+			entityTransformMatrix = glm::scale(entityTransformMatrix, entityTransformComponent.Scale);
 
 			if (meshRendererComponent.MeshType == ImportSettings::MeshType::SKELETAL_MESH) {
 				IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(meshRendererComponent);
 				Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
-				m_Animator.ProcessAnimationClip(meshSkeleton, animatorComponent, m_AssetLoader.GetAnimationLoader(), dt);
+				m_Animator.SolveIK(meshSkeleton, ikSolverComponent, entityTransformMatrix);
 			}
 		}
 
-		IP_CORE_PROFILE_BEGIN("Physics Update");
-		m_PhysicsSystem3D.Update();
-		IP_CORE_PROFILE_POP();
+		if (m_CurrentRuntimeState == RuntimeState::RUNNING) {
+			IP_CORE_PROFILE_BEGIN("Physics Update");
+			m_PhysicsSystem3D.Update();
+			IP_CORE_PROFILE_POP();
 
-		auto physicsEntitiesView = ActiveSceneRegistry.view<RigidBodyComponent>();
+			auto physicsEntitiesView = activeSceneRegistry.view<RigidBodyComponent>();
 
-		for (entt::entity entity : physicsEntitiesView) {
-			TransformComponent& transformComponent = ActiveSceneRegistry.get<TransformComponent>(entity);
-			RigidBodyComponent& rigidBodyComponent = ActiveSceneRegistry.get<RigidBodyComponent>(entity);
+			for (entt::entity entity : physicsEntitiesView) {
+				TransformComponent& transformComponent = activeSceneRegistry.get<TransformComponent>(entity);
+				RigidBodyComponent& rigidBodyComponent = activeSceneRegistry.get<RigidBodyComponent>(entity);
 
-			if (rigidBodyComponent.RigidBodyId.IsInvalid()) {
-				continue;
+				if (rigidBodyComponent.RigidBodyId.IsInvalid()) {
+					continue;
+				}
+
+				transformComponent.Position = m_PhysicsSystem3D.GetBodyPosition(rigidBodyComponent.RigidBodyId);
+				transformComponent.Rotation = m_PhysicsSystem3D.GetBodyRotation(rigidBodyComponent.RigidBodyId);
 			}
 
-			transformComponent.Position = m_PhysicsSystem3D.GetBodyPosition(rigidBodyComponent.RigidBodyId);
-			transformComponent.Rotation = m_PhysicsSystem3D.GetBodyRotation(rigidBodyComponent.RigidBodyId);
-		}
+			auto virtualCharactersView = activeSceneRegistry.view<VirtualCharacterComponent>();
 
-		SceneCamera& sceneCamera = GetComponent<SceneCamera>(m_SceneCameraId);
-		sceneCamera.OnUpdate(GameInput, dt);
-		m_SceneRenderDetails.ViewProjectionMatrix = sceneCamera.GetViewProjectionMatrix();
-		m_SceneRenderDetails.CameraPosition = sceneCamera.cameraPosition;
-		//m_SceneRenderDetails.AccumulatedTime += dt.GetDelta();
+			for (entt::entity entity : virtualCharactersView) {
+				TransformComponent& entityTransform = GetComponent<TransformComponent>(entity);
+				VirtualCharacterComponent& entityVirtualCharacter = GetComponent<VirtualCharacterComponent>(entity);
+				m_PhysicsSystem3D.UpdateVirtualCharacter(dt, entityVirtualCharacter);
+				JPH::Ref<JPH::CharacterVirtual> virtualCharacter = m_PhysicsSystem3D.GetVirtualCharacter(entityVirtualCharacter.VirtualCharacterContainerIndex);
+				entityTransform.Position = PhysicsVec3ToVec3(virtualCharacter->GetPosition()) - entityVirtualCharacter.CapsuleOffset;
+				entityTransform.Rotation = PhysicsQuatToQuat(virtualCharacter->GetRotation());
+			}
+
+			m_SceneCamera.OnUpdate(GameInput, dt);
+			m_SceneRenderDetails.ViewProjectionMatrix = m_SceneCamera.GetViewProjectionMatrix();
+			m_SceneRenderDetails.CameraPosition = m_SceneCamera.cameraPosition;
+		}		
 	}
 
 	void EngineLayer::OnNewFrame() {
@@ -255,7 +284,7 @@ namespace IcePick {
 #ifndef DIST
 		IP_CORE_PROFILE_BEGIN("Debug physics render.");
 		if (m_RenderDebugPhysics) {
-			m_PhysicsSystem3D.DebugRender();
+			//m_PhysicsSystem3D.DebugRender();
 		}
 		IP_CORE_PROFILE_POP();
 #endif
@@ -293,12 +322,12 @@ namespace IcePick {
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat3 normalMatrix = glm::mat3(1.0f);
 
-		auto& ActiveSceneRegistry = GetActiveSceneRegistry();
-		auto sceneView = ActiveSceneRegistry.view<MeshRendererComponent>();
+		auto& activeSceneRegistry = GetActiveSceneRegistry();
+		auto sceneView = activeSceneRegistry.view<MeshRendererComponent>();
 
 		for (entt::entity entity : sceneView) {
-			MeshRendererComponent& EntityMeshRendererComponent = ActiveSceneRegistry.get<MeshRendererComponent>(entity);
-			TransformComponent& EntityTransformComponent = ActiveSceneRegistry.get<TransformComponent>(entity);
+			MeshRendererComponent& EntityMeshRendererComponent = activeSceneRegistry.get<MeshRendererComponent>(entity);
+			TransformComponent& EntityTransformComponent = activeSceneRegistry.get<TransformComponent>(entity);
 
 			if (!EntityMeshRendererComponent.MeshVisible)
 				continue;
@@ -427,8 +456,6 @@ namespace IcePick {
 	}
 
 	void EngineLayer::OnBeginScene() {
-		//m_TerrainSystem.CreateTerrain(100, 20, m_AssetLoader.GetTextureLoader());
-
 		auto& activeSceneRegistry = GetActiveSceneRegistry();
 		auto rigidBodiesView = activeSceneRegistry.view<RigidBodyComponent>();
 
@@ -438,6 +465,34 @@ namespace IcePick {
 			m_PhysicsSystem3D.MultiCreateAndAddBodyPrepare(entityTransform, entityRigidBody);
 		}
 		m_PhysicsSystem3D.MultiAddBodiesFinalize();
+
+		auto virtualCharactersView = activeSceneRegistry.view<VirtualCharacterComponent>();
+
+		for (entt::entity entity : virtualCharactersView) {
+			TransformComponent& entityTransform = GetComponent<TransformComponent>(entity);
+			VirtualCharacterComponent& entityVirtualCharacter = GetComponent<VirtualCharacterComponent>(entity);
+			m_PhysicsSystem3D.CreateVirtualCharacter(entityTransform, entityVirtualCharacter);
+		}
+
+		auto scriptedEntitiesView = activeSceneRegistry.view<ScriptComponent>();
+		for (entt::entity entity : scriptedEntitiesView) {
+			ScriptComponent& entityScriptComponent = activeSceneRegistry.get<ScriptComponent>(entity);
+
+			if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
+				continue;
+
+			Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
+
+			if (!entityScript.IsValid)
+				continue;
+
+			sol::protected_function_result result = entityScript.OnCreateFunction(entityScriptComponent.Self);
+			if (!result.valid()) {
+				sol::error err = result;
+				IP_LOG(err.what(), IP_ERROR_LOG);
+				entityScriptComponent.Active = false;
+			}
+		}
 	}
 
 	void EngineLayer::OnEndScene() {
@@ -449,6 +504,8 @@ namespace IcePick {
 			m_PhysicsSystem3D.MultiRemoveBodyPrepare(entityRigidBody);
 		}
 		m_PhysicsSystem3D.MultiRemoveBodiesFinalize();
+
+		m_PhysicsSystem3D.DestroyAllVirtualCharacters();
 	}
 
 	void EngineLayer::OnDetach() {

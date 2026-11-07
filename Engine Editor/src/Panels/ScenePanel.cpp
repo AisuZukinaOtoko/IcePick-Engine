@@ -8,8 +8,6 @@
 
 static const char* GetListItemIcon(const IcePick::TagComponent& tag) {
 	switch (tag.Type) {
-	case IcePick::TagComponent::EntityType::CAMERA:
-		return ICON_FA_CAMERA;
 	case IcePick::TagComponent::EntityType::CAMERA_CONTROLLER:
 		return ICON_FA_VIDEO;
 	case IcePick::TagComponent::EntityType::POINT_LIGHT:
@@ -74,6 +72,17 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 		ImGui::EndMenu();
 	}
 
+	ImGuiTreeNodeFlags flags = (m_SelectionContext.SelectionType == SelectionContext::Type::SCENE_CAMERA) ? ImGuiTreeNodeFlags_Selected : 0;
+	bool cameraNodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)0, ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | flags, "%s", ICON_FA_CAMERA " Scene Camera");
+	if (ImGui::IsItemClicked()) {
+		m_SelectionContext.SelectionType = SelectionContext::Type::SCENE_CAMERA;
+		m_SelectionContext.SelectionId = static_cast<uint64_t>(entt::null);
+		m_SelectionContextChanged = true;
+	}
+	if (cameraNodeOpen)
+		ImGui::TreePop();
+
+
 	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 	auto& activeSceneRegistry = IcePick::GetActiveSceneRegistry();
 	auto taggedEntityView = activeSceneRegistry.view<IcePick::TagComponent>();
@@ -86,7 +95,7 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 		ImGuiTreeNodeFlags entityNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_Leaf;
 		entityNodeFlags |= (selectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0;
 
-		bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)entity, entityNodeFlags, "%s %s", icon, entityTag.value.c_str());
+		bool nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)entity, entityNodeFlags, "%s %s", icon, entityTag.Value.c_str());
 
 		if (ImGui::IsItemClicked()) {
 			m_SelectionContext.SelectionType = SelectionContext::Type::ENTITY;
@@ -119,14 +128,12 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 
 			SelectionContext dragDropContext{ SelectionContext::Type::ENTITY, static_cast<uint64_t>(entity), 0};
 			ImGui::SetDragDropPayload(sceneObjectType.c_str(), &dragDropContext, sizeof(SelectionContext), ImGuiCond_Once);
-			ImGui::Text("%s %s", icon, entityTag.value.c_str());
+			ImGui::Text("%s %s", icon, entityTag.Value.c_str());
 			ImGui::EndDragDropSource();
 		}
 
-		if ((entityTag.Type != IcePick::TagComponent::EntityType::CAMERA) && ImGui::BeginPopup("Options"))
-		{
-			if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginMenu("Add component"))
-			{
+		if (ImGui::BeginPopup("Options")) {
+			if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginMenu("Add component"))	{
 				if (ImGui::MenuItem("Mesh renderer component")) {
 					IcePick::AddComponent<IcePick::MeshRendererComponent>(selectedEntity);
 				}
@@ -139,12 +146,16 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 					IcePick::AddComponent<IcePick::RigidBodyComponent>(selectedEntity);
 				}
 
-				if (ImGui::MenuItem("IK solver component")) {
-					IcePick::AddComponent<IcePick::IKSolverComponent>(selectedEntity);
-				}
-
 				if (ImGui::MenuItem("Animator component")) {
 					IcePick::AddComponent<IcePick::AnimatorComponent>(selectedEntity);
+				}
+
+				if (ImGui::MenuItem("Virtual Character component")) {
+					IcePick::AddComponent<IcePick::VirtualCharacterComponent>(selectedEntity);
+				}
+
+				if (ImGui::MenuItem("IK solver component")) {
+					IcePick::AddComponent<IcePick::IKSolverComponent>(selectedEntity);
 				}
 
 				ImGui::EndMenu();
@@ -201,7 +212,13 @@ void ScenePanel::RenderSkeletonHierarchyRecursive(const IcePick::SkeletonNodeHie
 			m_SelectionContext.SelectionId = static_cast<uint64_t>(entityId);
 			m_SelectionContext.SelectionData = static_cast<uint64_t>(currentNode.NodeIndex);
 			m_SelectionContextChanged = true;
-			//IP_LOG(std::to_string(m_SelectionContext.SelectionData));
+		}
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+			SelectionContext dragDropContext{ SelectionContext::Type::BONE, static_cast<uint64_t>(currentNode.NodeIndex), 0 };
+			ImGui::SetDragDropPayload("SKELETON_NODE", &dragDropContext, sizeof(SelectionContext), ImGuiCond_Once);
+			ImGui::Text("%s %s", icon, currentNode.NodeName.c_str());
+			ImGui::EndDragDropSource();
 		}
 	}
 

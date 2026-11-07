@@ -4,6 +4,10 @@
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
 
+#include <Jolt/Physics/Character/CharacterVirtual.h>
+
+#include <entt/entt.h>
+
 #include "ObjectLayerPairFilterImpl.h"
 #include "ObjectBroadPhaseLayerImpl.h"
 #include "ObjectVsBroadPhaseLayerImpl.h"
@@ -12,9 +16,12 @@
 
 #include "PhysicsDebugRenderer.h"
 
+class DeltaTime;
+
 namespace IcePick {
 	struct TransformComponent;
 	struct RigidBodyComponent;
+	struct VirtualCharacterComponent;
 	class TerrainSystem;
 	class TextureLoader;
 
@@ -32,11 +39,25 @@ namespace IcePick {
 
 		void AddTerrainHeightField(const TerrainSystem& terrainSystem, TextureLoader& textureLoader);
 
+		void CreateVirtualCharacter(const TransformComponent& bodyTransform, VirtualCharacterComponent& virtualCharacterComponent);
+		JPH::Ref<JPH::CharacterVirtual>& GetVirtualCharacter(int index);
+		void UpdateVirtualCharacter(DeltaTime dt, const VirtualCharacterComponent& virtualCharacterComponent);
+		void DestroyAllVirtualCharacters();
+
 		glm::vec3 GetBodyPosition(JPH::BodyID bodyId) const;
 		glm::quat GetBodyRotation(JPH::BodyID bodyId) const;
 
+
 		JPH::BodyID AddBoxBody();
 		JPH::BodyID AddSphereBody();
+
+		glm::vec3 GetGravity();
+		glm::vec3 GetVirtualCharacterWorldPosition(entt::entity entityId);
+		glm::vec3 GetVirtualCharacterLinearVelocity(entt::entity entityId);
+		void SetVirtualCharacterLinearVelocity(entt::entity entityId, glm::vec3 velocity);
+		void AddForce(entt::entity entityId, glm::vec3 forceDirection);
+
+		glm::vec3 CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength);
 
 #ifndef DIST
 		void DebugRender();
@@ -65,5 +86,7 @@ namespace IcePick {
 
 		std::vector<JPH::BodyID> m_MultiAddBodyBuffer;
 		std::vector<JPH::BodyID> m_MultiRemoveBodyBuffer;
+
+		std::vector<JPH::Ref<JPH::CharacterVirtual>> m_CharacterVirtualContainer;
 	};
 }

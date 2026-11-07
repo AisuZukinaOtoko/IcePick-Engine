@@ -16,7 +16,7 @@ static int DefaultTagCount = 0;
 
 static IcePick::TagComponent GetDefaultTag() {
     IcePick::TagComponent returnTag{};
-    returnTag.value = "Object: " + std::to_string(DefaultTagCount);
+    returnTag.Value = "Object: " + std::to_string(DefaultTagCount);
     DefaultTagCount++;
     return returnTag;
 }
@@ -96,26 +96,13 @@ entt::entity IcePick::NewTerrain() {
     return newEntity;
 }
 
-entt::entity IcePick::AddSceneCamera() {
-    entt::registry& activeRegistry = GetActiveSceneRegistry();
-    entt::entity newEntity = activeRegistry.create();
-
-    TagComponent tag;
-    tag.value = "Scene Camera";
-    tag.Type = TagComponent::EntityType::CAMERA;
-    AddComponent<TagComponent>(newEntity, tag);
-
-    AddComponent<SceneCamera>(newEntity);
-    return newEntity;
-}
-
 entt::entity IcePick::FindEntityByTag(TagComponent& tag) {
     entt::registry& activeRegistry = GetActiveSceneRegistry();
     auto taggedEntities = activeRegistry.view<TransformComponent>();
 
     for (auto entity : taggedEntities) {
         TagComponent& entityTag = activeRegistry.get<TagComponent>(entity);
-        if (entityTag.value == tag.value)
+        if (entityTag.Value == tag.Value)
             return entity;
     }
 
@@ -189,6 +176,7 @@ void IcePick::DuplicateSceneRegistry(entt::registry& sourceRegistry, entt::regis
             RigidBodyComponent,
             IKSolverComponent,
             AnimatorComponent,
+            VirtualCharacterComponent,
             SceneCamera
         >(sourceRegistry, sourceEntity, targetRegistry, targetEntity);
         

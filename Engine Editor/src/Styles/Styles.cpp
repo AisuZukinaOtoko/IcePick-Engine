@@ -13,6 +13,7 @@ void Styles::Init(IcePick::EngineAPI& engineAPI) {
 	m_IconTextures[ICON_STATIC_MESH_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/cube_icon.png", sRGB);
 	m_IconTextures[ICON_MATERIAL_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/material_icon.png", sRGB);
 	m_IconTextures[ICON_SCRIPT_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/lua_icon.png", sRGB);
+	m_IconTextures[ICON_SCENE_ASSET] = engineAPI.GetTexture("Engine Editor/res/Textures/icons/mountain_icon.png", sRGB);
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.Colors[ImGuiCol_WindowBg] = ImColor(45, 45, 45, 255);
 	//style.Colors[ImGuiCol_Border] = ImColor(200, 200, 200, 0);

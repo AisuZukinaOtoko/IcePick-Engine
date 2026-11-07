@@ -15,6 +15,9 @@ namespace IcePick {
 		void SetNewCameraController(entt::entity cameraControllerId);
 		entt::entity GetCameraControllerId();
 
+		glm::vec3 GetFrontVector();
+		glm::vec3 GetRightVector();
+
 		glm::vec3 cameraPosition;
 		glm::vec3 cameraFront;
 		glm::vec3 cameraUp;

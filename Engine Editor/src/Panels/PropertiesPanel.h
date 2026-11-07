@@ -37,6 +37,7 @@ private:
 	void ColourPicker(const char* label, glm::vec3& rgb);
 	void AssetDropTarget(const char* label, IcePick::UUID& assetIdTarget, IcePick::AssetTypes assetType);
 	void EntityDropTargetProperty(const char* label, entt::entity& entityProperty);
+	void SkeletonNodeDropTargetProperty(const char* label, int& nodeIndex, entt::entity selectedEntity);
 
 	// Component Properties
 	void CameraDetails();
@@ -45,6 +46,7 @@ private:
 	void RigidBodyComponentDetails(const Styles& styles);
 	void CameraControllerDetails();
 	void AnimatorComponentDetails();
+	void IKSolverComponentDetails();
 
 	const char* m_ID = "Properties";
 	float m_ColumnWidth = 50.0f;

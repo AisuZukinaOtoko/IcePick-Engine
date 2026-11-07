@@ -4,6 +4,7 @@
 #include "../Render Systems/FrameBuffer.h"
 #include "../Render Systems/UniformBuffer.h"
 #include "../Scene Systems/Scene.h"
+#include "../Scene Systems/SceneCamera.h"
 #include "../Scene Systems/SceneRegistry.h"
 #include "../File Systems/AssetLoader.h"
 #include "../Scene Systems/ScriptRunner.h"
@@ -67,6 +68,7 @@ namespace IcePick {
 		Animator m_Animator;
 		TerrainSystem m_TerrainSystem;
 
+		SceneCamera m_SceneCamera;
 		SceneRenderDetails m_SceneRenderDetails;
 
 		void RenderEntityMeshes();
@@ -76,7 +78,6 @@ namespace IcePick {
 
 		bool m_RenderDebugPhysics = false;
 		Scene m_CurrentScene;
-		entt::entity m_SceneCameraId = entt::null;
 
 		std::vector<IcePickRenderer::Texture> m_RenderTextureStorage;
 	};

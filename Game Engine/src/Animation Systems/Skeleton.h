@@ -43,6 +43,8 @@ namespace IcePick {
 		void UploadBoneData();
 		void Destroy();
 
+		float GetNodeLength(unsigned int childNodeIndex);
+
 		UUID Id;
 		SkeletonNodeHierarchy RootBone;
 		glm::mat4 InverseGlobalRootTransform{ 1.0f };

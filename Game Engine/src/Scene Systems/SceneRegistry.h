@@ -15,8 +15,6 @@ namespace IcePick {
 	entt::entity NewDirectionalLight();
 	entt::entity NewTerrain();
 
-	entt::entity AddSceneCamera();
-
 	entt::entity FindEntityByTag(TagComponent&);
 	entt::registry& GetActiveSceneRegistry();
 	entt::registry& GetSceneRegistry(SceneRegistryTypes registryType);

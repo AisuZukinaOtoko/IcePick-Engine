@@ -14,6 +14,9 @@ namespace IcePickRenderer {
 	}
 	
 	void SSBO::UploadDataInternal(void* data, size_t dataSize) {
+		if (!dataSize)
+			return;
+
 		IP_ASSERT(m_MaxBufferSize >= dataSize, "Data size excedes allocated size of SSBO.");
 		glNamedBufferSubData(m_ID, 0, dataSize,	data);
 	}

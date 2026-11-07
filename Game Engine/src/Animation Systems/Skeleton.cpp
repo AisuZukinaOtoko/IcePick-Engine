@@ -71,4 +71,8 @@ namespace IcePick {
 		BoneLocalTransforms.clear();
 		BoneParentTransforms.clear();
 	}
+
+	float Skeleton::GetNodeLength(unsigned int childNodeIndex) {
+		return 0.0f;
+	}
 }

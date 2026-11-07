@@ -2,12 +2,14 @@
 #include "Components.h"
 #include "ScriptAPI.h"
 #include "../LogSystem.h"
+#include "../Scene Systems/SceneCamera.h"
+#include "../Physics Systems/PhysicsSystem3D.h"
 #include <glm/glm.hpp>
 #include <fstream>
 
 namespace IcePick {
 
-	void ScriptRunner::Init() {
+	void ScriptRunner::Init(const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera) {
 		m_LuaState.open_libraries(sol::lib::base, sol::lib::math);
 		m_LuaState.set_function("Log", IP_LOG);
 
@@ -19,10 +21,9 @@ namespace IcePick {
 		//m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
 		m_LuaState.set_function("SetWorldScale", ScriptAPI::SetWorldScale);
 
-		m_LuaState.set_function("GetSceneCameraFrontVector", ScriptAPI::GetSceneCameraFrontVector);
-		m_LuaState.set_function("GetSceneCameraRightVector", ScriptAPI::GetSceneCameraRightVector);
-
 		m_LuaState.set_function("GetWalkActionAxes", ScriptAPI::GetWalkActionAxes);
+
+		m_LuaState.set_function("DrawLine", ScriptAPI::DrawLine);
 
 		m_LuaState.new_usertype<glm::vec3>(
 			"vec3",
@@ -44,6 +45,25 @@ namespace IcePick {
 			sol::meta_function::addition, sol::overload([](const glm::vec2& v1, const glm::vec2& v2) { return v1 + v2; }),
 			sol::meta_function::multiplication, sol::overload([](const glm::vec2& v1, const float& v2) { return v1 * v2; })
 			);
+
+		// Scene Camera
+		m_LuaState.new_usertype<SceneCamera>(
+			"SceneCameraClass",
+			"GetFrontVector", &SceneCamera::GetFrontVector,
+			"GetRightVector", &SceneCamera::GetRightVector
+		);
+		m_LuaState["SceneCamera"] = &sceneCamera;
+
+		// Physics system setup
+		m_LuaState.new_usertype<PhysicsSystem3D>(
+			"PhysicsSystem3DClass",
+			"GetGravity", &PhysicsSystem3D::GetGravity,
+			"AddForce", &PhysicsSystem3D::AddForce,
+			"GetVirtualCharacterLinearVelocity", &PhysicsSystem3D::GetVirtualCharacterLinearVelocity,
+			"SetVirtualCharacterLinearVelocity", &PhysicsSystem3D::SetVirtualCharacterLinearVelocity,
+			"CastRay", &PhysicsSystem3D::CastRay
+		);
+		m_LuaState["Physics"] = &physicsSystem;
 	}
 
 	UUID ScriptRunner::LoadAndRegisterScript(const std::filesystem::path& scriptPath) {

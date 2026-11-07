@@ -7,11 +7,13 @@
 #include "UUID.h"
 
 namespace IcePick {
+	class PhysicsSystem3D;
+	class SceneCamera;
 	struct ScriptComponent;
 
 	class ScriptRunner {
 	public:
-		void Init();
+		void Init(const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera);
 		void ShutDown();
 		ScriptComponent CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId);
 

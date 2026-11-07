@@ -141,13 +141,8 @@ void Viewport::OnUpdate(DeltaTime dt) {
 		m_LockCursorFirstFrame = false;
 	}
 
-	auto& activeSceneRegistry = IcePick::GetActiveSceneRegistry();
-	auto sceneCameraView = activeSceneRegistry.view<IcePick::SceneCamera>();
-
-	for (auto entity : sceneCameraView) {
-		IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(entity);
-		sceneCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
-	}
+	IcePick::SceneCamera& sceneCamera = m_EngineAPI.GetSceneCamera();
+	sceneCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
 
 	m_EditorCamera.aspectRatio = m_ViewportSize.x / (float)m_ViewportSize.y;
 	m_EditorCamera.yaw += mouseDelta.x * 0.2;
@@ -299,6 +294,7 @@ void Viewport::RenderEntityGizmos() {
 				ScriptComponent,
 				IKSolverComponent,
 				AnimatorComponent,
+				VirtualCharacterComponent,
 				RigidBodyComponent>(selectedEntity);
 			m_SelectionContextChanged = true;
 			entityTransform = &GetComponent<TransformComponent>(selectedEntity);
@@ -385,19 +381,26 @@ void Viewport::RenderRigidBodyDebugColliders() {
 
 	entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 
-	if (!IcePick::HasComponent<IcePick::RigidBodyComponent>(selectedEntity))
-		return;
-
-	IcePick::RigidBodyComponent& rigidBody = IcePick::GetComponent<IcePick::RigidBodyComponent>(selectedEntity);
-	if (rigidBody.ColliderShapeCount == 0)
-		return;
-
 	glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 cameraFront = glm::normalize(m_EditorCamera.cameraFront);
 	glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, worldUp));
 	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
 
+
+	if (IcePick::HasComponent<IcePick::VirtualCharacterComponent>(selectedEntity)) {
+		IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(selectedEntity);
+		IcePick::VirtualCharacterComponent& virtualCharacterComponent = IcePick::GetComponent<IcePick::VirtualCharacterComponent>(selectedEntity);
+		DrawDebugCapsule(entityTransform.Position + virtualCharacterComponent.CapsuleOffset, entityTransform.Rotation, virtualCharacterComponent.CapsuleHeight, virtualCharacterComponent.CapsuleRadius, cameraFront, cameraUp, cameraRight);
+	}
+
+	if (!IcePick::HasComponent<IcePick::RigidBodyComponent>(selectedEntity))
+		return;
+
 	IcePick::TransformComponent& entityTransform = IcePick::GetComponent<IcePick::TransformComponent>(selectedEntity);
+	IcePick::RigidBodyComponent& rigidBody = IcePick::GetComponent<IcePick::RigidBodyComponent>(selectedEntity);
+	if (rigidBody.ColliderShapeCount == 0)
+		return;
+
 	for (unsigned int i = 0; i < rigidBody.ColliderShapeCount; i++) {
 		IcePick::ColliderShape& collider = rigidBody.ColliderShapes[i];
 		glm::vec3 colliderCenter = entityTransform.Position + entityTransform.Rotation * collider.ColliderOffset;

@@ -8,6 +8,8 @@
 #include <Jolt/Physics/PhysicsSettings.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
@@ -21,8 +23,10 @@
 #include "../File Systems/TextureLoader.h"
 #include "../Scene Systems/TerrainSystem.h"
 #include "../Scene Systems/Components.h"
+#include "../Scene Systems/SceneRegistry.h"
 #include "../LogSystem.h"
 #include "../Utilities/Assert.h"
+#include "../Utilities/Clock.h"
 
 #include <iostream>
 #include <cstdarg>
@@ -129,7 +133,6 @@ namespace IcePick {
 		return PhysicsQuatToQuat(rotation);
 	}
 
-
 	JPH::BodyID PhysicsSystem3D::AddBoxBody() {
 		// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
 		// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
@@ -190,6 +193,69 @@ namespace IcePick {
 		// (note that if we had used CreateBody then we could have set the velocity straight on the body before adding it to the physics system)
 		bodyInterface.SetLinearVelocity(sphere_id, JPH::Vec3(0.0f, -5.0f, 0.0f));
 		return JPH::BodyID();
+	}
+
+	glm::vec3 PhysicsSystem3D::GetGravity() {
+		return PhysicsVec3ToVec3(m_PhysicsSystem.GetGravity());
+	}
+
+	glm::vec3 PhysicsSystem3D::GetVirtualCharacterWorldPosition(entt::entity entityId) {
+		if (!HasComponent<VirtualCharacterComponent>(entityId)) {
+			IP_LOG("Entity does not have a virtual character component.", IP_ERROR_LOG);
+			return glm::vec3();
+		}
+
+		VirtualCharacterComponent& virtualCharacterComponent = GetComponent<VirtualCharacterComponent>(entityId);
+		auto& virtualCharacter = GetVirtualCharacter(virtualCharacterComponent.VirtualCharacterContainerIndex);
+		return PhysicsVec3ToVec3(virtualCharacter->GetPosition());
+	}
+
+	glm::vec3 PhysicsSystem3D::GetVirtualCharacterLinearVelocity(entt::entity entityId) {
+		if (!HasComponent<VirtualCharacterComponent>(entityId)) {
+			IP_LOG("Entity does not have a virtual character component.", IP_ERROR_LOG);
+			return glm::vec3();
+		}
+
+		VirtualCharacterComponent& virtualCharacterComponent = GetComponent<VirtualCharacterComponent>(entityId);
+		auto& virtualCharacter = GetVirtualCharacter(virtualCharacterComponent.VirtualCharacterContainerIndex);
+		return PhysicsVec3ToVec3(virtualCharacter->GetLinearVelocity());
+	}
+
+	void PhysicsSystem3D::SetVirtualCharacterLinearVelocity(entt::entity entityId, glm::vec3 velocity) {
+		if (!HasComponent<VirtualCharacterComponent>(entityId)) {
+			IP_LOG("Entity does not have a virtual character component.", IP_ERROR_LOG);
+			return;
+		}
+
+		VirtualCharacterComponent& virtualCharacterComponent = GetComponent<VirtualCharacterComponent>(entityId);
+		auto& virtualCharacter = GetVirtualCharacter(virtualCharacterComponent.VirtualCharacterContainerIndex);
+		virtualCharacter->SetLinearVelocity(Vec3ToPhysicsVec3(velocity));
+	}
+
+	void PhysicsSystem3D::AddForce(entt::entity entityId, glm::vec3 forceDirection) {
+		if (!HasComponent<RigidBodyComponent>(entityId)) {
+			IP_LOG("Cannot apply a force to an entity without a rigid body.", IP_ERROR_LOG);
+			return;
+		}
+
+		RigidBodyComponent& rigidBodyComponent = GetComponent<RigidBodyComponent>(entityId);
+		JPH::BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+		bodyInterface.AddForce(rigidBodyComponent.RigidBodyId, Vec3ToPhysicsVec3(forceDirection));
+	}
+
+	glm::vec3 PhysicsSystem3D::CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength) {
+		JPH::RRayCast ray(
+			Vec3ToPhysicsVec3(startPosition),
+			Vec3ToPhysicsVec3(directionAndLength)
+		);
+		JPH::RayCastResult result;
+		
+		bool rayHasHit = m_PhysicsSystem.GetNarrowPhaseQuery().CastRay(ray, result);
+
+		if (rayHasHit) {
+			return PhysicsVec3ToVec3(ray.GetPointOnRay(result.mFraction));
+		}
+		return startPosition + directionAndLength;
 	}
 
 	JPH::Body* PhysicsSystem3D::PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {
@@ -392,6 +458,67 @@ namespace IcePick {
 		JPH::ShapeRefC terrainShape = shapeResult.Get();
 		JPH::BodyCreationSettings bodyCreationSettings{ terrainShape, JPH::RVec3(0.0f, 0.0f, 0.0f), JPH::Quat::sIdentity(), JPH::EMotionType::Static, ObjectLayers::NON_MOVING };
 		m_TerrainBody = bodyInterface.CreateAndAddBody(bodyCreationSettings, JPH::EActivation::Activate);
+	}
+
+	void PhysicsSystem3D::CreateVirtualCharacter(const TransformComponent& bodyTransform, VirtualCharacterComponent& virtualCharacterComponent) {
+		int containerSize = m_CharacterVirtualContainer.size();
+
+		JPH::CharacterVirtualSettings settings;
+		JPH::CapsuleShapeSettings shapeSettings{ virtualCharacterComponent.CapsuleHeight, virtualCharacterComponent.CapsuleRadius };
+
+		JPH::ShapeSettings::ShapeResult shapeResult = shapeSettings.Create();
+		if (shapeResult.HasError()) {
+			IP_LOG("Physics system failed to create the character shape.", IP_ERROR_LOG);
+			IP_LOG(shapeResult.GetError().c_str(), IP_ERROR_LOG);
+			return;
+		}
+
+		settings.mShape = shapeResult.Get();
+		JPH::RVec3 position = Vec3ToPhysicsVec3(bodyTransform.Position + virtualCharacterComponent.CapsuleOffset);
+		JPH::Quat rotation = QuatToPhysicsQuat(bodyTransform.Rotation).Normalized();
+
+		m_CharacterVirtualContainer.emplace_back(new JPH::CharacterVirtual(&settings, position, rotation, &m_PhysicsSystem));
+		virtualCharacterComponent.VirtualCharacterContainerIndex = containerSize;
+	}
+
+	JPH::Ref<JPH::CharacterVirtual>& PhysicsSystem3D::GetVirtualCharacter(int index) {
+		IP_ASSERT(index <= m_CharacterVirtualContainer.size(), "Invalid virtual character index.");
+		return m_CharacterVirtualContainer[index];
+	}
+
+	void PhysicsSystem3D::UpdateVirtualCharacter(DeltaTime dt, const VirtualCharacterComponent& virtualCharacterComponent) {
+		if (virtualCharacterComponent.VirtualCharacterContainerIndex == -1)
+			return;
+
+		JPH::CharacterVirtual::ExtendedUpdateSettings updateSettings{};
+
+		JPH::DefaultBroadPhaseLayerFilter broadPhaseFilter(
+			m_ObjectVsBroadPhaseLayerFilter,
+			ObjectLayers::MOVING
+		);
+
+		JPH::DefaultObjectLayerFilter objectLayerFilter(
+			m_ObjectLayerPairFilter,
+			ObjectLayers::MOVING
+		);
+
+		JPH::BodyFilter bodyFilter;
+		JPH::ShapeFilter shapeFilter;
+		JPH::Ref<JPH::CharacterVirtual>& virtualCharacter = m_CharacterVirtualContainer[virtualCharacterComponent.VirtualCharacterContainerIndex];
+		virtualCharacter->ExtendedUpdate(
+			dt.GetDelta() / 1000.0f,
+			m_PhysicsSystem.GetGravity(),
+			updateSettings,
+			broadPhaseFilter,
+			objectLayerFilter,
+			bodyFilter,
+			shapeFilter,
+			*m_TempAllocator
+		);
+	}
+
+	void PhysicsSystem3D::DestroyAllVirtualCharacters()	{
+		m_CharacterVirtualContainer.clear();
 	}
 
 #ifndef DIST

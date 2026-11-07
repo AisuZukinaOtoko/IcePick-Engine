@@ -12,6 +12,7 @@ namespace IcePick {
 		SCRIPT_ASSET,
 		ANIMATION,
 		TIMELINE,
+		SCENE,
 		INVALID_ASSET,
 		ASSET_TYPE_COUNT
 	};
@@ -26,6 +27,7 @@ namespace IcePick {
 		SCRIPT_ASSET,
 		ANIMATION,
 		TIMELINE,
+		SCENE,
 		INVALID_ASSET,
 	};
 

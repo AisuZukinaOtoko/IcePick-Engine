@@ -2,6 +2,7 @@
 #include <imgui-docking/imgui.h>
 #include "LogSystem.h"
 #include "Scene Systems/AssetRegistry.h"
+#include "Scene Systems/SceneSerializer.h"
 
 
 Toolbar::Toolbar(IcePick::EngineAPI engineAPI) :
@@ -22,6 +23,7 @@ void Toolbar::Render() {
             if (ImGui::MenuItem("Save")) {
                 IcePick::AssetRegistry& assetRegistry = IcePick::GetAssetRegistry();
                 assetRegistry.SerializeAssetRegistry();
+                IcePick::SerializeScene(assetRegistry.ResolveAbsolutePathFromAssetPath("res/Scenes/TestScene.ipscene"));
             }
             //ImGui::BeginDisabled(true);
             //ImGui::EndDisabled();

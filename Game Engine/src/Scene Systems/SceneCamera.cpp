@@ -48,6 +48,14 @@ namespace IcePick {
 		return m_CameraControllerId;
 	}
 
+	glm::vec3 SceneCamera::GetFrontVector()	{
+		return glm::normalize(cameraFront);
+	}
+
+	glm::vec3 SceneCamera::GetRightVector()	{
+		return glm::normalize(glm::cross(cameraFront, cameraUp));
+	}
+
 	void SceneCamera::ThirdPersonCameraControllerUpdate(Input& inputState, CameraControllerComponent& cameraController, DeltaTime dt) {
 		if (!HasComponent<TransformComponent>(cameraController.LookAtTarget)) {
 			return;

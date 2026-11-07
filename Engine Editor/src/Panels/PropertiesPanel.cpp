@@ -24,7 +24,7 @@ static void CameraControllerDropTargetProperty(const char* label, IcePick::Scene
     std::string cameraControllerName = "None";
     if (IcePick::HasComponent<IcePick::TagComponent>(cameraControllerId)) {
         IcePick::TagComponent& tag = IcePick::GetComponent<IcePick::TagComponent>(cameraControllerId);
-        cameraControllerName = tag.value;
+        cameraControllerName = tag.Value;
     }
 
     std::string buttonText = std::string(ICON_FA_VIDEO) + " " + cameraControllerName;
@@ -166,13 +166,13 @@ void PropertiesPanel::SelectedProperties(const Styles& styles) {
     PanelSetup();
     entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
 
-    if (selectedEntity == entt::null) {
-        ImGui::End();
-        return;
-    }
-
     m_MeshImportPopup.Render();
-    EntityProperties(styles);
+    if (m_SelectionContext.SelectionType == SelectionContext::Type::SCENE_CAMERA) {
+        CameraDetails();
+    }
+    else {
+        EntityProperties(styles);
+    }
 
     ImGui::End();
 }
@@ -247,10 +247,13 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     using namespace IcePick;
 
     entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    if (selectedEntity == entt::null) {
+        return;
+    }
 
     if (HasComponent<TagComponent>(selectedEntity)) {
         TagComponent& tag = GetComponent<TagComponent>(selectedEntity);
-        InputTextProperty("Name", tag.value);
+        InputTextProperty("Name", tag.Value);
     }
 
     if (HasComponent<TransformComponent>(selectedEntity)) {
@@ -263,11 +266,6 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
         }
     }
 
-    if (HasComponent<SceneCamera>(selectedEntity)) {
-        ImGui::Spacing();
-        CameraDetails();
-    }
-
     if (HasComponent<MeshRendererComponent>(selectedEntity)) {
         ImGui::Spacing();
         MeshRendererDetails(styles);
@@ -277,6 +275,23 @@ void PropertiesPanel::EntityProperties(const Styles& styles) {
     if (HasComponent<ScriptComponent>(selectedEntity)) {
         ImGui::Spacing();
         ScriptComponentDetails(styles);
+    }
+
+    if (HasComponent<VirtualCharacterComponent>(selectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("Virtual Character", ImGuiTreeNodeFlags_DefaultOpen)) {
+            VirtualCharacterComponent& virtualCharacterComponent = GetComponent<VirtualCharacterComponent>(selectedEntity);
+            FloatSlider("Collider Height", &virtualCharacterComponent.CapsuleHeight, 0.0f, 10.0f);
+            FloatSlider("Collider Radius", &virtualCharacterComponent.CapsuleRadius, 0.0f, 10.0f);
+            Vec3Control("Collider Offset", virtualCharacterComponent.CapsuleOffset, 0.02f);
+        }
+    }
+
+    if (HasComponent<IKSolverComponent>(selectedEntity)) {
+        ImGui::Spacing();
+        if (ImGui::CollapsingHeader("IK Solver", ImGuiTreeNodeFlags_DefaultOpen)) {
+            IKSolverComponentDetails();
+        }
     }
 
     if (HasComponent<RigidBodyComponent>(selectedEntity)) {
@@ -651,7 +666,7 @@ void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& 
     std::string entityName = "None";
     if (IcePick::HasComponent<IcePick::TagComponent>(entityProperty)) {
         IcePick::TagComponent& tag = IcePick::GetComponent<IcePick::TagComponent>(entityProperty);
-        entityName = tag.value;
+        entityName = tag.Value;
     }
 
     std::string buttonText = std::string(ICON_FA_CUBE) + " " + entityName;
@@ -670,9 +685,43 @@ void PropertiesPanel::EntityDropTargetProperty(const char* label, entt::entity& 
     ImGui::PopID();
 }
 
+void PropertiesPanel::SkeletonNodeDropTargetProperty(const char* label, int& nodeIndex, entt::entity selectedEntity) {
+    ImGui::PushID(label);
+    ImGui::Columns(2);
+    ImGui::SetColumnWidth(0, m_ColumnWidth);
+    ImGui::Text(label);
+
+    ImGui::NextColumn();
+
+    std::string boneName = "None";
+    if (IcePick::HasComponent<IcePick::MeshRendererComponent>(selectedEntity)) {
+        IcePick::MeshRendererComponent& meshRenderer = IcePick::GetComponent<IcePick::MeshRendererComponent>(selectedEntity);
+        if (meshRenderer.MeshType == IcePick::ImportSettings::MeshType::SKELETAL_MESH) {
+            const IcePickRenderer::SkinnedMeshData& meshData = m_EngineAPI.GetSkinnedMeshDataById(meshRenderer.meshDataId);
+            IcePick::Skeleton& meshSkeleton = m_EngineAPI.GetSkeletonById(meshData.SkeletonId);
+            boneName = ((nodeIndex < meshSkeleton.Nodes.size()) && (nodeIndex >= 0)) ? meshSkeleton.Nodes[nodeIndex].NodeName : "None";
+        }
+        
+    }
+
+    std::string buttonText = std::string(ICON_FA_BONE) + " " + boneName;
+    ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+    if (ImGui::BeginDragDropTarget()) {
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SKELETON_NODE");
+        if (payload) {
+            SelectionContext droppedSelectionContext = *(SelectionContext*)payload->Data;
+            nodeIndex = static_cast<int>(droppedSelectionContext.SelectionId);
+        }
+        ImGui::EndDragDropTarget();
+    }
+
+    ImGui::Columns(1);
+    ImGui::PopID();
+}
+
 void PropertiesPanel::CameraDetails() {
-    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
-    IcePick::SceneCamera& sceneCamera = IcePick::GetComponent<IcePick::SceneCamera>(selectedEntity);
+    IcePick::SceneCamera& sceneCamera = m_EngineAPI.GetSceneCamera();
     CameraControllerDropTargetProperty("Default camera controller", sceneCamera, m_DroppedEntity, m_ColumnWidth);
 }
 
@@ -692,8 +741,6 @@ void PropertiesPanel::MeshRendererDetails(const Styles& styles) {
 
         TextProperty("Mesh count", std::to_string(meshRenderer.MeshCount).c_str());
         CheckBox("Visible", &meshRenderer.MeshVisible);
-        CheckBox("Cast shadows", &meshRenderer.CastShadows);
-        CheckBox("Receive shadows", &meshRenderer.ReceiveShadows);
 
         ImGui::Text("Drop an asset here!");
         ImGui::NextColumn();
@@ -766,4 +813,27 @@ void PropertiesPanel::AnimatorComponentDetails() {
 
     ImGui::Columns(1);
 
+}
+
+void PropertiesPanel::IKSolverComponentDetails() {
+    entt::entity selectedEntity = static_cast<entt::entity>(m_SelectionContext.SelectionId);
+    IcePick::IKSolverComponent& ikSolver = IcePick::GetComponent<IcePick::IKSolverComponent>(selectedEntity);
+
+    if (ImGui::Button("Add Two Bone Solve Group"))
+        ikSolver.TwoBoneSolveGroups.emplace_back();
+
+    if (ikSolver.TwoBoneSolveGroups.size())
+        ImGui::SeparatorText("Two Bone Solve Groups");
+
+    for (unsigned int index = 0; index < ikSolver.TwoBoneSolveGroups.size(); index++) {
+        ImGui::PushID(index);
+        IcePick::TwoBoneSolveGroup& twoBoneSolveGroup = ikSolver.TwoBoneSolveGroups[index];
+        InputTextProperty("Group Name", twoBoneSolveGroup.GroupName);
+        Vec3Control("Target Position", twoBoneSolveGroup.TargetWorldPosition, 0.1);
+        SkeletonNodeDropTargetProperty("Start Joint", twoBoneSolveGroup.StartJointNodeIndex, selectedEntity);
+        SkeletonNodeDropTargetProperty("Middle Joint", twoBoneSolveGroup.MiddleJointNodeIndex, selectedEntity);
+        SkeletonNodeDropTargetProperty("Target Joint", twoBoneSolveGroup.TargetJointNodeIndex, selectedEntity);
+        ImGui::PopID();
+        ImGui::Separator();
+    }
 }
