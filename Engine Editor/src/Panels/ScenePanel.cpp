@@ -134,29 +134,41 @@ void ScenePanel::ShowSceneHierarchy(IcePick::EngineAPI& engineAPI) {
 
 		if (ImGui::BeginPopup("Options")) {
 			if ((entityTag.Type == IcePick::TagComponent::EntityType::ENTITY) && ImGui::BeginMenu("Add component"))	{
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::MeshRendererComponent>(selectedEntity));
 				if (ImGui::MenuItem("Mesh renderer component")) {
 					IcePick::AddComponent<IcePick::MeshRendererComponent>(selectedEntity);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::ScriptComponent>(selectedEntity));
 				if (ImGui::MenuItem("Script component")) {
-					IcePick::AddComponent<IcePick::ScriptComponent>(selectedEntity);
+					IcePick::AddComponent<IcePick::ScriptComponent>(selectedEntity, engineAPI.CreateScriptComponent(selectedEntity));
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::RigidBodyComponent>(selectedEntity));
 				if (ImGui::MenuItem("Rigid body component")) {
 					IcePick::AddComponent<IcePick::RigidBodyComponent>(selectedEntity);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::AnimatorComponent>(selectedEntity));
 				if (ImGui::MenuItem("Animator component")) {
 					IcePick::AddComponent<IcePick::AnimatorComponent>(selectedEntity);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::VirtualCharacterComponent>(selectedEntity));
 				if (ImGui::MenuItem("Virtual Character component")) {
 					IcePick::AddComponent<IcePick::VirtualCharacterComponent>(selectedEntity);
 				}
+				ImGui::EndDisabled();
 
+				ImGui::BeginDisabled(IcePick::HasComponent<IcePick::IKSolverComponent>(selectedEntity));
 				if (ImGui::MenuItem("IK solver component")) {
 					IcePick::AddComponent<IcePick::IKSolverComponent>(selectedEntity);
 				}
+				ImGui::EndDisabled();
 
 				ImGui::EndMenu();
 			}

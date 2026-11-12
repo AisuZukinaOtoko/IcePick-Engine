@@ -9,6 +9,7 @@
 #include "../File Systems/MaterialLoader.h"
 #include "../File Systems/ShaderLoader.h"
 #include "../Scene Systems/Components.h"
+#include "../Scene Systems/SceneRegistry.h"
 #include "../Animation Systems/AnimationLoader.h"
 
 #include <assimp/Importer.hpp>
@@ -103,6 +104,49 @@ namespace IcePick {
 		}
 
 		return m_DefaultEmptySkeleton;
+	}
+
+	glm::vec3 MeshLoader::GetSkeletonNodeWorldPositionByName(entt::entity entityId, std::string nodeName) {
+		if (!HasComponent<MeshRendererComponent>(entityId) || !HasComponent<TransformComponent>(entityId)) {
+			IP_LOG("Entity needs a Mesh Renderer and Transform to get the skeleton node position.", IP_ERROR_LOG);
+			return glm::vec3(0.0f);
+		}
+
+		TransformComponent& transformComponent = GetComponent<TransformComponent>(entityId);
+		MeshRendererComponent& meshRendererComponent = GetComponent<MeshRendererComponent>(entityId);
+		if (meshRendererComponent.MeshType != ImportSettings::MeshType::SKELETAL_MESH) {
+			IP_LOG("Cannot get the skeleton node position of an entity without a skeletal mesh.", IP_ERROR_LOG);
+			return glm::vec3(0.0f);
+		}
+
+		IcePickRenderer::SkinnedMeshData& skinnedMeshData = GetSkinnedMeshById(meshRendererComponent.meshDataId);
+		Skeleton& entitySkeleton = GetSkeletonById(skinnedMeshData.SkeletonId);
+		for (unsigned int i = 0; i < entitySkeleton.Nodes.size(); i++) {
+			if (entitySkeleton.Nodes[i].NodeName == nodeName) {
+				glm::mat4 entityTransformMatrix = glm::translate(glm::mat4(1.0f), transformComponent.Position);
+				entityTransformMatrix *= glm::toMat4(transformComponent.Rotation);
+				entityTransformMatrix = glm::scale(entityTransformMatrix, transformComponent.Scale);
+				return entityTransformMatrix * entitySkeleton.NodeGlobalTransforms[i][3];
+			}
+		}
+
+		return glm::vec3(0.0f);
+	}
+
+	void MeshLoader::SetTwoBoneIKSolveGroupTarget(entt::entity entityId, std::string groupName, glm::vec3 target, float weight) {
+		if (!HasComponent<IKSolverComponent>(entityId)) {
+			IP_LOG("Entity does not have an IK Solver Component.", IP_ERROR_LOG);
+			return;
+		}
+
+		IKSolverComponent& ikSolverComponent = GetComponent<IKSolverComponent>(entityId);
+		for (auto& twoBoneSolveGroup : ikSolverComponent.TwoBoneSolveGroups) {
+			if (twoBoneSolveGroup.GroupName == groupName) {
+				twoBoneSolveGroup.TargetWorldPosition = target;
+				twoBoneSolveGroup.ApplySolve = true;
+				twoBoneSolveGroup.Weight = weight;
+			}
+		}
 	}
 
 	MeshRendererComponent MeshLoader::ImportMesh(std::filesystem::path filePath, MaterialLoader& materialLoader, TextureLoader& textureLoader, AnimationLoader& animationLoader, const ImportSettings& importSettings) {

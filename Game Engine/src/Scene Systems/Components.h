@@ -16,6 +16,7 @@
 #include <filesystem>
 #include <vector>
 #include "UUID.h"
+#include "ScriptComponentScriptSlot.h"
 
 namespace IcePick {
 
@@ -100,9 +101,8 @@ namespace IcePick {
 	};
 
 	struct ScriptComponent {
-		UUID ScriptId = UUID::Unitialised();
+		std::vector<ScriptSlot> ScriptSlots;
 		sol::table Self = sol::nil;
-		bool Active = false;
 	};
 
 	struct TagComponent {

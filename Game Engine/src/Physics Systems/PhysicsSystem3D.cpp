@@ -243,7 +243,7 @@ namespace IcePick {
 		bodyInterface.AddForce(rigidBodyComponent.RigidBodyId, Vec3ToPhysicsVec3(forceDirection));
 	}
 
-	glm::vec3 PhysicsSystem3D::CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength) {
+	RayCastResult PhysicsSystem3D::CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength) {
 		JPH::RRayCast ray(
 			Vec3ToPhysicsVec3(startPosition),
 			Vec3ToPhysicsVec3(directionAndLength)
@@ -253,9 +253,9 @@ namespace IcePick {
 		bool rayHasHit = m_PhysicsSystem.GetNarrowPhaseQuery().CastRay(ray, result);
 
 		if (rayHasHit) {
-			return PhysicsVec3ToVec3(ray.GetPointOnRay(result.mFraction));
+			return { PhysicsVec3ToVec3(ray.GetPointOnRay(result.mFraction)), result.mBodyID.GetIndexAndSequenceNumber(), true };
 		}
-		return startPosition + directionAndLength;
+		return { startPosition + directionAndLength, JPH::BodyID::cInvalidBodyID, false };
 	}
 
 	JPH::Body* PhysicsSystem3D::PrepareSimpleShapeBody(const TransformComponent& bodyTransform, const RigidBodyComponent& rigidBody) {

@@ -253,6 +253,7 @@
     <ClInclude Include="src\Scene Systems\SceneUtils.h" />
     <ClInclude Include="src\Scene Systems\Script.h" />
     <ClInclude Include="src\Scene Systems\ScriptAPI.h" />
+    <ClInclude Include="src\Scene Systems\ScriptComponentScriptSlot.h" />
     <ClInclude Include="src\Scene Systems\ScriptRunner.h" />
     <ClInclude Include="src\File Systems\ShaderLoader.h" />
     <ClInclude Include="src\File Systems\TextureLoader.h" />

@@ -768,39 +768,58 @@ void PropertiesPanel::ScriptComponentDetails(const Styles& styles) {
     if (ImGui::CollapsingHeader("Scripts", ImGuiTreeNodeFlags_DefaultOpen)) {
         IcePick::ScriptComponent& scriptComponent = IcePick::GetComponent<IcePick::ScriptComponent>(selectedEntity);
 
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, m_ColumnWidth);
-        ImGui::Text("Script");
-        ImGui::NextColumn();
-
-        if (ImGui::Button(ICON_FA_TRASH)) {
-            scriptComponent.ScriptId = IcePick::UUID::Unitialised();
-            scriptComponent.Active = false;
+        if (ImGui::Button("Add script slot")) {
+            scriptComponent.ScriptSlots.push_back({ IcePick::UUID::Unitialised(), false });
         }
 
-        ImGui::SameLine();
-        std::filesystem::path scriptPath = m_EngineAPI.GetScriptPathById(scriptComponent.ScriptId);
-        std::string buttonText;
-        if (scriptPath.empty())
-            buttonText = std::string(ICON_FA_EXCLAMATION) + " None";
-        else
-            buttonText = std::string(ICON_FA_FILE) + " " + scriptPath.stem().string();
-        ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+        int deleteIndex = -1;
+        for (unsigned int i = 0; i < scriptComponent.ScriptSlots.size(); i++) {
+            ImGui::PushID(i);
+            IcePick::ScriptSlot& scriptSlot = scriptComponent.ScriptSlots[i];
 
-        if (ImGui::BeginDragDropTarget()) {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::SCRIPT_ASSET))) {
-                std::filesystem::path droppedAssetPath((const char*)payload->Data);
-                scriptComponent = m_EngineAPI.LoadScript(droppedAssetPath, selectedEntity);
+            ImGui::Columns(2);
+            ImGui::SetColumnWidth(0, m_ColumnWidth);
+            ImGui::Text("Script");
+            ImGui::NextColumn();
+
+            if (ImGui::Button(ICON_FA_TRASH)) {
+                scriptSlot.ScriptId = IcePick::UUID::Unitialised();
+                scriptSlot.Active = false;
+                deleteIndex = -1;
             }
-            ImGui::EndDragDropTarget();
+
+            ImGui::SameLine();
+            std::filesystem::path scriptPath = m_EngineAPI.GetScriptPathById(scriptSlot.ScriptId);
+            std::string buttonText;
+            if (scriptPath.empty())
+                buttonText = std::string(ICON_FA_EXCLAMATION) + " None";
+            else
+                buttonText = std::string(ICON_FA_FILE) + " " + scriptPath.stem().string();
+            ImGui::Button(buttonText.c_str(), ImVec2(-FLT_MIN, 0.0f));
+
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IcePick::GetAssetTypeString(IcePick::AssetTypes::SCRIPT_ASSET))) {
+                    std::filesystem::path droppedAssetPath((const char*)payload->Data);
+                    scriptSlot.ScriptId = m_EngineAPI.LoadScript(droppedAssetPath);
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            ImGui::Columns(1);
+
+            CheckBox("Script active", &scriptSlot.Active);
+
+            if (ImGui::Button(ICON_FA_PEN_TO_SQUARE "Edit script")) {
+                OpenScriptEditor(scriptPath);
+            }
+
+            ImGui::Separator();
+            ImGui::PopID();
         }
 
-        ImGui::Columns(1);
-
-        CheckBox("Script active", &scriptComponent.Active);
-        
-        if (ImGui::Button(ICON_FA_PEN_TO_SQUARE "Edit Script")) {
-            OpenScriptEditor(scriptPath);
+        if (deleteIndex != -1) {
+            scriptComponent.ScriptSlots[deleteIndex] = scriptComponent.ScriptSlots.back();
+            scriptComponent.ScriptSlots.pop_back();
         }
     }
 }
@@ -828,11 +847,13 @@ void PropertiesPanel::IKSolverComponentDetails() {
     for (unsigned int index = 0; index < ikSolver.TwoBoneSolveGroups.size(); index++) {
         ImGui::PushID(index);
         IcePick::TwoBoneSolveGroup& twoBoneSolveGroup = ikSolver.TwoBoneSolveGroups[index];
-        InputTextProperty("Group Name", twoBoneSolveGroup.GroupName);
-        Vec3Control("Target Position", twoBoneSolveGroup.TargetWorldPosition, 0.1);
-        SkeletonNodeDropTargetProperty("Start Joint", twoBoneSolveGroup.StartJointNodeIndex, selectedEntity);
-        SkeletonNodeDropTargetProperty("Middle Joint", twoBoneSolveGroup.MiddleJointNodeIndex, selectedEntity);
-        SkeletonNodeDropTargetProperty("Target Joint", twoBoneSolveGroup.TargetJointNodeIndex, selectedEntity);
+        InputTextProperty("Group name", twoBoneSolveGroup.GroupName);
+        Vec3Control("Target position", twoBoneSolveGroup.TargetWorldPosition, 0.1);
+        FloatSlider("Weight", &twoBoneSolveGroup.Weight, 0.0f, 1.0f);
+        SkeletonNodeDropTargetProperty("Start joint", twoBoneSolveGroup.StartJointNodeIndex, selectedEntity);
+        SkeletonNodeDropTargetProperty("Middle joint", twoBoneSolveGroup.MiddleJointNodeIndex, selectedEntity);
+        SkeletonNodeDropTargetProperty("Target joint", twoBoneSolveGroup.TargetJointNodeIndex, selectedEntity);
+        CheckBox("Always apply solve", &twoBoneSolveGroup.AlwaysApplySolve);
         ImGui::PopID();
         ImGui::Separator();
     }

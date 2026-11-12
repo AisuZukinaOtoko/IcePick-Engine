@@ -29,7 +29,10 @@ namespace IcePick {
 		IcePickRenderer::VertexArray& GetMeshNodeVertexArray(UUID vertexArrayId);
 
 		Skeleton& GetSkeletonById(UUID skeletonId);
-		
+
+		glm::vec3 GetSkeletonNodeWorldPositionByName(entt::entity entityId, std::string nodeName);
+		void SetTwoBoneIKSolveGroupTarget(entt::entity entityId, std::string groupName, glm::vec3 target, float weight);
+
 		void Destroy();
 		~MeshLoader();
 	private:

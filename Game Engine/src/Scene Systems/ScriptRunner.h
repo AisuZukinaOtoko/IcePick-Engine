@@ -9,13 +9,16 @@
 namespace IcePick {
 	class PhysicsSystem3D;
 	class SceneCamera;
+	class AssetLoader;
 	struct ScriptComponent;
 
 	class ScriptRunner {
 	public:
-		void Init(const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera);
+		void Init(AssetLoader& assetLoader, const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera);
 		void ShutDown();
-		ScriptComponent CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId);
+		ScriptComponent CreateScriptComponent(entt::entity entityId);
+		void InitializeScriptComponent(ScriptComponent& component, entt::entity entityId);
+		UUID LoadScriptFile(const std::filesystem::path& scriptPath);
 
 		Script& GetScriptById(UUID scriptId);
 		void ReloadScripts();

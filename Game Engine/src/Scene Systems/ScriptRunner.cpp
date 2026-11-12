@@ -2,28 +2,41 @@
 #include "Components.h"
 #include "ScriptAPI.h"
 #include "../LogSystem.h"
+#include "../File Systems/AssetLoader.h"
 #include "../Scene Systems/SceneCamera.h"
 #include "../Physics Systems/PhysicsSystem3D.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <fstream>
 
 namespace IcePick {
 
-	void ScriptRunner::Init(const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera) {
+	void ScriptRunner::Init(AssetLoader& assetLoader, const PhysicsSystem3D& physicsSystem, const SceneCamera& sceneCamera) {
 		m_LuaState.open_libraries(sol::lib::base, sol::lib::math);
 		m_LuaState.set_function("Log", IP_LOG);
 
 		m_LuaState.set_function("GetWorldPosition", ScriptAPI::GetWorldPosition);
-		//m_LuaState.set_function("GetWorldRotation", ScriptAPI::GetWorldRotation);
+		m_LuaState.set_function("GetWorldRotation", ScriptAPI::GetWorldRotation);
 		m_LuaState.set_function("GetWorldScale", ScriptAPI::GetWorldScale);
 
 		m_LuaState.set_function("SetWorldPosition", ScriptAPI::SetWorldPosition);
-		//m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
+		m_LuaState.set_function("SetWorldRotation", ScriptAPI::SetWorldRotation);
 		m_LuaState.set_function("SetWorldScale", ScriptAPI::SetWorldScale);
 
 		m_LuaState.set_function("GetWalkActionAxes", ScriptAPI::GetWalkActionAxes);
 
 		m_LuaState.set_function("DrawLine", ScriptAPI::DrawLine);
+
+		m_LuaState.new_usertype<glm::quat>(
+			"quat",
+			sol::constructors<glm::quat(), glm::quat(float, float, float, float)>(),
+			"x", &glm::quat::x,
+			"y", &glm::quat::y,
+			"z", &glm::quat::z,
+			"w", &glm::quat::w,
+
+			sol::meta_function::multiplication, sol::overload([](const glm::quat& v1, const glm::vec3& v2) { return v1 * v2; })
+		);
 
 		m_LuaState.new_usertype<glm::vec3>(
 			"vec3",
@@ -33,7 +46,9 @@ namespace IcePick {
 			"z", &glm::vec3::z,
 
 			sol::meta_function::addition, sol::overload([](const glm::vec3& v1, const glm::vec3& v2) { return v1 + v2; }),
-			sol::meta_function::multiplication, sol::overload([](const glm::vec3& v1, const float& v2) { return v1 * v2; })
+			sol::meta_function::subtraction, sol::overload([](const glm::vec3& v1, const glm::vec3& v2) { return v1 - v2; }),
+			sol::meta_function::multiplication, sol::overload([](const glm::vec3& v1, const float& v2) { return v1 * v2; }),
+			sol::meta_function::division, sol::overload([](const glm::vec3& v1, const float& v2) { return v1 / v2; })
 			);
 
 		m_LuaState.new_usertype<glm::vec2>(
@@ -43,8 +58,18 @@ namespace IcePick {
 			"y", &glm::vec2::y,
 
 			sol::meta_function::addition, sol::overload([](const glm::vec2& v1, const glm::vec2& v2) { return v1 + v2; }),
-			sol::meta_function::multiplication, sol::overload([](const glm::vec2& v1, const float& v2) { return v1 * v2; })
+			sol::meta_function::subtraction, sol::overload([](const glm::vec2& v1, const glm::vec2& v2) { return v1 - v2; }),
+			sol::meta_function::multiplication, sol::overload([](const glm::vec2& v1, const float& v2) { return v1 * v2; }),
+			sol::meta_function::division, sol::overload([](const glm::vec2& v1, const float& v2) { return v1 / v2; })
 			);
+
+		// Asset systems
+		m_LuaState.new_usertype<MeshLoader>(
+			"MeshLoaderClass",
+			"GetSkeletonNodeWorldPositionByName", &MeshLoader::GetSkeletonNodeWorldPositionByName,
+			"SetTwoBoneIKSolveGroupTarget", &MeshLoader::SetTwoBoneIKSolveGroupTarget
+		);
+		m_LuaState["Mesh"] = &assetLoader.GetMeshLoader();
 
 		// Scene Camera
 		m_LuaState.new_usertype<SceneCamera>(
@@ -64,6 +89,12 @@ namespace IcePick {
 			"CastRay", &PhysicsSystem3D::CastRay
 		);
 		m_LuaState["Physics"] = &physicsSystem;
+		m_LuaState.new_usertype<RayCastResult>(
+			"RayCastResult",
+			"HitPosition", &RayCastResult::HitPosition,
+			"HitBodyId", &RayCastResult::HitBodyId,
+			"HasHit", &RayCastResult::HasHit
+		);
 	}
 
 	UUID ScriptRunner::LoadAndRegisterScript(const std::filesystem::path& scriptPath) {
@@ -137,15 +168,20 @@ namespace IcePick {
 		return "";
 	}
 
-	ScriptComponent ScriptRunner::CreateScriptComponentFromFile(const std::filesystem::path& scriptPath, entt::entity entityId) {
+	ScriptComponent ScriptRunner::CreateScriptComponent(entt::entity entityId) {
 		ScriptComponent returnScriptComponent;
-		returnScriptComponent.Active = true;
-		returnScriptComponent.ScriptId = LoadAndRegisterScript(scriptPath);
 		returnScriptComponent.Self = m_LuaState.create_table();
 		returnScriptComponent.Self["Id"] = (uint32_t)entityId;
-		returnScriptComponent.Self["temp"] = 0;
-
 		return returnScriptComponent;
+	}
+
+	void ScriptRunner::InitializeScriptComponent(ScriptComponent& component, entt::entity entityId) {
+		component.Self = m_LuaState.create_table();
+		component.Self["Id"] = (uint32_t)entityId;
+	}
+
+	UUID ScriptRunner::LoadScriptFile(const std::filesystem::path& scriptPath) {
+		return LoadAndRegisterScript(scriptPath);
 	}
 
 	std::string ScriptRunner::ReadScriptFile(const std::filesystem::path& scriptFilePath) {

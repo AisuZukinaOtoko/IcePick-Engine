@@ -148,8 +148,12 @@ namespace IcePick {
 		return m_Engine->m_AssetLoader.m_MeshLoader.GetSkinnedMeshById(meshDataId);
 	}
 
-	ScriptComponent EngineAPI::LoadScript(std::filesystem::path scriptPath, entt::entity entityId) {
-		return m_Engine->m_ScriptRunner.CreateScriptComponentFromFile(scriptPath, entityId);
+	ScriptComponent EngineAPI::CreateScriptComponent(entt::entity entityId)	{
+		return m_Engine->m_ScriptRunner.CreateScriptComponent(entityId);
+	}
+
+	UUID EngineAPI::LoadScript(const std::filesystem::path& scriptPath)	{
+		return m_Engine->m_ScriptRunner.LoadScriptFile(scriptPath);
 	}
 
 	void EngineAPI::ReloadScripts() {

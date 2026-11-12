@@ -61,7 +61,8 @@ namespace IcePick {
 		void DestroyTerrain();
 
 		// Scripts
-		ScriptComponent LoadScript(std::filesystem::path scriptPath, entt::entity entityId);
+		ScriptComponent CreateScriptComponent(entt::entity entityId);
+		UUID LoadScript(const std::filesystem::path& scriptPath);
 		void ReloadScripts();
 		std::filesystem::path GetScriptPathById(UUID scriptId);
 		

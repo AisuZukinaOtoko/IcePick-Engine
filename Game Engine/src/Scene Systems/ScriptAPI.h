@@ -5,7 +5,7 @@
 namespace ScriptAPI {
 	// Transforms
 	glm::vec3& GetWorldPosition(entt::entity entityId);
-	//glm::vec3 GetWorldRotation(entt::entity entityId);
+	glm::quat GetWorldRotation(entt::entity entityId);
 	glm::vec3 GetWorldScale(entt::entity entityId);
 
 	glm::vec2 GetWalkActionAxes();
@@ -13,6 +13,6 @@ namespace ScriptAPI {
 	void DrawLine(glm::vec3 point1, glm::vec3 point2);
 
 	void SetWorldPosition(entt::entity entityId, glm::vec3& position);
-	//void SetWorldRotation(entt::entity entityId, glm::vec3 rotation);
+	void SetWorldRotation(entt::entity entityId, glm::quat rotation);
 	void SetWorldScale(entt::entity entityId, glm::vec3 scale);
 }

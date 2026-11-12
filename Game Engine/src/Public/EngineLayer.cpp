@@ -68,7 +68,7 @@ namespace IcePick {
 		AssetRegistry& assetRegistry = GetAssetRegistry();
 		IP_ASSERT(assetRegistry.IsInitialised(), "Asset Registry must be initialised before attaching the engine layer.");
 
-		m_ScriptRunner.Init(m_PhysicsSystem3D, m_SceneCamera);
+		m_ScriptRunner.Init(m_AssetLoader, m_PhysicsSystem3D, m_SceneCamera);
 		m_AssetLoader.Init();
 		m_PhysicsSystem3D.Init();
 
@@ -114,27 +114,6 @@ namespace IcePick {
 		auto& activeSceneRegistry = GetActiveSceneRegistry();
 
 		if (m_CurrentRuntimeState == RuntimeState::RUNNING) {
-			auto scriptedEntitiesView = activeSceneRegistry.view<ScriptComponent>();
-
-			for (entt::entity entity : scriptedEntitiesView) {
-				ScriptComponent& entityScriptComponent = activeSceneRegistry.get<ScriptComponent>(entity);
-
-				if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
-					continue;
-
-				Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
-
-				if (!entityScript.IsValid)
-					continue;
-
-				sol::protected_function_result result = entityScript.OnUpdateFunction(entityScriptComponent.Self, dt.GetDelta());
-				if (!result.valid()) {
-					sol::error err = result;
-					IP_LOG(err.what(), IP_ERROR_LOG);
-					entityScriptComponent.Active = false;
-				}
-			}
-
 			auto animatedMeshesView = activeSceneRegistry.view<AnimatorComponent, MeshRendererComponent>();
 			for (entt::entity entity : animatedMeshesView) {
 				MeshRendererComponent& meshRendererComponent = activeSceneRegistry.get<MeshRendererComponent>(entity);
@@ -144,7 +123,30 @@ namespace IcePick {
 					IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(meshRendererComponent);
 					Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
 					m_Animator.ProcessAnimationClip(meshSkeleton, animatorComponent, m_AssetLoader.GetAnimationLoader(), dt);
+					m_Animator.CalculateSkeletonTransforms(meshSkeleton);
 				}
+			}
+
+			auto scriptedEntitiesView = activeSceneRegistry.view<ScriptComponent>();
+			for (entt::entity entity : scriptedEntitiesView) {
+				ScriptComponent& entityScriptComponent = activeSceneRegistry.get<ScriptComponent>(entity);
+
+				for (auto& scriptSlot : entityScriptComponent.ScriptSlots) {
+					if (!scriptSlot.Active && scriptSlot.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
+						continue;
+
+					Script& entityScript = m_ScriptRunner.GetScriptById(scriptSlot.ScriptId);
+
+					if (!entityScript.IsValid)
+						continue;
+
+					sol::protected_function_result result = entityScript.OnUpdateFunction(entityScriptComponent.Self, dt.GetDelta());
+					if (!result.valid()) {
+						sol::error err = result;
+						IP_LOG(err.what(), IP_ERROR_LOG);
+						scriptSlot.Active = false;
+					}
+				}				
 			}
 		}		
 
@@ -162,6 +164,7 @@ namespace IcePick {
 				IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(meshRendererComponent);
 				Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
 				m_Animator.SolveIK(meshSkeleton, ikSolverComponent, entityTransformMatrix);
+				m_Animator.CalculateSkeletonTransforms(meshSkeleton);
 			}
 		}
 
@@ -335,7 +338,7 @@ namespace IcePick {
 			if (EntityMeshRendererComponent.MeshType == ImportSettings::MeshType::SKELETAL_MESH) {
 				IcePickRenderer::SkinnedMeshData& skinnedMeshData = m_AssetLoader.GetSkinnedMeshData(EntityMeshRendererComponent);
 				Skeleton& meshSkeleton = m_AssetLoader.GetSkeletonById(skinnedMeshData.SkeletonId);
-				m_Animator.CalculateSkeletonTransforms(meshSkeleton);
+				meshSkeleton.UploadBoneData();
 				meshSkeleton.Use();
 			}
 
@@ -477,20 +480,23 @@ namespace IcePick {
 		auto scriptedEntitiesView = activeSceneRegistry.view<ScriptComponent>();
 		for (entt::entity entity : scriptedEntitiesView) {
 			ScriptComponent& entityScriptComponent = activeSceneRegistry.get<ScriptComponent>(entity);
+			m_ScriptRunner.InitializeScriptComponent(entityScriptComponent, entity);        
 
-			if (!entityScriptComponent.Active && entityScriptComponent.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
-				continue;
+			for (auto& scriptSlot : entityScriptComponent.ScriptSlots) {
+				if (!scriptSlot.Active && scriptSlot.ScriptId != UUID::Unitialised()) //TODO verify conditional logic
+					continue;
 
-			Script& entityScript = m_ScriptRunner.GetScriptById(entityScriptComponent.ScriptId);
+				Script& entityScript = m_ScriptRunner.GetScriptById(scriptSlot.ScriptId);
 
-			if (!entityScript.IsValid)
-				continue;
+				if (!entityScript.IsValid)
+					continue;
 
-			sol::protected_function_result result = entityScript.OnCreateFunction(entityScriptComponent.Self);
-			if (!result.valid()) {
-				sol::error err = result;
-				IP_LOG(err.what(), IP_ERROR_LOG);
-				entityScriptComponent.Active = false;
+				sol::protected_function_result result = entityScript.OnCreateFunction(entityScriptComponent.Self);
+				if (!result.valid()) {
+					sol::error err = result;
+					IP_LOG(err.what(), IP_ERROR_LOG);
+					scriptSlot.Active = false;
+				}
 			}
 		}
 	}

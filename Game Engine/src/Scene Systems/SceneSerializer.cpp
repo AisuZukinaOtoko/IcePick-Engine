@@ -41,6 +41,50 @@ namespace IcePick {
 	}
 
 	template<>
+	void SerializeComponentJSON<IKSolverComponent>(const IKSolverComponent& component, nlohmann::json& outputStream) {
+		nlohmann::json componentBody;
+
+		nlohmann::json twoBoneSolveGroupsJsonObject = nlohmann::json::array();
+		for (const auto& twoBoneSolveGroup : component.TwoBoneSolveGroups) {
+			nlohmann::json solveGroupObject;
+			solveGroupObject["groupName"] = twoBoneSolveGroup.GroupName;
+			JsonUtils::WriteVec3(twoBoneSolveGroup.TargetWorldPosition, solveGroupObject, "targetWorldPosition");
+			solveGroupObject["weight"] = twoBoneSolveGroup.Weight;
+			solveGroupObject["startJointNodeIndex"] = twoBoneSolveGroup.StartJointNodeIndex;
+			solveGroupObject["middleJointNodeIndex"] = twoBoneSolveGroup.MiddleJointNodeIndex;
+			solveGroupObject["targetJointNodeIndex"] = twoBoneSolveGroup.TargetJointNodeIndex;
+			solveGroupObject["alwaysApplySolve"] = twoBoneSolveGroup.AlwaysApplySolve;
+			twoBoneSolveGroupsJsonObject.push_back(solveGroupObject);
+		}
+		componentBody["twoBoneSolveGroups"] = twoBoneSolveGroupsJsonObject;
+
+		outputStream["IKSolverComponent"] = componentBody;
+	}
+
+	template<>
+	IKSolverComponent DeserializeComponentJSON(nlohmann::json& componentData) {
+		IKSolverComponent returnComponent;
+		
+		if (componentData.contains("twoBoneSolveGroups") && componentData["twoBoneSolveGroups"].is_array()) {
+			nlohmann::json& twoBoneSolveGroups = componentData["twoBoneSolveGroups"];
+
+			for (auto solveGroupIterator = twoBoneSolveGroups.begin(); solveGroupIterator != twoBoneSolveGroups.end(); solveGroupIterator++) {
+				TwoBoneSolveGroup twoBoneSolveGroup;
+				twoBoneSolveGroup.GroupName = solveGroupIterator->value("groupName", "Unknown");
+				twoBoneSolveGroup.TargetWorldPosition = JsonUtils::GetVec3(*solveGroupIterator, "targetWorldPosition");
+				twoBoneSolveGroup.Weight = solveGroupIterator->value("weight", 1.0f);
+				twoBoneSolveGroup.StartJointNodeIndex = solveGroupIterator->value("startJointNodeIndex", -1);
+				twoBoneSolveGroup.MiddleJointNodeIndex = solveGroupIterator->value("middleJointNodeIndex", -1);
+				twoBoneSolveGroup.TargetJointNodeIndex = solveGroupIterator->value("targetJointNodeIndex", -1);
+				twoBoneSolveGroup.AlwaysApplySolve = solveGroupIterator->value("alwaysApplySolve", true);
+				returnComponent.TwoBoneSolveGroups.push_back(twoBoneSolveGroup);
+			}
+		}
+
+		return returnComponent;
+	}
+
+	template<>
 	void SerializeComponentJSON<MeshRendererComponent>(const MeshRendererComponent& component, nlohmann::json& outputStream) {
 		nlohmann::json componentBody;
 		componentBody["meshDataId"] = static_cast<uint64_t>(component.meshDataId);
@@ -96,16 +140,32 @@ namespace IcePick {
 	template<>
 	void SerializeComponentJSON<ScriptComponent>(const ScriptComponent& component, nlohmann::json& outputStream) {
 		nlohmann::json componentBody;
-		componentBody["scriptId"] = static_cast<uint64_t>(component.ScriptId);
-		componentBody["active"] = component.Active;
+
+		nlohmann::json scriptSlotsObject = nlohmann::json::array();
+		for (const auto& scriptSlot : component.ScriptSlots) {
+			nlohmann::json scriptSlotObject;
+			scriptSlotObject["scriptId"] = static_cast<uint64_t>(scriptSlot.ScriptId);
+			scriptSlotObject["active"] = scriptSlot.Active;
+			scriptSlotsObject.push_back(scriptSlotObject);
+		}
+		componentBody["scriptSlots"] = scriptSlotsObject;
+		
 		outputStream["script"] = componentBody;
 	}
 
 	template<>
 	ScriptComponent DeserializeComponentJSON(nlohmann::json& componentData) {
 		ScriptComponent returnComponent;
-		returnComponent.ScriptId = JsonUtils::GetUint64(componentData, "scriptId", UUID::Unitialised());
-		returnComponent.Active = componentData.value("active", true);
+		if (componentData.contains("scriptSlots") && componentData["scriptSlots"].is_array()) {
+			nlohmann::json& scriptSlots = componentData["scriptSlots"];
+
+			for (auto slotIterator = scriptSlots.begin(); slotIterator != scriptSlots.end(); slotIterator++) {
+				IcePick::ScriptSlot scriptSlot;
+				scriptSlot.ScriptId = JsonUtils::GetUint64(componentData, "scriptId", UUID::Unitialised());
+				scriptSlot.Active = componentData.value("active", true);
+				returnComponent.ScriptSlots.push_back(scriptSlot);
+			}
+		}
 		return returnComponent;
 	}
 
@@ -176,6 +236,7 @@ namespace IcePick {
 			SerializeEntityComponentsJSON<
 				AnimatorComponent,
 				CameraControllerComponent,
+				IKSolverComponent,
 				MeshRendererComponent,
 				RigidBodyComponent,
 				ScriptComponent,
@@ -220,6 +281,11 @@ namespace IcePick {
 				if (entityIterator->contains("cameraController")) {
 					nlohmann::json componentData = entityIterator->at("cameraController");
 					registry.emplace<CameraControllerComponent>(entityId, DeserializeComponentJSON<CameraControllerComponent>(componentData));
+				}
+
+				if (entityIterator->contains("IKSolverComponent")) {
+					nlohmann::json componentData = entityIterator->at("IKSolverComponent");
+					registry.emplace<IKSolverComponent>(entityId, DeserializeComponentJSON<IKSolverComponent>(componentData));
 				}
 
 				if (entityIterator->contains("meshRenderer")) {

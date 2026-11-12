@@ -24,7 +24,6 @@ namespace IcePick {
 	void Animator::CalculateSkeletonTransforms(Skeleton& skeleton) {
 		glm::mat4 rootTransform{ 1.0f };
         CalculateBoneTransforms(skeleton);
-		skeleton.UploadBoneData();
 	}
 
     void Animator::SolveIK(Skeleton& skeleton, IKSolverComponent& ikSolverComponent, glm::mat4& entityTransform) {
@@ -33,6 +32,9 @@ namespace IcePick {
         quat entityRot = GlobalRotation(entityTransform);
 
         for (auto& twoBoneSolveGroup : ikSolverComponent.TwoBoneSolveGroups) {
+            if (!twoBoneSolveGroup.ApplySolve && !twoBoneSolveGroup.AlwaysApplySolve)
+                continue;
+
             int maxJointNodeIndex = std::max({ twoBoneSolveGroup.StartJointNodeIndex, twoBoneSolveGroup.MiddleJointNodeIndex, twoBoneSolveGroup.TargetJointNodeIndex });
             int minJointNodeIndex = std::min({ twoBoneSolveGroup.StartJointNodeIndex, twoBoneSolveGroup.MiddleJointNodeIndex, twoBoneSolveGroup.TargetJointNodeIndex });
             bool solveGroupIndicesValid = (maxJointNodeIndex < skeleton.Nodes.size()) && (minJointNodeIndex >= 0);
@@ -81,9 +83,17 @@ namespace IcePick {
             quat r0 = angleAxis(ac_ab_1 - ac_ab_0, a_inv * axis0);
             quat r1 = angleAxis(ba_bc_1 - ba_bc_0, b_inv * axis0);
             quat r2 = angleAxis(ac_at_0, a_inv * axis1);
+            
+            const quat startJointRotationCorrection = r2 * r0;
+            const quat identity(1.0f, 0.0f, 0.0f, 0.0f);
 
-            skeleton.Nodes[twoBoneSolveGroup.StartJointNodeIndex].LocalTransform *= toMat4(r2 * r0); // note order
-            skeleton.Nodes[twoBoneSolveGroup.MiddleJointNodeIndex].LocalTransform *= toMat4(r1);
+            const quat startJointResult = glm::slerp(identity, startJointRotationCorrection, twoBoneSolveGroup.Weight);
+            const quat middleJointResult = glm::slerp(identity, r1, twoBoneSolveGroup.Weight);
+
+            skeleton.Nodes[twoBoneSolveGroup.StartJointNodeIndex].LocalTransform *= toMat4(startJointResult); // note order
+            skeleton.Nodes[twoBoneSolveGroup.MiddleJointNodeIndex].LocalTransform *= toMat4(middleJointResult);
+
+            twoBoneSolveGroup.ApplySolve = false;
 
             // MINE!!!!!!
             //glm::vec3 startJointPosition = entityTransform * skeleton.NodeGlobalTransforms[twoBoneSolveGroup.StartJointNodeIndex][3];

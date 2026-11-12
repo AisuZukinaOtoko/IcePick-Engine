@@ -25,6 +25,12 @@ namespace IcePick {
 	class TerrainSystem;
 	class TextureLoader;
 
+	struct RayCastResult {
+		glm::vec3 HitPosition;
+		uint32_t HitBodyId;
+		bool HasHit = false;
+	};
+
 	class PhysicsSystem3D {
 	public:
 		void Init();
@@ -57,7 +63,7 @@ namespace IcePick {
 		void SetVirtualCharacterLinearVelocity(entt::entity entityId, glm::vec3 velocity);
 		void AddForce(entt::entity entityId, glm::vec3 forceDirection);
 
-		glm::vec3 CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength);
+		RayCastResult CastRay(glm::vec3 startPosition, glm::vec3 directionAndLength);
 
 #ifndef DIST
 		void DebugRender();

@@ -44,7 +44,9 @@ namespace IcePick {
 			std::string name = animation->mName.C_Str();
 			double duration = animation->mDuration;
 			double ticksPerSecond = animation->mTicksPerSecond;
-			importAnimation.Duration = duration;
+			float keyTimeFactor = 1000.0f / ticksPerSecond;
+			importAnimation.Duration = duration * keyTimeFactor;
+
 			IP_LOG(name);
 			IP_LOG(std::to_string(scene->mNumAnimations) + " animations");
 			IP_LOG(std::to_string(duration) + " duration");
@@ -62,17 +64,17 @@ namespace IcePick {
 
 				for (unsigned int positionKeyIndex = 0; positionKeyIndex < channel->mNumPositionKeys; positionKeyIndex++) {
 					aiVectorKey& importPositionKey = channel->mPositionKeys[positionKeyIndex];
-					nodeTransform.TransformChannels.PositionChannel.ChannelKeys.emplace_back(glm::vec3(importPositionKey.mValue.x, importPositionKey.mValue.y, importPositionKey.mValue.z), importPositionKey.mTime);
+					nodeTransform.TransformChannels.PositionChannel.ChannelKeys.emplace_back(glm::vec3(importPositionKey.mValue.x, importPositionKey.mValue.y, importPositionKey.mValue.z), importPositionKey.mTime * keyTimeFactor);
 				}
 
 				for (unsigned int rotationKeyIndex = 0; rotationKeyIndex < channel->mNumRotationKeys; rotationKeyIndex++) {
 					aiQuatKey& importRotationKey = channel->mRotationKeys[rotationKeyIndex];
-					nodeTransform.TransformChannels.RotationChannel.ChannelKeys.emplace_back(glm::quat(importRotationKey.mValue.w, importRotationKey.mValue.x, importRotationKey.mValue.y, importRotationKey.mValue.z), importRotationKey.mTime);
+					nodeTransform.TransformChannels.RotationChannel.ChannelKeys.emplace_back(glm::quat(importRotationKey.mValue.w, importRotationKey.mValue.x, importRotationKey.mValue.y, importRotationKey.mValue.z), importRotationKey.mTime * keyTimeFactor);
 				}
 
 				for (unsigned int scaleKeyIndex = 0; scaleKeyIndex < channel->mNumScalingKeys; scaleKeyIndex++) {
 					aiVectorKey& importScaleKey = channel->mScalingKeys[scaleKeyIndex];
-					nodeTransform.TransformChannels.ScaleChannel.ChannelKeys.emplace_back(glm::vec3(importScaleKey.mValue.x, importScaleKey.mValue.y, importScaleKey.mValue.z), importScaleKey.mTime);
+					nodeTransform.TransformChannels.ScaleChannel.ChannelKeys.emplace_back(glm::vec3(importScaleKey.mValue.x, importScaleKey.mValue.y, importScaleKey.mValue.z), importScaleKey.mTime * keyTimeFactor);
 				}
 			}
 			
